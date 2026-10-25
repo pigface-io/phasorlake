@@ -3282,6 +3282,7 @@ dependencies = [
  "utilake-mms-decode",
  "utilake-mms-registry",
  "utilake-nem",
+ "utilake-provenance",
  "utilake-wem",
  "utilake-writer",
  "zip",

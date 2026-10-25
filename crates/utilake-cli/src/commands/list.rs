@@ -361,9 +361,11 @@ async fn values(ctx: &Context, id: TableId, column: &str, limit: usize) -> Resul
     let outputs = m.live_outputs(Some(&t.name)).await.map_err(|e| fail(&e))?;
     drop(m);
     thread.join();
+    let catalog = catalog(&outputs);
     let lake = Lake {
         registry: r,
-        files: catalog(&outputs, off),
+        files: catalog.files,
+        sources: catalog.sources,
         version: env!("CARGO_PKG_VERSION"),
     };
     let valid = t.temporal.valid.column().cloned();
@@ -458,7 +460,7 @@ async fn files(ctx: &Context, id: Option<TableId>) -> Result<i32> {
                     o.rows.to_string(),
                     h.span(off),
                     side(&o.url).to_owned(),
-                    format!("{}!{}", o.url.rsplit('/').next().unwrap_or(&o.url), o.entry),
+                    sources_text(&o.url, &o.entries),
                     o.path.clone(),
                 ]
             })
@@ -598,7 +600,7 @@ async fn ingests(ctx: &Context, args: &ListCmd) -> Result<i32> {
                     i.bad_rows.to_string(),
                     i.outputs.len().to_string(),
                     i.error_code.clone().unwrap_or_default(),
-                    format!("{}!{}", i.url.rsplit('/').next().unwrap_or(&i.url), i.entry),
+                    sources_text(&i.url, &i.entries),
                 ]
             })
             .collect();
@@ -613,6 +615,18 @@ async fn ingests(ctx: &Context, args: &ListCmd) -> Result<i32> {
         );
     }
     Ok(0)
+}
+
+/// A source file's name and what of it was read: its one entry, or how
+/// many entries.
+fn sources_text(url: &str, entries: &[utilake_writer::manifest::EntryShare]) -> String {
+    let name = url.rsplit('/').next().unwrap_or(url);
+    match entries {
+        [] => name.to_owned(),
+        [e] if e.entry.is_empty() => name.to_owned(),
+        [e] => format!("{name}!{}", e.entry),
+        many => format!("{name} ({} entries)", many.len()),
+    }
 }
 
 #[cfg(test)]
@@ -646,7 +660,10 @@ mod tests {
             source_version: 1,
             source_period: None,
             url: "u".into(),
-            entry: "e".into(),
+            entries: vec![utilake_writer::manifest::EntryShare {
+                entry: "e".into(),
+                ..Default::default()
+            }],
             min_time: Some(1_704_031_200_000_000_000),
             max_time: Some(1_704_031_500_000_000_000),
             partition: "year=2024/month=01".into(),

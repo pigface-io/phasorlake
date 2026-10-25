@@ -25,7 +25,6 @@ pub mod query;
 pub mod resolve;
 pub mod scan;
 pub mod sql;
-pub mod stamp;
 pub mod time;
 pub mod window;
 
@@ -33,7 +32,7 @@ use std::path::PathBuf;
 
 use arrow_array::RecordBatch;
 pub use bind::bind;
-pub use catalog::{LakeFile, SourceStamp, catalog};
+pub use catalog::{Catalog, LakeFile, Source, SourceStamp, catalog, source_name};
 pub use error::QueryError;
 pub use intervals::{Gap, Intervals};
 pub use output::{
@@ -61,6 +60,9 @@ pub struct Lake<'a> {
     pub registry: &'a Registry,
     /// The files, from the manifest's live outputs ([`catalog()`]).
     pub files: Vec<LakeFile>,
+    /// The sources of their rows, in stamp order: a source's index is its
+    /// rank, which every row's `_nl_src` holds.
+    pub sources: Vec<Source>,
     /// The utilake version, written into every output.
     pub version: &'a str,
 }
@@ -78,10 +80,7 @@ pub fn read_with(
         warnings: b.warnings.clone(),
         ..Report::default()
     };
-    let known_at = match b.query.resolution {
-        Resolution::Latest { known_at } => known_at,
-        _ => None,
-    };
+    let known_at = b.query.resolution.known_at();
     // Units, in partition order (which is time order, as the directories
     // are named); one unit when the table resolves whole.
     let by_partition = b.spec.as_ref().is_some_and(|s| s.unit == Unit::Partition);
@@ -98,13 +97,27 @@ pub fn read_with(
         }
     }
     units.sort_by(|a, b| a.0.cmp(&b.0));
-    for fr in &b.files {
-        let f = &lake.files[fr.file];
+    // The sources of the files read, each once, in stamp order.
+    let mut read: Vec<u32> = b
+        .files
+        .iter()
+        .flat_map(|fr| lake.files[fr.file].sources.iter().map(|(_, r)| *r))
+        .collect();
+    read.sort_unstable();
+    read.dedup();
+    for r in read {
+        let s = &lake.sources[r as usize];
+        let period = b
+            .files
+            .iter()
+            .map(|fr| &lake.files[fr.file])
+            .find(|f| f.url == s.url)
+            .and_then(|f| f.source_period.clone());
         report.sources.push(SourceRef {
-            url: f.url.to_string(),
-            entry: f.entry.to_string(),
-            source_period: f.source_period.clone(),
-            published: f.published.map(|p| rfc3339(p.get(), 0)),
+            url: s.url.to_string(),
+            entry: s.entry.to_string(),
+            source_period: period,
+            published: s.published.map(|p| rfc3339(p.get(), 0)),
         });
     }
     let names = output::source_names(lake);
@@ -122,8 +135,7 @@ pub fn read_with(
         let mut batches: Vec<RecordBatch> = Vec::new();
         let t = std::time::Instant::now();
         for fr in reads {
-            let ix = u32::try_from(fr.file).expect("fewer than 2^32 files");
-            batches.extend(scan::scan(b, lake, fr, ix, known_at, &mut report)?);
+            batches.extend(scan::scan(b, lake, fr, known_at, &mut report)?);
             report.files += 1;
         }
         report.timing.scan_us += us(t);

@@ -2,11 +2,10 @@
 //! roles in standard SQL, which the DuckDB test runs against the kernel.
 //!
 //! ```sql
-//! WITH raw AS (<the rows, with filename naming each row's lake file>),
-//!      sources(filename, published) AS (VALUES (...)),
-//!      stamped AS (SELECT raw.*, published, coalesce("LASTCHANGED", published) AS _nl_known FROM raw JOIN sources USING (filename)),
+//! WITH raw AS (<the rows, each with its _nl_source and _nl_published>),
+//!      stamped AS (SELECT raw.*, greatest("LASTCHANGED", _nl_published) AS _nl_known FROM raw),
 //!      known AS (SELECT * FROM stamped WHERE _nl_known <= K),
-//!      latest AS (SELECT <columns>, filename, published, _nl_known FROM (SELECT known.*, row_number() OVER (PARTITION BY entity…, valid ORDER BY order… DESC NULLS LAST, published DESC, filename DESC) AS _nl_rank FROM known) ranked WHERE _nl_rank = 1),
+//!      latest AS (SELECT <columns>, _nl_source, _nl_published, _nl_known FROM (SELECT known.*, row_number() OVER (PARTITION BY entity…, valid ORDER BY order… DESC NULLS LAST, _nl_published DESC NULLS LAST, _nl_source DESC) AS _nl_rank FROM known) ranked WHERE _nl_rank = 1),
 //!      ends AS (SELECT DISTINCT entity…, valid FROM latest),
 //!      next_ends AS (SELECT entity…, valid, lead(valid) OVER (PARTITION BY entity… ORDER BY valid) AS next_valid FROM ends),
 //!      spans AS (SELECT latest.*, CASE WHEN next_valid >= <no end> THEN NULL ELSE next_valid END AS _nl_valid_to FROM latest JOIN next_ends USING (entity…, valid))
@@ -14,11 +13,11 @@
 //! ```
 //!
 //! Only `raw` is of one dialect. For DuckDB it is every lake file read
-//! with `read_parquet(..., filename = true)`, each projected onto the
-//! schema. For Postgres it is one relation named for the table, already
-//! in the schema, whose rows carry `_nl_source`: the lake file each came
-//! from, as the sidecar names it. Everything after is window functions,
-//! `coalesce`, `CASE` and `TIMESTAMP WITH TIME ZONE` literals.
+//! with `read_parquet`, each projected onto the schema. For Postgres it is
+//! one relation named for the table, already in the schema. Either way
+//! every row carries its own `_nl_source` and `_nl_published`, as the lake
+//! file holds them, so nothing is joined in. Everything after is window
+//! functions, `greatest`, `CASE` and `TIMESTAMP WITH TIME ZONE` literals.
 
 use std::fmt::Write as _;
 
@@ -101,13 +100,15 @@ fn all_columns(b: &Bound) -> Vec<String> {
     b.schema.fields().iter().map(|f| ident(f.name())).collect()
 }
 
-/// The `raw` CTE: the rows, each with `filename` naming its lake file.
+/// The two columns each row carries: its source and publish time.
+const STAMP: &str = "\"_nl_source\", \"_nl_published\"";
+
+/// The `raw` CTE: the rows, each with its source and publish time.
 fn raw(b: &Bound, lake: &Lake<'_>, dialect: Dialect) -> String {
     match dialect {
         Dialect::Postgres => format!(
-            "SELECT {}, {} AS filename FROM {}",
+            "SELECT {}, {STAMP} FROM {}",
             all_columns(b).join(", "),
-            ident(crate::output::SOURCE),
             ident(&b.table)
         ),
         Dialect::DuckDb => {
@@ -136,7 +137,7 @@ fn raw(b: &Bound, lake: &Lake<'_>, dialect: Dialect) -> String {
                     })
                     .collect();
                 selects.push(format!(
-                    "SELECT {}, filename FROM read_parquet([{}], filename = true)",
+                    "SELECT {}, CAST(\"_nl_source\" AS VARCHAR) AS \"_nl_source\", \"_nl_published\" FROM read_parquet([{}])",
                     cols.join(", "),
                     literal(&f.path)
                 ));
@@ -155,7 +156,7 @@ fn raw(b: &Bound, lake: &Lake<'_>, dialect: Dialect) -> String {
                     })
                     .collect();
                 selects.push(format!(
-                    "SELECT {}, CAST(NULL AS VARCHAR) AS filename WHERE 1 = 0",
+                    "SELECT {}, CAST(NULL AS VARCHAR) AS \"_nl_source\", CAST(NULL AS TIMESTAMP WITH TIME ZONE) AS \"_nl_published\" WHERE 1 = 0",
                     cols.join(", ")
                 ));
             }
@@ -168,46 +169,24 @@ fn raw(b: &Bound, lake: &Lake<'_>, dialect: Dialect) -> String {
 pub fn render(b: &Bound, lake: &Lake<'_>, dialect: Dialect) -> String {
     let mut out = String::new();
     let _ = writeln!(out, "WITH raw AS (\n  {}\n),", raw(b, lake, dialect));
-    // sources: each file's publish time.
-    let tz = "TIMESTAMP WITH TIME ZONE";
-    let rows: Vec<String> = b
-        .files
-        .iter()
-        .map(|fr| {
-            let f = &lake.files[fr.file];
-            let p = f.published.map_or_else(
-                || format!("CAST(NULL AS {tz})"),
-                |p| format!("CAST({} AS {tz})", literal(&rfc3339(p.get(), 0))),
-            );
-            format!("({}, {p})", literal(&f.path))
-        })
-        .collect();
-    let rows = if rows.is_empty() {
-        format!("(CAST(NULL AS VARCHAR), CAST(NULL AS {tz}))")
-    } else {
-        rows.join(", ")
-    };
-    let _ = writeln!(out, "sources(filename, published) AS (VALUES {rows}),");
     let Some(spec) = &b.spec else {
         return finish_raw(out, b);
     };
     if b.query.resolution == Resolution::Raw {
         return finish_raw(out, b);
     }
+    // Known no earlier than published, nor than the cutoff says.
     let known = spec.cutoff.map_or_else(
-        || "published".to_owned(),
-        |c| format!("coalesce({}, published)", as_instant(b, c)),
+        || "\"_nl_published\"".to_owned(),
+        |c| format!("greatest({}, \"_nl_published\")", as_instant(b, c)),
     );
     let _ = writeln!(
         out,
-        "stamped AS (SELECT raw.*, published, {known} AS _nl_known FROM raw JOIN sources USING (filename)),"
+        "stamped AS (SELECT raw.*, {known} AS _nl_known FROM raw),"
     );
-    let known_filter = match b.query.resolution {
-        Resolution::Latest { known_at: Some(k) } => {
-            format!("WHERE _nl_known <= {}", instant(k.get()))
-        }
-        _ => String::new(),
-    };
+    let known_filter = b.query.resolution.known_at().map_or_else(String::new, |k| {
+        format!("WHERE _nl_known <= {}", instant(k.get()))
+    });
     let _ = writeln!(out, "known AS (SELECT * FROM stamped {known_filter}),");
     // The fact, and the rank within it.
     let names = |ixs: &[FieldIx]| -> Vec<String> {
@@ -226,7 +205,7 @@ pub fn render(b: &Bound, lake: &Lake<'_>, dialect: Dialect) -> String {
         );
         let order = names(&spec.order);
         match b.query.resolution {
-            Resolution::Revisions => (key.into_iter().chain(order).collect(), Vec::new()),
+            Resolution::Revisions { .. } => (key.into_iter().chain(order).collect(), Vec::new()),
             _ => (
                 key,
                 order
@@ -236,15 +215,15 @@ pub fn render(b: &Bound, lake: &Lake<'_>, dialect: Dialect) -> String {
             ),
         }
     };
-    rank.push("published DESC NULLS LAST".to_owned());
-    rank.push("filename DESC".to_owned());
+    rank.push("\"_nl_published\" DESC NULLS LAST".to_owned());
+    rank.push("\"_nl_source\" DESC".to_owned());
     let partition = if key.is_empty() {
         String::new()
     } else {
         format!("PARTITION BY {} ", key.join(", "))
     };
     let mut carried = all_columns(b);
-    carried.extend(["filename", "published", "_nl_known"].map(str::to_owned));
+    carried.extend(["\"_nl_source\"", "\"_nl_published\"", "_nl_known"].map(str::to_owned));
     let _ = writeln!(
         out,
         "latest AS (SELECT {cols} FROM (SELECT known.*, row_number() OVER ({partition}ORDER BY {rank}) AS _nl_rank FROM known) ranked WHERE _nl_rank = 1),",
@@ -374,10 +353,7 @@ fn finish_raw(mut out: String, b: &Bound) -> String {
     let where_ = valid.map_or_else(String::new, |c| {
         window_sql(axis, &b.query.window, &as_instant(b, c), b.day_start_us)
     });
-    let _ = writeln!(
-        out,
-        "spans AS (SELECT raw.* FROM raw JOIN sources USING (filename))"
-    );
+    let _ = writeln!(out, "spans AS (SELECT raw.* FROM raw)");
     let _ = write!(out, "SELECT {} FROM spans {where_}", kept(b).join(", "));
     out
 }
@@ -447,6 +423,7 @@ mod tests {
         let lake = Lake {
             registry: &utilake_nem::registry(),
             files: vec![],
+            sources: vec![],
             version: "test",
         };
         let after = ValidTime::new(1_704_031_200_000_000);
@@ -501,6 +478,7 @@ mod tests {
         let lake = Lake {
             registry: &utilake_nem::registry(),
             files: vec![],
+            sources: vec![],
             version: "test",
         };
         let at = ValidWindow::At(ValidTime::new(1_704_031_200_000_000));
@@ -514,13 +492,10 @@ mod tests {
             "{s}"
         );
         assert!(
-            s.contains("SELECT CAST(NULL AS DATE) AS \"DAY\", CAST(NULL AS BOOLEAN) AS \"X\", CAST(NULL AS VARCHAR) AS filename WHERE 1 = 0"),
+            s.contains("SELECT CAST(NULL AS DATE) AS \"DAY\", CAST(NULL AS BOOLEAN) AS \"X\", CAST(NULL AS VARCHAR) AS \"_nl_source\", CAST(NULL AS TIMESTAMP WITH TIME ZONE) AS \"_nl_published\" WHERE 1 = 0"),
             "{s}"
         );
-        assert!(
-            s.contains("VALUES (CAST(NULL AS VARCHAR), CAST(NULL AS TIMESTAMP WITH TIME ZONE))"),
-            "{s}"
-        );
+        assert!(!s.contains("VALUES"), "{s}");
         assert!(
             s.contains("SELECT \"DAY\", \"X\", _nl_known FROM spans WHERE"),
             "{s}"
@@ -528,7 +503,7 @@ mod tests {
         // A timeless table takes no window; Postgres reads the relation.
         let s = render(&dated(at, ValidAxis::Timeless), &lake, Dialect::Postgres);
         assert!(
-            s.contains("SELECT \"DAY\", \"X\", \"_nl_source\" AS filename FROM \"T\""),
+            s.contains("SELECT \"DAY\", \"X\", \"_nl_source\", \"_nl_published\" FROM \"T\""),
             "{s}"
         );
         assert!(!s.contains("read_parquet"), "{s}");

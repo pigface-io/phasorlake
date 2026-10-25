@@ -21,6 +21,7 @@ macro_rules! zone {
 #[cfg(feature = "zones")]
 pub mod zones;
 
+mod entry_times;
 pub mod get;
 pub mod ingest_file;
 pub mod plan;

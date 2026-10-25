@@ -35,7 +35,7 @@ impl QuarantineWriter {
 
     /// Writes one row with its diagnostic. The file is truncated on first
     /// write so a re-ingest of the same source is idempotent.
-    pub fn write(&mut self, raw: &[u8], diag: &Diagnostic) -> std::io::Result<()> {
+    pub fn write(&mut self, raw: &[u8], source: &str, diag: &Diagnostic) -> std::io::Result<()> {
         if self.out.is_none() {
             if let Some(p) = self.path.parent() {
                 std::fs::create_dir_all(p)?;
@@ -44,6 +44,7 @@ impl QuarantineWriter {
         }
         let w = self.out.as_mut().expect("just created");
         let rec = serde_json::json!({
+            "source": source,
             "line": diag.line,
             "byte_offset": diag.byte_offset,
             "code": diag.code,
@@ -88,8 +89,8 @@ mod tests {
         let d = Diagnostic::error("parse.float", Category::Parse, "Bad.")
             .at(7, 70)
             .with_column("X");
-        q.write(b"D,1,2", &d).unwrap();
-        q.write(b"D,3,\xff", &d).unwrap();
+        q.write(b"D,1,2", "https://h/a.zip!A.CSV", &d).unwrap();
+        q.write(b"D,3,\xff", "https://h/a.zip!B.CSV", &d).unwrap();
         assert_eq!(q.count, 2);
         let p = q.finish().unwrap().unwrap();
         let text = std::fs::read_to_string(p).unwrap();

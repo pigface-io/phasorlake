@@ -131,6 +131,9 @@ pub struct Fixture {
     pub dir: tempfile::TempDir,
     pub registry: Arc<Registry>,
     pub outputs: Vec<LiveOutput>,
+    /// Whether rows are stamped with what the server said of their file;
+    /// off, only a time in the file's name stamps them.
+    pub server_times: bool,
 }
 
 impl Fixture {
@@ -139,6 +142,7 @@ impl Fixture {
             dir: tempfile::tempdir().unwrap(),
             registry: utilake_nem::registry(),
             outputs: Vec::new(),
+            server_times: true,
         }
     }
 
@@ -160,9 +164,19 @@ impl Fixture {
 
     /// Writes a source's rows as one lake file and records it.
     pub fn write(&mut self, s: &Source<'_>) -> &LiveOutput {
+        self.write_together(std::slice::from_ref(s))
+    }
+
+    /// Writes the rows of several entries of one source file as one lake
+    /// file, each row naming its entry, and records it: what the pipeline
+    /// writes of a zip. Table, partition, URL and publish time are the
+    /// first's.
+    pub fn write_together(&mut self, sources: &[Source<'_>]) -> &LiveOutput {
+        let s = &sources[0];
         let id = self.id(s.table);
         let table = self.registry.table(id);
         let schema = self.schema(s.table);
+        let lake = utilake_writer::provenance::lake_schema(&schema);
         let time_column = table
             .time_column
             .as_deref()
@@ -190,7 +204,6 @@ impl Fixture {
             fingerprint: Fingerprint(self.outputs.len() as u128 + 1),
             source_url: s.url.to_owned(),
             source_sha256: format!("{:064x}", self.outputs.len() + 1),
-            entry: s.entry.to_owned(),
             time_column,
             part: 1,
             transform: Transform {
@@ -206,8 +219,17 @@ impl Fixture {
                 schema_id: s.schema_id,
             },
         };
-        let w = hive.open(&key, schema, &meta).unwrap();
-        hive.write(w, &s.rows).unwrap();
+        let w = hive.open(&key, lake.clone(), &meta).unwrap();
+        let modified = s.last_modified_at.filter(|_| self.server_times);
+        let published = utilake_core::published::published(s.url, modified, NEM.0);
+        for e in sources {
+            let stamp = utilake_writer::provenance::Stamp::new(
+                &utilake_query::source_name(s.url, e.entry),
+                published,
+            );
+            let rows = utilake_writer::provenance::stamped(&e.rows, &stamp, &lake).unwrap();
+            hive.write(w, &rows).unwrap();
+        }
         let written = hive.close(w).unwrap();
         hive.commit().unwrap();
         self.outputs.push(LiveOutput {
@@ -219,7 +241,14 @@ impl Fixture {
             source_version: 1,
             source_period: s.source_period.map(str::to_owned),
             url: s.url.to_owned(),
-            entry: s.entry.to_owned(),
+            entries: sources
+                .iter()
+                .map(|e| utilake_writer::manifest::EntryShare {
+                    entry: e.entry.to_owned(),
+                    published,
+                    ..Default::default()
+                })
+                .collect(),
             min_time: written.min_time,
             max_time: written.max_time,
             partition: written.partition.to_string(),
@@ -229,13 +258,15 @@ impl Fixture {
     }
 
     pub fn files(&self) -> Vec<LakeFile> {
-        catalog(&self.outputs, NEM)
+        catalog(&self.outputs).files
     }
 
     pub fn lake(&self) -> Lake<'_> {
+        let c = catalog(&self.outputs);
         Lake {
             registry: &self.registry,
-            files: self.files(),
+            files: c.files,
+            sources: c.sources,
             version: "test",
         }
     }

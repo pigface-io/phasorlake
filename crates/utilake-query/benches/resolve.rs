@@ -260,7 +260,11 @@ fn bench(c: &mut Criterion) {
     }
     let (batch, b, spec) = dispatchprice(3);
     let b = Bound {
-        query: Query::new("T", b.query.window, Resolution::Revisions),
+        query: Query::new(
+            "T",
+            b.query.window,
+            Resolution::Revisions { known_at: None },
+        ),
         ..b
     };
     g.throughput(Throughput::Elements(batch.num_rows() as u64));

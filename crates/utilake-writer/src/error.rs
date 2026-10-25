@@ -77,6 +77,14 @@ pub enum StoreError {
         /// Its Arrow type.
         observed: String,
     },
+    /// A lake file was opened without each row's source and publish time.
+    #[error(
+        "A lake file must end with the columns _nl_source and _nl_published; the batch has {observed}."
+    )]
+    NoProvenance {
+        /// The batch's columns.
+        observed: String,
+    },
 }
 
 impl Diagnose for StoreError {
@@ -117,6 +125,10 @@ impl Diagnose for StoreError {
                 Diagnostic::error("store.naive_timestamp", Category::Store, msg)
                     .with_column(column.clone())
                     .expected_observed("Timestamp(Microsecond, Some(offset))", observed.clone())
+            }
+            Self::NoProvenance { observed } => {
+                Diagnostic::error("store.no_provenance", Category::Store, msg)
+                    .expected_observed("…,_nl_source,_nl_published", observed.clone())
             }
         }
     }

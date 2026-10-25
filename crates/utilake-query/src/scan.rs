@@ -17,6 +17,7 @@ use parquet::arrow::ProjectionMask;
 use parquet::arrow::arrow_reader::ParquetRecordBatchReaderBuilder;
 use utilake_core::{Category, Diagnostic};
 use utilake_iceberg::Column;
+use utilake_iceberg::provenance::{PUBLISHED, SOURCE};
 
 use crate::error::QueryError;
 use crate::output::Report;
@@ -25,10 +26,12 @@ use crate::time::{KnownTime, MarketOffset};
 use crate::{Lake, LakeFile, window};
 
 /// The column of a scanned row that says which source it came from: its
-/// position in the lake's files. Replaced by `_nl_source` on output.
+/// rank among the lake's sources. Replaced by `_nl_source` on output.
 pub const SOURCE_IX: &str = "_nl_src";
-/// The column of a scanned row that says when it was known: the cutoff
-/// column's value, else its source's publish time.
+/// The column of a scanned row that says when it was known: its source's
+/// publish time, or its cutoff column's value when that is later (a row
+/// is never known before it was published); the cutoff alone when the
+/// publish time is not known.
 pub const KNOWN: &str = "_nl_known";
 
 /// Rows per batch read from a file.
@@ -90,31 +93,33 @@ pub fn micros_of(col: &ArrayRef, off: MarketOffset) -> Option<Vec<Option<i64>>> 
 
 /// One file's rows of the target schema, in the window, through the
 /// entity filters. `known_at` set and the file has neither a cutoff
-/// column nor a publish time: nothing of it can be shown known by then,
-/// so it is left out with a warning.
+/// column nor a publish time for any of its sources: nothing of it can be
+/// shown known by then, so it is left out with a warning.
 pub fn scan(
     b: &Bound,
     lake: &Lake<'_>,
     read: &FileRead,
-    source_ix: u32,
     known_at: Option<KnownTime>,
     report: &mut Report,
 ) -> Result<Vec<RecordBatch>, QueryError> {
     let file: &LakeFile = &lake.files[read.file];
     let cutoff = b.spec.as_ref().and_then(|s| s.cutoff);
-    if known_at.is_some() && cutoff.is_none() && file.published.is_none() {
+    let unknown = file
+        .sources
+        .iter()
+        .all(|(_, r)| lake.sources[*r as usize].published.is_none());
+    if known_at.is_some() && cutoff.is_none() && unknown {
         report.warnings.push(
             Diagnostic::warning(
                 "query.stamp_unknown",
                 Category::Query,
                 format!(
                     "{} has no publish time, so none of its rows can be shown to have been known by the time asked for; they are left out.",
-                    file.source()
+                    file.url
                 ),
             )
             .with_table(b.table.clone())
-            .with_url(file.url.to_string())
-            .with_entry(file.entry.to_string()),
+            .with_url(file.url.to_string()),
         );
         return Ok(Vec::new());
     }
@@ -137,7 +142,19 @@ pub fn scan(
             _ => None,
         })
         .collect();
-    let mask = ProjectionMask::columns(builder.parquet_schema(), wanted.iter().copied());
+    // Every row's source and publish time: a lake file without them was
+    // written before rows named their sources.
+    for c in [SOURCE.name, PUBLISHED.name] {
+        if file_schema.index_of(c).is_err() {
+            return Err(QueryError::LakeFormat {
+                path: path.to_owned(),
+            });
+        }
+    }
+    let mask = ProjectionMask::columns(
+        builder.parquet_schema(),
+        wanted.iter().copied().chain([SOURCE.name, PUBLISHED.name]),
+    );
     let axis = b.spec.as_ref().map(|s| &s.valid);
     let valid_ix = match (axis, b.time) {
         (Some(a), _) => a.column().copied(),
@@ -188,17 +205,27 @@ pub fn scan(
             };
             columns.push(col);
         }
-        columns.push(Arc::new(UInt32Array::from(vec![source_ix; n])));
-        // When each row was known: its cutoff value, else (a null cutoff
-        // or none at all) when its source was published.
-        let published = file.published.map(KnownTime::get);
+        let source = batch.column_by_name(SOURCE.name).expect("projected above");
+        columns.push(Arc::new(ranks(source.as_ref(), file).map_err(|name| {
+            QueryError::SourceUnknown {
+                path: path.to_owned(),
+                name,
+            }
+        })?));
+        // When each row was known: no earlier than its source was
+        // published, nor than its cutoff value says.
+        let published = batch
+            .column_by_name(PUBLISHED.name)
+            .expect("projected above")
+            .as_primitive::<TimestampMicrosecondType>();
         let known: Vec<Option<i64>> = match cutoff {
             Some(FieldIx(ix)) => micros_of(&columns[ix], b.offset)
                 .unwrap_or_else(|| vec![None; n])
                 .into_iter()
-                .map(|v| v.or(published))
+                .zip(published.iter())
+                .map(|(c, p)| c.max(p))
                 .collect(),
-            None => vec![published; n],
+            None => published.iter().collect(),
         };
         let known: ArrayRef =
             Arc::new(TimestampMicrosecondArray::from(known).with_timezone(tz.as_str()));
@@ -228,6 +255,34 @@ pub fn scan(
         }
     }
     Ok(out)
+}
+
+/// Each row's source rank, from a file's `_nl_source`: a dictionary's
+/// values are looked up once each and its keys gathered, so no row costs
+/// a string comparison; plain text (a file rewritten by another tool) is
+/// looked up row by row. A name the file's sources do not hold is the
+/// error.
+fn ranks(column: &dyn Array, file: &LakeFile) -> Result<UInt32Array, String> {
+    let lookup = |name: &str| file.rank_of(name).ok_or_else(|| name.to_owned());
+    if let DataType::Dictionary(_, _) = column.data_type() {
+        let dict = column.as_any_dictionary();
+        let values = dict.values().as_string::<i32>();
+        let by_key: Vec<u32> = values
+            .iter()
+            .map(|v| lookup(v.unwrap_or("")))
+            .collect::<Result<_, _>>()?;
+        let keys = arrow_cast::cast(dict.keys(), &DataType::UInt32).map_err(|e| e.to_string())?;
+        return Ok(keys
+            .as_primitive::<arrow_array::types::UInt32Type>()
+            .iter()
+            .map(|k| k.map(|k| by_key[k as usize]))
+            .collect());
+    }
+    let text = arrow_cast::cast(column, &DataType::Utf8).map_err(|e| e.to_string())?;
+    text.as_string::<i32>()
+        .iter()
+        .map(|v| lookup(v.unwrap_or("")).map(Some))
+        .collect()
 }
 
 /// The row groups whose valid column may hold a value in `[t0, t1)`, by
@@ -386,31 +441,48 @@ mod file_tests {
     use super::*;
     use crate::query::{Bound, BoundSpec, Query, Unit};
     use crate::time::{ValidTime, ValidWindow};
+    use utilake_core::Diagnose;
 
     const NEM: MarketOffset = MarketOffset(36_000);
 
-    fn file(dir: &std::path::Path) -> String {
-        let path = dir.join("f.parquet");
+    /// The rows of the tests, without provenance.
+    fn rows() -> RecordBatch {
         let schema = Arc::new(Schema::new(vec![
             Field::new("A", DataType::Int64, true),
             Field::new("DAY", DataType::Date32, true),
             Field::new("S", DataType::Utf8, true),
         ]));
-        let batch = RecordBatch::try_new(
-            schema.clone(),
+        RecordBatch::try_new(
+            schema,
             vec![
                 Arc::new(Int64Array::from(vec![Some(1), Some(2), None])),
                 Arc::new(Date32Array::from(vec![Some(19_723), Some(19_724), None])),
                 Arc::new(StringArray::from(vec!["x", "y", "z"])),
             ],
         )
-        .unwrap();
+        .unwrap()
+    }
+
+    fn write(path: &std::path::Path, batch: &RecordBatch) -> String {
         let mut w =
-            parquet::arrow::ArrowWriter::try_new(File::create(&path).unwrap(), schema, None)
+            parquet::arrow::ArrowWriter::try_new(File::create(path).unwrap(), batch.schema(), None)
                 .unwrap();
-        w.write(&batch).unwrap();
+        w.write(batch).unwrap();
         w.close().unwrap();
         path.display().to_string()
+    }
+
+    /// A lake file of the rows from source `file:///f`, public at `published`.
+    fn file_published(dir: &std::path::Path, published: Option<i64>) -> String {
+        let rows = rows();
+        let lake = utilake_writer::provenance::lake_schema(&rows.schema());
+        let stamp = utilake_writer::provenance::Stamp::new("file:///f", published);
+        let batch = utilake_writer::provenance::stamped(&rows, &stamp, &lake).unwrap();
+        write(&dir.join("f.parquet"), &batch)
+    }
+
+    fn file(dir: &std::path::Path) -> String {
+        file_published(dir, None)
     }
 
     fn bound(cutoff: Option<FieldIx>, resolution: Resolution) -> Bound {
@@ -491,8 +563,12 @@ mod file_tests {
                 min_us: None,
                 max_us: None,
                 url: Arc::from("file:///f"),
-                entry: Arc::from(""),
                 source_period: None,
+                sources: Box::new([(Arc::from("file:///f"), 0)]),
+            }],
+            sources: vec![crate::Source {
+                url: Arc::from("file:///f"),
+                entry: Arc::from(""),
                 published: published.map(KnownTime::new),
             }],
             version: "test",
@@ -507,7 +583,7 @@ mod file_tests {
         let lake = lake(&registry, &path, None);
         let b = bound(Some(FieldIx(1)), Resolution::Latest { known_at: None });
         let mut report = Report::default();
-        let out = scan(&b, &lake, &b.files[0], 0, None, &mut report).unwrap();
+        let out = scan(&b, &lake, &b.files[0], None, &mut report).unwrap();
         assert_eq!(out.len(), 1);
         let batch = &out[0];
         assert_eq!(batch.column(0).data_type(), &DataType::Float64);
@@ -524,9 +600,101 @@ mod file_tests {
         );
         // A raw read trims too, and a zero-row batch is not returned.
         let b = bound(None, Resolution::Raw);
-        let out = scan(&b, &lake, &b.files[0], 0, None, &mut report).unwrap();
+        let out = scan(&b, &lake, &b.files[0], None, &mut report).unwrap();
         assert_eq!(out[0].num_rows(), 2);
         assert_eq!(micros_of(out[0].column(5), NEM).unwrap(), [None, None]);
+    }
+
+    #[test]
+    fn a_row_is_known_no_earlier_than_its_publish_time() {
+        let dir = tempfile::tempdir().unwrap();
+        // Published after the days of the cutoff: the publish time wins;
+        // the cutoff wins only where it is later.
+        let late = NEM.midnight_us(19_723) + 3_600_000_000;
+        let path = file_published(dir.path(), Some(late));
+        let registry = utilake_nem::registry();
+        let lake = lake(&registry, &path, Some(late));
+        let b = bound(Some(FieldIx(1)), Resolution::Latest { known_at: None });
+        let mut report = Report::default();
+        let out = scan(&b, &lake, &b.files[0], None, &mut report).unwrap();
+        assert_eq!(
+            micros_of(out[0].column(5), NEM).unwrap(),
+            [Some(late), Some(NEM.midnight_us(19_724))]
+        );
+        // Every row's rank is its source's.
+        let src = out[0]
+            .column(4)
+            .as_primitive::<arrow_array::types::UInt32Type>();
+        assert_eq!(src.values().to_vec(), [0, 0]);
+    }
+
+    #[test]
+    fn a_source_is_ranked_from_text_and_an_unknown_one_is_refused() {
+        let dir = tempfile::tempdir().unwrap();
+        let registry = utilake_nem::registry();
+        // `_nl_source` as plain text, as another tool rewrites it.
+        let rows = rows();
+        let mut fields: Vec<Field> = rows
+            .schema()
+            .fields()
+            .iter()
+            .map(|f| f.as_ref().clone())
+            .collect();
+        fields.push(Field::new("_nl_source", DataType::Utf8, false));
+        fields.push(Field::new(
+            "_nl_published",
+            DataType::Timestamp(TimeUnit::Microsecond, Some("UTC".into())),
+            true,
+        ));
+        let with = |name: &str| {
+            let mut cols = rows.columns().to_vec();
+            cols.push(Arc::new(StringArray::from(vec![name; 3])));
+            cols.push(Arc::new(
+                TimestampMicrosecondArray::from(vec![None::<i64>; 3]).with_timezone("UTC"),
+            ));
+            RecordBatch::try_new(Arc::new(Schema::new(fields.clone())), cols).unwrap()
+        };
+        let b = bound(None, Resolution::Raw);
+        let mut report = Report::default();
+        let text = write(&dir.path().join("t.parquet"), &with("file:///f"));
+        let out = scan(
+            &b,
+            &lake(&registry, &text, None),
+            &b.files[0],
+            None,
+            &mut report,
+        )
+        .unwrap();
+        assert_eq!(out[0].num_rows(), 2);
+        let other = write(&dir.path().join("o.parquet"), &with("file:///other"));
+        let err = scan(
+            &b,
+            &lake(&registry, &other, None),
+            &b.files[0],
+            None,
+            &mut report,
+        )
+        .unwrap_err();
+        assert!(
+            matches!(&err, QueryError::SourceUnknown { name, .. } if name == "file:///other"),
+            "{err}"
+        );
+        assert_eq!(err.diagnostic().code, "query.source_unknown");
+        // So is a dictionary value the file's sources do not hold.
+        let rows = self::rows();
+        let lake_schema = utilake_writer::provenance::lake_schema(&rows.schema());
+        let stamp = utilake_writer::provenance::Stamp::new("file:///else", None);
+        let batch = utilake_writer::provenance::stamped(&rows, &stamp, &lake_schema).unwrap();
+        let dict = write(&dir.path().join("d.parquet"), &batch);
+        let err = scan(
+            &b,
+            &lake(&registry, &dict, None),
+            &b.files[0],
+            None,
+            &mut report,
+        )
+        .unwrap_err();
+        assert!(matches!(err, QueryError::SourceUnknown { .. }), "{err}");
     }
 
     #[test]
@@ -542,40 +710,37 @@ mod file_tests {
             },
         );
         let mut report = Report::default();
-        let out = scan(
-            &b,
-            &lake,
-            &b.files[0],
-            0,
-            Some(KnownTime::new(5)),
-            &mut report,
-        )
-        .unwrap();
+        let out = scan(&b, &lake, &b.files[0], Some(KnownTime::new(5)), &mut report).unwrap();
         assert!(out.is_empty());
         assert_eq!(report.warnings[0].code, "query.stamp_unknown");
         // With a stamp the file is read and every row knows it.
+        let path = file_published(dir.path(), Some(7));
         let lake = self::lake(&registry, &path, Some(7));
-        let out = scan(
-            &b,
-            &lake,
-            &b.files[0],
-            0,
-            Some(KnownTime::new(5)),
-            &mut report,
-        )
-        .unwrap();
+        let out = scan(&b, &lake, &b.files[0], Some(KnownTime::new(5)), &mut report).unwrap();
         assert_eq!(
             micros_of(out[0].column(5), NEM).unwrap(),
             [Some(7), Some(7)]
         );
         let gone = self::lake(&registry, "/nowhere/f.parquet", Some(7));
-        let err = scan(&b, &gone, &b.files[0], 0, None, &mut report).unwrap_err();
+        let err = scan(&b, &gone, &b.files[0], None, &mut report).unwrap_err();
         assert!(matches!(err, QueryError::ReadParquet { .. }), "{err}");
         let not_parquet = dir.path().join("x.parquet");
         std::fs::write(&not_parquet, b"nope").unwrap();
         let bad = self::lake(&registry, not_parquet.to_str().unwrap(), Some(7));
-        let err = scan(&b, &bad, &b.files[0], 0, None, &mut report).unwrap_err();
+        let err = scan(&b, &bad, &b.files[0], None, &mut report).unwrap_err();
         assert!(matches!(err, QueryError::ReadParquet { .. }), "{err}");
+        // A file from before rows named their sources is refused.
+        let old = write(&dir.path().join("old.parquet"), &rows());
+        let err = scan(
+            &b,
+            &self::lake(&registry, &old, Some(7)),
+            &b.files[0],
+            None,
+            &mut report,
+        )
+        .unwrap_err();
+        assert!(matches!(err, QueryError::LakeFormat { .. }), "{err}");
+        assert_eq!(err.diagnostic().code, "query.lake_format");
         let s: ArrayRef = Arc::new(StringArray::from(vec!["x"]));
         assert!(scalar("x", &DataType::Int64).is_err());
         assert_eq!(

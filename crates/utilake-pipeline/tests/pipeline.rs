@@ -1,6 +1,7 @@
 //! The pipeline end to end over fixture files: local zips, a mocked remote
 //! source, idempotent re-runs, failures that do not stop the run.
 
+use std::fmt::Write as _;
 use std::io::Write;
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
@@ -376,6 +377,101 @@ async fn local_zip_ingests_idempotently_and_records_manifest() {
         walk(&e.home.lake()).len(),
         1,
         "old file replaced, not duplicated"
+    );
+}
+
+/// An entry of a rollup that the mirror also holds from its own address
+/// went public when that address served it, which its record keeps: its
+/// rows are stamped with that time, and an entry held only in the rollup
+/// with the rollup's.
+#[tokio::test]
+async fn an_entry_held_alone_is_stamped_when_it_first_went_public() {
+    let e = env();
+    let scada = std::fs::read(fixtures().join("DISPATCH_UNIT_SCADA_v1_head.csv")).unwrap();
+    let zip_path = e
+        .home
+        .root()
+        .join("PUBLIC_DVD_DISPATCH_UNIT_SCADA_202401010000.zip");
+    let held = "PUBLIC_DVD_DISPATCH_UNIT_SCADA_202401010000.CSV";
+    let other = "PUBLIC_DVD_DISPATCH_UNIT_SCADA_202401020000.CSV";
+    make_zip(&zip_path, &[(held, &scada), (other, &scada)]);
+    let zip_url = format!("file://{}", zip_path.display());
+    // The record of the entry held from its own address, which names the
+    // rollup's entry as the same bytes.
+    let record = format!(
+        r#"{{"size":1,"sha256":"{sha}","tool":"t","addresses":[{{"url":"https://h/CURRENT/{held}","seen":"2024-01-01T00:06:00Z","via":"fetched","served":{{"modified":"2024-01-01T00:05:31Z"}}}},{{"url":"{zip_url}!{held}","seen":"2024-01-02T00:00:00Z","via":"entry"}}]}}"#,
+        sha = "0".repeat(64)
+    );
+    std::fs::write(
+        e.home.root().join(format!("{held}.provenance.json")),
+        record,
+    )
+    .unwrap();
+    // A record that does not name the rollup's entry says nothing of it.
+    let unrelated = format!(
+        r#"{{"size":1,"sha256":"{sha}","tool":"t","addresses":[{{"url":"https://h/CURRENT/{other}","seen":"2024-01-02T00:06:00Z","via":"fetched","served":{{"modified":"2024-01-02T00:05:31Z"}}}}]}}"#,
+        sha = "0".repeat(64)
+    );
+    std::fs::write(
+        e.home.root().join(format!("{other}.provenance.json")),
+        unrelated,
+    )
+    .unwrap();
+    let (rep, _) = run_plan(
+        &e,
+        Plan {
+            request: "ingest rollup".into(),
+            input: Input::Local(vec![zip_path.clone()]),
+            options: RunOptions::default(),
+        },
+    )
+    .await;
+    assert_eq!(rep.exit_code, 0, "{:?}", rep.report.summary_lines());
+    let files = walk(&e.home.lake());
+    assert_eq!(files.len(), 1, "both entries in one file: {files:?}");
+    let b = parquet_batch(&files[0]);
+    use arrow_array::Array as _;
+    let source = b
+        .column_by_name("_nl_source")
+        .unwrap()
+        .as_any()
+        .downcast_ref::<arrow_array::DictionaryArray<arrow_array::types::UInt16Type>>()
+        .unwrap();
+    let names = source
+        .values()
+        .as_any()
+        .downcast_ref::<arrow_array::StringArray>()
+        .unwrap();
+    let published = b
+        .column_by_name("_nl_published")
+        .unwrap()
+        .as_any()
+        .downcast_ref::<arrow_array::TimestampMicrosecondArray>()
+        .unwrap();
+    // 2024-01-01T00:05:31Z.
+    let first = 1_704_067_531_000_000;
+    for i in 0..b.num_rows() {
+        let s = names.value(usize::from(source.keys().value(i)));
+        if s.ends_with(&format!("!{held}")) {
+            assert_eq!(published.value(i), first, "{s}");
+        } else {
+            assert!(s.ends_with(&format!("!{other}")), "{s}");
+            // A monthly archive's name has no time and a local file no
+            // server: nothing says when it went public.
+            assert!(published.is_null(i), "{s}");
+        }
+    }
+    // The manifest says so too, entry by entry.
+    let ingests = e.deps.manifest.list_ingests(None, false, 10).await.unwrap();
+    let shares = &ingests[0].entries;
+    assert_eq!(shares.len(), 2);
+    assert_eq!(
+        shares.iter().find(|x| x.entry == held).unwrap().published,
+        Some(first)
+    );
+    assert_eq!(
+        shares.iter().find(|x| x.entry == other).unwrap().published,
+        None
     );
 }
 
@@ -1030,10 +1126,21 @@ C,\"END OF REPORT\",9\n";
     let first = parquet_batch(files.iter().find(|f| *f != second_name).unwrap());
     let second = parquet_batch(second_name);
     assert_eq!(first.num_rows(), 2);
-    assert_eq!(first.num_columns(), 4);
+    // The table's columns, then each row's source and publish time.
+    assert_eq!(first.num_columns(), 4 + 2);
     assert!(!first.schema().field(1).is_nullable());
     assert_eq!(second.num_rows(), 4);
-    assert_eq!(second.num_columns(), 5);
+    assert_eq!(second.num_columns(), 5 + 2);
+    let names: Vec<String> = second
+        .schema()
+        .fields()
+        .iter()
+        .map(|f| f.name().clone())
+        .collect();
+    assert_eq!(
+        &names[4..],
+        ["SCADAVALUE__raw", "_nl_source", "_nl_published"]
+    );
     assert!(second.schema().field(1).is_nullable());
     assert_eq!(
         texts(&second, "SCADAVALUE__raw"),
@@ -1257,7 +1364,7 @@ async fn a_file_of_a_kit_without_a_decoder_is_refused() {
 }
 
 #[tokio::test]
-async fn multi_entry_zip_with_bad_file_is_partial_and_everything_is_attempted() {
+async fn a_zip_with_a_bad_entry_is_refused_whole_and_every_entry_is_read() {
     let e = env();
     let good = std::fs::read(fixtures().join("REGION_v1_head.csv")).unwrap();
     let bad_rows = b"I,DISPATCH,UNIT_SCADA,1,SETTLEMENTDATE,DUID,SCADAVALUE\r\nD,DISPATCH,UNIT_SCADA,1,\"2024/01/01 00:05:00\",A,1,extra\r\nD,DISPATCH,UNIT_SCADA,1,\"2024/01/01 00:05:00\",B,1\r\nC,\"END OF REPORT\",4\r\n";
@@ -1287,54 +1394,55 @@ async fn multi_entry_zip_with_bad_file_is_partial_and_everything_is_attempted() 
         },
     )
     .await;
-    assert_eq!(rep.exit_code, 3, "{:?}", rep.report.summary_lines());
-    assert_eq!(rep.summary.ingested, 2);
-    assert_eq!(rep.summary.failed, 1);
+    // Every entry was read, and the file is refused whole: the bad entry
+    // with its own error, the others discarded for it.
+    assert_ne!(rep.exit_code, 0, "{:?}", rep.report.summary_lines());
+    assert_eq!(rep.summary.ingested, 0);
+    assert_eq!(rep.summary.failed, 3);
     let failed: Vec<_> = rep.report.failed().collect();
-    assert_eq!(failed.len(), 1);
-    assert!(failed[0].source.ends_with("!BAD.CSV"));
-    assert_eq!(
-        failed[0].failed_with.as_deref(),
-        Some("csv.too_many_bad_rows")
-    );
+    assert_eq!(failed.len(), 3);
+    let bad = failed
+        .iter()
+        .find(|f| f.source.ends_with("!BAD.CSV"))
+        .unwrap();
+    assert_eq!(bad.failed_with.as_deref(), Some("csv.too_many_bad_rows"));
+    for f in failed.iter().filter(|f| !f.source.ends_with("!BAD.CSV")) {
+        assert_eq!(f.failed_with.as_deref(), Some("store.file_discarded"));
+    }
     let bad_diag = rep.report.by_code.get("csv.too_many_bad_rows").unwrap();
     let d = &bad_diag.examples[0];
     assert_eq!(d.entry.as_deref(), Some("BAD.CSV"));
     assert!(d.request.as_deref().unwrap().starts_with("ingest"));
     assert!(d.url.as_deref().unwrap().starts_with("file://"));
-    // The quarantine holds the bad row with its sample.
+    let discarded = &rep
+        .report
+        .by_code
+        .get("store.file_discarded")
+        .unwrap()
+        .examples[0];
+    assert!(
+        discarded.message.contains("BAD.CSV"),
+        "{}",
+        discarded.message
+    );
+    assert!(discarded.request.as_deref().unwrap().starts_with("ingest"));
+    // No Parquet is left, nor a temporary file. The quarantine keeps the
+    // bad row to show why, and each shape read is a failed ingest, with
+    // no files, naming the refusal.
+    assert!(
+        walk(&e.home.lake()).is_empty(),
+        "{:?}",
+        walk(&e.home.lake())
+    );
     let q: Vec<_> = walk(&e.home.quarantine());
     assert_eq!(q.len(), 1, "{q:?}");
-    let qtext = std::fs::read_to_string(&q[0]).unwrap();
-    assert!(
-        qtext.contains("csv.field_count_mismatch") && qtext.contains("extra"),
-        "{qtext}"
-    );
-    // REGION is a snapshot table: partitioned by archive month.
-    let files = walk(&e.home.lake());
-    assert!(
-        files
-            .iter()
-            .any(|f| f.contains("nem/region/snapshot=202401/")),
-        "{files:?}"
-    );
-    assert!(
-        files
-            .iter()
-            .any(|f| f.contains("nem/dispatch_unit_scada/year=2024/month=01/")),
-        "{files:?}"
-    );
-    assert!(!files.iter().any(|f| f.contains(".tmp-")), "{files:?}");
-    assert_eq!(files.len(), 2, "the failed entry wrote nothing");
-    // Manifest has three ingest rows, one failed with its code.
     let ingests = e.deps.manifest.list_ingests(None, false, 10).await.unwrap();
-    assert_eq!(ingests.len(), 3);
-    let failed_ingests = e.deps.manifest.list_ingests(None, true, 10).await.unwrap();
-    assert_eq!(failed_ingests.len(), 1);
-    assert_eq!(
-        failed_ingests[0].error_code.as_deref(),
-        Some("csv.too_many_bad_rows")
-    );
+    assert!(!ingests.is_empty());
+    for i in &ingests {
+        assert_eq!(i.status, utilake_writer::manifest::IngestStatus::Failed);
+        assert!(i.outputs.is_empty());
+        assert_eq!(i.error_code.as_deref(), Some("csv.too_many_bad_rows"));
+    }
     let diags = e
         .deps
         .manifest
@@ -1373,7 +1481,7 @@ async fn multi_entry_zip_with_bad_file_is_partial_and_everything_is_attempted() 
     )
     .await;
     assert!(rep.report.stopped());
-    assert!(rep.summary.ingested < 2);
+    assert_eq!(rep.summary.ingested, 0);
     // Tolerating one bad row makes the entry succeed with the row quarantined.
     let e3 = env();
     let opts = RunOptions {
@@ -1392,6 +1500,43 @@ async fn multi_entry_zip_with_bad_file_is_partial_and_everything_is_attempted() 
     assert_eq!(rep.exit_code, 0, "{:?}", rep.report.summary_lines());
     assert_eq!(rep.summary.bad_rows, 1);
     assert_eq!(rep.summary.rows, 6 + 20 + 1);
+    // The quarantine holds the bad row, naming the entry it came from.
+    let q: Vec<_> = walk(&e3.home.quarantine());
+    assert_eq!(q.len(), 1, "{q:?}");
+    let qtext = std::fs::read_to_string(&q[0]).unwrap();
+    assert!(
+        qtext.contains("csv.field_count_mismatch") && qtext.contains("extra"),
+        "{qtext}"
+    );
+    assert!(
+        qtext.contains("PUBLIC_DVD_MIXED_202401010000.zip!BAD.CSV"),
+        "{qtext}"
+    );
+    // REGION is a snapshot table: partitioned by archive month; every
+    // file ends with each row's source and publish time.
+    let files = walk(&e3.home.lake());
+    assert!(
+        files
+            .iter()
+            .any(|f| f.contains("nem/region/snapshot=202401/")),
+        "{files:?}"
+    );
+    assert!(!files.iter().any(|f| f.contains(".tmp-")), "{files:?}");
+    let ingests = e3
+        .deps
+        .manifest
+        .list_ingests(None, false, 10)
+        .await
+        .unwrap();
+    let entries: Vec<&str> = ingests
+        .iter()
+        .flat_map(|i| &i.entries)
+        .map(|x| x.entry.as_str())
+        .collect();
+    assert!(
+        entries.contains(&"BAD.CSV") && entries.contains(&"GOOD.CSV"),
+        "{entries:?}"
+    );
 }
 
 #[tokio::test]
@@ -2680,4 +2825,275 @@ async fn local_files_read_by_a_named_kit() {
     assert_eq!(rep.summary.listed, 0);
     let d = &rep.report.by_code["config.bad_path"].examples[0];
     assert!(d.message.contains("the mars kit"), "{}", d.message);
+}
+
+/// One field's text in an MMS row, for row `i` of three, by the type its
+/// table gives it: the widest value the type holds, an awkward one, and
+/// the empty field where the column allows it.
+fn synthetic_value(ty: LakeType, i: usize, required: bool) -> String {
+    let empty_or = |v: &str| {
+        if required {
+            v.to_owned()
+        } else {
+            String::new()
+        }
+    };
+    match (ty, i) {
+        (LakeType::String, 0) => "\"a, \"\"b\"\"\"".into(),
+        (LakeType::String, 1) => "X".into(),
+        (LakeType::String, _) => empty_or("Y"),
+        (LakeType::Double, 0) => "1.5".into(),
+        (LakeType::Double, 1) => "-2.5E3".into(),
+        (LakeType::Double, _) => empty_or("0"),
+        (LakeType::Long, 0) => "9223372036854775807".into(),
+        (LakeType::Long, 1) => "-7".into(),
+        (LakeType::Long, _) => empty_or("0"),
+        (LakeType::Boolean, 0) => "1".into(),
+        (LakeType::Boolean, 1) => "0".into(),
+        (LakeType::Boolean, _) => empty_or("1"),
+        (LakeType::Date, n) => format!("\"2024/01/0{} 00:00:00\"", n + 1),
+        (LakeType::Timestamp, n) => format!("\"2024/01/15 10:{n}5:00\""),
+        (LakeType::Decimal { precision, scale }, 0) => {
+            let int = usize::from(precision - scale);
+            let int = if int == 0 {
+                "0".to_owned()
+            } else {
+                "9".repeat(int)
+            };
+            if scale == 0 {
+                int
+            } else {
+                format!("{int}.{}", "9".repeat(usize::from(scale)))
+            }
+        }
+        (LakeType::Decimal { scale, .. }, 1) if scale > 0 => format!("-1E-{scale}"),
+        (LakeType::Decimal { .. }, 1) => "-1".into(),
+        (LakeType::Decimal { .. }, _) => empty_or("0"),
+    }
+}
+
+/// A file of one run of a table: its I row as the run's report pair and
+/// version, three D rows of every column, and the footer.
+fn synthetic_mms(table: &Table, run: &Run) -> String {
+    let schema = table
+        .schemas
+        .iter()
+        .find(|s| s.id == run.schema)
+        .expect("a run's schema");
+    let (rt, st) = &run.report;
+    let columns: Vec<(&Column, bool)> = schema
+        .fields
+        .iter()
+        .map(|(id, required)| {
+            let c = table.column_by_id(*id).expect("a schema's column");
+            (
+                c,
+                *required || table.primary_key.contains(&c.name) || !c.nullable,
+            )
+        })
+        .collect();
+    let names: Vec<&str> = columns.iter().map(|(c, _)| c.name.as_str()).collect();
+    let mut out = format!(
+        "C,NEMP.WORLD,SYNTHETIC\nI,{rt},{st},{},{}\n",
+        run.version,
+        names.join(",")
+    );
+    for i in 0..3 {
+        let values: Vec<String> = columns
+            .iter()
+            .map(|(c, required)| synthetic_value(c.ty, i, *required))
+            .collect();
+        writeln!(out, "D,{rt},{st},{},{}", run.version, values.join(",")).unwrap();
+    }
+    out.push_str("C,\"END OF REPORT\",6\n");
+    out
+}
+
+/// Every NEM table of the registry, as its latest and its oldest runs
+/// write it, goes into the lake: one zip, an entry per run, three rows of
+/// every column each. Each file holds its table's columns under their field ids, then
+/// each row's source and publish time; no value is turned to text; each
+/// source's rows are all there.
+#[tokio::test]
+async fn every_table_survives_the_lake() {
+    use arrow_array::Array as _;
+    let e = env();
+    let registry = e.registry.clone();
+    let tables: Vec<(&str, String, String)> = registry
+        .tables()
+        .filter(|(id, t)| {
+            t.market == Market::Nem && !t.runs.is_empty() && !registry.is_derived(*id)
+        })
+        .flat_map(|(_, t)| {
+            // The latest run, and the oldest where its shape differs.
+            let last = t.runs.last().unwrap();
+            let first = t.runs.first().unwrap();
+            let mut runs = vec![("LAST", last)];
+            if first.schema != last.schema || first.version != last.version {
+                runs.push(("FIRST", first));
+            }
+            runs.into_iter().map(move |(which, run)| {
+                (
+                    t.name.as_str(),
+                    format!("SYN_{}_{which}.CSV", t.name),
+                    synthetic_mms(t, run),
+                )
+            })
+        })
+        .collect();
+    assert!(tables.len() > 200, "{}", tables.len());
+    let zip_path = e.home.root().join("PUBLIC_DVD_SYNTHETIC_202401010000.zip");
+    let entries: Vec<(&str, &[u8])> = tables
+        .iter()
+        .map(|(_, entry, text)| (entry.as_str(), text.as_bytes()))
+        .collect();
+    make_zip(&zip_path, &entries);
+    let (rep, _) = run_plan(
+        &e,
+        Plan {
+            request: "ingest every table".into(),
+            input: Input::Local(vec![zip_path.clone()]),
+            options: RunOptions::default(),
+        },
+    )
+    .await;
+    assert_eq!(rep.summary.failed, 0, "{:?}", rep.report.summary_lines());
+    assert_eq!(rep.summary.bad_rows, 0, "{:?}", rep.report.summary_lines());
+    assert_eq!(rep.summary.rows, 3 * tables.len() as u64);
+    let files = walk(&e.home.lake());
+    let mut names: Vec<&str> = tables.iter().map(|(n, _, _)| *n).collect();
+    names.dedup();
+    let mut seen = 0;
+    for name in names {
+        let entries: Vec<&str> = tables
+            .iter()
+            .filter(|(n, _, _)| *n == name)
+            .map(|(_, e, _)| e.as_str())
+            .collect();
+        let id = registry.table_by_name(name).unwrap();
+        let dir = format!("/{}/{}/", Market::Nem, registry.table_dir(id));
+        let mine: Vec<&String> = files.iter().filter(|f| f.contains(&dir)).collect();
+        assert!(!mine.is_empty(), "{name}: no file under {dir}");
+        let lake = registry.lake_schema(id);
+        let id_of = |f: &arrow_schema::Field| {
+            f.metadata()
+                .get("PARQUET:field_id")
+                .cloned()
+                .unwrap_or_default()
+        };
+        let mut rows = 0;
+        for f in mine {
+            let b = parquet_batch(f);
+            let schema = b.schema();
+            let fields = schema.fields();
+            let n = fields.len();
+            assert_eq!(fields[n - 2].name(), "_nl_source", "{name}");
+            assert_eq!(fields[n - 1].name(), "_nl_published", "{name}");
+            assert_eq!(id_of(&fields[n - 2]), "2147483000", "{name}");
+            for field in &fields[..n - 2] {
+                assert!(
+                    !field.name().ends_with("__raw"),
+                    "{name}: {} kept as text",
+                    field.name()
+                );
+                let declared = lake
+                    .field_with_name(field.name())
+                    .unwrap_or_else(|_| panic!("{name}: {} not in the lake schema", field.name()));
+                assert_eq!(id_of(field), id_of(declared), "{name}.{}", field.name());
+            }
+            let source = b
+                .column_by_name("_nl_source")
+                .unwrap()
+                .as_any()
+                .downcast_ref::<arrow_array::DictionaryArray<arrow_array::types::UInt16Type>>()
+                .unwrap()
+                .clone();
+            let values = source
+                .values()
+                .as_any()
+                .downcast_ref::<arrow_array::StringArray>()
+                .unwrap();
+            for k in source.keys().values() {
+                let v = values.value(usize::from(*k));
+                assert!(
+                    entries.iter().any(|e| v.ends_with(&format!("!{e}"))),
+                    "{name}: {v}"
+                );
+            }
+            rows += b.num_rows();
+        }
+        assert_eq!(rows, 3 * entries.len(), "{name}");
+        seen += entries.len();
+    }
+    assert_eq!(seen, tables.len());
+}
+
+/// A file is closed for the next once it holds `file_size_mb`: the rows
+/// go on in a further part, each still naming its source, none lost.
+#[tokio::test]
+async fn a_file_is_cut_at_its_size_and_the_rows_go_on() {
+    let e = env();
+    let mut csv =
+        String::from("C,NEMP.WORLD,TEST\nI,DISPATCH,UNIT_SCADA,1,SETTLEMENTDATE,DUID,SCADAVALUE\n");
+    let rows = 300_000;
+    // Values that do not compress, so the file grows past its size.
+    let mut x: u64 = 0x9E37_79B9_7F4A_7C15;
+    for i in 0..rows {
+        x ^= x << 13;
+        x ^= x >> 7;
+        x ^= x << 17;
+        writeln!(
+            csv,
+            "D,DISPATCH,UNIT_SCADA,1,\"2024/01/{:02} {:02}:{:02}:00\",U{x:016x},{}.{:03}",
+            1 + (i / 7_200) % 28,
+            (i / 60) % 24,
+            i % 60,
+            x % 100_000,
+            (x >> 20) % 1000
+        )
+        .unwrap();
+    }
+    writeln!(csv, "C,\"END OF REPORT\",{}", rows + 3).unwrap();
+    let zip_path = e
+        .home
+        .root()
+        .join("PUBLIC_DVD_DISPATCH_UNIT_SCADA_202401010000.zip");
+    make_zip(&zip_path, &[("A.CSV", csv.as_bytes()), ("B.CSV", b"C,NEMP.WORLD,TEST\nI,DISPATCH,UNIT_SCADA,1,SETTLEMENTDATE,DUID,SCADAVALUE\nD,DISPATCH,UNIT_SCADA,1,\"2024/01/31 00:05:00\",Z,1\nC,\"END OF REPORT\",4\n")]);
+    let (rep, _) = run_plan(
+        &e,
+        Plan {
+            request: "ingest big".into(),
+            input: Input::Local(vec![zip_path]),
+            options: RunOptions {
+                layout: utilake_core::config::Lake {
+                    file_size_mb: 1,
+                    ..Default::default()
+                },
+                ..Default::default()
+            },
+        },
+    )
+    .await;
+    assert_eq!(rep.exit_code, 0, "{:?}", rep.report.summary_lines());
+    let files = walk(&e.home.lake());
+    let sizes: Vec<u64> = files
+        .iter()
+        .map(|f| std::fs::metadata(f).unwrap().len())
+        .collect();
+    assert!(files.len() >= 2, "{files:?} {sizes:?}");
+    assert!(
+        files.iter().any(|f| f.ends_with("-p2.parquet")),
+        "{files:?}"
+    );
+    let total: usize = files.iter().map(|f| parquet_rows(f)).sum();
+    assert_eq!(total, rows + 1);
+    // The manifest has both entries' shares, adding up to every row.
+    let ingests = e.deps.manifest.list_ingests(None, false, 10).await.unwrap();
+    let shares: u64 = ingests
+        .iter()
+        .flat_map(|i| &i.entries)
+        .map(|x| x.rows)
+        .sum();
+    assert_eq!(shares, rows as u64 + 1);
+    assert_eq!(ingests[0].outputs.len(), files.len());
 }

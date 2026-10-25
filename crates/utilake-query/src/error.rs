@@ -12,6 +12,23 @@ pub enum QueryError {
     /// No table has the name.
     #[error("No table is named {0}.")]
     UnknownTable(String),
+    /// A lake file without each row's source and publish time: it was
+    /// written by a utilake from before rows named their sources.
+    #[error(
+        "The lake file {path} does not name each row's source; run `utilake ingest` to write the lake again."
+    )]
+    LakeFormat {
+        /// The file.
+        path: String,
+    },
+    /// A row names a source the manifest does not give its file.
+    #[error("A row of {path} names the source {name}, which the manifest does not give the file.")]
+    SourceUnknown {
+        /// The file.
+        path: String,
+        /// The source the row names.
+        name: String,
+    },
     /// The table has no history (it was derived from a file), so its rows
     /// have no roles to resolve by.
     #[error("Table {0} has no history, so it can only be read raw.")]
@@ -185,6 +202,10 @@ impl Diagnose for QueryError {
         let e = |code: &'static str| Diagnostic::error(code, Category::Query, msg.clone());
         match self {
             Self::UnknownTable(t) => e("query.unknown_table").with_table(t.clone()),
+            Self::LakeFormat { path } => e("query.lake_format").with_file(path.clone()),
+            Self::SourceUnknown { path, name } => e("query.source_unknown")
+                .with_file(path.clone())
+                .with_sample(name.as_bytes()),
             Self::RawOnly(t) => e("query.raw_only").with_table(t.clone()),
             Self::Plan { table, source } => e("query.plan_failed")
                 .with_table(table.clone())

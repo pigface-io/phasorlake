@@ -44,6 +44,7 @@ const MIGRATIONS: &[(&str, &str)] = &[
         "0007_schema_id",
         include_str!("migrations/0007_schema_id.sql"),
     ),
+    ("0008_sources", include_str!("migrations/0008_sources.sql")),
 ];
 
 /// A row of `files`.
@@ -117,8 +118,6 @@ pub struct IngestStart {
     pub run_id: i64,
     /// File.
     pub file_id: i64,
-    /// Zip entry (`a.zip!b.CSV`).
-    pub entry: String,
     /// Table.
     pub table: String,
     /// Version.
@@ -142,8 +141,47 @@ pub struct IngestEnd {
     pub quarantine_path: Option<String>,
     /// Files written.
     pub outputs: Vec<WrittenFile>,
+    /// What each entry of the source file gave, in the order they were read.
+    pub entries: Vec<EntryShare>,
     /// Code of the error that failed it.
     pub error_code: Option<String>,
+}
+
+/// What one entry of a source file gave an ingest.
+#[derive(Debug, Clone, PartialEq, Eq, Default, Serialize, Deserialize)]
+pub struct EntryShare {
+    /// The entry (`a.zip!b.CSV`); empty when the source is the file itself.
+    pub entry: String,
+    /// Rows written.
+    pub rows: u64,
+    /// Rows quarantined.
+    pub bad_rows: u64,
+    /// Its least time value, nanoseconds since 1970.
+    pub min_time: Option<i64>,
+    /// Its greatest.
+    pub max_time: Option<i64>,
+    /// When it went public, microseconds since 1970 (UTC): what its rows
+    /// carry as `_nl_published`.
+    #[serde(default)]
+    pub published: Option<i64>,
+}
+
+impl EntryShare {
+    /// Counts `rows` more, whose time column spans `bounds` when the
+    /// table has one.
+    pub fn add(&mut self, rows: u64, bounds: Option<(Option<i64>, Option<i64>)>) {
+        self.rows += rows;
+        if let Some((min, max)) = bounds {
+            self.min_time = match (self.min_time, min) {
+                (Some(a), Some(b)) => Some(a.min(b)),
+                (a, b) => a.or(b),
+            };
+            self.max_time = match (self.max_time, max) {
+                (Some(a), Some(b)) => Some(a.max(b)),
+                (a, b) => a.or(b),
+            };
+        }
+    }
 }
 
 /// An output of a live ingest, with what the lake's Iceberg tables need.
@@ -165,8 +203,9 @@ pub struct LiveOutput {
     pub source_period: Option<String>,
     /// The source file.
     pub url: String,
-    /// The entry of the source file.
-    pub entry: String,
+    /// The entries of the source file its ingest read, with when each
+    /// went public; each row of the file names its own in `_nl_source`.
+    pub entries: Vec<EntryShare>,
     /// Its least time value, nanoseconds since 1970.
     pub min_time: Option<i64>,
     /// Its greatest.
@@ -189,8 +228,8 @@ pub struct IngestRecord {
     pub run_id: i64,
     /// Source URL.
     pub url: String,
-    /// Entry.
-    pub entry: String,
+    /// The entries it read.
+    pub entries: Vec<EntryShare>,
     /// Table.
     pub table: String,
     /// Version.
@@ -541,8 +580,8 @@ impl Manifest {
                 .replace('_', "\\_")
         );
         let mut stmt = self.sql(self.conn.prepare(
-            "SELECT DISTINCT f.url, i.entry FROM ingests i JOIN files f ON i.file_id = f.id
-             WHERE i.status = 'ok' AND f.url LIKE ?1 ESCAPE '\\' ORDER BY f.url, i.entry",
+            "SELECT DISTINCT f.url, e.entry FROM ingest_entries e JOIN ingests i ON e.ingest_id = i.id JOIN files f ON i.file_id = f.id
+             WHERE i.status = 'ok' AND f.url LIKE ?1 ESCAPE '\\' ORDER BY f.url, e.entry",
         ))?;
         let rows: Vec<(String, String)> = self.sql(
             stmt.query_map([pattern], |r| Ok((r.get(0)?, r.get(1)?)))
@@ -566,8 +605,8 @@ impl Manifest {
                 .replace('_', "\\_")
         );
         let r = self.conn.query_row(
-            "SELECT COUNT(*) FROM ingests i JOIN files f ON i.file_id = f.id
-             WHERE i.status = 'ok' AND f.url = ?1 AND (i.entry = ?2 OR i.entry LIKE ?3 ESCAPE '\\')",
+            "SELECT COUNT(*) FROM ingest_entries e JOIN ingests i ON e.ingest_id = i.id JOIN files f ON i.file_id = f.id
+             WHERE i.status = 'ok' AND f.url = ?1 AND (e.entry = ?2 OR e.entry LIKE ?3 ESCAPE '\\')",
             params![url, entry, nested],
             |r| r.get::<_, i64>(0),
         );
@@ -600,36 +639,81 @@ impl Manifest {
         self.sql(stmt.query_map([], |r| r.get(0)).and_then(Iterator::collect))
     }
 
-    /// Every output of a live ingest (status `ok`), of one table or all, in
-    /// the order the lake's Iceberg tables commit them: table, then source
-    /// month, then source file, entry and output.
-    pub fn live_outputs(&self, table: Option<&str>) -> Result<Vec<LiveOutput>, ManifestError> {
+    /// The entries each ingest read, by ingest, in entry order.
+    fn entries_by_ingest(
+        &self,
+        table: Option<&str>,
+    ) -> Result<std::collections::HashMap<i64, Vec<EntryShare>>, ManifestError> {
         let mut stmt = self.sql(self.conn.prepare(
-            "SELECT i.table_name, o.parquet_path, o.rows, o.bytes, i.schema_id, i.source_version, i.source_period, f.url, i.entry, o.min_time, o.max_time, o.partition, f.last_modified_at
-             FROM outputs o JOIN ingests i ON o.ingest_id = i.id JOIN files f ON i.file_id = f.id
-             WHERE i.status = 'ok' AND (?1 IS NULL OR i.table_name = ?1)
-             ORDER BY i.table_name, i.source_period, f.url, i.entry, o.id",
+            "SELECT e.ingest_id, e.entry, e.rows, e.bad_rows, e.min_time, e.max_time, e.published
+             FROM ingest_entries e JOIN ingests i ON e.ingest_id = i.id
+             WHERE ?1 IS NULL OR i.table_name = ?1 ORDER BY e.ingest_id, e.entry",
         ))?;
-        self.sql(
+        let rows: Vec<(i64, EntryShare)> = self.sql(
             stmt.query_map([table], |r| {
-                Ok(LiveOutput {
-                    table: r.get(0)?,
-                    path: r.get(1)?,
-                    rows: r.get::<_, i64>(2)? as u64,
-                    bytes: r.get::<_, i64>(3)? as u64,
-                    schema_id: r.get(4)?,
-                    source_version: r.get::<_, i64>(5)? as u16,
-                    source_period: r.get(6)?,
-                    url: r.get(7)?,
-                    entry: r.get(8)?,
-                    min_time: r.get(9)?,
-                    max_time: r.get(10)?,
-                    partition: r.get(11)?,
-                    last_modified_at: r.get(12)?,
-                })
+                Ok((
+                    r.get(0)?,
+                    EntryShare {
+                        entry: r.get(1)?,
+                        rows: r.get::<_, i64>(2)? as u64,
+                        bad_rows: r.get::<_, i64>(3)? as u64,
+                        min_time: r.get(4)?,
+                        max_time: r.get(5)?,
+                        published: r.get(6)?,
+                    },
+                ))
             })
             .and_then(Iterator::collect),
-        )
+        )?;
+        let mut by: std::collections::HashMap<i64, Vec<EntryShare>> =
+            std::collections::HashMap::new();
+        for (id, entry) in rows {
+            by.entry(id).or_default().push(entry);
+        }
+        Ok(by)
+    }
+
+    /// Every output of a live ingest (status `ok`), of one table or all, in
+    /// the order the lake's Iceberg tables commit them: table, then source
+    /// month, then source file and output.
+    pub fn live_outputs(&self, table: Option<&str>) -> Result<Vec<LiveOutput>, ManifestError> {
+        let entries = self.entries_by_ingest(table)?;
+        let mut stmt = self.sql(self.conn.prepare(
+            "SELECT i.table_name, o.parquet_path, o.rows, o.bytes, i.schema_id, i.source_version, i.source_period, f.url, i.id, o.min_time, o.max_time, o.partition, f.last_modified_at
+             FROM outputs o JOIN ingests i ON o.ingest_id = i.id JOIN files f ON i.file_id = f.id
+             WHERE i.status = 'ok' AND (?1 IS NULL OR i.table_name = ?1)
+             ORDER BY i.table_name, i.source_period, f.url, o.id",
+        ))?;
+        let rows: Vec<(LiveOutput, i64)> = self.sql(
+            stmt.query_map([table], |r| {
+                Ok((
+                    LiveOutput {
+                        table: r.get(0)?,
+                        path: r.get(1)?,
+                        rows: r.get::<_, i64>(2)? as u64,
+                        bytes: r.get::<_, i64>(3)? as u64,
+                        schema_id: r.get(4)?,
+                        source_version: r.get::<_, i64>(5)? as u16,
+                        source_period: r.get(6)?,
+                        url: r.get(7)?,
+                        entries: Vec::new(),
+                        min_time: r.get(9)?,
+                        max_time: r.get(10)?,
+                        partition: r.get(11)?,
+                        last_modified_at: r.get(12)?,
+                    },
+                    r.get(8)?,
+                ))
+            })
+            .and_then(Iterator::collect),
+        )?;
+        Ok(rows
+            .into_iter()
+            .map(|(mut o, ingest)| {
+                o.entries = entries.get(&ingest).cloned().unwrap_or_default();
+                o
+            })
+            .collect())
     }
 
     /// Marks every ingest of a file superseded and forgets its outputs.
@@ -647,19 +731,18 @@ impl Manifest {
     /// Starts an ingest; a previous row for the same key is replaced.
     pub fn begin_ingest(&mut self, s: &IngestStart) -> Result<i64, ManifestError> {
         let r = self.conn.execute(
-            "DELETE FROM ingests WHERE file_id = ?1 AND entry = ?2 AND table_name = ?3 AND schema_version = ?4 AND fingerprint = ?5",
-            params![s.file_id, s.entry, s.table, i64::from(s.schema_version), s.fingerprint],
+            "DELETE FROM ingests WHERE file_id = ?1 AND table_name = ?2 AND schema_version = ?3 AND fingerprint = ?4",
+            params![s.file_id, s.table, i64::from(s.schema_version), s.fingerprint],
         );
         self.sql(r)?;
         let t = &s.transform;
         let r = self.conn.execute(
-            "INSERT INTO ingests (run_id, file_id, entry, table_name, schema_version, fingerprint, status, started_at,
+            "INSERT INTO ingests (run_id, file_id, table_name, schema_version, fingerprint, status, started_at,
                                   report_type, report_subtype, source_version, source_columns, plan_hash, schema_source, resolution, source_period, shape_id, schema_id)
-             VALUES (?1, ?2, ?3, ?4, ?5, ?6, 'running', ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, ?16, ?17)",
+             VALUES (?1, ?2, ?3, ?4, ?5, 'running', ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, ?16)",
             params![
                 s.run_id,
                 s.file_id,
-                s.entry,
                 s.table,
                 i64::from(s.schema_version),
                 s.fingerprint,
@@ -717,6 +800,13 @@ impl Manifest {
                 id: ingest_id,
             });
         }
+        for x in &e.entries {
+            tx.execute(
+                "INSERT OR REPLACE INTO ingest_entries (ingest_id, entry, rows, bad_rows, min_time, max_time, published) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7)",
+                params![ingest_id, x.entry, x.rows as i64, x.bad_rows as i64, x.min_time, x.max_time, x.published],
+            )
+            .map_err(|er| ManifestError::Sqlite { path: path.clone(), message: er.to_string() })?;
+        }
         for o in &e.outputs {
             tx.execute(
                 "INSERT OR REPLACE INTO outputs (ingest_id, parquet_path, partition, rows, bytes, min_time, max_time) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7)",
@@ -762,7 +852,7 @@ impl Manifest {
         limit: usize,
     ) -> Result<Vec<IngestRecord>, ManifestError> {
         let sql = format!(
-            "SELECT i.id, i.run_id, f.url, i.entry, i.table_name, i.schema_version, i.status, i.rows, i.bad_rows, i.started_at, i.finished_at, i.error_code,
+            "SELECT i.id, i.run_id, f.url, i.table_name, i.schema_version, i.status, i.rows, i.bad_rows, i.started_at, i.finished_at, i.error_code,
                     i.fingerprint, i.report_type, i.report_subtype, i.source_version, i.source_columns, i.plan_hash, i.schema_source, i.resolution, i.source_period, i.shape_id, i.schema_id
              FROM ingests i JOIN files f ON i.file_id = f.id
              WHERE (?1 IS NULL OR i.table_name = ?1) AND (?2 = 0 OR i.status = 'failed')
@@ -776,23 +866,27 @@ impl Manifest {
                     id: r.get(0)?,
                     run_id: r.get(1)?,
                     url: r.get(2)?,
-                    entry: r.get(3)?,
-                    table: r.get(4)?,
-                    schema_version: r.get::<_, i64>(5)? as u16,
-                    fingerprint: r.get(12)?,
-                    transform: transform_from_row(r, 13)?,
-                    status: IngestStatus::parse(&r.get::<_, String>(6)?),
-                    rows: r.get::<_, i64>(7)? as u64,
-                    bad_rows: r.get::<_, i64>(8)? as u64,
-                    started_at: r.get(9)?,
-                    finished_at: r.get(10)?,
-                    error_code: r.get(11)?,
+                    entries: Vec::new(),
+                    table: r.get(3)?,
+                    schema_version: r.get::<_, i64>(4)? as u16,
+                    fingerprint: r.get(11)?,
+                    transform: transform_from_row(r, 12)?,
+                    status: IngestStatus::parse(&r.get::<_, String>(5)?),
+                    rows: r.get::<_, i64>(6)? as u64,
+                    bad_rows: r.get::<_, i64>(7)? as u64,
+                    started_at: r.get(8)?,
+                    finished_at: r.get(9)?,
+                    error_code: r.get(10)?,
                     outputs: vec![],
                 })
             })
             .and_then(Iterator::collect),
         )?;
         let mut stmt = self.sql(self.conn.prepare("SELECT parquet_path, partition, rows, bytes, min_time, max_time FROM outputs WHERE ingest_id = ?1 ORDER BY id"))?;
+        let mut entries = self.entries_by_ingest(table)?;
+        for rec in &mut recs {
+            rec.entries = entries.remove(&rec.id).unwrap_or_default();
+        }
         for rec in &mut recs {
             rec.outputs = self.sql(
                 stmt.query_map([rec.id], |r| {
@@ -906,6 +1000,13 @@ fn parse_partition(seg: &str) -> crate::writer::Partition {
 
 #[cfg(test)]
 mod tests {
+    /// One entry's share, its counts left to the ingest's.
+    fn share(entry: impl Into<String>) -> EntryShare {
+        EntryShare {
+            entry: entry.into(),
+            ..EntryShare::default()
+        }
+    }
     use utilake_core::Category;
 
     use super::*;
@@ -977,7 +1078,6 @@ mod tests {
         let start = IngestStart {
             run_id: run,
             file_id: fid,
-            entry: "A.CSV".into(),
             table: "T".into(),
             schema_version: 1,
             fingerprint: "xxh3:1".into(),
@@ -1005,6 +1105,7 @@ mod tests {
         m.finish_ingest(
             iid,
             &IngestEnd {
+                entries: vec![share("A.CSV")],
                 status: IngestStatus::Ok,
                 rows: 5,
                 bad_rows: 1,
@@ -1038,7 +1139,7 @@ mod tests {
         );
         assert_eq!(live[0].source_period.as_deref(), Some("2024-01"));
         assert_eq!(
-            (live[0].url.as_str(), live[0].entry.as_str()),
+            (live[0].url.as_str(), live[0].entries[0].entry.as_str()),
             ("https://h/a.zip", "A.CSV")
         );
         assert_eq!((live[0].min_time, live[0].max_time), (Some(10), Some(20)));
@@ -1092,6 +1193,7 @@ mod tests {
         m.finish_ingest(
             iid2,
             &IngestEnd {
+                entries: vec![share("A.CSV")],
                 status: IngestStatus::Failed,
                 rows: 0,
                 bad_rows: 0,
@@ -1167,7 +1269,7 @@ mod tests {
         // Supersede and abort_running.
         let iid3 = m
             .begin_ingest(&IngestStart {
-                entry: "B.CSV".into(),
+                table: "U".into(),
                 ..start.clone()
             })
             .unwrap();
@@ -1184,6 +1286,7 @@ mod tests {
         m.finish_ingest(
             iid3,
             &IngestEnd {
+                entries: vec![share("B.CSV")],
                 status: IngestStatus::Ok,
                 rows: 1,
                 bad_rows: 0,
@@ -1204,15 +1307,11 @@ mod tests {
         );
         // What a superseded source left behind does not hold back the
         // source that replaced it.
-        let fresh = m
-            .begin_ingest(&IngestStart {
-                entry: "C.CSV".into(),
-                ..start.clone()
-            })
-            .unwrap();
+        let fresh = m.begin_ingest(&IngestStart { ..start.clone() }).unwrap();
         m.finish_ingest(
             fresh,
             &IngestEnd {
+                entries: vec![share("C.CSV")],
                 status: IngestStatus::Ok,
                 rows: 1,
                 bad_rows: 0,
@@ -1241,6 +1340,7 @@ mod tests {
             m.finish_ingest(
                 999,
                 &IngestEnd {
+                    entries: vec![share("C.CSV")],
                     status: IngestStatus::Ok,
                     rows: 0,
                     bad_rows: 0,
@@ -1300,7 +1400,6 @@ mod tests {
             m.begin_ingest(&IngestStart {
                 run_id: 99,
                 file_id: 99,
-                entry: String::new(),
                 table: String::new(),
                 schema_version: 0,
                 fingerprint: String::new(),
@@ -1404,7 +1503,6 @@ mod tests {
             .begin_ingest(&IngestStart {
                 run_id: 1,
                 file_id: 1,
-                entry: "y.csv".into(),
                 table: "T".into(),
                 schema_version: 1,
                 fingerprint: "xxh3:9".into(),
@@ -1418,6 +1516,80 @@ mod tests {
             .find(|r| r.id == iid)
             .unwrap();
         assert_eq!(rec.transform, transform());
+    }
+
+    /// A manifest at migration 7 has an ingest per entry; after the move to
+    /// one per source file, those of one shape are merged into the first,
+    /// each entry's rows kept as its share, outputs and diagnostics with it,
+    /// and a merge of an ok and a failed entry is failed.
+    #[test]
+    fn ingests_per_entry_merge_into_one_per_source_file() {
+        let dir = tempfile::tempdir().unwrap();
+        let p = dir.path().join("manifest.sqlite");
+        {
+            let conn = Connection::open(&p).unwrap();
+            let mut batch = String::from("PRAGMA foreign_keys = OFF; BEGIN;");
+            for (_, sql) in &MIGRATIONS[..7] {
+                batch.push_str(sql);
+                batch.push(';');
+            }
+            batch.push_str(
+                "INSERT INTO meta(key, value) VALUES ('migration', '7');
+                 INSERT INTO runs (id, argv, started_at, version) VALUES (1, 'ingest z', 't', '0');
+                 INSERT INTO files (id, source, url, cache_path, sha256, size, fetched_at) VALUES (1, 'local', 'https://h/z.zip', '/z.zip', 'sha', 1, 't');
+                 INSERT INTO ingests (id, run_id, file_id, entry, table_name, schema_version, fingerprint, status, rows, bad_rows, min_time, max_time, started_at, finished_at)
+                     VALUES (3, 1, 1, 'A.CSV', 'T', 1, 'xxh3:1', 'ok', 5, 1, 10, 20, 't', 't1'),
+                            (4, 1, 1, 'B.CSV', 'T', 1, 'xxh3:1', 'ok', 7, 0, 5, 30, 't', 't2'),
+                            (5, 1, 1, 'A.CSV', 'U', 1, 'xxh3:2', 'ok', 2, 0, NULL, NULL, 't', 't'),
+                            (6, 1, 1, 'B.CSV', 'U', 1, 'xxh3:2', 'failed', 0, 0, NULL, NULL, 't', 't');
+                 INSERT INTO outputs (ingest_id, parquet_path, partition, rows, bytes) VALUES
+                     (3, '/l/a.parquet', 'year=2024/month=01', 5, 1),
+                     (4, '/l/b.parquet', 'year=2024/month=01', 7, 1);
+                 INSERT INTO diagnostics (run_id, ingest_id, severity, code, category, message, json, created_at)
+                     VALUES (1, 4, 'warning', 'schema.x', 'schema', 'w', '{}', 't');
+                 COMMIT;",
+            );
+            conn.execute_batch(&batch).unwrap();
+        }
+        let m = Manifest::open(&p).unwrap();
+        assert_eq!(m.version().unwrap(), MIGRATIONS.len() as u32);
+        let mut recs = m.list_ingests(None, false, 10).unwrap();
+        recs.sort_by_key(|r| r.id);
+        assert_eq!(recs.len(), 2, "one per shape of the file");
+        let t = &recs[0];
+        assert_eq!(
+            (t.id, t.table.as_str(), t.rows, t.bad_rows),
+            (3, "T", 12, 1)
+        );
+        assert_eq!(t.status, IngestStatus::Ok);
+        assert_eq!(t.outputs.len(), 2, "both entries' outputs");
+        let entries: Vec<(&str, u64)> = t
+            .entries
+            .iter()
+            .map(|e| (e.entry.as_str(), e.rows))
+            .collect();
+        assert_eq!(entries, [("A.CSV", 5), ("B.CSV", 7)]);
+        assert!(t.entries.iter().all(|e| e.published.is_none()));
+        let u = &recs[1];
+        assert_eq!(
+            (u.id, u.status),
+            (5, IngestStatus::Failed),
+            "an entry failed"
+        );
+        let moved: i64 = m
+            .conn
+            .query_row(
+                "SELECT count(*) FROM diagnostics WHERE ingest_id = 3",
+                [],
+                |r| r.get(0),
+            )
+            .unwrap();
+        assert_eq!(moved, 1, "the diagnostic moved with its entry");
+        // The skip list reads the shares.
+        assert!(m.is_ingested_from("https://h/z.zip", "B.CSV").unwrap());
+        let live = m.live_outputs(Some("T")).unwrap();
+        assert_eq!(live.len(), 2);
+        assert_eq!(live[0].entries.len(), 2);
     }
 
     /// A migration that fails leaves the manifest as it was and says which
@@ -1449,13 +1621,12 @@ mod tests {
         let dir = tempfile::tempdir().unwrap();
         let mut m = Manifest::open(&dir.path().join("m.sqlite")).unwrap();
         let run = m.begin_run("get").unwrap();
-        let ok = |m: &mut Manifest, url: &str, entry: &str| {
+        let ok = |m: &mut Manifest, url: &str, entries: &[&str]| {
             let fid = m.record_file(&file(url, "s")).unwrap();
             let iid = m
                 .begin_ingest(&IngestStart {
                     run_id: run,
                     file_id: fid,
-                    entry: entry.into(),
                     table: "T".into(),
                     schema_version: 1,
                     fingerprint: "xxh3:1".into(),
@@ -1465,6 +1636,7 @@ mod tests {
             m.finish_ingest(
                 iid,
                 &IngestEnd {
+                    entries: entries.iter().map(|e| share(*e)).collect(),
                     status: IngestStatus::Ok,
                     rows: 1,
                     bad_rows: 0,
@@ -1480,11 +1652,11 @@ mod tests {
         ok(
             &mut m,
             &format!("{zip}!PUBLIC_DVD_A_201401010000.zip"),
-            "A.CSV",
+            &["A.CSV"],
         );
-        ok(&mut m, &format!("{zip}!d/notes.csv"), "d/notes.csv");
+        ok(&mut m, &format!("{zip}!d/notes.csv"), &["d/notes.csv"]);
         // A zip of a near name, and a failed ingest, do not count.
-        ok(&mut m, "https://h/M_2014_01.zip.bak!X.zip", "X.CSV");
+        ok(&mut m, "https://h/M_2014_01.zip.bak!X.zip", &["X.CSV"]);
         let fid = m
             .record_file(&file(&format!("{zip}!PUBLIC_DVD_B_201401010000.zip"), "s"))
             .unwrap();
@@ -1492,7 +1664,6 @@ mod tests {
             .begin_ingest(&IngestStart {
                 run_id: run,
                 file_id: fid,
-                entry: "B.CSV".into(),
                 table: "T".into(),
                 schema_version: 1,
                 fingerprint: "xxh3:1".into(),
@@ -1502,6 +1673,7 @@ mod tests {
         m.finish_ingest(
             iid,
             &IngestEnd {
+                entries: vec![share("B.CSV")],
                 status: IngestStatus::Failed,
                 rows: 0,
                 bad_rows: 0,
@@ -1524,8 +1696,11 @@ mod tests {
                 .is_empty()
         );
         // The whole zip read: its entries, nested paths joined with `!`.
-        ok(&mut m, zip, "PUBLIC_DVD_C_201401010000.zip!C.CSV");
-        ok(&mut m, zip, "d/plain.csv");
+        ok(
+            &mut m,
+            zip,
+            &["PUBLIC_DVD_C_201401010000.zip!C.CSV", "d/plain.csv"],
+        );
         assert!(
             m.is_ingested_from(zip, "PUBLIC_DVD_C_201401010000.zip")
                 .unwrap()

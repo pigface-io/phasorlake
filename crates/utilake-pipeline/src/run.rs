@@ -758,9 +758,8 @@ async fn commit(
         previous.is_some() && (source_changed || rep.rules_changed),
     ) {
         let written: Vec<&str> = rep
-            .entries
+            .results
             .iter()
-            .flat_map(|e| &e.results)
             .flat_map(|r| &r.outputs)
             .map(|o| o.path.as_str())
             .collect();
@@ -772,9 +771,8 @@ async fn commit(
         // So are the rows it quarantined: this read quarantined its own,
         // under the same names where it had any.
         let quarantined: Vec<&str> = rep
-            .entries
+            .results
             .iter()
-            .flat_map(|e| &e.results)
             .filter_map(|r| r.quarantine_path.as_deref())
             .collect();
         let old_quarantine = deps
@@ -857,54 +855,64 @@ async fn commit(
         stop |= report.emit(d.clone()) == Flow::Stop;
         return stop;
     }
-    for entry in rep.entries {
-        let source_name = format!("{}!{}", local.remote.url, entry.entry);
-        let mut errors = 0u32;
-        let mut rows = 0u64;
-        let mut bad_rows = 0u64;
-        let status = if entry.error.is_some() {
-            IngestStatus::Failed
-        } else {
-            IngestStatus::Ok
-        };
-        let mut first_ingest_id = None;
-        for r in &entry.results {
-            rows += r.rows;
-            bad_rows += r.bad_rows;
-            if let (Some(fid), Some(run)) = (file_id, run_id) {
-                let start = IngestStart {
-                    run_id: run,
-                    file_id: fid,
-                    entry: entry.entry.clone(),
-                    table: r.table.clone(),
-                    schema_version: r.version,
-                    fingerprint: r.fingerprint.to_string(),
-                    transform: r.transform.clone(),
-                };
-                match deps.manifest.begin_ingest(start).await {
-                    Ok(iid) => {
-                        first_ingest_id.get_or_insert(iid);
-                        let end = IngestEnd {
-                            status,
-                            rows: r.rows,
-                            bad_rows: r.bad_rows,
-                            quarantine_path: r.quarantine_path.clone(),
-                            outputs: r.outputs.clone(),
-                            error_code: entry.error.as_ref().map(|d| d.code.to_string()),
-                        };
-                        if let Err(e) = deps.manifest.finish_ingest(iid, end).await {
-                            report.emit(e.diagnostic());
-                        }
-                    }
-                    Err(e) => {
+    // One ingest per shape the file read, each with what every entry gave
+    // it; failed, without files, when an entry failed.
+    // The refusal is the entry's own error, not the discard it caused.
+    let refused = rep
+        .entries
+        .iter()
+        .filter_map(|e| e.error.as_ref())
+        .min_by_key(|d| d.code.as_ref() == "store.file_discarded")
+        .map(|d| d.code.to_string());
+    let mut first_ingest_id = None;
+    for r in &rep.results {
+        if let (Some(fid), Some(run)) = (file_id, run_id) {
+            let start = IngestStart {
+                run_id: run,
+                file_id: fid,
+                table: r.table.clone(),
+                schema_version: r.version,
+                fingerprint: r.fingerprint.to_string(),
+                transform: r.transform.clone(),
+            };
+            match deps.manifest.begin_ingest(start).await {
+                Ok(iid) => {
+                    first_ingest_id.get_or_insert(iid);
+                    let end = IngestEnd {
+                        status: if refused.is_some() {
+                            IngestStatus::Failed
+                        } else {
+                            IngestStatus::Ok
+                        },
+                        rows: r.rows,
+                        bad_rows: r.bad_rows,
+                        quarantine_path: r.quarantine_path.clone(),
+                        outputs: r.outputs.clone(),
+                        entries: r.entries.clone(),
+                        error_code: refused.clone(),
+                    };
+                    if let Err(e) = deps.manifest.finish_ingest(iid, end).await {
                         report.emit(e.diagnostic());
                     }
                 }
-            }
-            for o in &r.outputs {
-                summary.bytes_out += o.bytes;
+                Err(e) => {
+                    report.emit(e.diagnostic());
+                }
             }
         }
+        for o in &r.outputs {
+            summary.bytes_out += o.bytes;
+        }
+    }
+    for entry in rep.entries {
+        let source_name = format!("{}!{}", local.remote.url, entry.entry);
+        let mut errors = 0u32;
+        let (rows, bad_rows) = rep
+            .results
+            .iter()
+            .flat_map(|r| &r.entries)
+            .filter(|s| s.entry == entry.entry)
+            .fold((0, 0), |(r, b), s| (r + s.rows, b + s.bad_rows));
         // Row errors first, so the exact fault is on record before the
         // refusal that follows from it.
         for w in entry.row_errors.iter().chain(&entry.warnings) {

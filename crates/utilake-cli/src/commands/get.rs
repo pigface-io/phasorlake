@@ -9,8 +9,7 @@ use anyhow::{Result, bail};
 use utilake_core::Diagnose as _;
 use utilake_pipeline::GetRequest;
 use utilake_query::{
-    Dialect, Filter, Format, Lake, MarketOffset, Query, Resolution, Target, WriteOptions, bind,
-    catalog,
+    Dialect, Filter, Format, Lake, Query, Resolution, Target, WriteOptions, bind, catalog,
 };
 
 use crate::cli::{Cli, DialectArg, FormatArg, GetCmd, ResolveArgs};
@@ -34,7 +33,7 @@ pub fn query(
     let resolution = if args.raw {
         Resolution::Raw
     } else if args.revisions {
-        Resolution::Revisions
+        Resolution::Revisions { known_at }
     } else {
         Resolution::Latest { known_at }
     };
@@ -170,7 +169,6 @@ pub async fn get(cli: &Cli, ctx: &Context, args: &GetCmd) -> Result<i32> {
         plan = Some(super::acquire::json("get", &request, &report));
     }
     // Stage three: each table as one frame.
-    let off = MarketOffset(sel.def.utc_offset_secs);
     let options = write_options(&args.output);
     let mut written = Vec::new();
     let mut planned = Vec::new();
@@ -181,9 +179,11 @@ pub async fn get(cli: &Cli, ctx: &Context, args: &GetCmd) -> Result<i32> {
             .live_outputs(Some(&name))
             .await
             .map_err(|e| fail(&e))?;
+        let catalog = catalog(&outputs);
         let lake = Lake {
             registry: &ctx.registry,
-            files: catalog(&outputs, off),
+            files: catalog.files,
+            sources: catalog.sources,
             version: env!("CARGO_PKG_VERSION"),
         };
         let b = match bind(q, &lake) {

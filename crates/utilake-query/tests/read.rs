@@ -118,7 +118,10 @@ fn interval_table_latest_revisions_and_raw() {
     let sources = strings(&b, "_nl_source");
     assert!(sources[0].starts_with(ARCHIVE), "{}", sources[0]);
     assert!(sources[1].starts_with(DVD), "{}", sources[1]);
-    assert_eq!(times(&b, "_nl_known")[1], t("2024-01-01T00:12:00"));
+    // Known when its file was published (5 February, 10:00 in market
+    // time), not at its LASTCHANGED of 00:12 on 1 January: nobody could
+    // see the row before then.
+    assert_eq!(times(&b, "_nl_known")[1], t("2024-02-05T10:00:00"));
     assert!(b.column_by_name("_nl_valid_to").is_none());
     assert_eq!(report.rows_out, 4);
     assert_eq!(report.units, 1, "one partition read");
@@ -134,20 +137,30 @@ fn interval_table_latest_revisions_and_raw() {
     );
 
     // Revisions: every run once, however many copies.
-    let (b, _) = rows(&fx, Query::new("DISPATCHPRICE", day, Resolution::Revisions));
+    let (b, _) = rows(
+        &fx,
+        Query::new(
+            "DISPATCHPRICE",
+            day,
+            Resolution::Revisions { known_at: None },
+        ),
+    );
     assert_eq!(b.num_rows(), 5);
     assert_eq!(
         ints(&b, "RRP"),
         [Some(101), Some(110), Some(111), Some(120), Some(125)]
     );
 
-    // As known at 00:11: the second run (changed at 00:12) is not yet.
+    // As known at 00:11: only the live report was out (its copies of
+    // 00:05 and 00:10); the month's DVD and archive files, published in
+    // February, were not, so their copies (and the second run, changed at
+    // 00:12) are not known yet.
     let (b, report) = rows(
         &fx,
         Query::new("DISPATCHPRICE", day, known("2024-01-01T00:11")),
     );
-    assert_eq!(ints(&b, "RRP"), [Some(101), Some(110)]);
-    assert_eq!(report.dropped_unknown, 3);
+    assert_eq!(ints(&b, "RRP"), [Some(99), Some(110)]);
+    assert_eq!(report.dropped_unknown, 6);
 
     // Raw: every row of every file in the window, the older schema's
     // file projected (its PRE_AP_LOWER1_PRICE is null, the DVD's is 8).
@@ -310,20 +323,25 @@ fn from_table_versions_in_force() {
     // Every revision: both versions of the corrected date.
     let (b, _) = rows(
         &fx,
-        Query::new("DUDETAIL", at("2024-01-15T00:00"), Resolution::Revisions),
+        Query::new(
+            "DUDETAIL",
+            at("2024-01-15T00:00"),
+            Resolution::Revisions { known_at: None },
+        ),
     );
     assert_eq!(
         ints(&b, "REGISTEREDCAPACITY"),
         [Some(20), Some(21), Some(30), Some(40)]
     );
 
-    // Before the correction was known.
+    // Before the correction was published (5 March), after the January
+    // snapshot was (5 February).
     let (b, _) = rows(
         &fx,
         Query::new(
             "DUDETAIL",
             at("2024-01-15T00:00"),
-            known("2024-01-01T00:00"),
+            known("2024-02-10T00:00"),
         ),
     );
     assert_eq!(
@@ -515,10 +533,8 @@ fn a_file_without_a_publish_time_is_left_out_under_known_at() {
     // need no stamp; the derived table has neither, but is raw only. Take
     // DISPATCHPRICE's report file, which has a stamp in its name, and
     // strip it.
+    fx.server_times = false;
     common::dispatchprice(&mut fx);
-    for o in &mut fx.outputs {
-        o.last_modified_at = None;
-    }
     let day = range("2024-01-01T00:00", "2024-01-01T00:15");
     let (b, report) = rows(
         &fx,
@@ -534,7 +550,14 @@ fn a_file_without_a_publish_time_is_left_out_under_known_at() {
     let sources = strings(&b, "_nl_source");
     assert!(sources[0].starts_with(REPORT), "{}", sources[0]);
     // The DVD's own copy of the 00:10 run 1 row now loses to the report's.
-    let (b, _) = rows(&fx, Query::new("DISPATCHPRICE", day, Resolution::Revisions));
+    let (b, _) = rows(
+        &fx,
+        Query::new(
+            "DISPATCHPRICE",
+            day,
+            Resolution::Revisions { known_at: None },
+        ),
+    );
     let sources = strings(&b, "_nl_source");
     assert!(sources[1].starts_with(REPORT), "{}", sources[1]);
 }
@@ -782,7 +805,7 @@ fn a_day_label_covers_its_trading_day() {
         Query::new(
             "BIDDAYOFFER_D",
             range("2023-12-31T04:00", "2024-01-02T04:00"),
-            Resolution::Revisions,
+            Resolution::Revisions { known_at: None },
         ),
         &lake,
     )

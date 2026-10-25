@@ -79,7 +79,9 @@ pub struct PartitionKey {
 pub struct FileMeta {
     /// Table name as in the registry.
     pub table: String,
-    /// Source file stem (lower-case), the first part of the file name.
+    /// The source file's stem (lower-case), the first part of the file
+    /// name: a file holds rows of the source file's entries, each row
+    /// naming its own.
     pub source_stem: String,
     /// Schema version of the block.
     pub schema_version: u16,
@@ -89,8 +91,6 @@ pub struct FileMeta {
     pub source_url: String,
     /// sha256 of the source file, hex.
     pub source_sha256: String,
-    /// Zip entry inside the source.
-    pub entry: String,
     /// Index of the time column in the schema, when the table has one.
     pub time_column: Option<usize>,
     /// Which file of this source, shape and partition this is, from 1.

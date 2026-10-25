@@ -15,6 +15,7 @@ pub mod event;
 pub mod num;
 pub mod paths;
 pub mod period;
+pub mod published;
 pub mod report;
 pub mod timetext;
 

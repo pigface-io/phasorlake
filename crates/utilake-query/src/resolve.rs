@@ -54,7 +54,7 @@ pub fn resolve(
     let mut batch = batch.clone();
 
     // What was known by then.
-    if let Resolution::Latest { known_at: Some(k) } = b.query.resolution {
+    if let Some(k) = b.query.resolution.known_at() {
         let known = batch
             .column(known_ix)
             .as_primitive::<TimestampMicrosecondType>();
@@ -120,7 +120,7 @@ pub fn resolve(
         }
         let mut rank: Vec<(usize, bool)> = Vec::new();
         match b.query.resolution {
-            Resolution::Revisions => key.extend(spec.order.iter().map(|i| i.0)),
+            Resolution::Revisions { .. } => key.extend(spec.order.iter().map(|i| i.0)),
             _ => rank.extend(spec.order.iter().map(|i| (i.0, true))),
         }
         rank.push((src_ix, true));
@@ -152,6 +152,9 @@ pub fn resolve(
         keys.row(*a as usize)
             .cmp(&keys.row(*c as usize))
             .then_with(|| ranks.row(*a as usize).cmp(&ranks.row(*c as usize)))
+            // Copies equal in every rank: the row read last wins, every
+            // time, whatever the sort does with ties.
+            .then_with(|| c.cmp(a))
     };
     let mut winners: Vec<u32> = Vec::with_capacity(n);
     let mut keep_first_of_each_fact = |group: &[u32]| {

@@ -134,7 +134,7 @@ fn the_kernel_agrees_with_duckdb() {
         Resolution::Latest {
             known_at: Some(KnownTime::new(ts("2024-01-01T00:11"))),
         },
-        Resolution::Revisions,
+        Resolution::Revisions { known_at: None },
     ] {
         compare(&fx, Query::new("DISPATCHPRICE", day, res), &dp, &dp_times);
         compare(
@@ -167,7 +167,7 @@ fn the_kernel_agrees_with_duckdb() {
         Resolution::Latest {
             known_at: Some(KnownTime::new(ts("2024-01-01T00:00"))),
         },
-        Resolution::Revisions,
+        Resolution::Revisions { known_at: None },
     ] {
         compare(
             &fx,

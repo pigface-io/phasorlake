@@ -21,6 +21,7 @@ use parquet::file::metadata::KeyValue;
 use parquet::file::properties::{EnabledStatistics, WriterProperties, WriterVersion};
 
 use utilake_core::config::{Codec, Lake, Statistics};
+use utilake_iceberg::provenance::PUBLISHED;
 
 use crate::error::StoreError;
 use crate::partition::{is_sorted, time_bounds};
@@ -38,6 +39,8 @@ struct Open {
     sorted: bool,
     last_max: Option<i64>,
     time_column: Option<usize>,
+    /// Rows of each source, in the order they came.
+    sources: Vec<(String, u64)>,
 }
 
 /// A file closed, on the disk under its temporary name until a commit.
@@ -163,7 +166,10 @@ impl ParquetHive {
                     "utilake.source_sha256".to_owned(),
                     meta.source_sha256.clone(),
                 ),
-                KeyValue::new("utilake.entry".to_owned(), meta.entry.clone()),
+                KeyValue::new(
+                    "utilake.lake_format".to_owned(),
+                    crate::provenance::LAKE_FORMAT.to_owned(),
+                ),
                 // The transform: what was read, and by which plan.
                 KeyValue::new(
                     "utilake.report_type".to_owned(),
@@ -205,14 +211,17 @@ impl ParquetHive {
                         .map_or_else(String::new, |s| s.to_string()),
                 ),
             ]));
-        // Measures never benefit from dictionaries; ids do.
+        // Measures never benefit from dictionaries; ids do, and so does a
+        // source's publish time, one value over many rows.
         for f in schema.fields() {
-            if matches!(
-                f.data_type(),
-                arrow_schema::DataType::Float64
-                    | arrow_schema::DataType::Decimal128(_, _)
-                    | arrow_schema::DataType::Timestamp(_, _)
-            ) {
+            if f.name() != PUBLISHED.name
+                && matches!(
+                    f.data_type(),
+                    arrow_schema::DataType::Float64
+                        | arrow_schema::DataType::Decimal128(_, _)
+                        | arrow_schema::DataType::Timestamp(_, _)
+                )
+            {
                 b = b.set_column_dictionary_enabled(
                     parquet::schema::types::ColumnPath::from(f.name().as_str()),
                     false,
@@ -246,6 +255,22 @@ impl LakeWriter for ParquetHive {
         meta: &FileMeta,
     ) -> Result<WriterId, StoreError> {
         zone!(OPEN);
+        // A lake file ends with every row's source and publish time.
+        let ends = schema.fields().len() >= 2
+            && schema.fields()[schema.fields().len() - 2..]
+                .iter()
+                .zip(crate::provenance::fields())
+                .all(|(f, p)| f.name() == p.name() && f.data_type() == p.data_type());
+        if !ends {
+            return Err(StoreError::NoProvenance {
+                observed: schema
+                    .fields()
+                    .iter()
+                    .map(|f| f.name().clone())
+                    .collect::<Vec<_>>()
+                    .join(","),
+            });
+        }
         if let Some(f) = crate::partition::naive_timestamp(&schema) {
             return Err(StoreError::NaiveTimestamp {
                 column: f.name().clone(),
@@ -294,6 +319,7 @@ impl LakeWriter for ParquetHive {
                 sorted: true,
                 last_max: None,
                 time_column: meta.time_column,
+                sources: Vec::new(),
             },
         );
         Ok(WriterId(id))
@@ -352,6 +378,8 @@ impl LakeWriter for ParquetHive {
             message: e.to_string(),
         })?;
         o.rows += batch.num_rows() as u64;
+        let source = batch.column(batch.num_columns() - 2);
+        crate::provenance::count(source.as_ref(), &mut o.sources);
         Ok(())
     }
 
@@ -371,8 +399,20 @@ impl LakeWriter for ParquetHive {
             max,
             sorted,
             time_column,
+            sources,
             ..
         } = o;
+        let mut writer = writer;
+        let sources = serde_json::Value::Array(
+            sources
+                .iter()
+                .map(|(source, rows)| serde_json::json!({"source": source, "rows": rows}))
+                .collect(),
+        );
+        writer.append_key_value_metadata(KeyValue::new(
+            "utilake.sources".to_owned(),
+            sources.to_string(),
+        ));
         let sorted = sorted && time_column.is_some();
         let file = writer.into_inner().map_err(|e| StoreError::Parquet {
             path: tmp.display().to_string(),
@@ -501,7 +541,11 @@ mod tests {
     use crate::writer::{Partition, Transform};
 
     fn schema() -> SchemaRef {
-        Arc::new(Schema::new(vec![
+        crate::provenance::lake_schema(&data_schema())
+    }
+
+    fn data_schema() -> Schema {
+        Schema::new(vec![
             Field::new(
                 "SETTLEMENTDATE",
                 DataType::Timestamp(TimeUnit::Microsecond, Some("+10:00".into())),
@@ -509,20 +553,23 @@ mod tests {
             ),
             Field::new("DUID", DataType::Utf8, false),
             Field::new("SCADAVALUE", DataType::Float64, true),
-        ]))
+        ])
     }
 
     fn batch(times: &[&str], ids: &[&str], vals: &[Option<f64>]) -> RecordBatch {
         let ts: Vec<i64> = times.iter().map(|t| nanos(t) / 1_000).collect();
-        RecordBatch::try_new(
-            schema(),
+        let data = RecordBatch::try_new(
+            Arc::new(data_schema()),
             vec![
                 Arc::new(TimestampMicrosecondArray::from(ts).with_timezone("+10:00")),
                 Arc::new(StringArray::from(ids.to_vec())),
                 Arc::new(Float64Array::from(vals.to_vec())),
             ],
         )
-        .unwrap()
+        .unwrap();
+        let stamp =
+            crate::provenance::Stamp::new("https://x/y.zip!Y.CSV", Some(1_704_067_200_000_000));
+        crate::provenance::stamped(&data, &stamp, &schema()).unwrap()
     }
 
     fn meta() -> FileMeta {
@@ -533,7 +580,6 @@ mod tests {
             fingerprint: Fingerprint(7),
             source_url: "https://x/y.zip".into(),
             source_sha256: "abcdef0123456789".into(),
-            entry: "Y.CSV".into(),
             time_column: Some(0),
             part: 1,
             transform: Transform {
@@ -662,7 +708,7 @@ mod tests {
                 DataType::Timestamp(TimeUnit::Nanosecond, Some("+10:00".into())),
             ),
         ] {
-            let s = Arc::new(Schema::new(vec![
+            let s = crate::provenance::lake_schema(&Schema::new(vec![
                 Field::new("DUID", DataType::Utf8, false),
                 Field::new(name, ty, true),
             ]));
@@ -673,6 +719,14 @@ mod tests {
             );
             assert_eq!(err.diagnostic().code, "store.naive_timestamp");
         }
+        // Nor one without each row's source and publish time.
+        let err = w
+            .open(&key(1), Arc::new(data_schema()), &meta())
+            .unwrap_err();
+        assert!(matches!(err, StoreError::NoProvenance { .. }), "{err}");
+        assert_eq!(err.diagnostic().code, "store.no_provenance");
+        let one = Arc::new(Schema::new(vec![Field::new("X", DataType::Int64, true)]));
+        assert!(w.open(&key(1), one, &meta()).is_err());
         // Nothing was created for a schema the lake refuses.
         assert!(w.open.is_empty());
         assert!(std::fs::read_dir(dir.path()).unwrap().next().is_none());
@@ -736,6 +790,17 @@ mod tests {
                 .and_then(|k| k.value.as_deref())
                 .unwrap();
             assert_eq!(serde_json::from_str::<Lake>(written).unwrap(), layout);
+            let value = |key: &str| {
+                kv.iter()
+                    .find(|k| k.key == key)
+                    .and_then(|k| k.value.clone())
+                    .unwrap()
+            };
+            assert_eq!(value("utilake.lake_format"), "2");
+            assert_eq!(
+                value("utilake.sources"),
+                r#"[{"rows":2000,"source":"https://x/y.zip!Y.CSV"}]"#
+            );
             std::fs::remove_file(&f.path).unwrap();
         }
     }

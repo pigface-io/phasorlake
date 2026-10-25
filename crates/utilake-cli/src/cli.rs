@@ -216,8 +216,9 @@ impl WindowArgs {
 #[derive(Args, Debug, Clone, Default)]
 pub struct ResolveArgs {
     /// Keep only what was known by this time, e.g. `--known-at 2026-08-01T16:30`:
-    /// the row's cutoff column (LASTCHANGED, RUN_DATETIME), else its
-    /// source's publish time. Not with `--raw`.
+    /// a row is known from its source's publish time, or from its cutoff
+    /// column (LASTCHANGED, RUN_DATETIME) when that is later. With the
+    /// newest rows or `--revisions`; not with `--raw`.
     #[arg(long, conflicts_with = "raw")]
     pub known_at: Option<String>,
     /// Every revision of every fact, each once, instead of the newest.

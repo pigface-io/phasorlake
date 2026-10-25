@@ -266,6 +266,12 @@ impl ManifestHandle {
 
 #[cfg(test)]
 mod tests {
+    fn share(entry: impl Into<String>) -> crate::manifest::EntryShare {
+        crate::manifest::EntryShare {
+            entry: entry.into(),
+            ..Default::default()
+        }
+    }
     use utilake_core::Category;
 
     use super::*;
@@ -296,7 +302,6 @@ mod tests {
             .begin_ingest(IngestStart {
                 run_id: run,
                 file_id: fid,
-                entry: "e".into(),
                 table: "T".into(),
                 schema_version: 1,
                 fingerprint: "f".into(),
@@ -310,6 +315,7 @@ mod tests {
         h.finish_ingest(
             iid,
             IngestEnd {
+                entries: vec![share("e")],
                 status: IngestStatus::Ok,
                 rows: 2,
                 bad_rows: 0,

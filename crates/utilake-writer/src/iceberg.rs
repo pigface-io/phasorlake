@@ -102,16 +102,23 @@ pub fn build_table(dir: &Path, t: &TableSchemas, outputs: &[LiveOutput]) -> Resu
         std::fs::remove_dir_all(&meta)?;
     }
     let store = Store::at(dir);
-    let Some(first) = t.schemas.first() else {
+    // A lake file holds its table's columns, then each row's source and
+    // publish time; so does each schema of the table the lake publishes.
+    let schemas: Vec<Schema> = t
+        .schemas
+        .iter()
+        .map(utilake_iceberg::provenance::lake_schema)
+        .collect();
+    let Some(first) = schemas.first() else {
         return Ok(Built::default());
     };
     let mut at = month_ms(outputs.first().and_then(|o| o.source_period.as_deref()));
     store.create(&t.uuid, first, at)?;
-    for s in &t.schemas[1..] {
+    for s in &schemas[1..] {
         at += 1;
         store.set_schema(s, at)?;
     }
-    let latest = t.schemas.len() - 1;
+    let latest = schemas.len() - 1;
     let mut built = Built::default();
     let mut i = 0;
     while i < outputs.len() {
@@ -129,7 +136,7 @@ pub fn build_table(dir: &Path, t: &TableSchemas, outputs: &[LiveOutput]) -> Resu
         }
         let run = &outputs[i..j];
         at = at.max(month_ms(run[0].source_period.as_deref())) + 1;
-        store.set_schema(&t.schemas[schema], at)?;
+        store.set_schema(&schemas[schema], at)?;
         let mut properties = BTreeMap::from([
             ("utilake.first-file".to_owned(), run[0].url.clone()),
             (
@@ -253,7 +260,10 @@ mod tests {
             source_version: version,
             source_period: Some(period.into()),
             url: format!("https://h/{period}.zip"),
-            entry: "E.CSV".into(),
+            entries: vec![crate::manifest::EntryShare {
+                entry: "E.CSV".into(),
+                ..Default::default()
+            }],
             min_time: None,
             max_time: None,
             partition: String::new(),
@@ -298,6 +308,12 @@ mod tests {
         let (version, meta) = Store::at(&dir).current().unwrap();
         let ids: Vec<u32> = meta.schemas.iter().map(|s| s.schema_id).collect();
         assert_eq!(ids, [0, 1], "the history's schemas, with its ids");
+        let last = meta.schemas[1]
+            .fields
+            .iter()
+            .map(|f| f.name.as_str())
+            .collect::<Vec<_>>();
+        assert_eq!(&last[last.len() - 2..], ["_nl_source", "_nl_published"]);
         let snaps = &meta.snapshots;
         assert_eq!(
             snaps.iter().map(|s| s.schema_id).collect::<Vec<_>>(),

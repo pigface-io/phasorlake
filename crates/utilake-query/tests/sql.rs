@@ -36,13 +36,16 @@ fn each_kind_of_read_renders() {
     );
     let s = render_duck(&bind(q, &lake).unwrap(), &lake);
     assert!(s.contains("read_parquet(['"), "{s}");
-    assert!(s.contains("filename = true"), "{s}");
+    assert!(
+        !s.contains("filename"),
+        "every row carries its own source: {s}"
+    );
     assert!(
         s.contains("CAST(NULL AS DECIMAL(15, 5)) AS \"PRE_AP_LOWER1_PRICE\""),
         "the schema-0 file: {s}"
     );
     assert!(
-        s.contains("coalesce(\"LASTCHANGED\", published) AS _nl_known"),
+        s.contains("greatest(\"LASTCHANGED\", \"_nl_published\") AS _nl_known"),
         "{s}"
     );
     assert!(
@@ -52,7 +55,7 @@ fn each_kind_of_read_renders() {
         "{s}"
     );
     assert!(
-        s.contains("row_number() OVER (PARTITION BY \"REGIONID\", \"DISPATCHINTERVAL\", \"INTERVENTION\", \"SETTLEMENTDATE\" ORDER BY \"RUNNO\" DESC NULLS LAST, \"LASTCHANGED\" DESC NULLS LAST, published DESC NULLS LAST, filename DESC) AS _nl_rank FROM known) ranked WHERE _nl_rank = 1"),
+        s.contains("row_number() OVER (PARTITION BY \"REGIONID\", \"DISPATCHINTERVAL\", \"INTERVENTION\", \"SETTLEMENTDATE\" ORDER BY \"RUNNO\" DESC NULLS LAST, \"LASTCHANGED\" DESC NULLS LAST, \"_nl_published\" DESC NULLS LAST, \"_nl_source\" DESC) AS _nl_rank FROM known) ranked WHERE _nl_rank = 1"),
         "{s}"
     );
     assert!(
@@ -69,14 +72,18 @@ fn each_kind_of_read_renders() {
     // Revisions: the order columns join the partition.
     let s = render_duck(
         &bind(
-            Query::new("DISPATCHPRICE", day, Resolution::Revisions),
+            Query::new(
+                "DISPATCHPRICE",
+                day,
+                Resolution::Revisions { known_at: None },
+            ),
             &lake,
         )
         .unwrap(),
         &lake,
     );
     assert!(
-        s.contains("PARTITION BY \"REGIONID\", \"DISPATCHINTERVAL\", \"INTERVENTION\", \"SETTLEMENTDATE\", \"RUNNO\", \"LASTCHANGED\" ORDER BY published DESC NULLS LAST, filename DESC) AS _nl_rank"),
+        s.contains("PARTITION BY \"REGIONID\", \"DISPATCHINTERVAL\", \"INTERVENTION\", \"SETTLEMENTDATE\", \"RUNNO\", \"LASTCHANGED\" ORDER BY \"_nl_published\" DESC NULLS LAST, \"_nl_source\" DESC) AS _nl_rank"),
         "{s}"
     );
     assert!(!s.contains("WHERE _nl_known"), "{s}");
@@ -122,7 +129,7 @@ fn each_kind_of_read_renders() {
         &bind(Query::new("SSM_ENABLEMENT_COSTS", any, LATEST), &lake).unwrap(),
         &lake,
     );
-    assert!(s.contains("PARTITION BY \"END_TRADINGDATE\", \"ENABLEMENT_REASON\", \"ESTIMATED_COSTS\", \"LASTCHANGED\" ORDER BY published DESC NULLS LAST, filename DESC) AS _nl_rank"), "{s}");
+    assert!(s.contains("PARTITION BY \"END_TRADINGDATE\", \"ENABLEMENT_REASON\", \"ESTIMATED_COSTS\", \"LASTCHANGED\" ORDER BY \"_nl_published\" DESC NULLS LAST, \"_nl_source\" DESC) AS _nl_rank"), "{s}");
     assert!(
         s.contains("SELECT \"END_TRADINGDATE\", \"ENABLEMENT_REASON\", \"ESTIMATED_COSTS\", \"LASTCHANGED\", _nl_known FROM spans "),
         "{s}"
@@ -172,11 +179,7 @@ fn each_kind_of_read_renders() {
         &lake,
     );
     assert!(
-        s.contains("CAST(NULL AS VARCHAR) AS filename WHERE 1 = 0"),
-        "{s}"
-    );
-    assert!(
-        s.contains("VALUES (CAST(NULL AS VARCHAR), CAST(NULL AS TIMESTAMP WITH TIME ZONE))"),
+        s.contains("CAST(NULL AS VARCHAR) AS \"_nl_source\", CAST(NULL AS TIMESTAMP WITH TIME ZONE) AS \"_nl_published\" WHERE 1 = 0"),
         "{s}"
     );
 
@@ -184,11 +187,11 @@ fn each_kind_of_read_renders() {
     let b = bind(Query::new("DISPATCHPRICE", day, LATEST), &lake).unwrap();
     let s = render(&b, &lake, Dialect::Postgres);
     assert!(
-        s.contains("\"_nl_source\" AS filename FROM \"DISPATCHPRICE\""),
+        s.contains("\"_nl_source\", \"_nl_published\" FROM \"DISPATCHPRICE\""),
         "{s}"
     );
     assert!(!s.contains("read_parquet"), "{s}");
     let d = render(&b, &lake, Dialect::DuckDb);
-    let after = |s: &str| s[s.find("sources(filename").unwrap()..].to_owned();
+    let after = |s: &str| s[s.find("stamped AS").unwrap()..].to_owned();
     assert_eq!(after(&s), after(&d), "only the raw CTE differs");
 }

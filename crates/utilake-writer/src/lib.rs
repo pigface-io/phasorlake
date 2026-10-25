@@ -27,6 +27,7 @@ pub mod iceberg;
 pub mod manifest;
 pub mod parquet_hive;
 pub mod partition;
+pub mod provenance;
 pub mod verify;
 pub mod writer;
 

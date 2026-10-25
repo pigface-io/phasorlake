@@ -27,7 +27,9 @@ fn batch(spill: bool) -> RecordBatch {
         Field::new("SCADAVALUE", DataType::Float64, true),
     ]));
     let duids: Vec<String> = (0..ROWS).map(|i| format!("UNIT{:03}", i % 400)).collect();
-    RecordBatch::try_new(
+    let lake = utilake_writer::provenance::lake_schema(&schema);
+    let stamp = utilake_writer::provenance::Stamp::new("https://h/s.zip!S.CSV", None);
+    let data = RecordBatch::try_new(
         schema,
         vec![
             Arc::new(TimestampMicrosecondArray::from(ts).with_timezone("+10:00")),
@@ -39,7 +41,8 @@ fn batch(spill: bool) -> RecordBatch {
             )),
         ],
     )
-    .unwrap()
+    .unwrap();
+    utilake_writer::provenance::stamped(&data, &stamp, &lake).unwrap()
 }
 
 fn bench(c: &mut Criterion) {
@@ -66,7 +69,6 @@ fn bench(c: &mut Criterion) {
             fingerprint: Fingerprint(1),
             source_url: String::new(),
             source_sha256: "abcdef01".into(),
-            entry: String::new(),
             time_column: Some(0),
             part: 1,
             transform: utilake_writer::Transform::default(),

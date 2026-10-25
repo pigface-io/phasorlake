@@ -264,7 +264,7 @@ pub fn finish(
 
 /// The names of every source, as the dictionary of `_nl_source`.
 pub fn source_names(lake: &crate::Lake<'_>) -> ArrayRef {
-    let names: Vec<String> = lake.files.iter().map(crate::LakeFile::source).collect();
+    let names: Vec<String> = lake.sources.iter().map(crate::Source::name).collect();
     Arc::new(StringArray::from(names))
 }
 
@@ -434,10 +434,11 @@ impl<'a> Writer<'a> {
 
     fn footer(&self) -> Vec<KeyValue> {
         let b = self.b;
-        let known_at = match b.query.resolution {
-            Resolution::Latest { known_at: Some(k) } => rfc3339(k.get(), 0),
-            _ => String::new(),
-        };
+        let known_at = b
+            .query
+            .resolution
+            .known_at()
+            .map_or_else(String::new, |k| rfc3339(k.get(), 0));
         vec![
             KeyValue::new("utilake.version".to_owned(), self.version.to_owned()),
             KeyValue::new("utilake.table".to_owned(), b.table.clone()),
@@ -588,10 +589,7 @@ impl<'a> Writer<'a> {
             schema_id: b.schema_id,
             resolution: b.query.resolution.name(),
             window: window_text(b),
-            known_at: match b.query.resolution {
-                Resolution::Latest { known_at: Some(k) } => Some(rfc3339(k.get(), 0)),
-                _ => None,
-            },
+            known_at: b.query.resolution.known_at().map(|k| rfc3339(k.get(), 0)),
             rows: self.rows,
             rows_read: report.rows_read,
             dropped_window: report.dropped_window,

@@ -120,12 +120,14 @@ Every error and warning utilake reports carries one of these codes. Codes are st
 | code | raised in |
 |---|---|
 | `store.extract` | `crates/utilake-writer/src/error.rs` |
+| `store.file_discarded` | `crates/utilake-pipeline/src/ingest_file.rs` |
 | `store.iceberg_io` | `crates/utilake-iceberg-store/src/lib.rs` |
 | `store.iceberg_location` | `crates/utilake-iceberg-store/src/lib.rs` |
 | `store.iceberg_manifest` | `crates/utilake-iceberg-store/src/lib.rs` |
 | `store.iceberg_metadata` | `crates/utilake-iceberg-store/src/lib.rs` |
 | `store.io` | `crates/utilake-writer/src/error.rs` |
 | `store.naive_timestamp` | `crates/utilake-writer/src/error.rs` |
+| `store.no_provenance` | `crates/utilake-writer/src/error.rs` |
 | `store.parquet_write` | `crates/utilake-writer/src/error.rs` |
 | `store.partition_column_not_timestamp` | `crates/utilake-writer/src/error.rs` |
 | `store.quarantine_write` | `crates/utilake-pipeline/src/ingest_file.rs` |
@@ -151,6 +153,7 @@ Every error and warning utilake reports carries one of these codes. Codes are st
 | `verify.missing_file` | `crates/utilake-writer/src/verify.rs` |
 | `verify.orphan_quarantine` | `crates/utilake-writer/src/verify.rs` |
 | `verify.size_mismatch` | `crates/utilake-writer/src/verify.rs` |
+| `verify.sources_mismatch` | `crates/utilake-writer/src/verify.rs` |
 
 ## query
 
@@ -160,6 +163,7 @@ Every error and warning utilake reports carries one of these codes. Codes are st
 | `query.bad_filter_value` | `crates/utilake-query/src/error.rs` |
 | `query.bad_time` | `crates/utilake-query/src/error.rs` |
 | `query.filter_after_resolution` | `crates/utilake-query/src/bind.rs` |
+| `query.lake_format` | `crates/utilake-query/src/error.rs` |
 | `query.order_nan` | `crates/utilake-query/src/resolve.rs` |
 | `query.plan_failed` | `crates/utilake-query/src/error.rs` |
 | `query.raw_only` | `crates/utilake-query/src/error.rs` |
@@ -167,6 +171,7 @@ Every error and warning utilake reports carries one of these codes. Codes are st
 | `query.role_missing` | `crates/utilake-query/src/error.rs` |
 | `query.role_type` | `crates/utilake-query/src/error.rs` |
 | `query.roles_invalid` | `crates/utilake-query/src/error.rs` |
+| `query.source_unknown` | `crates/utilake-query/src/error.rs` |
 | `query.stamp_unknown` | `crates/utilake-query/src/scan.rs` |
 | `query.unknown_column` | `crates/utilake-query/src/error.rs` |
 | `query.unknown_table` | `crates/utilake-query/src/error.rs` |

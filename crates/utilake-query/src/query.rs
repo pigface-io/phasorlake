@@ -30,18 +30,30 @@ pub enum Resolution {
         /// Keep only what was known by then.
         known_at: Option<KnownTime>,
     },
-    /// Every revision of every fact, each once.
-    Revisions,
+    /// Every revision of every fact, each once, as known at `known_at`
+    /// (`None`: as known now).
+    Revisions {
+        /// Keep only what was known by then.
+        known_at: Option<KnownTime>,
+    },
     /// Every row of every file, as written.
     Raw,
 }
 
 impl Resolution {
+    /// Only what was known by this time, when the read asks.
+    pub const fn known_at(self) -> Option<KnownTime> {
+        match self {
+            Self::Latest { known_at } | Self::Revisions { known_at } => known_at,
+            Self::Raw => None,
+        }
+    }
+
     /// The name in output metadata.
     pub const fn name(self) -> &'static str {
         match self {
             Self::Latest { .. } => "latest",
-            Self::Revisions => "revisions",
+            Self::Revisions { .. } => "revisions",
             Self::Raw => "raw",
         }
     }
@@ -226,7 +238,11 @@ mod tests {
         assert_eq!(q.filters.len(), 1);
         assert_eq!(q.with_columns(vec![]).columns, Projection::All);
         assert_eq!(Resolution::Raw.name(), "raw");
-        assert_eq!(Resolution::Revisions.name(), "revisions");
+        assert_eq!(Resolution::Revisions { known_at: None }.name(), "revisions");
+        let k = Some(KnownTime::new(5));
+        assert_eq!(Resolution::Revisions { known_at: k }.known_at(), k);
+        assert_eq!(Resolution::Latest { known_at: k }.known_at(), k);
+        assert_eq!(Resolution::Raw.known_at(), None);
         assert_eq!(Resolution::Latest { known_at: None }.name(), "latest");
     }
 }
