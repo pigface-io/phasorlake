@@ -875,6 +875,14 @@ fn a_home_before_state_is_upgraded_first() {
         json.contains("\"upgrade_step\"") && json.contains("\"upgrade_done\""),
         "{json}"
     );
+    // A folder past the cap keeps its records, and is named.
+    let capped = cli.code(&["upgrade", "--dry-run", "--max-entries", "1"]).1;
+    assert!(
+        capped.contains("0 provenance records written again")
+            && capped.contains("skipped: ")
+            && capped.contains("entries)"),
+        "{capped}"
+    );
     let (code, out, _) = cli.code(&["upgrade"]);
     assert_eq!(code, 1, "one record does not read: {out}");
     assert!(out.contains("left: ") && out.contains("mine.txt"), "{out}");
