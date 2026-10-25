@@ -490,6 +490,11 @@ fn log(state: &Mirror, step: &Step) -> Result<(), MirrorError> {
         .open(&path)
         .map_err(MirrorError::io(&path))?;
     f.write_all(&line).map_err(MirrorError::io(&path))?;
+    // A record's step is handed to the disk with its batch, by the sync
+    // before the old records go: an fsync each takes seconds on exFAT.
+    if step.action == Action::Record {
+        return Ok(());
+    }
     crate::net::archive::to_disk(&f).map_err(MirrorError::io(&path))
 }
 
