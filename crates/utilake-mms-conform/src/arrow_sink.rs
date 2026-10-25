@@ -522,24 +522,27 @@ impl<B: BatchSink> Sink for ArrowSink<'_, B> {
             RowFailure::fatal(SinkError::Refused(Box::new(d)))
         };
         // Pass 1: parse every field; nothing is appended until all are read.
-        self.parsed.fill(Parsed::Null);
-        self.misfits.clear();
-        for c in &block.steps {
-            let target = c.target;
-            let bytes = row.get(usize::from(c.field)).unwrap_or(b"");
-            let parsed = match parse_field(c.cast, c.nullable, c.field, bytes) {
-                Ok(p) => p,
-                Err(fault) if strict => return Err(refuse(block, target, c.field, fault)),
-                Err(fault) => {
-                    self.misfits.push((target, c.field, fault));
-                    Parsed::Null
+        {
+            zone!(PARSE);
+            self.parsed.fill(Parsed::Null);
+            self.misfits.clear();
+            for c in &block.steps {
+                let target = c.target;
+                let bytes = row.get(usize::from(c.field)).unwrap_or(b"");
+                let parsed = match parse_field(c.cast, c.nullable, c.field, bytes) {
+                    Ok(p) => p,
+                    Err(fault) if strict => return Err(refuse(block, target, c.field, fault)),
+                    Err(fault) => {
+                        self.misfits.push((target, c.field, fault));
+                        Parsed::Null
+                    }
+                };
+                if matches!(parsed, Parsed::Clamped(_)) {
+                    block.clamped[target as usize]
+                        .note(|| String::from_utf8_lossy(bytes).into_owned(), pos.line);
                 }
-            };
-            if matches!(parsed, Parsed::Clamped(_)) {
-                block.clamped[target as usize]
-                    .note(|| String::from_utf8_lossy(bytes).into_owned(), pos.line);
+                self.parsed[target as usize] = parsed;
             }
-            self.parsed[target as usize] = parsed;
         }
         // A column the file does not carry is null, also where the lake
         // does not allow it.
@@ -560,19 +563,22 @@ impl<B: BatchSink> Sink for ArrowSink<'_, B> {
             }
         }
         // Pass 2: append.
-        for (b, v) in block.builders.iter_mut().zip(&self.parsed) {
-            match v {
-                Parsed::Str(i) => {
-                    // SAFETY-free: the bytes live in `row`, which outlives this call.
-                    let bytes = row.get(usize::from(*i)).unwrap_or(b"");
-                    match b {
-                        ColumnBuilder::Utf8(sb) => {
-                            sb.append_value(std::str::from_utf8(bytes).unwrap_or(""));
+        {
+            zone!(APPEND);
+            for (b, v) in block.builders.iter_mut().zip(&self.parsed) {
+                match v {
+                    Parsed::Str(i) => {
+                        // SAFETY-free: the bytes live in `row`, which outlives this call.
+                        let bytes = row.get(usize::from(*i)).unwrap_or(b"");
+                        match b {
+                            ColumnBuilder::Utf8(sb) => {
+                                sb.append_value(std::str::from_utf8(bytes).unwrap_or(""));
+                            }
+                            _ => unreachable!("Str is only parsed for Utf8 columns"),
                         }
-                        _ => unreachable!("Str is only parsed for Utf8 columns"),
                     }
+                    other => b.append(*other, |_| b""),
                 }
-                other => b.append(*other, |_| b""),
             }
         }
         if !self.misfits.is_empty() || !block.raws.is_empty() {
