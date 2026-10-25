@@ -300,10 +300,25 @@ pub enum CodecArg {
     /// zstd level 3: what the lake writes.
     #[default]
     Zstd,
+    /// LZ4: larger files, the fastest to read.
+    Lz4,
     /// Snappy: larger files, read by older tools too.
     Snappy,
     /// None.
     None,
+}
+
+impl CodecArg {
+    /// The codec it names.
+    pub const fn codec(self) -> utilake_core::config::Codec {
+        use utilake_core::config::Codec;
+        match self {
+            Self::Zstd => Codec::Zstd,
+            Self::Lz4 => Codec::Lz4,
+            Self::Snappy => Codec::Snappy,
+            Self::None => Codec::None,
+        }
+    }
 }
 
 /// How files are fetched.
@@ -484,6 +499,44 @@ pub struct IngestArgs {
     /// Stop at the first failure.
     #[arg(long)]
     pub fail_fast: bool,
+    /// Close a lake file for the next at about this size, e.g.
+    /// `--lake-file-size-mb 256` (default from `[lake]` in config, else 128).
+    #[arg(long, value_parser = clap::value_parser!(u32).range(1..=4096))]
+    pub lake_file_size_mb: Option<u32>,
+    /// Rows per row group of a lake file, e.g. `--lake-row-group-rows 131072`
+    /// (default 262144).
+    #[arg(long, value_parser = clap::value_parser!(u64).range(1024..=16_777_216))]
+    pub lake_row_group_rows: Option<u64>,
+    /// Data page size of a lake file in kilobytes, e.g. `--lake-page-kb 512`
+    /// (default 1024).
+    #[arg(long, value_parser = clap::value_parser!(u32).range(8..=65_536))]
+    pub lake_page_kb: Option<u32>,
+    /// Compression of the lake's files, e.g. `--lake-compression lz4`
+    /// (default zstd).
+    #[arg(long, value_enum)]
+    pub lake_compression: Option<CodecArg>,
+    /// The zstd level of the lake's files, 1 to 22, e.g. `--lake-zstd-level 9`
+    /// (default 3).
+    #[arg(long, value_parser = clap::value_parser!(i32).range(1..=22))]
+    pub lake_zstd_level: Option<i32>,
+}
+
+impl IngestArgs {
+    /// The lake layout: `[lake]` from config, each flag given over it.
+    pub fn layout(&self, config: utilake_core::config::Lake) -> utilake_core::config::Lake {
+        utilake_core::config::Lake {
+            file_size_mb: self.lake_file_size_mb.unwrap_or(config.file_size_mb),
+            row_group_rows: self
+                .lake_row_group_rows
+                .map_or(config.row_group_rows, |r| r as usize),
+            page_kb: self.lake_page_kb.unwrap_or(config.page_kb),
+            compression: self
+                .lake_compression
+                .map_or(config.compression, CodecArg::codec),
+            zstd_level: self.lake_zstd_level.unwrap_or(config.zstd_level),
+            ..config
+        }
+    }
 }
 
 /// `list`: what there is.
@@ -615,6 +668,58 @@ pub enum WemCmd {
 #[cfg(test)]
 mod tests {
     use clap::CommandFactory;
+
+    #[test]
+    fn layout_flags_go_over_the_config() {
+        use utilake_core::config::{Codec, Lake};
+        let c = Cli::try_parse_from([
+            "utilake",
+            "import",
+            "a.zip",
+            "--lake-file-size-mb",
+            "256",
+            "--lake-row-group-rows",
+            "131072",
+            "--lake-page-kb",
+            "512",
+            "--lake-compression",
+            "lz4",
+            "--lake-zstd-level",
+            "9",
+        ])
+        .unwrap();
+        let Command::Import(ImportCmd { ingest, .. }) = c.command else {
+            panic!("import");
+        };
+        let config = Lake {
+            page_rows: 5000,
+            ..Lake::default()
+        };
+        let l = ingest.layout(config);
+        assert_eq!(
+            (l.file_size_mb, l.row_group_rows, l.page_kb, l.zstd_level),
+            (256, 131_072, 512, 9)
+        );
+        assert_eq!(l.compression, Codec::Lz4);
+        // What no flag sets stays the config's.
+        assert_eq!(l.page_rows, 5000);
+        assert_eq!(IngestArgs::default().layout(config), config);
+        for (arg, codec) in [
+            ("zstd", Codec::Zstd),
+            ("snappy", Codec::Snappy),
+            ("none", Codec::None),
+        ] {
+            let c = Cli::try_parse_from(["utilake", "import", "a.zip", "--lake-compression", arg])
+                .unwrap();
+            let Command::Import(ImportCmd { ingest, .. }) = c.command else {
+                panic!("import");
+            };
+            assert_eq!(ingest.layout(config).compression, codec);
+        }
+        assert!(
+            Cli::try_parse_from(["utilake", "import", "a.zip", "--lake-page-kb", "4"]).is_err()
+        );
+    }
 
     use super::*;
 

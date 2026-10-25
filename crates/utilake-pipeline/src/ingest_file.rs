@@ -696,7 +696,7 @@ pub fn ingest_file(input: IngestInput) -> FileReport {
     zone!(FILE);
     // One read buffer and one writer for every entry of the file.
     let mut scan_buf = Vec::new();
-    let mut hive = ParquetHive::new(&input.lake_root);
+    let mut hive = ParquetHive::new(&input.lake_root).with_layout(input.options.layout);
     let path = input.local.path.clone();
     // The file's name is its URL's: a version the mirror kept beside the
     // first (`{name}@{stamp}`) is read as the file it is a version of.

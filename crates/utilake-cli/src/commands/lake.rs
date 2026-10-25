@@ -39,6 +39,7 @@ pub(crate) fn options(
         strict_footer: args.strict || ctx.config.strict,
         batch_rows: utilake_pipeline::DEFAULT_BATCH_ROWS,
         ingest: true,
+        layout: args.layout(ctx.config.lake),
     }
 }
 

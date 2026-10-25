@@ -378,6 +378,26 @@ between requests (`request_interval_ms` in `config.toml`), and when the
 server refuses it (HTTP 403, or 429 through every retry) it sends nothing
 more in that run and reports `net.blocked` for what is left.
 
+The lake's Parquet layout is set in `[lake]` in `config.toml`, and the
+first five keys by flags of `ingest`, `import`, `fetch` and `get`
+(`--lake-file-size-mb`, `--lake-row-group-rows`, `--lake-page-kb`,
+`--lake-compression`, `--lake-zstd-level`). The
+layout changes how files are cut, never what they hold, so changing it
+does not re-read the lake; each file records the layout it was written
+with (`utilake.write_options` in its footer).
+
+```toml
+[lake]
+file_size_mb = 128         # a file is closed for the next at about this size
+row_group_rows = 262144
+page_kb = 1024             # data pages: one range request each over HTTP
+page_rows = 20000
+dictionary_page_kb = 1024
+compression = "zstd"       # zstd, lz4, snappy or none
+zstd_level = 3
+statistics = "page"        # none, chunk or page (page keeps the page index)
+```
+
 A download that breaks leaves nothing behind; the next attempt fetches the
 file whole. Its bytes go from the network to disk without a copy, hashed on
 the way on a thread of their own.

@@ -119,7 +119,7 @@ arrow-ord = "60"
 arrow-row = "60"
 arrow-csv = "60"
 arrow-ipc = "60"
-parquet = { version = "60", default-features = false, features = ["arrow", "zstd", "snap"] }
+parquet = { version = "60", default-features = false, features = ["arrow", "zstd", "snap", "lz4"] }
 # archive
 zip = { version = "9", default-features = false, features = ["deflate-flate2-zlib-rs"] }
 # serialisation

@@ -9,11 +9,11 @@ use anyhow::{Result, bail};
 use utilake_core::Diagnose as _;
 use utilake_pipeline::GetRequest;
 use utilake_query::{
-    Codec, Dialect, Filter, Format, Lake, MarketOffset, Query, Resolution, Target, WriteOptions,
-    bind, catalog,
+    Dialect, Filter, Format, Lake, MarketOffset, Query, Resolution, Target, WriteOptions, bind,
+    catalog,
 };
 
-use crate::cli::{Cli, CodecArg, DialectArg, FormatArg, GetCmd, ResolveArgs};
+use crate::cli::{Cli, DialectArg, FormatArg, GetCmd, ResolveArgs};
 use crate::context::Context;
 use crate::render;
 
@@ -65,11 +65,7 @@ fn write_options(args: &crate::cli::OutputArgs) -> WriteOptions {
             FormatArg::Arrow => Format::Arrow,
             FormatArg::Parquet | FormatArg::Sql => Format::Parquet,
         },
-        codec: match args.compression {
-            CodecArg::Zstd => Codec::Zstd,
-            CodecArg::Snappy => Codec::Snappy,
-            CodecArg::None => Codec::None,
-        },
+        codec: args.compression.codec(),
         target_file_bytes: args.target_file_bytes.unwrap_or(d.target_file_bytes),
         row_group_rows: d.row_group_rows,
     }

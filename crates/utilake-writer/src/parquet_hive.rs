@@ -20,13 +20,11 @@ use parquet::basic::{Compression, ZstdLevel};
 use parquet::file::metadata::KeyValue;
 use parquet::file::properties::{EnabledStatistics, WriterProperties, WriterVersion};
 
+use utilake_core::config::{Codec, Lake, Statistics};
+
 use crate::error::StoreError;
 use crate::partition::{is_sorted, time_bounds};
 use crate::writer::{FileMeta, LakeWriter, PartitionKey, WriterId, WrittenFile};
-
-/// Rows per row group. Small enough for fine predicate pushdown, large
-/// enough that per-group metadata is noise.
-pub const ROW_GROUP_ROWS: usize = 262_144;
 
 struct Open {
     tmp: PathBuf,
@@ -49,10 +47,23 @@ struct Closed {
     final_path: PathBuf,
 }
 
+/// Parquet's compression for `codec`; `zstd_level` counts for zstd only
+/// and is held to 1..=22.
+pub fn compression(codec: Codec, zstd_level: i32) -> Compression {
+    match codec {
+        Codec::Zstd => {
+            Compression::ZSTD(ZstdLevel::try_new(zstd_level.clamp(1, 22)).expect("held to 1..=22"))
+        }
+        Codec::Lz4 => Compression::LZ4_RAW,
+        Codec::Snappy => Compression::SNAPPY,
+        Codec::None => Compression::UNCOMPRESSED,
+    }
+}
+
 /// The production lake writer.
 pub struct ParquetHive {
     lake_root: PathBuf,
-    zstd_level: i32,
+    layout: Lake,
     open: HashMap<u32, Open>,
     closed: Vec<Closed>,
     next: u32,
@@ -64,7 +75,7 @@ impl ParquetHive {
     pub fn new(lake_root: impl Into<PathBuf>) -> Self {
         Self {
             lake_root: lake_root.into(),
-            zstd_level: 3,
+            layout: Lake::default(),
             open: HashMap::new(),
             closed: Vec::new(),
             next: 1,
@@ -72,11 +83,19 @@ impl ParquetHive {
         }
     }
 
-    /// Sets the zstd level (1..=22).
-    #[cfg(test)]
-    pub(crate) fn with_zstd_level(mut self, level: i32) -> Self {
-        self.zstd_level = level.clamp(1, 22);
+    /// Lays files out as `layout` says, in place of the defaults.
+    #[must_use]
+    pub fn with_layout(mut self, layout: Lake) -> Self {
+        self.layout = layout;
         self
+    }
+
+    /// The bytes an open file holds so far, written and buffered: what
+    /// decides when it is closed for the next.
+    pub fn bytes_in_file(&self, id: WriterId) -> u64 {
+        self.open.get(&id.0).map_or(0, |o| {
+            (o.writer.bytes_written() + o.writer.in_progress_size()) as u64
+        })
     }
 
     /// The directory of a partition.
@@ -110,16 +129,26 @@ impl ParquetHive {
     }
 
     fn props(&self, schema: &SchemaRef, meta: &FileMeta) -> WriterProperties {
+        let l = &self.layout;
         let mut b = WriterProperties::builder()
             .set_writer_version(WriterVersion::PARQUET_2_0)
-            .set_compression(Compression::ZSTD(
-                ZstdLevel::try_new(self.zstd_level).expect("level clamped to 1..=22"),
-            ))
-            .set_max_row_group_row_count(Some(ROW_GROUP_ROWS))
-            .set_statistics_enabled(EnabledStatistics::Page)
+            .set_compression(compression(l.compression, l.zstd_level))
+            .set_max_row_group_row_count(Some(l.row_group_rows))
+            .set_data_page_size_limit(l.page_kb as usize * 1024)
+            .set_data_page_row_count_limit(l.page_rows)
+            .set_dictionary_page_size_limit(l.dictionary_page_kb as usize * 1024)
+            .set_statistics_enabled(match l.statistics {
+                Statistics::None => EnabledStatistics::None,
+                Statistics::Chunk => EnabledStatistics::Chunk,
+                Statistics::Page => EnabledStatistics::Page,
+            })
             .set_created_by(format!("utilake {}", self.version))
             .set_key_value_metadata(Some(vec![
                 KeyValue::new("utilake.version".to_owned(), self.version.to_owned()),
+                KeyValue::new(
+                    "utilake.write_options".to_owned(),
+                    serde_json::to_string(&self.layout).expect("the layout is plain data"),
+                ),
                 KeyValue::new("utilake.table".to_owned(), meta.table.clone()),
                 KeyValue::new(
                     "utilake.schema_version".to_owned(),
@@ -533,7 +562,10 @@ mod tests {
     #[test]
     fn writes_renames_and_reads_back() {
         let dir = tempfile::tempdir().unwrap();
-        let mut w = ParquetHive::new(dir.path()).with_zstd_level(1);
+        let mut w = ParquetHive::new(dir.path()).with_layout(Lake {
+            zstd_level: 1,
+            ..Lake::default()
+        });
         let id = w.open(&key(1), schema(), &meta()).unwrap();
         w.write(
             id,
@@ -644,6 +676,68 @@ mod tests {
         // Nothing was created for a schema the lake refuses.
         assert!(w.open.is_empty());
         assert!(std::fs::read_dir(dir.path()).unwrap().next().is_none());
+    }
+
+    #[test]
+    fn the_layout_reaches_the_file() {
+        use parquet::file::reader::{FileReader, SerializedFileReader};
+        let dir = tempfile::tempdir().unwrap();
+        for (layout, codec) in [
+            (Lake::default(), "ZSTD"),
+            (
+                Lake {
+                    compression: Codec::Lz4,
+                    row_group_rows: 1024,
+                    statistics: Statistics::Chunk,
+                    ..Lake::default()
+                },
+                "LZ4_RAW",
+            ),
+            (
+                Lake {
+                    compression: Codec::Snappy,
+                    statistics: Statistics::None,
+                    ..Lake::default()
+                },
+                "SNAPPY",
+            ),
+            (
+                Lake {
+                    compression: Codec::None,
+                    ..Lake::default()
+                },
+                "UNCOMPRESSED",
+            ),
+        ] {
+            let mut w = ParquetHive::new(dir.path()).with_layout(layout);
+            let id = w.open(&key(7), schema(), &meta()).unwrap();
+            let times: Vec<String> = (0..2000)
+                .map(|i| format!("2024/07/01 {:02}:{:02}:00", i / 60 % 24, i % 60))
+                .collect();
+            let times: Vec<&str> = times.iter().map(String::as_str).collect();
+            let ids = vec!["A"; 2000];
+            let vals = vec![Some(1.5); 2000];
+            w.write(id, &batch(&times, &ids, &vals)).unwrap();
+            assert!(w.bytes_in_file(id) > 0);
+            assert_eq!(w.bytes_in_file(WriterId(999)), 0);
+            let f = w.close(id).unwrap();
+            w.commit().unwrap();
+            let r = SerializedFileReader::new(File::open(&f.path).unwrap()).unwrap();
+            let md = r.metadata();
+            // A reader sees the codec, not the level it was written at.
+            let seen = md.row_group(0).column(0).compression().to_string();
+            assert!(seen.starts_with(codec), "{seen}");
+            let groups = 2000usize.div_ceil(layout.row_group_rows);
+            assert_eq!(md.num_row_groups(), groups);
+            let kv = md.file_metadata().key_value_metadata().unwrap();
+            let written = kv
+                .iter()
+                .find(|k| k.key == "utilake.write_options")
+                .and_then(|k| k.value.as_deref())
+                .unwrap();
+            assert_eq!(serde_json::from_str::<Lake>(written).unwrap(), layout);
+            std::fs::remove_file(&f.path).unwrap();
+        }
     }
 
     #[test]

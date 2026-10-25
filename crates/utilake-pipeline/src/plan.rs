@@ -32,6 +32,8 @@ pub struct RunOptions {
     pub batch_rows: usize,
     /// Ingest what is fetched; `false` only downloads into the archive.
     pub ingest: bool,
+    /// How the lake's Parquet files are laid out.
+    pub layout: utilake_core::config::Lake,
 }
 
 impl Default for RunOptions {
@@ -46,6 +48,7 @@ impl Default for RunOptions {
             strict_footer: false,
             batch_rows: DEFAULT_BATCH_ROWS,
             ingest: true,
+            layout: utilake_core::config::Lake::default(),
         }
     }
 }

@@ -25,8 +25,124 @@ pub struct Config {
     pub strict: bool,
     /// Appended to the `User-Agent` header, e.g. a contact address.
     pub user_agent_suffix: String,
+    /// How the lake's Parquet files are laid out: `[lake]`.
+    pub lake: Lake,
     /// Per-source settings.
     pub sources: Sources,
+}
+
+/// How a Parquet file is compressed.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum Codec {
+    /// zstd: the smallest files at a fair speed, read by every current reader.
+    #[default]
+    Zstd,
+    /// LZ4: larger files, the fastest to read.
+    Lz4,
+    /// Snappy: larger files, read by older tools too.
+    Snappy,
+    /// No compression.
+    None,
+}
+
+impl Codec {
+    /// Its name, as config and the command line write it.
+    pub const fn name(self) -> &'static str {
+        match self {
+            Self::Zstd => "zstd",
+            Self::Lz4 => "lz4",
+            Self::Snappy => "snappy",
+            Self::None => "none",
+        }
+    }
+}
+
+/// Which statistics a Parquet file keeps of its values.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default, Serialize, Deserialize)]
+#[serde(rename_all = "lowercase")]
+pub enum Statistics {
+    /// None.
+    None,
+    /// Per column chunk: a row group's least and greatest values.
+    Chunk,
+    /// Per page too, with the column and offset indexes that let a reader
+    /// skip pages.
+    #[default]
+    Page,
+}
+
+/// How the lake's Parquet files are laid out. Every value is set
+/// explicitly, so a newer Parquet library never changes the files; none
+/// changes what a file holds, so changing one never re-reads the lake.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields, default)]
+pub struct Lake {
+    /// A file is closed, and the next begun, once it holds about this
+    /// many megabytes.
+    pub file_size_mb: u32,
+    /// Rows per row group.
+    pub row_group_rows: usize,
+    /// A data page is closed at about this many kilobytes.
+    pub page_kb: u32,
+    /// Or at this many rows, whichever comes first.
+    pub page_rows: usize,
+    /// A column's dictionary may grow to this many kilobytes; past it the
+    /// column is written plain.
+    pub dictionary_page_kb: u32,
+    /// The compression.
+    pub compression: Codec,
+    /// The zstd level, when the compression is zstd.
+    pub zstd_level: i32,
+    /// The statistics kept.
+    pub statistics: Statistics,
+}
+
+impl Default for Lake {
+    fn default() -> Self {
+        Self {
+            file_size_mb: 128,
+            row_group_rows: 262_144,
+            page_kb: 1024,
+            page_rows: 20_000,
+            dictionary_page_kb: 1024,
+            compression: Codec::Zstd,
+            zstd_level: 3,
+            statistics: Statistics::Page,
+        }
+    }
+}
+
+impl Lake {
+    /// The first value out of its range: which key, the value, the range.
+    pub fn invalid(&self) -> Option<ConfigError> {
+        let checks: [(&str, i64, i64, i64); 6] = [
+            ("file_size_mb", i64::from(self.file_size_mb), 1, 4096),
+            (
+                "row_group_rows",
+                self.row_group_rows as i64,
+                1024,
+                16_777_216,
+            ),
+            ("page_kb", i64::from(self.page_kb), 8, 65_536),
+            ("page_rows", self.page_rows as i64, 1000, 1_048_576),
+            (
+                "dictionary_page_kb",
+                i64::from(self.dictionary_page_kb),
+                64,
+                65_536,
+            ),
+            ("zstd_level", i64::from(self.zstd_level), 1, 22),
+        ];
+        checks
+            .into_iter()
+            .find(|&(_, v, lo, hi)| v < lo || v > hi)
+            .map(|(key, value, lo, hi)| ConfigError::Invalid {
+                key: format!("lake.{key}"),
+                value: value.to_string(),
+                range: format!("{lo} to {hi}"),
+            })
+    }
 }
 
 /// Per-kit settings: `[sources.<kit>]` tables, each read by its kit with
@@ -93,6 +209,7 @@ impl Default for Config {
             max_bad_rows: 0,
             strict: false,
             user_agent_suffix: String::new(),
+            lake: Lake::default(),
             sources: Sources::default(),
         }
     }
@@ -120,6 +237,16 @@ pub enum ConfigError {
         /// Line, when TOML reported one.
         line: Option<u64>,
     },
+    /// A value is out of its range.
+    #[error("The setting {key} is {value}; it must be {range}.")]
+    Invalid {
+        /// The key, e.g. `lake.page_kb`.
+        key: String,
+        /// The value given.
+        value: String,
+        /// What it may be.
+        range: String,
+    },
 }
 
 impl Diagnose for ConfigError {
@@ -138,6 +265,10 @@ impl Diagnose for ConfigError {
                 }
                 d
             }
+            Self::Invalid { range, value, .. } => {
+                Diagnostic::error("config.invalid", Category::Config, self.to_string())
+                    .expected_observed(range.clone(), value.clone())
+            }
         }
     }
 }
@@ -155,13 +286,14 @@ impl Config {
                 });
             }
         };
-        Self::parse(&text).map_err(|e| ConfigError::Parse {
+        let config = Self::parse(&text).map_err(|e| ConfigError::Parse {
             path: path.display().to_string(),
             message: e.message().to_owned(),
             line: e.span().map(|span| {
                 u64::try_from(text[..span.start].matches('\n').count()).unwrap_or(0) + 1
             }),
-        })
+        })?;
+        config.lake.invalid().map_or(Ok(config), Err)
     }
 
     /// Parses TOML text.
@@ -216,6 +348,35 @@ mod tests {
         assert!(e.to_string().starts_with("sources.fake:"), "{e}");
         // Anything under [sources] that is not a kit's table is a parse error.
         assert!(Config::parse("[sources]\nfake = 1\n").is_err());
+    }
+
+    #[test]
+    fn the_lake_layout_has_defaults_and_ranges() {
+        let c = Config::parse("").unwrap();
+        assert_eq!(c.lake, Lake::default());
+        assert_eq!(c.lake.file_size_mb, 128);
+        assert!(c.lake.invalid().is_none());
+        let c = Config::parse(
+            "[lake]\nfile_size_mb = 256\ncompression = \"lz4\"\nstatistics = \"chunk\"\n",
+        )
+        .unwrap();
+        assert_eq!(c.lake.file_size_mb, 256);
+        assert_eq!(c.lake.compression, Codec::Lz4);
+        assert_eq!(c.lake.statistics, Statistics::Chunk);
+        assert!(Config::parse("[lake]\npage_kbs = 1\n").is_err());
+        assert!(Config::parse("[lake]\ncompression = \"brotli\"\n").is_err());
+        let names: Vec<&str> = [Codec::Zstd, Codec::Lz4, Codec::Snappy, Codec::None]
+            .iter()
+            .map(|c| c.name())
+            .collect();
+        assert_eq!(names, ["zstd", "lz4", "snappy", "none"]);
+        let dir = tempfile::tempdir().unwrap();
+        let p = dir.path().join("config.toml");
+        std::fs::write(&p, "[lake]\npage_kb = 4\n").unwrap();
+        let d = Config::load(&p).unwrap_err().diagnostic();
+        assert_eq!(d.code, "config.invalid");
+        assert!(d.message.contains("lake.page_kb"), "{}", d.message);
+        assert!(d.message.contains("8 to 65536"), "{}", d.message);
     }
 
     #[test]

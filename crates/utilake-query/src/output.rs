@@ -16,7 +16,7 @@ use arrow_array::types::{Int32Type, UInt32Type};
 use arrow_array::{ArrayRef, DictionaryArray, Int32Array, RecordBatch, StringArray};
 use arrow_schema::{DataType, Field, Schema, SchemaRef, TimeUnit};
 use parquet::arrow::ArrowWriter;
-use parquet::basic::{Compression, ZstdLevel};
+
 use parquet::file::metadata::KeyValue;
 use parquet::file::properties::{EnabledStatistics, WriterProperties, WriterVersion};
 use serde::Serialize;
@@ -158,36 +158,7 @@ impl Format {
     }
 }
 
-/// How a Parquet file is compressed.
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
-pub enum Codec {
-    /// zstd at level 3: what the lake writes, read by every current reader.
-    #[default]
-    Zstd,
-    /// Snappy: larger files, read by older tools too.
-    Snappy,
-    /// No compression.
-    None,
-}
-
-impl Codec {
-    /// The codec's name on the command line.
-    pub const fn name(self) -> &'static str {
-        match self {
-            Self::Zstd => "zstd",
-            Self::Snappy => "snappy",
-            Self::None => "none",
-        }
-    }
-
-    fn parquet(self) -> Compression {
-        match self {
-            Self::Zstd => Compression::ZSTD(ZstdLevel::try_new(3).expect("3 is a zstd level")),
-            Self::Snappy => Compression::SNAPPY,
-            Self::None => Compression::UNCOMPRESSED,
-        }
-    }
-}
+pub use utilake_core::config::Codec;
 
 /// How a read is written out.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -499,7 +470,7 @@ impl<'a> Writer<'a> {
             Format::Parquet => {
                 let props = WriterProperties::builder()
                     .set_writer_version(WriterVersion::PARQUET_2_0)
-                    .set_compression(self.opts.codec.parquet())
+                    .set_compression(utilake_writer::compression(self.opts.codec, 3))
                     .set_max_row_group_row_count(Some(self.opts.row_group_rows))
                     .set_statistics_enabled(EnabledStatistics::Page)
                     .set_created_by(format!("utilake {}", self.version))

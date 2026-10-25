@@ -32,6 +32,6 @@ pub mod writer;
 
 pub use error::StoreError;
 pub use manifest::{Manifest, ManifestHandle, ManifestThread};
-pub use parquet_hive::ParquetHive;
+pub use parquet_hive::{ParquetHive, compression};
 pub use verify::{Problem, VerifyReport, verify_lake};
 pub use writer::{FileMeta, LakeWriter, Partition, PartitionKey, Transform, WriterId, WrittenFile};
