@@ -309,6 +309,9 @@ pub struct Manifest {
     conn: Connection,
     path: String,
     home: Option<PathBuf>,
+    /// The home's run lock, held from the first run started until the
+    /// manifest is closed.
+    lock: Option<std::fs::File>,
 }
 
 /// Now, RFC 3339 UTC to the second: the form of every time the manifest
@@ -336,6 +339,7 @@ impl Manifest {
             conn,
             path: p,
             home,
+            lock: None,
         };
         m.exec_batch("PRAGMA journal_mode = WAL; PRAGMA synchronous = NORMAL; PRAGMA foreign_keys = ON; PRAGMA busy_timeout = 5000;")?;
         m.migrate()?;
@@ -353,6 +357,7 @@ impl Manifest {
             conn,
             path: ":memory:".into(),
             home: None,
+            lock: None,
         };
         m.exec_batch("PRAGMA foreign_keys = ON;")?;
         m.migrate()?;
@@ -440,12 +445,39 @@ impl Manifest {
     /// Starts a run: every ingest a run that ended without finishing left
     /// running is marked aborted, and every file such a run left half
     /// written in the lake is removed.
+    ///
+    /// The home is locked first, so a second run on it waits for none of
+    /// this: it is refused, rather than aborting the first one's ingests
+    /// and removing the files it is writing. The system drops the lock with
+    /// the process, so a run that was killed leaves none behind.
     pub fn start_run(&mut self, argv: &str) -> Result<i64, ManifestError> {
+        self.lock_home()?;
         self.abort_running()?;
         if let Some(h) = &self.home {
             let _ = crate::parquet_hive::sweep_tmp(&h.join("lake"));
         }
         self.begin_run(argv)
+    }
+
+    /// Takes the home's run lock, once per manifest.
+    fn lock_home(&mut self) -> Result<(), ManifestError> {
+        let (Some(home), None) = (&self.home, &self.lock) else {
+            return Ok(());
+        };
+        let path = home.join("lake.lock");
+        let busy = |cause: String| ManifestError::Busy {
+            path: path.display().to_string(),
+            cause,
+        };
+        let file = std::fs::OpenOptions::new()
+            .create(true)
+            .truncate(false)
+            .write(true)
+            .open(&path)
+            .map_err(|e| busy(e.to_string()))?;
+        file.try_lock().map_err(|e| busy(e.to_string()))?;
+        self.lock = Some(file);
+        Ok(())
     }
 
     /// Finishes a run.
@@ -1362,6 +1394,33 @@ mod tests {
             ingests[0].outputs[0].path,
             under(&b, "lake/nem/t/data/year=2024/month=01/x.parquet")
         );
+    }
+
+    /// One run on a home at a time: a second is refused while the first
+    /// holds it, not let in to abort the first one's ingests.
+    #[test]
+    fn a_second_run_on_a_home_is_refused_while_the_first_holds_it() {
+        let dir = tempfile::tempdir().unwrap();
+        let path = dir.path().join("manifest.sqlite");
+        let mut first = Manifest::open(&path).unwrap();
+        first.start_run("one").unwrap();
+        // The same manifest starts its next run under the lock it holds.
+        first.start_run("one again").unwrap();
+        let mut second = Manifest::open(&path).unwrap();
+        let e = second.start_run("two").unwrap_err();
+        assert!(matches!(e, ManifestError::Busy { .. }), "{e}");
+        assert_eq!(utilake_core::Diagnose::diagnostic(&e).code, "manifest.busy");
+        drop(first);
+        second.start_run("two").unwrap();
+        // A home that cannot hold a lock file: refused, saying why.
+        let gone = dir.path().join("gone");
+        std::fs::create_dir_all(&gone).unwrap();
+        let mut third = Manifest::open(&gone.join("manifest.sqlite")).unwrap();
+        std::fs::create_dir_all(gone.join("lake.lock")).unwrap();
+        assert!(matches!(
+            third.start_run("three"),
+            Err(ManifestError::Busy { .. })
+        ));
     }
 
     #[test]

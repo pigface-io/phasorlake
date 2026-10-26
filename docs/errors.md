@@ -140,6 +140,7 @@ Every error and warning utilake reports carries one of these codes. Codes are st
 | code | raised in |
 |---|---|
 | `manifest.already_ingested` | `crates/utilake-pipeline/src/run.rs` |
+| `manifest.busy` | `crates/utilake-writer/src/error.rs` |
 | `manifest.closed` | `crates/utilake-writer/src/error.rs` |
 | `manifest.migration_failed` | `crates/utilake-writer/src/error.rs` |
 | `manifest.not_found` | `crates/utilake-writer/src/error.rs` |

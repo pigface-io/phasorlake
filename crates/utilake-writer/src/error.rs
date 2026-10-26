@@ -180,6 +180,14 @@ pub enum ManifestError {
     /// The actor is gone.
     #[error("The manifest thread has stopped; the run cannot record its results.")]
     Closed,
+    /// Another run holds the home.
+    #[error("another run is using this home (lock {path}: {cause}); wait for it to finish")]
+    Busy {
+        /// The lock file.
+        path: String,
+        /// Why the lock could not be taken.
+        cause: String,
+    },
     /// A row referenced something that does not exist.
     #[error("The manifest has no {kind} with id {id}.")]
     NotFound {
@@ -203,6 +211,9 @@ impl Diagnose for ManifestError {
                     .with_file(path.clone())
             }
             Self::Closed => Diagnostic::error("manifest.closed", Category::MANIFEST, msg),
+            Self::Busy { path, .. } => {
+                Diagnostic::error("manifest.busy", Category::MANIFEST, msg).with_file(path.clone())
+            }
             Self::NotFound { .. } => {
                 Diagnostic::error("manifest.not_found", Category::MANIFEST, msg)
             }
