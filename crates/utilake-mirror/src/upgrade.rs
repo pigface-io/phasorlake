@@ -173,7 +173,7 @@ pub fn upgrade(
     if let Some(max_entries) = records {
         // Old records to remove, by folder, once the new ones are on the
         // disk: one sync for many folders, each folder's unlinks together.
-        let mut done: Vec<Vec<PathBuf>> = Vec::new();
+        let mut done: Vec<Vec<(PathBuf, PathBuf)>> = Vec::new();
         let mut waiting = 0;
         // An archive not there is an error, not an archive with nothing.
         std::fs::read_dir(archive.root()).map_err(MirrorError::io(archive.root()))?;
@@ -187,17 +187,17 @@ pub fn upgrade(
                     if let Some(p) = p {
                         std::fs::write(&v2, p.to_json()).map_err(MirrorError::io(&v2))?;
                     }
-                    here.push(v1);
+                    here.push((v1, v2));
                 }
             }
             waiting += here.len();
             done.push(here);
             if waiting >= RECORDS_PER_SYNC {
-                remove_old(&mut done)?;
+                remove_old(&state, &mut done)?;
                 waiting = 0;
             }
         }
-        remove_old(&mut done)?;
+        remove_old(&state, &mut done)?;
     }
     Ok(summary)
 }
@@ -205,15 +205,18 @@ pub fn upgrade(
 /// Old records written again before one sync hands them to the disk.
 const RECORDS_PER_SYNC: usize = if cfg!(test) { 2 } else { 4096 };
 
-/// Hands the new records to the disk, then removes the old ones beside
-/// them, folder by folder.
-fn remove_old(done: &mut Vec<Vec<PathBuf>>) -> Result<(), MirrorError> {
+/// Hands the new records, and the log of their steps, to the disk, then
+/// removes the old ones beside them, folder by folder.
+fn remove_old(state: &Mirror, done: &mut Vec<Vec<(PathBuf, PathBuf)>>) -> Result<(), MirrorError> {
     if done.iter().all(Vec::is_empty) {
         done.clear();
         return Ok(());
     }
-    rustix::fs::sync();
-    for v1 in done.drain(..).flatten() {
+    let log = state.migrations_dir().join("upgrade.ndjson");
+    let written = done.iter().flatten().map(|(_, v2)| v2.as_path());
+    crate::net::archive::batch_to_disk(written.chain([log.as_path()]))
+        .map_err(|(p, e)| MirrorError::io(&p)(e))?;
+    for (v1, _) in done.drain(..).flatten() {
         std::fs::remove_file(&v1).map_err(MirrorError::io(&v1))?;
     }
     Ok(())

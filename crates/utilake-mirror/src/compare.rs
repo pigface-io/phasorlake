@@ -555,6 +555,7 @@ pub fn note_entries(cmp: &Comparison) -> Result<usize, MirrorError> {
     }
     let now = Stamp::now();
     let mut n = 0;
+    let mut written = Vec::new();
     for (name, path) in &cmp.held {
         let url = format!("{}!{name}", cmp.zip);
         let entry = Address {
@@ -565,13 +566,13 @@ pub fn note_entries(cmp: &Comparison) -> Result<usize, MirrorError> {
         };
         if crate::net::archive::add_address(path, entry, false)? {
             n += 1;
+            written.push(Archive::record_path(path));
         }
     }
     // One sync for the batch: on the volume, a sync per record costs
     // seconds once its folder is large.
-    if n > 0 {
-        rustix::fs::sync();
-    }
+    crate::net::archive::batch_to_disk(written.iter().map(PathBuf::as_path))
+        .map_err(|(p, e)| MirrorError::io(&p)(e))?;
     Ok(n)
 }
 

@@ -130,6 +130,8 @@ pub fn relayout(
     // Files copied to their place whose sources go once the copies are on
     // the disk: one sync for a batch, not one for each file.
     let mut copied: Vec<(PathBuf, PathBuf)> = Vec::new();
+    // What the steps taken wrote, to hand to the disk before any source goes.
+    let mut written: Vec<PathBuf> = Vec::new();
     // Steps waiting to be taken together, and their bytes.
     let mut pending: Vec<Pending> = Vec::new();
     let mut bytes = 0u64;
@@ -230,15 +232,15 @@ pub fn relayout(
                 bytes += sidecar.content.size;
                 pending.push((step, sidecar, record, kept));
                 if pending.len() >= BATCH || bytes >= CHUNK_BYTES {
-                    copied.extend(take(mirror, std::mem::take(&mut pending))?);
+                    copied.extend(take(mirror, std::mem::take(&mut pending), &mut written)?);
                     bytes = 0;
-                    rustix::fs::sync();
+                    to_disk(&mut written)?;
                 }
             }
         }
-        copied.extend(take(mirror, std::mem::take(&mut pending))?);
+        copied.extend(take(mirror, std::mem::take(&mut pending), &mut written)?);
         if !copied.is_empty() {
-            rustix::fs::sync();
+            to_disk(&mut written)?;
             if drained(&here, &copied) {
                 set_aside(mirror, archive, dir)?;
                 copied.clear();
@@ -705,6 +707,14 @@ fn put(to: &Path, bytes: &Bytes, durable: bool) -> Result<(), MirrorError> {
     Ok(())
 }
 
+/// Hands what a batch wrote to the disk, and forgets it.
+fn to_disk(written: &mut Vec<PathBuf>) -> Result<(), MirrorError> {
+    crate::net::archive::batch_to_disk(written.iter().map(PathBuf::as_path))
+        .map_err(|(p, e)| MirrorError::io(&p)(e))?;
+    written.clear();
+    Ok(())
+}
+
 /// A step waiting to be taken: the step, the moving file's record, the
 /// record's path and its bytes as read.
 type Pending = (Step, Provenance, PathBuf, Bytes);
@@ -724,10 +734,18 @@ fn drop_records(path: &Path) -> Result<(), MirrorError> {
 /// target folder reads each from the disk every time. A file moved is
 /// copied to its place, held to its record's sha256; a file the same as
 /// the one there adds its addresses to that one's record. Each source and
-/// record is returned, to go once the batch is on the disk.
-fn take(mirror: &Mirror, steps: Vec<Pending>) -> Result<Vec<(PathBuf, PathBuf)>, MirrorError> {
+/// record is returned, to go once the batch is on the disk; what was
+/// written is added to `written`, to be handed to it.
+fn take(
+    mirror: &Mirror,
+    steps: Vec<Pending>,
+    written: &mut Vec<PathBuf>,
+) -> Result<Vec<(PathBuf, PathBuf)>, MirrorError> {
     for (step, ..) in &steps {
         log(mirror, step, false)?;
+    }
+    if !steps.is_empty() {
+        written.push(mirror.relayout_path());
     }
     let mut read = Vec::with_capacity(steps.len());
     for (step, sidecar, ..) in &steps {
@@ -746,8 +764,12 @@ fn take(mirror: &Mirror, steps: Vec<Pending>) -> Result<Vec<(PathBuf, PathBuf)>,
                 record_to.push(record_suffix(&step.from, &record));
                 put(&step.to, &data, false)?;
                 put(Path::new(&record_to), &kept, false)?;
+                written.extend([step.to.clone(), record_to.into()]);
             }
-            None => same(&step, sidecar)?,
+            None => {
+                same(&step, sidecar)?;
+                written.push(Archive::record_path(&step.to));
+            }
         }
         done.push((step.from, record));
     }
@@ -1142,12 +1164,18 @@ mod tests {
         }
         std::fs::remove_file(format!("{}.json", to.display())).unwrap();
         let none = Vec::new();
+        let mut written = Vec::new();
         let done = take(
             &mirror,
             vec![(step(Action::Same, &to), sc, record.clone(), none)],
+            &mut written,
         )
         .unwrap();
         assert_eq!(done, [(from3.clone(), record.clone())]);
+        // The log and the target's record, to be handed to the disk.
+        assert_eq!(written, [mirror.relayout_path(), Archive::record_path(&to)]);
+        to_disk(&mut written).unwrap();
+        assert!(written.is_empty());
         let done = done.into_iter().next().unwrap();
         std::fs::remove_file(&record).unwrap();
         settle(&mut vec![done]).unwrap();
