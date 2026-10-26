@@ -462,6 +462,19 @@ impl Manifest {
         self.sql(r)
     }
 
+    /// The tables a run began an ingest of, by name: those whose lake
+    /// files it may have written or superseded.
+    pub fn tables_of_run(&self, run_id: i64) -> Result<Vec<String>, ManifestError> {
+        let r = (|| {
+            let mut st = self.conn.prepare(
+                "SELECT DISTINCT table_name FROM ingests WHERE run_id = ?1 ORDER BY table_name",
+            )?;
+            let rows = st.query_map([run_id], |r| r.get(0))?;
+            rows.collect::<rusqlite::Result<Vec<String>>>()
+        })();
+        self.sql(r)
+    }
+
     /// Records (or updates) a fetched file; returns its id.
     pub fn record_file(&mut self, f: &FileRecord) -> Result<i64, ManifestError> {
         let r = self.conn.execute(
@@ -1191,6 +1204,8 @@ mod tests {
         );
         std::fs::write(&out_path, b"x").unwrap();
         assert_eq!(recs[0].status, IngestStatus::Ok);
+        assert_eq!(m.tables_of_run(run).unwrap(), [recs[0].table.clone()]);
+        assert!(m.tables_of_run(run + 1).unwrap().is_empty());
         assert_eq!(recs[0].outputs, outputs);
         assert_eq!(recs[0].bad_rows, 1);
         assert_eq!(m.list_ingests(Some("OTHER"), false, 10).unwrap().len(), 0);

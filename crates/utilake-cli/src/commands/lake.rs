@@ -63,6 +63,7 @@ async fn run_plan(cli: &Cli, ctx: &Context, plan: Plan) -> Result<i32> {
     let report = utilake_pipeline::run(plan, deps, tx, cancel).await;
     let _ = consumer.await;
     drop(thread);
+    refresh_iceberg(ctx, report.run_id).await?;
     if json {
         render::json_line(&serde_json::json!({
             "type": "run",
@@ -261,12 +262,34 @@ pub async fn iceberg(ctx: &Context, table: Option<&str>) -> Result<i32> {
     let outputs = manifest
         .live_outputs(table)
         .await
-        .map_err(|e| anyhow::anyhow!("{}", e.diagnostic().render()))?;
+        .map_err(|e| anyhow::anyhow!("{}", e.diagnostic().render()));
     drop(manifest);
     thread.join();
+    let (rows, code) = build_iceberg(ctx, &outputs?)?;
+    if ctx.json {
+        for row in &rows {
+            render::json_line(&serde_json::json!({
+                "table": row[0], "snapshots": row[1], "files": row[2], "rows": row[3],
+            }));
+        }
+    } else {
+        print!(
+            "{}",
+            render::table(&["table", "snapshots", "files", "rows"], &rows)
+        );
+    }
+    Ok(code)
+}
+
+/// Each table's Iceberg metadata from its live lake files: one row per
+/// table (name, snapshots, files, rows), and 1 when a table has no history.
+fn build_iceberg(
+    ctx: &Context,
+    outputs: &[utilake_writer::manifest::LiveOutput],
+) -> Result<(Vec<Vec<String>>, i32)> {
     let mut by_table: std::collections::BTreeMap<&str, Vec<utilake_writer::manifest::LiveOutput>> =
         std::collections::BTreeMap::new();
-    for o in &outputs {
+    for o in outputs {
         by_table
             .entry(o.table.as_str())
             .or_default()
@@ -308,19 +331,41 @@ pub async fn iceberg(ctx: &Context, table: Option<&str>) -> Result<i32> {
             built.rows.to_string(),
         ]);
     }
-    if ctx.json {
-        for row in &rows {
-            render::json_line(&serde_json::json!({
-                "table": row[0], "snapshots": row[1], "files": row[2], "rows": row[3],
-            }));
+    Ok((rows, code))
+}
+
+/// After a run, the Iceberg metadata of every table it ingested, so a
+/// reader of the lake by field id never sees it lag the files. A table
+/// with no history (derived from a file) has none to build.
+pub async fn refresh_iceberg(ctx: &Context, run_id: Option<i64>) -> Result<()> {
+    let Some(run_id) = run_id else {
+        return Ok(());
+    };
+    let (manifest, thread) = ctx.manifest()?;
+    let mut outputs = Vec::new();
+    let tables = manifest
+        .tables_of_run(run_id)
+        .await
+        .map_err(|e| super::common::fail(&e));
+    for t in tables.as_deref().unwrap_or_default() {
+        let has_history = ctx
+            .registry
+            .table_by_name(t)
+            .is_some_and(|id| ctx.registry.history(id).is_some());
+        if has_history {
+            outputs.extend(
+                manifest
+                    .live_outputs(Some(t))
+                    .await
+                    .map_err(|e| super::common::fail(&e))?,
+            );
         }
-    } else {
-        print!(
-            "{}",
-            render::table(&["table", "snapshots", "files", "rows"], &rows)
-        );
     }
-    Ok(code)
+    drop(manifest);
+    thread.join();
+    tables?;
+    build_iceberg(ctx, &outputs)?;
+    Ok(())
 }
 
 /// `utilake verify --archive`: every archived file hashed again against

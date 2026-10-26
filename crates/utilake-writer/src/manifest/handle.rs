@@ -35,6 +35,7 @@ enum Cmd {
     ListIngests(Option<String>, bool, usize, Reply<Vec<IngestRecord>>),
     ListDiagnostics(DiagFilter, Reply<Vec<(i64, Option<i64>, Diagnostic)>>),
     LatestRun(Reply<Option<RunRecord>>),
+    TablesOfRun(i64, Reply<Vec<String>>),
 }
 
 /// An async handle to the manifest thread. Cloning shares the thread.
@@ -133,6 +134,9 @@ impl ManifestHandle {
                         }
                         Cmd::LatestRun(r) => {
                             let _ = r.send(manifest.latest_run());
+                        }
+                        Cmd::TablesOfRun(run, r) => {
+                            let _ = r.send(manifest.tables_of_run(run));
                         }
                     }
                 }
@@ -261,6 +265,10 @@ impl ManifestHandle {
     /// See [`Manifest::latest_run`].
     pub async fn latest_run(&self) -> Result<Option<RunRecord>, ManifestError> {
         self.call(Cmd::LatestRun).await
+    }
+    /// See [`Manifest::tables_of_run`].
+    pub async fn tables_of_run(&self, run_id: i64) -> Result<Vec<String>, ManifestError> {
+        self.call(|r| Cmd::TablesOfRun(run_id, r)).await
     }
 }
 

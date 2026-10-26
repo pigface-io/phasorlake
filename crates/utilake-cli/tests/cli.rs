@@ -200,13 +200,15 @@ fn ingest_ls_errors_verify_round_trip() {
     let (_, out, _) = cli.code(&["verify", "--table", "DISPATCH_UNIT_SCADA"]);
     assert!(!out.contains("orphan"), "another table's quarantine: {out}");
     std::fs::remove_file(qdir.join("left_over.jsonl")).unwrap();
-    // SCADA's Iceberg table.
-    let built = cli.ok(&["--json", "iceberg", "--table", "DISPATCH_UNIT_SCADA"]);
-    assert!(built.contains("\"snapshots\":\"1\""), "{built}");
+    // SCADA's Iceberg table: the ingest left it current, and a rebuild
+    // gives the same.
     let meta = cli
         .home
         .path()
         .join("lake/nem/dispatch_unit_scada/metadata/version-hint.text");
+    assert!(meta.is_file(), "the ingest builds the table's metadata");
+    let built = cli.ok(&["--json", "iceberg", "--table", "DISPATCH_UNIT_SCADA"]);
+    assert!(built.contains("\"snapshots\":\"1\""), "{built}");
     assert!(meta.is_file());
     // A window the flags cannot read, and a table nobody declared.
     let (code, _, err) = cli.code(&[
@@ -1396,6 +1398,11 @@ fn fetch_reads_an_interval_of_a_table_from_a_whole_month_zip_into_the_lake() {
     ]);
     assert!(text.contains("1 ingested"), "{text}");
     assert!(lake.join("tradingprice").is_dir(), "{text}");
+    assert!(
+        lake.join("tradingprice/metadata/version-hint.text")
+            .is_file(),
+        "fetch leaves the table's Iceberg metadata current"
+    );
     let requests = server.requests.lock().unwrap().clone();
     assert!(
         requests

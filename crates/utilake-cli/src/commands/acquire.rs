@@ -40,6 +40,11 @@ pub async fn run(
     ));
     let report = utilake_pipeline::run_get(req, deps, options, tx, cancel).await;
     let _ = consumer.await;
+    if let Ok(r) = &report {
+        for run in &r.runs {
+            super::lake::refresh_iceberg(ctx, run.run_id).await?;
+        }
+    }
     let report = match report {
         Ok(r) => r,
         Err(d) => {
