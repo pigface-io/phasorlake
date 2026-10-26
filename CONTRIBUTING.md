@@ -15,7 +15,6 @@ crates/utilake-acquire       L1  the Source port, HTTP transport with pacing and
 crates/utilake-kit           L1  the ports a kit implements (Decoder, BlockSink, Catalog, SourceKit), Transform, the zip walker, quarantine
 crates/utilake-writer        L1  Parquet writer, partitioner, SQLite manifest actor, verify
 crates/utilake-pipeline      L2  list → fetch → decode → write → commit as tokio streams, over the kit ports only
-crates/utilake-query         L2  one frame of one table over a window: scan, resolve by the roles, write as parts; the same read as SQL
 crates/utilake-cli           L3  the command: flags, rendering, exit codes; kits.rs lists the kits a binary reads with
 
 The MMS format (AEMO's C/I/D rows and SQL*Loader control files):
@@ -51,7 +50,6 @@ worker; the async and sync worlds meet once per file.
 | pulled schemas | `schemas/nem/pulled/` against its manifest and the rev in `Cargo.lock` | `just schemas-check`, pre-commit |
 | benchmarks | criterion plus `utilake-bench` | `just bench-fast` pre-push, `just bench` in CI, against `bench/budgets.json` |
 | network | `crates/utilake-nem/tests/net.rs` | `just net-test`, weekly in CI |
-| oracle | `crates/utilake-query/tests/oracle.rs`, the kernel against DuckDB running the same read as standard SQL | `just test` (needs the DuckDB CLI: `just duckdb`), pre-commit |
 
 ## Floors and budgets
 

@@ -6,14 +6,13 @@ use std::collections::BTreeMap;
 
 use anyhow::Result;
 use utilake_mms_registry::TableId;
-use utilake_query::rfc3339;
 use utilake_writer::manifest::LiveOutput;
 
 use crate::cli::ListCmd;
 use crate::context::Context;
 use crate::render;
 
-use super::common::{fail, table_id};
+use super::common::{fail, rfc3339, table_id};
 
 /// What the lake holds of one table, from its live outputs.
 #[derive(Default)]

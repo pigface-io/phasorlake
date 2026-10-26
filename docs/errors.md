@@ -155,31 +155,6 @@ Every error and warning utilake reports carries one of these codes. Codes are st
 | `verify.size_mismatch` | `crates/utilake-writer/src/verify.rs` |
 | `verify.sources_mismatch` | `crates/utilake-writer/src/verify.rs` |
 
-## query
-
-| code | raised in |
-|---|---|
-| `query.at_on_interval_table` | `crates/utilake-query/src/error.rs` |
-| `query.bad_filter_value` | `crates/utilake-query/src/error.rs` |
-| `query.bad_time` | `crates/utilake-query/src/error.rs` |
-| `query.filter_after_resolution` | `crates/utilake-query/src/bind.rs` |
-| `query.lake_format` | `crates/utilake-query/src/error.rs` |
-| `query.order_nan` | `crates/utilake-query/src/resolve.rs` |
-| `query.plan_failed` | `crates/utilake-query/src/error.rs` |
-| `query.raw_only` | `crates/utilake-query/src/error.rs` |
-| `query.read_failed` | `crates/utilake-query/src/error.rs` |
-| `query.role_missing` | `crates/utilake-query/src/error.rs` |
-| `query.role_type` | `crates/utilake-query/src/error.rs` |
-| `query.roles_invalid` | `crates/utilake-query/src/error.rs` |
-| `query.source_unknown` | `crates/utilake-query/src/error.rs` |
-| `query.stamp_unknown` | `crates/utilake-query/src/scan.rs` |
-| `query.unknown_column` | `crates/utilake-query/src/error.rs` |
-| `query.unknown_table` | `crates/utilake-query/src/error.rs` |
-| `query.window_empty` | `crates/utilake-query/src/error.rs` |
-| `query.window_ignored` | `crates/utilake-query/src/bind.rs` |
-| `query.window_uncovered` | `crates/utilake-query/src/error.rs` |
-| `query.write_failed` | `crates/utilake-query/src/error.rs` |
-
 ## internal
 
 | code | raised in |
@@ -207,3 +182,23 @@ No longer raised; kept so the code is never reused.
 | `schema.rule_conflict` | a hand-written rule routed a column the file also carried; rules are gone, fixes go in an increment's columns |
 | `schema.census_unresolved` | a census shape neither declared nor read by a rule; now `schema.census_deviates` |
 | `schema.breaking_change` | a table file changed in a way the lake does not survive; tables come from the histories utilake-schemas publishes, which hold their own changes |
+| `query.at_on_interval_table` | raised by utilake's read of the lake, which is gone: utilake writes the lake and reading it is the reader's own SQL |
+| `query.bad_filter_value` | raised by utilake's read of the lake, which is gone: utilake writes the lake and reading it is the reader's own SQL |
+| `query.bad_time` | raised by utilake's read of the lake, which is gone: utilake writes the lake and reading it is the reader's own SQL |
+| `query.filter_after_resolution` | raised by utilake's read of the lake, which is gone: utilake writes the lake and reading it is the reader's own SQL |
+| `query.lake_format` | raised by utilake's read of the lake, which is gone: utilake writes the lake and reading it is the reader's own SQL |
+| `query.order_nan` | raised by utilake's read of the lake, which is gone: utilake writes the lake and reading it is the reader's own SQL |
+| `query.plan_failed` | raised by utilake's read of the lake, which is gone: utilake writes the lake and reading it is the reader's own SQL |
+| `query.raw_only` | raised by utilake's read of the lake, which is gone: utilake writes the lake and reading it is the reader's own SQL |
+| `query.read_failed` | raised by utilake's read of the lake, which is gone: utilake writes the lake and reading it is the reader's own SQL |
+| `query.role_missing` | raised by utilake's read of the lake, which is gone: utilake writes the lake and reading it is the reader's own SQL |
+| `query.role_type` | raised by utilake's read of the lake, which is gone: utilake writes the lake and reading it is the reader's own SQL |
+| `query.roles_invalid` | raised by utilake's read of the lake, which is gone: utilake writes the lake and reading it is the reader's own SQL |
+| `query.source_unknown` | raised by utilake's read of the lake, which is gone: utilake writes the lake and reading it is the reader's own SQL |
+| `query.stamp_unknown` | raised by utilake's read of the lake, which is gone: utilake writes the lake and reading it is the reader's own SQL |
+| `query.unknown_column` | raised by utilake's read of the lake, which is gone: utilake writes the lake and reading it is the reader's own SQL |
+| `query.unknown_table` | raised by utilake's read of the lake, which is gone: utilake writes the lake and reading it is the reader's own SQL |
+| `query.window_empty` | raised by utilake's read of the lake, which is gone: utilake writes the lake and reading it is the reader's own SQL |
+| `query.window_ignored` | raised by utilake's read of the lake, which is gone: utilake writes the lake and reading it is the reader's own SQL |
+| `query.window_uncovered` | raised by utilake's read of the lake, which is gone: utilake writes the lake and reading it is the reader's own SQL |
+| `query.write_failed` | raised by utilake's read of the lake, which is gone: utilake writes the lake and reading it is the reader's own SQL |

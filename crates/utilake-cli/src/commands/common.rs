@@ -2,11 +2,11 @@
 //! over what window, in the market's clock.
 
 use anyhow::{Context as _, Result, bail};
+use utilake_core::timetext;
 use utilake_core::{Diagnose, TimeRange, YearMonth};
 use utilake_mms_registry::file_model::MarketDef;
 use utilake_mms_registry::{Market, Registry, TableId};
 use utilake_pipeline::days_of;
-use utilake_query::{MarketOffset, QueryError, Valid, ValidTime, ValidWindow, parse_local};
 
 use crate::cli::{TablesArg, WindowArgs};
 use crate::context::Context;
@@ -44,7 +44,9 @@ pub fn select(ctx: &Context, args: &TablesArg) -> Result<Selection> {
     let r = &ctx.registry;
     let mut ids = Vec::new();
     for t in &args.tables {
-        let id = table_id(r, t).ok_or_else(|| fail(&QueryError::UnknownTable(t.clone())))?;
+        let Some(id) = table_id(r, t) else {
+            bail!("No table is named {t}; `utilake list` names them.");
+        };
         if !args
             .exclude
             .iter()
@@ -96,17 +98,26 @@ pub fn parse_when(text: &str, offset_secs: i32, end: bool) -> Result<i64> {
         let d = if end { day.next() } else { day };
         return Ok(d.start_micros(offset_secs));
     }
-    parse_local::<Valid>(text, MarketOffset(offset_secs))
-        .map(utilake_query::Micros::get)
-        .map_err(|_| bad())
+    let padded = match text.len() {
+        10 => format!("{text}T00:00:00"),
+        16 => format!("{text}:00"),
+        _ => text.to_owned(),
+    };
+    timetext::parse_rfc3339(text)
+        .or_else(|| timetext::parse_naive(&padded, offset_secs))
+        .map(|s| s.secs_utc * 1_000_000 + i64::from(s.nanos / 1_000))
+        .ok_or_else(bad)
+}
+
+/// An instant as RFC 3339 in an offset, to the second.
+pub fn rfc3339(us: i64, offset_secs: i32) -> String {
+    timetext::format_rfc3339(us.div_euclid(1_000_000), offset_secs)
 }
 
 /// A window, in the market's clock, with the days and instants the fetch
 /// needs to cover it.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Window {
-    /// What the read keeps.
-    pub valid: ValidWindow,
     /// `[from, to)` as microseconds since the epoch, for the sources.
     pub instants: (i64, i64),
 }
@@ -127,16 +138,11 @@ pub fn window(args: &WindowArgs, def: &MarketDef) -> Result<Option<Window>> {
             if b <= a {
                 bail!("--to {to} is not after --from {from}.");
             }
-            Window {
-                valid: ValidWindow::range(ValidTime::new(a), ValidTime::new(b))
-                    .map_err(|e| fail(&e))?,
-                instants: (a, b),
-            }
+            Window { instants: (a, b) }
         }
         (_, _, Some(at), _) => {
             let t = parse_when(at, off, false)?;
             Window {
-                valid: ValidWindow::At(ValidTime::new(t)),
                 instants: (t, t + 1),
             }
         }
@@ -147,8 +153,6 @@ pub fn window(args: &WindowArgs, def: &MarketDef) -> Result<Option<Window>> {
             let start = d.start_micros(off) + i64::from(def.trading_day_start_secs) * 1_000_000;
             let end = start + 86_400_000_000;
             Window {
-                valid: ValidWindow::range(ValidTime::new(start), ValidTime::new(end))
-                    .map_err(|e| fail(&e))?,
                 instants: (start, end),
             }
         }
@@ -169,8 +173,8 @@ pub fn request(verb: &str, sel: &Selection, w: Option<&Window>, def: &MarketDef)
             "{verb} {} {} {}..{}",
             sel.kit,
             tables,
-            utilake_query::rfc3339(w.instants.0, def.utc_offset_secs),
-            utilake_query::rfc3339(w.instants.1, def.utc_offset_secs)
+            rfc3339(w.instants.0, def.utc_offset_secs),
+            rfc3339(w.instants.1, def.utc_offset_secs)
         ),
         None => format!("{verb} {} {tables}", sel.kit),
     }
@@ -248,7 +252,6 @@ mod tests {
         .unwrap();
         let midnight = 1_704_031_200_000_000;
         assert_eq!(w.instants, (midnight, midnight + 86_400_000_000));
-        assert!(matches!(w.valid, ValidWindow::Range { .. }));
         assert_eq!(w.days(&def).to_string(), "2024-01-01");
         let w = window(&args(None, None, Some("2024-01-01T02:00"), None), &def)
             .unwrap()
@@ -257,7 +260,6 @@ mod tests {
             w.instants,
             (midnight + 7_200_000_000, midnight + 7_200_000_001)
         );
-        assert!(matches!(w.valid, ValidWindow::At(_)));
         // A trading day starts at 04:00.
         let w = window(&args(None, None, None, Some("2024-01-01")), &def)
             .unwrap()

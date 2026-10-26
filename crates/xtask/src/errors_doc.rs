@@ -15,7 +15,7 @@ const CATEGORIES: [&str; 14] = [
 
 /// Codes that are no longer raised. A code is a promise to whoever matches
 /// on it, so a retired one stays listed and may never be given a new meaning.
-const RETIRED: [(&str, &str); 13] = [
+const RETIRED: [(&str, &str); 33] = [
     (
         "zip.no_csv",
         "an archive with no .CSV entry; the walk takes what a decoder accepts, so it is `zip.no_entry`",
@@ -67,6 +67,86 @@ const RETIRED: [(&str, &str); 13] = [
     (
         "schema.breaking_change",
         "a table file changed in a way the lake does not survive; tables come from the histories utilake-schemas publishes, which hold their own changes",
+    ),
+    (
+        "query.at_on_interval_table",
+        "raised by utilake's read of the lake, which is gone: utilake writes the lake and reading it is the reader's own SQL",
+    ),
+    (
+        "query.bad_filter_value",
+        "raised by utilake's read of the lake, which is gone: utilake writes the lake and reading it is the reader's own SQL",
+    ),
+    (
+        "query.bad_time",
+        "raised by utilake's read of the lake, which is gone: utilake writes the lake and reading it is the reader's own SQL",
+    ),
+    (
+        "query.filter_after_resolution",
+        "raised by utilake's read of the lake, which is gone: utilake writes the lake and reading it is the reader's own SQL",
+    ),
+    (
+        "query.lake_format",
+        "raised by utilake's read of the lake, which is gone: utilake writes the lake and reading it is the reader's own SQL",
+    ),
+    (
+        "query.order_nan",
+        "raised by utilake's read of the lake, which is gone: utilake writes the lake and reading it is the reader's own SQL",
+    ),
+    (
+        "query.plan_failed",
+        "raised by utilake's read of the lake, which is gone: utilake writes the lake and reading it is the reader's own SQL",
+    ),
+    (
+        "query.raw_only",
+        "raised by utilake's read of the lake, which is gone: utilake writes the lake and reading it is the reader's own SQL",
+    ),
+    (
+        "query.read_failed",
+        "raised by utilake's read of the lake, which is gone: utilake writes the lake and reading it is the reader's own SQL",
+    ),
+    (
+        "query.role_missing",
+        "raised by utilake's read of the lake, which is gone: utilake writes the lake and reading it is the reader's own SQL",
+    ),
+    (
+        "query.role_type",
+        "raised by utilake's read of the lake, which is gone: utilake writes the lake and reading it is the reader's own SQL",
+    ),
+    (
+        "query.roles_invalid",
+        "raised by utilake's read of the lake, which is gone: utilake writes the lake and reading it is the reader's own SQL",
+    ),
+    (
+        "query.source_unknown",
+        "raised by utilake's read of the lake, which is gone: utilake writes the lake and reading it is the reader's own SQL",
+    ),
+    (
+        "query.stamp_unknown",
+        "raised by utilake's read of the lake, which is gone: utilake writes the lake and reading it is the reader's own SQL",
+    ),
+    (
+        "query.unknown_column",
+        "raised by utilake's read of the lake, which is gone: utilake writes the lake and reading it is the reader's own SQL",
+    ),
+    (
+        "query.unknown_table",
+        "raised by utilake's read of the lake, which is gone: utilake writes the lake and reading it is the reader's own SQL",
+    ),
+    (
+        "query.window_empty",
+        "raised by utilake's read of the lake, which is gone: utilake writes the lake and reading it is the reader's own SQL",
+    ),
+    (
+        "query.window_ignored",
+        "raised by utilake's read of the lake, which is gone: utilake writes the lake and reading it is the reader's own SQL",
+    ),
+    (
+        "query.window_uncovered",
+        "raised by utilake's read of the lake, which is gone: utilake writes the lake and reading it is the reader's own SQL",
+    ),
+    (
+        "query.write_failed",
+        "raised by utilake's read of the lake, which is gone: utilake writes the lake and reading it is the reader's own SQL",
     ),
 ];
 

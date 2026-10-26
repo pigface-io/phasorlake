@@ -220,7 +220,10 @@ fn ingest_ls_errors_verify_round_trip() {
     ]);
     assert!(code != 0 && err.contains("not a month, a day"), "{err}");
     let (code, _, err) = cli.code(&["--offline", "fetch", "NOBODY", "--at", "2024-01-01"]);
-    assert!(code != 0 && err.contains("unknown_table"), "{err}");
+    assert!(
+        code != 0 && err.contains("No table is named NOBODY"),
+        "{err}"
+    );
     // What there is.
     let tables = cli.ok(&["list"]);
     assert!(

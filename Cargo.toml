@@ -21,7 +21,6 @@ members = [
     "crates/utilake-gas",
     "crates/utilake-writer",
     "crates/utilake-pipeline",
-    "crates/utilake-query",
     "crates/utilake-cli",
     "crates/utilake-mdff",
     "crates/utilake-mirror",
@@ -41,7 +40,6 @@ default-members = [
     "crates/utilake-gas",
     "crates/utilake-writer",
     "crates/utilake-pipeline",
-    "crates/utilake-query",
     "crates/utilake-cli",
 ]
 
@@ -98,7 +96,6 @@ utilake-wem = { path = "crates/utilake-wem" }
 utilake-gas = { path = "crates/utilake-gas" }
 utilake-writer = { path = "crates/utilake-writer" }
 utilake-pipeline = { path = "crates/utilake-pipeline" }
-utilake-query = { path = "crates/utilake-query" }
 utilake-mirror = { path = "crates/utilake-mirror" }
 
 # hot path
