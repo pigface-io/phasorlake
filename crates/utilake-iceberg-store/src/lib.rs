@@ -164,6 +164,18 @@ impl Store {
         Ok(id)
     }
 
+    /// Sets the table's properties to `properties`, recorded at `at_ms`;
+    /// the same properties again write nothing.
+    pub fn set_properties(&self, properties: BTreeMap<String, String>, at_ms: i64) -> Result<()> {
+        let (version, metadata) = self.current()?;
+        if metadata.properties == properties {
+            return Ok(());
+        }
+        let mut next = metadata.next(&url(&self.version_file(version)), at_ms);
+        next.properties = properties;
+        self.publish(&next, version + 1)
+    }
+
     /// Adds the files as one snapshot under the current schema.
     pub fn append(&self, append: Append) -> Result<TableMetadata> {
         let (version, metadata) = self.current()?;

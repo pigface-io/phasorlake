@@ -312,10 +312,13 @@ fn build_iceberg(
             code = 1;
             continue;
         };
+        let published = r.table(id).published();
         let t = utilake_writer::iceberg::TableSchemas {
             table: name.to_owned(),
             uuid: utilake_writer::iceberg::table_uuid(name),
             schemas: h.schemas.clone(),
+            properties: published.properties,
+            docs: published.docs,
         };
         let dir = ctx
             .home

@@ -192,16 +192,9 @@ async fn tables(ctx: &Context, args: &ListCmd) -> Result<i32> {
 fn columns(ctx: &Context, id: TableId) -> Result<i32> {
     let r = &ctx.registry;
     let t = r.table(id);
-    let docs: BTreeMap<u32, String> = r
-        .history(id)
-        .and_then(|h| h.schema(h.current_schema_id))
-        .map(|s| {
-            s.fields
-                .iter()
-                .filter_map(|f| f.doc.clone().map(|d| (f.id, d)))
-                .collect()
-        })
-        .unwrap_or_default();
+    // The data model's words for each column, as utilake-schemas
+    // publishes them.
+    let docs: BTreeMap<u32, String> = t.published().docs;
     let role = |name: &str| -> &'static str {
         let tp = &t.temporal;
         if tp.entity.iter().any(|e| e == name) {

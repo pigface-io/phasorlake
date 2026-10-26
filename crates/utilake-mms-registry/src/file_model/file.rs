@@ -331,6 +331,7 @@ pub fn parse_table(path: &Path, text: &str, market: Market) -> Result<Table, Sch
         report_pairs,
         with_columns: f.with_columns,
         older_names: Vec::new(),
+        published: String::new(),
         load_mode: f.load_mode,
         temporal,
         primary_key,

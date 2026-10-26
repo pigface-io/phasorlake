@@ -171,6 +171,11 @@ pub fn parse_doc(
         report_pairs,
         with_columns: decl.with_columns.clone(),
         older_names,
+        published: serde_json::to_string(&crate::file_model::model::Published {
+            properties: m.properties.clone(),
+            docs: p.docs.clone(),
+        })
+        .expect("maps of strings serialise"),
         load_mode,
         temporal,
         primary_key: decl.primary_key.clone(),
@@ -252,9 +257,21 @@ pub(crate) mod tests {
         parse_doc(Path::new(DOC_FILE), &v.to_string(), Market::Nem)
     }
 
+    /// A table read from a document, its published properties checked and
+    /// then set aside: the rest is the fixture's.
+    pub(crate) fn bare(t: Option<Table>) -> Option<Table> {
+        t.map(|mut t| {
+            let p = t.published();
+            assert_eq!(p.properties["utilake.declared"], "true");
+            assert!(p.properties.contains_key("utilake.temporal.entity"));
+            t.published.clear();
+            t
+        })
+    }
+
     #[test]
     fn a_document_reads_as_its_table() {
-        assert_eq!(parse(&scada_doc()).unwrap(), Some(unit_scada()));
+        assert_eq!(bare(parse(&scada_doc()).unwrap()), Some(unit_scada()));
         // Not declared: no table.
         let mut d = scada_doc();
         d["properties"]["utilake.declared"] = json!("false");
@@ -327,7 +344,7 @@ pub(crate) mod tests {
         ));
         write_doc(dir.path(), &scada_doc());
         assert_eq!(
-            read_doc(dir.path(), Market::Nem).unwrap(),
+            bare(read_doc(dir.path(), Market::Nem).unwrap()),
             Some(unit_scada())
         );
     }

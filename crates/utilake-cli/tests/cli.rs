@@ -207,6 +207,14 @@ fn ingest_ls_errors_verify_round_trip() {
         .path()
         .join("lake/nem/dispatch_unit_scada/metadata/version-hint.text");
     assert!(meta.is_file(), "the ingest builds the table's metadata");
+    // The lake's table carries the declaration utilake-schemas publishes.
+    let hint = std::fs::read_to_string(&meta).unwrap();
+    let doc: serde_json::Value = serde_json::from_slice(
+        &std::fs::read(meta.with_file_name(format!("v{}.metadata.json", hint.trim()))).unwrap(),
+    )
+    .unwrap();
+    assert_eq!(doc["properties"]["utilake.temporal.entity"], r#"["DUID"]"#);
+    assert_eq!(doc["properties"]["utilake.lake.format"], "3");
     let built = cli.ok(&["--json", "iceberg", "--table", "DISPATCH_UNIT_SCADA"]);
     assert!(built.contains("\"snapshots\":\"1\""), "{built}");
     assert!(meta.is_file());
@@ -248,6 +256,10 @@ fn ingest_ls_errors_verify_round_trip() {
     assert!(
         cols.contains("SCADAVALUE") && cols.contains("entity") && cols.contains("valid"),
         "{cols}"
+    );
+    assert!(
+        cols.contains("Dispatchable Unit Identifier"),
+        "the data model's words: {cols}"
     );
     let cov = cli.ok(&["list", "DISPATCH_UNIT_SCADA", "--coverage"]);
     assert!(

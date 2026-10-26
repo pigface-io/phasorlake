@@ -43,6 +43,11 @@ pub struct TableSchemas {
     pub uuid: String,
     /// Its schemas, by id from 0.
     pub schemas: Vec<Schema>,
+    /// Its properties as utilake-schemas publishes them: its declaration,
+    /// roles, key, breaks and the data model's words.
+    pub properties: BTreeMap<String, String>,
+    /// What the data model says of each column, by field id.
+    pub docs: BTreeMap<u32, String>,
 }
 
 /// What building one table wrote.
@@ -180,9 +185,19 @@ pub fn build_table(dir: &Path, t: &TableSchemas, outputs: &[LiveOutput]) -> Resu
         built.rows += run.iter().map(|o| o.rows).sum::<u64>();
         i = j;
     }
-    // The table reads as its files hold it: every field of every schema.
-    let all = union(&t.schemas);
+    // The table reads as its files hold it: every field of every schema,
+    // each with the data model's words, and the table's declaration.
+    let mut all = union(&t.schemas);
+    for f in &mut all.fields {
+        f.doc = t.docs.get(&f.id).cloned();
+    }
     store.set_schema(&utilake_iceberg::provenance::lake_schema(&all), at + 1)?;
+    let mut properties = t.properties.clone();
+    properties.insert(
+        "utilake.lake.format".to_owned(),
+        crate::provenance::LAKE_FORMAT.to_owned(),
+    );
+    store.set_properties(properties, at + 2)?;
     Ok(built)
 }
 
@@ -379,6 +394,11 @@ mod tests {
             table: "DISPATCHPRICE".into(),
             uuid: table_uuid("DISPATCHPRICE"),
             schemas: schemas(),
+            properties: BTreeMap::from([(
+                "utilake.temporal.entity".to_owned(),
+                r#"["REGIONID"]"#.to_owned(),
+            )]),
+            docs: BTreeMap::from([(2, "The regional price".to_owned())]),
         };
         let built = build_table(&dir, &t, &outs).unwrap();
         assert_eq!(
@@ -397,6 +417,18 @@ mod tests {
             "the history's schemas, with its ids, and their union"
         );
         assert_eq!(meta.current_schema_id, 2, "the union is current");
+        // The table carries its declaration, and its columns their words.
+        assert_eq!(
+            meta.properties["utilake.temporal.entity"],
+            r#"["REGIONID"]"#
+        );
+        assert_eq!(meta.properties["utilake.lake.format"], "3");
+        let rrp = meta.schemas[2]
+            .fields
+            .iter()
+            .find(|f| f.name == "RRP")
+            .unwrap();
+        assert_eq!(rrp.doc.as_deref(), Some("The regional price"));
         let last = meta.schemas[2]
             .fields
             .iter()

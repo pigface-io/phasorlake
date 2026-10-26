@@ -221,6 +221,16 @@ pub struct Column {
     pub note: Option<String>,
 }
 
+/// What utilake-schemas publishes of a table beyond its columns.
+#[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
+pub struct Published {
+    /// Its properties (declaration, roles, key, breaks, the data model's
+    /// words), which the lake's own Iceberg table carries too.
+    pub properties: std::collections::BTreeMap<String, String>,
+    /// What the data model says of each column, by field id.
+    pub docs: std::collections::BTreeMap<u32, String>,
+}
+
 /// One schema of the table's history: the columns of the files written
 /// under it, in file order.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -280,6 +290,12 @@ pub struct Table {
     /// still writes the older one.
     #[serde(default)]
     pub older_names: Vec<(u16, ColumnId, String)>,
+    /// What utilake-schemas publishes of the table beyond its columns, as
+    /// JSON ([`Published`]); empty for a table written by hand or derived
+    /// from a file. Kept as text so loading the registry does not build
+    /// its maps: [`Table::published`] reads it when it is wanted.
+    #[serde(default)]
+    pub published: String,
     /// Append or snapshot.
     pub load_mode: LoadMode,
     /// What a fact is about, when it applies, and which revision is newest.
@@ -439,6 +455,15 @@ impl Table {
         }
     }
 
+    /// What utilake-schemas publishes of the table beyond its columns;
+    /// empty for a table it does not publish.
+    pub fn published(&self) -> Published {
+        if self.published.is_empty() {
+            return Published::default();
+        }
+        serde_json::from_str(&self.published).expect("the registry wrote it")
+    }
+
     /// Lower-case name for lake directories.
     pub fn dir_name(&self) -> String {
         self.name.to_ascii_lowercase()
@@ -490,6 +515,7 @@ pub(crate) mod tests {
             report_pairs: vec![("DISPATCH".into(), "UNIT_SCADA".into())],
             with_columns: Vec::new(),
             older_names: Vec::new(),
+            published: String::new(),
             load_mode: LoadMode::Append,
             temporal: Temporal {
                 origin: crate::file_model::temporal::RoleOrigin::Derived,

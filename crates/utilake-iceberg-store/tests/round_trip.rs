@@ -375,3 +375,17 @@ fn refusals_name_their_cause() {
     assert!(err.to_string().contains("not valid"), "{err}");
     assert_eq!(err.code(), "store.iceberg_metadata");
 }
+
+#[test]
+fn a_tables_properties_are_set_once() {
+    let tmp = tempfile::tempdir().unwrap();
+    let store = Store::at(tmp.path());
+    store.create("u", &a(), 1_000).unwrap();
+    let props = std::collections::BTreeMap::from([("utilake.key".to_owned(), "[]".to_owned())]);
+    store.set_properties(props.clone(), 1_001).unwrap();
+    let (v, m) = store.current().unwrap();
+    assert_eq!((v, &m.properties), (2, &props));
+    // The same again writes nothing.
+    store.set_properties(props, 1_002).unwrap();
+    assert_eq!(store.current().unwrap().0, 2);
+}

@@ -195,7 +195,10 @@ mod tests {
         let set = SchemaSet::read_dir(dir.path()).unwrap();
         let names: Vec<&str> = set.tables.iter().map(|t| t.name.as_str()).collect();
         assert_eq!(names, ["DISPATCH_UNIT_SCADA", "DOC", "OWN"]);
-        assert_eq!(set.tables[0], unit_scada());
+        assert_eq!(
+            crate::file_model::doc::tests::bare(Some(set.tables[0].clone())),
+            Some(unit_scada())
+        );
         assert_eq!(set.markets, vec![nem()]);
         assert!(set.validate().is_empty(), "{:?}", set.validate());
         let back = SchemaSet::decode(&set.encode()).unwrap();

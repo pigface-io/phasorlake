@@ -631,6 +631,7 @@ fn derived_table(market: Market, irow: &IRow<'_>) -> Table {
         report_pairs: vec![(irow.report_type.to_owned(), irow.report_subtype.to_owned())],
         with_columns: Vec::new(),
         older_names: Vec::new(),
+        published: String::new(),
         load_mode: LoadMode::Append,
         temporal: crate::file_model::Temporal {
             origin: crate::file_model::RoleOrigin::Derived,

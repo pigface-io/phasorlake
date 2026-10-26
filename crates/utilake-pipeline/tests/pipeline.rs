@@ -122,6 +122,7 @@ fn text_table(
         report_pairs: vec![(pair.0.into(), pair.1.into())],
         with_columns: Vec::new(),
         older_names: Vec::new(),
+        published: String::new(),
         load_mode: LoadMode::Append,
         temporal: Temporal {
             origin: RoleOrigin::Hand,
