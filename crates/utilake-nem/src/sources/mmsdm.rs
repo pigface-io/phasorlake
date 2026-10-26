@@ -219,6 +219,35 @@ impl MmsdmArchive {
             .into_iter()
             .map(|e| e.path)
             .collect();
+        // Entries fetched alone out of the month's zip (a month published as
+        // one zip, before 2015) are kept beside it, under folders named for
+        // the zip and the entry: `MMSDM_2012_01.zip!01/…`.
+        let whole_path = archive.path_for(whole_url.as_str());
+        if let (Some(year_dir), Some(zip_name)) = (
+            whole_path.parent(),
+            whole_path.file_name().and_then(|n| n.to_str()),
+        ) {
+            let prefix = format!("{zip_name}!");
+            let mut picked: Vec<PathBuf> = std::fs::read_dir(year_dir)
+                .into_iter()
+                .flatten()
+                .filter_map(Result::ok)
+                .filter(|e| {
+                    e.file_name()
+                        .to_str()
+                        .is_some_and(|n| n.starts_with(&prefix))
+                })
+                .map(|e| e.path())
+                .collect();
+            picked.sort();
+            for d in picked {
+                out.extend(
+                    utilake_acquire::archive::entries_under(archive, Some(&d))
+                        .into_iter()
+                        .map(|e| e.path),
+                );
+            }
+        }
         if let Some(whole) = archive.lookup(whole_url.as_str())? {
             out.push(whole.path);
         }
@@ -1152,7 +1181,35 @@ mod tests {
         assert_eq!(std::fs::read(&local.path).unwrap(), b"PK month zip bytes");
         // The archive finds it as the month's file.
         let store = Archive::new(dir.path());
-        assert_eq!(a.archived_files(&store, ym).unwrap(), [local.path]);
+        assert_eq!(
+            a.archived_files(&store, ym).unwrap(),
+            std::slice::from_ref(&local.path)
+        );
+        // An entry fetched alone out of the month's zip is found too.
+        let entry_url = format!(
+            "{zip_url}!01/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_REGION_201201010000.zip"
+        );
+        let entry = store.path_for(&entry_url);
+        std::fs::create_dir_all(entry.parent().unwrap()).unwrap();
+        std::fs::write(&entry, b"PK entry").unwrap();
+        let record = utilake_acquire::Provenance::new(
+            utilake_acquire::Content::of(b"PK entry"),
+            "test",
+            utilake_acquire::Address {
+                url: entry_url.clone(),
+                seen: utilake_core::timetext::Stamp::new(1_792_454_400, 0),
+                gone: None,
+                via: utilake_acquire::Via::Fetched {
+                    listed: None,
+                    served: None,
+                },
+            },
+        );
+        Archive::write(&entry, &record).unwrap();
+        assert_eq!(
+            a.archived_files(&store, ym).unwrap(),
+            [local.path.clone(), entry.clone()]
+        );
         assert!(
             a.archived_files(&store, YearMonth::new(2012, 2).unwrap())
                 .unwrap()
