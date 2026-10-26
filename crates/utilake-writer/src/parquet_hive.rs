@@ -20,7 +20,7 @@ use std::path::{Path, PathBuf};
 use arrow_array::RecordBatch;
 use arrow_schema::SchemaRef;
 use parquet::arrow::ArrowWriter;
-use parquet::basic::{Compression, ZstdLevel};
+use parquet::basic::{Compression, Encoding, ZstdLevel};
 use parquet::file::metadata::KeyValue;
 use parquet::file::properties::{EnabledStatistics, WriterProperties, WriterVersion};
 
@@ -140,6 +140,10 @@ impl ParquetHive {
         let l = &self.layout;
         let mut b = WriterProperties::builder()
             .set_writer_version(WriterVersion::PARQUET_2_0)
+            // PLAIN where a dictionary gives up: the version 2 default,
+            // DELTA, reserves 1 MiB per integer column for every row group
+            // a writer has open, and zstd after PLAIN does as well here.
+            .set_encoding(Encoding::PLAIN)
             .set_compression(compression(l.compression, l.zstd_level))
             .set_max_row_group_row_count(Some(l.row_group_rows))
             .set_data_page_size_limit(l.page_kb as usize * 1024)
