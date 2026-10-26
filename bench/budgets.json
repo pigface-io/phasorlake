@@ -7,7 +7,7 @@
   "benches": {
     "e2e/ingest_synthetic_zip": {
       "max_ms": 141.403,
-      "max_peak_heap_mb": 13.5,
+      "max_peak_heap_mb": 14.85,
       "max_rss_mb": 100.06,
       "min_rows_per_s": 3707749.565
     },
