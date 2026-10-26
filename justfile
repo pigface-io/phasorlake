@@ -13,7 +13,26 @@ setup:
     cargo install --locked cargo-audit --version 0.22.2
     command -v prek >/dev/null || brew install prek
     command -v gitleaks >/dev/null || brew install gitleaks
+    @just duckdb
     @just hooks
+
+# the DuckDB CLI the read tests run their SQL through, at the version CI pins
+duckdb:
+    #!/usr/bin/env zsh
+    set -euo pipefail
+    want=1.5.6
+    if command -v duckdb >/dev/null && duckdb --version | grep -q "^v$want "; then
+        exit 0
+    fi
+    case "$(uname -s)" in
+    Darwin) url=https://github.com/duckdb/duckdb/releases/download/v$want/duckdb_cli-osx-universal.zip
+            sha=80a80c68736bd7dea53e8b02447e9759db0c8596ea156476ba396c44f54c5810 ;;
+    Linux)  url=https://github.com/duckdb/duckdb/releases/download/v$want/duckdb_cli-linux-amd64.zip
+            sha=6e89deac1ebbc36eed0291caf8b567b030c7b86ac35998f71854e22b3c5d5e2f ;;
+    *)      echo "no pinned duckdb for $(uname -s)" >&2; exit 1 ;;
+    esac
+    scripts/fetch-tool.sh "$url" "$sha" duckdb "$HOME/.local/bin"
+    echo "make sure $HOME/.local/bin comes first on PATH"
 
 # install the git hooks (pre-commit and pre-push)
 hooks:
@@ -65,10 +84,6 @@ cover:
 # the real nemweb and WA host: a month listed per kit and the smallest file fetched (needs the network)
 net-test:
     UTILAKE_NET_TESTS=1 cargo test --locked -p utilake-nem -p utilake-gas -p utilake-wem --test net -- --nocapture
-
-# the read kernel against DuckDB running the same read as SQL (needs duckdb on PATH)
-oracle-test:
-    UTILAKE_ORACLE_TESTS=1 cargo test --locked -p utilake-query --test oracle -- --nocapture
 
 # ── benchmarks ───────────────────────────────────────────────────────────────
 

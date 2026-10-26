@@ -254,7 +254,7 @@ table, already in the schema, whose rows carry `_ul_source` and
 the three time columns as the lake files hold them. Everything after is the same
 text.
 
-It is an independent statement of the roles. `just oracle-test` runs the
+It is an independent statement of the roles. Every test run runs the
 DuckDB form through DuckDB and compares the rows with the kernel's on a
 fixture lake of every pattern above (an oracle in the testing sense: the
 reference answer). The Postgres form differs by that one clause and has

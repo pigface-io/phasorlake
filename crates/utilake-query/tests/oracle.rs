@@ -1,5 +1,5 @@
 //! The kernel against DuckDB running the same read as SQL. Needs the
-//! `duckdb` binary and `UTILAKE_ORACLE_TESTS=1` (`just oracle-test`).
+//! `duckdb` CLI on PATH, a required developer tool (`just duckdb`).
 
 mod common;
 
@@ -13,16 +13,12 @@ use utilake_query::{
     Dialect, KnownTime, Query, Resolution, ValidTime, ValidWindow, bind, read, sql::render,
 };
 
-fn enabled() -> bool {
-    std::env::var("UTILAKE_ORACLE_TESTS").is_ok_and(|v| v == "1")
-}
-
 /// Rows of a query through DuckDB, as JSON objects.
 fn duck(sql: &str) -> Vec<serde_json::Value> {
     let out = Command::new("duckdb")
         .args(["-json", "-c", &format!("SET TimeZone = 'UTC'; {sql}")])
         .output()
-        .expect("duckdb runs");
+        .expect("the duckdb CLI is on PATH: run `just duckdb`");
     assert!(
         out.status.success(),
         "{}\n{sql}",
@@ -138,10 +134,6 @@ fn range(a: &str, b: &str) -> ValidWindow {
 
 #[test]
 fn the_kernel_agrees_with_duckdb() {
-    if !enabled() {
-        eprintln!("skipped: set UTILAKE_ORACLE_TESTS=1");
-        return;
-    }
     let mut fx = Fixture::new();
     common::dispatchprice(&mut fx);
     common::dudetail(&mut fx);
