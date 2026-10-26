@@ -200,7 +200,7 @@ fn ingest_ls_errors_verify_round_trip() {
     let (_, out, _) = cli.code(&["verify", "--table", "DISPATCH_UNIT_SCADA"]);
     assert!(!out.contains("orphan"), "another table's quarantine: {out}");
     std::fs::remove_file(qdir.join("left_over.jsonl")).unwrap();
-    // SCADA's Iceberg table, and the query that reads an interval of it.
+    // SCADA's Iceberg table.
     let built = cli.ok(&["--json", "iceberg", "--table", "DISPATCH_UNIT_SCADA"]);
     assert!(built.contains("\"snapshots\":\"1\""), "{built}");
     let meta = cli
@@ -208,54 +208,10 @@ fn ingest_ls_errors_verify_round_trip() {
         .path()
         .join("lake/nem/dispatch_unit_scada/metadata/version-hint.text");
     assert!(meta.is_file());
-    let sql = cli.ok(&[
-        "--offline",
-        "get",
-        "DISPATCH_UNIT_SCADA",
-        "--from",
-        "2023-12-31T14:00:00Z",
-        "--to",
-        "2024-01-31",
-        "--raw",
-        "--format",
-        "sql",
-        "-o",
-        "-",
-    ]);
-    // 2024-01-01 00:00 in market time is 2023-12-31 14:00 in UTC.
-    // The time ends an interval: midnight is December's last row.
-    assert!(
-        sql.contains("read_parquet(")
-            && sql.contains("WHERE \"SETTLEMENTDATE\" > TIMESTAMP WITH TIME ZONE '2023-12-31 14:00:00.000000+00:00'"),
-        "{sql}"
-    );
-    assert!(!sql.contains("row_number"), "a raw read: {sql}");
-    let latest = cli.ok(&[
-        "--offline",
-        "get",
-        "DISPATCH_UNIT_SCADA",
-        "--from",
-        "2024-01-01",
-        "--to",
-        "2024-01-31",
-        "--known-at",
-        "2024-02-01",
-        "--format",
-        "sql",
-        "--dialect",
-        "postgres",
-        "-o",
-        "-",
-    ]);
-    assert!(
-        latest.contains("row_number() OVER (")
-            && latest.contains("_ul_known_from <=")
-            && latest.contains("FROM \"DISPATCH_UNIT_SCADA\""),
-        "{latest}"
-    );
+    // A window the flags cannot read, and a table nobody declared.
     let (code, _, err) = cli.code(&[
         "--offline",
-        "get",
+        "fetch",
         "DISPATCH_UNIT_SCADA",
         "--from",
         "soon",
@@ -263,114 +219,8 @@ fn ingest_ls_errors_verify_round_trip() {
         "2024-02-01",
     ]);
     assert!(code != 0 && err.contains("not a month, a day"), "{err}");
-    // The read itself: a dry run, the files with their sidecar, the flags.
-    let plan = cli.ok(&[
-        "--offline",
-        "get",
-        "DISPATCH_UNIT_SCADA",
-        "--from",
-        "2024-01-01",
-        "--to",
-        "2024-01-31",
-        "--dry-run",
-    ]);
-    assert!(
-        plan.contains("latest") && plan.contains("dry run: nothing written"),
-        "{plan}"
-    );
-    let out_dir = cli.home.path().join("out");
-    let json = cli.ok(&[
-        "--offline",
-        "--json",
-        "get",
-        "DISPATCH_UNIT_SCADA",
-        "--from",
-        "2024-01-01",
-        "--to",
-        "2024-01-31",
-        "--revisions",
-        "-o",
-        out_dir.to_str().unwrap(),
-    ]);
-    assert!(
-        json.contains("\"rows\":") && json.contains("part-00000.parquet"),
-        "{json}"
-    );
-    assert!(
-        out_dir
-            .join("nem/DISPATCH_UNIT_SCADA/part-00000.parquet")
-            .is_file()
-    );
-    assert!(
-        out_dir
-            .join("nem/DISPATCH_UNIT_SCADA/DISPATCH_UNIT_SCADA.json")
-            .is_file()
-    );
-    let out = cli.home.path().join("scada.csv");
-    let written = cli.ok(&[
-        "--offline",
-        "get",
-        "DISPATCH_UNIT_SCADA",
-        "--from",
-        "2024-01-01",
-        "--to",
-        "2024-01-31",
-        "--raw",
-        "--columns",
-        "DUID,SCADAVALUE",
-        "--where",
-        "DUID=BARCSF1",
-        "-o",
-        out.to_str().unwrap(),
-    ]);
-    assert!(written.contains("scada.csv"), "{written}");
-    assert!(out.is_file() && cli.home.path().join("scada.csv.json").is_file());
-    let (code, _, err) = cli.code(&[
-        "--offline",
-        "get",
-        "DISPATCH_UNIT_SCADA",
-        "--at",
-        "2024-01-01",
-    ]);
-    assert!(
-        code != 0 && err.contains("query.at_on_interval_table"),
-        "{err}"
-    );
-    let (code, _, err) = cli.code(&[
-        "--offline",
-        "get",
-        "DISPATCH_UNIT_SCADA",
-        "--day",
-        "2024-01-01",
-        "--where",
-        "DUID",
-    ]);
-    assert!(code != 0 && err.contains("COL=v1,v2"), "{err}");
-    let (code, _, err) = cli.code(&["--offline", "get", "NOBODY", "--at", "2024-01-01"]);
-    assert!(code != 0 && err.contains("query.unknown_table"), "{err}");
-    let (code, _, err) = cli.code(&[
-        "--offline",
-        "get",
-        "DISPATCH_UNIT_SCADA",
-        "--from",
-        "2024-01-01",
-        "--to",
-        "2024-01-31",
-        "--as-of",
-        "9",
-    ]);
-    assert!(code != 0, "{err}");
-    // A window the lake has nothing for, offline, is said so.
-    let (code, _, err) = cli.code(&[
-        "--offline",
-        "get",
-        "DISPATCH_UNIT_SCADA",
-        "--from",
-        "2030-01-01",
-        "--to",
-        "2030-01-31",
-    ]);
-    assert!(code != 0 && err.contains("query.window_uncovered"), "{err}");
+    let (code, _, err) = cli.code(&["--offline", "fetch", "NOBODY", "--at", "2024-01-01"]);
+    assert!(code != 0 && err.contains("unknown_table"), "{err}");
     // What there is.
     let tables = cli.ok(&["list"]);
     assert!(
@@ -399,8 +249,6 @@ fn ingest_ls_errors_verify_round_trip() {
         cov.contains("year=2024/month=01") && cov.contains("no gap"),
         "{cov}"
     );
-    let vals = cli.ok(&["list", "DISPATCH_UNIT_SCADA", "--values", "DUID"]);
-    assert!(vals.contains("BUTLERSG"), "{vals}");
     let files = cli.ok(&["list", "DISPATCH_UNIT_SCADA", "--files"]);
     assert!(
         files.contains("1 file(s)") && files.contains("local"),
@@ -1430,7 +1278,7 @@ impl Drop for MonthServer {
 /// `get` over a whole-month zip: planned, picked out by range, read into
 /// the lake and written as parts with a sidecar; dry runs and refusals.
 #[test]
-fn get_writes_an_interval_of_a_table_from_a_whole_month_zip() {
+fn fetch_reads_an_interval_of_a_table_from_a_whole_month_zip_into_the_lake() {
     use std::io::Write as _;
     let cli = Cli::new();
     let tmp = cli.home.path();
@@ -1475,11 +1323,11 @@ fn get_writes_an_interval_of_a_table_from_a_whole_month_zip() {
         ),
     )
     .unwrap();
-    let out = tmp.join("out");
-    // Offline: nothing is fetched, and the lake has nothing yet.
-    let (code, _, err) = cli.code(&[
+    let lake = tmp.join("lake/nem");
+    // Offline: nothing can be fetched.
+    let (code, _, _) = cli.code(&[
         "--offline",
-        "get",
+        "fetch",
         "TRADINGPRICE",
         "--from",
         "2024-01",
@@ -1487,12 +1335,11 @@ fn get_writes_an_interval_of_a_table_from_a_whole_month_zip() {
         "2024-01",
     ]);
     assert_ne!(code, 0);
-    assert!(err.contains("query.window_uncovered"), "{err}");
     // Refusals before any request.
-    let (code, _, err) = cli.code(&["get", "NOPE", "--from", "2024-01", "--to", "2024-01"]);
+    let (code, _, err) = cli.code(&["fetch", "NOPE", "--from", "2024-01", "--to", "2024-01"]);
     assert!(code != 0 && err.contains("No table is named NOPE"), "{err}");
     let (code, _, err) = cli.code(&[
-        "get",
+        "fetch",
         "TRADINGPRICE",
         "--from",
         "2024-02",
@@ -1501,7 +1348,7 @@ fn get_writes_an_interval_of_a_table_from_a_whole_month_zip() {
     ]);
     assert!(code != 0 && err.contains("is not after"), "{err}");
     let (code, _, err) = cli.code(&[
-        "get",
+        "fetch",
         "TRADINGPRICE",
         "--market",
         "mars",
@@ -1511,42 +1358,41 @@ fn get_writes_an_interval_of_a_table_from_a_whole_month_zip() {
         "2024-01",
     ]);
     assert!(code != 0 && err.contains("No market named mars"), "{err}");
-    // A dry run: the plan and the listing, nothing fetched.
+    // A dry run: the plan and the listing, nothing fetched or read.
     let text = cli.ok(&[
-        "get",
+        "fetch",
         "TRADINGPRICE",
         "--from",
         "2024-01",
         "--to",
         "2024-01",
         "--dry-run",
-        "--out",
-        out.to_str().unwrap(),
     ]);
     assert!(text.contains("nem-mmsdm: 1 file(s) over 2024-01"), "{text}");
-    assert!(!out.exists());
-    // The run: one table out of the zip by range, written with its sidecar.
-    let text = cli.ok(&[
-        "get",
+    assert!(!lake.join("tradingprice").exists());
+    // Download only: into the archive, nothing read into the lake.
+    cli.ok(&[
+        "fetch",
         "TRADINGPRICE",
         "--from",
         "2024-01",
         "--to",
         "2024-01",
-        "--out",
-        out.to_str().unwrap(),
+        "--no-ingest",
     ]);
-    assert!(text.contains("TRADINGPRICE"), "{text}");
-    let written = out.join("nem/TRADINGPRICE/part-00000.parquet");
-    assert!(written.is_file(), "{text}");
-    let side: serde_json::Value = serde_json::from_slice(
-        &std::fs::read(out.join("nem/TRADINGPRICE/TRADINGPRICE.json")).unwrap(),
-    )
-    .unwrap();
-    assert_eq!(side["resolution"], "latest");
-    assert_eq!(side["files"], serde_json::json!(["part-00000.parquet"]));
-    assert!(side["rows"].as_u64().unwrap() > 0, "{side}");
-    assert_eq!(side["table"], "TRADINGPRICE");
+    assert!(!lake.join("tradingprice").exists());
+    assert!(!cli.ok(&["list", "--ingests"]).contains("TRADINGPRICE"));
+    // The run: one table out of the zip by range, read into the lake.
+    let text = cli.ok(&[
+        "fetch",
+        "TRADINGPRICE",
+        "--from",
+        "2024-01",
+        "--to",
+        "2024-01",
+    ]);
+    assert!(text.contains("1 ingested"), "{text}");
+    assert!(lake.join("tradingprice").is_dir(), "{text}");
     let requests = server.requests.lock().unwrap().clone();
     assert!(
         requests
@@ -1561,22 +1407,19 @@ fn get_writes_an_interval_of_a_table_from_a_whole_month_zip() {
             .any(|r| r == "/Data_Archive/Wholesale_Electricity/MMSDM/2024/MMSDM_2024_01.zip "),
         "never whole: {requests:?}"
     );
-    // JSON output names what was written; the lake holds the one table.
+    // JSON output names the run; the lake holds the one table.
     let json = cli.ok(&[
         "--json",
-        "get",
+        "fetch",
         "TRADINGPRICE",
         "--from",
         "2024-01-02",
         "--to",
         "2024-01-03",
-        "--out",
-        out.to_str().unwrap(),
     ]);
     let last = json.lines().last().unwrap();
     let v: serde_json::Value = serde_json::from_str(last).unwrap();
-    assert_eq!(v["type"], "get");
-    assert!(v["written"][0]["schema_id"].as_u64().is_some());
+    assert_eq!(v["type"], "fetch", "{last}");
     let ls = cli.ok(&["list", "--ingests"]);
     assert!(
         ls.contains("TRADINGPRICE") && !ls.contains("DISPATCHPRICE"),
@@ -1584,7 +1427,7 @@ fn get_writes_an_interval_of_a_table_from_a_whole_month_zip() {
     );
     // A side forced, an excluded table, and a JSON dry run.
     let text = cli.ok(&[
-        "get",
+        "fetch",
         "TRADINGPRICE,DISPATCHPRICE",
         "--exclude",
         "DISPATCHPRICE",
@@ -1594,17 +1437,15 @@ fn get_writes_an_interval_of_a_table_from_a_whole_month_zip() {
         "2024-01",
         "--to",
         "2024-01",
-        "--out",
-        out.to_str().unwrap(),
     ]);
     assert!(
         text.contains("plan: every month from the monthly archive, as asked"),
         "{text}"
     );
-    assert!(!out.join("nem/DISPATCHPRICE").exists());
+    assert!(!lake.join("dispatchprice").exists());
     let (_, json, err) = cli.code(&[
         "--json",
-        "get",
+        "fetch",
         "TRADINGPRICE",
         "--source",
         "daily",
@@ -1615,12 +1456,12 @@ fn get_writes_an_interval_of_a_table_from_a_whole_month_zip() {
         "--dry-run",
     ]);
     assert!(
-        json.contains("\"type\":\"get\"") || err.contains("report folder"),
+        json.contains("\"type\":\"fetch\"") || err.contains("report folder"),
         "{json}{err}"
     );
     // Downloads are capped: AEMO's server blocks a client that asks too fast.
     let (code, _, err) = cli.code(&[
-        "get",
+        "fetch",
         "TRADINGPRICE",
         "--from",
         "2024-01",

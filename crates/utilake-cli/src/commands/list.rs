@@ -1,17 +1,12 @@
 //! `list`: what there is, for a consumer. Every table with its roles and
 //! what the lake holds of it; one table's columns; the months held and
-//! the gaps; the values of an entity column; the files, the archive, the
-//! manifest's ingests and runs.
+//! the gaps; the files, the archive, the manifest's ingests and runs.
 
 use std::collections::BTreeMap;
 
 use anyhow::Result;
-use arrow_array::Array as _;
 use utilake_mms_registry::TableId;
-use utilake_query::{
-    Lake, MarketOffset, Query, Resolution, ValidTime, ValidWindow, bind, catalog, read_with,
-    rfc3339,
-};
+use utilake_query::rfc3339;
 use utilake_writer::manifest::LiveOutput;
 
 use crate::cli::ListCmd;
@@ -92,9 +87,6 @@ pub async fn list(ctx: &Context, args: &ListCmd) -> Result<i32> {
     }
     if args.coverage {
         return coverage(ctx, id.expect("--coverage requires a table")).await;
-    }
-    if let Some(col) = &args.values {
-        return values(ctx, id.expect("--values requires a table"), col, args.limit).await;
     }
     match id {
         Some(id) => columns(ctx, id),
@@ -341,90 +333,6 @@ async fn coverage(ctx: &Context, id: TableId) -> Result<i32> {
             println!("{} partition(s), no gap", months.len());
         } else {
             println!("{} partition(s); gaps: {}", months.len(), gaps.join(", "));
-        }
-    }
-    Ok(0)
-}
-
-/// The distinct values of one column, with rows and span, from a read of
-/// the newest revision of every fact.
-async fn values(ctx: &Context, id: TableId, column: &str, limit: usize) -> Result<i32> {
-    let r = &ctx.registry;
-    let t = r.table(id);
-    let col = t
-        .column(&column.to_ascii_uppercase())
-        .ok_or_else(|| anyhow::anyhow!("{} has no column {column}.", t.name))?
-        .name
-        .clone();
-    let off = MarketOffset(r.market_of(id).utc_offset_secs);
-    let (m, thread) = ctx.manifest()?;
-    let outputs = m.live_outputs(Some(&t.name)).await.map_err(|e| fail(&e))?;
-    drop(m);
-    thread.join();
-    let catalog = catalog(&outputs);
-    let lake = Lake {
-        registry: r,
-        files: catalog.files,
-        sources: catalog.sources,
-        version: env!("CARGO_PKG_VERSION"),
-    };
-    let valid = t.temporal.valid.column().cloned();
-    let mut columns = vec![col.clone()];
-    columns.extend(valid.clone());
-    let all = ValidWindow::range(ValidTime::new(i64::MIN / 4), ValidTime::new(i64::MAX / 4))
-        .map_err(|e| fail(&e))?;
-    let q = Query::new(t.name.clone(), all, Resolution::Latest { known_at: None })
-        .with_columns(columns);
-    let b = bind(q, &lake).map_err(|e| fail(&e))?;
-    let mut seen: BTreeMap<String, (u64, Option<i64>, Option<i64>)> = BTreeMap::new();
-    read_with(&b, &lake, &mut |frame| {
-        let batch = frame.batch();
-        let v = batch
-            .column_by_name(&col)
-            .expect("the column was asked for");
-        let text = arrow_cast::cast(v, &arrow_schema::DataType::Utf8)
-            .map_err(|e| utilake_query::QueryError::arrow(&t.name, e))?;
-        let text = arrow_array::cast::AsArray::as_string::<i32>(&text);
-        let times = valid
-            .as_deref()
-            .and_then(|c| batch.column_by_name(c))
-            .and_then(|c| utilake_query::scan::micros_of(c, off));
-        for i in 0..batch.num_rows() {
-            let key = if text.is_null(i) {
-                "<null>".to_owned()
-            } else {
-                text.value(i).to_owned()
-            };
-            let e = seen.entry(key).or_default();
-            e.0 += 1;
-            if let Some(Some(tm)) = times.as_ref().map(|v| v[i]) {
-                e.1 = Some(e.1.map_or(tm, |a| a.min(tm)));
-                e.2 = Some(e.2.map_or(tm, |a| a.max(tm)));
-            }
-        }
-        Ok(())
-    })
-    .map_err(|e| fail(&e))?;
-    let span = |a: Option<i64>, b: Option<i64>| match (a, b) {
-        (Some(a), Some(b)) => format!("{}..{}", rfc3339(a, off.0), rfc3339(b, off.0)),
-        _ => String::new(),
-    };
-    if ctx.json {
-        for (v, (n, a, b)) in seen.iter().take(limit) {
-            render::json_line(&serde_json::json!({
-                "table": t.name, "column": col, "value": v, "rows": n,
-                "first": a.map(|a| rfc3339(a, off.0)), "last": b.map(|b| rfc3339(b, off.0)),
-            }));
-        }
-    } else {
-        let rows: Vec<Vec<String>> = seen
-            .iter()
-            .take(limit)
-            .map(|(v, (n, a, b))| vec![v.clone(), n.to_string(), span(*a, *b)])
-            .collect();
-        print!("{}", render::table(&[&col, "rows", "span"], &rows));
-        if seen.len() > limit {
-            println!("{} of {} values; --limit shows more", limit, seen.len());
         }
     }
     Ok(0)

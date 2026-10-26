@@ -1,10 +1,10 @@
 # The semantics of a read
 
-The lake keeps every row of every file. `utilake get` turns an interval
-of one table into one frame: every file projected onto one schema, one
-row per fact, the versions in force across the window. The rules come
-from the table's published roles, so the same kernel reads every declared
-table of every market and no table needs code of its own.
+The lake keeps every row of every file. A read turns an interval of one
+table into one frame: every file projected onto one schema, one row per
+fact, the versions in force across the window. The rules come from the
+table's published roles, so the same rules read every declared table of
+every market and no table needs code of its own.
 
 ## Two time axes
 
@@ -172,9 +172,8 @@ WHERE greatest(LASTCHANGED, least(_ul_server_last_modified,
         _ul_zip_entry_modified, _ul_filename_timestamp)) <= :t
 ```
 
-Which evidence to trust is the reader's choice. `utilake get
---known-at` uses the server's word only: it is the proof, and it is never
-early.
+Which evidence to trust is the reader's choice. The server's word is
+the proof, and it is never early.
 
 Each file's footer counts its rows of each source (`utilake.sources`),
 and the manifest keeps what each entry gave (`ingest_entries`); `utilake

@@ -1,4 +1,4 @@
-//! What `fetch`, `ingest` and `get` share: which tables, of which market,
+//! What `fetch` and `ingest` share: which tables, of which market,
 //! over what window, in the market's clock.
 
 use anyhow::{Context as _, Result, bail};
@@ -6,7 +6,7 @@ use utilake_core::{Diagnose, TimeRange, YearMonth};
 use utilake_mms_registry::file_model::MarketDef;
 use utilake_mms_registry::{Market, Registry, TableId};
 use utilake_pipeline::days_of;
-use utilake_query::{Known, MarketOffset, QueryError, Valid, ValidTime, ValidWindow, parse_local};
+use utilake_query::{MarketOffset, QueryError, Valid, ValidTime, ValidWindow, parse_local};
 
 use crate::cli::{TablesArg, WindowArgs};
 use crate::context::Context;
@@ -18,9 +18,8 @@ pub fn fail(e: &impl Diagnose) -> anyhow::Error {
 
 /// The tables a command works on, and the one market they are of.
 pub struct Selection {
-    /// The tables, in the order asked, less the excluded.
-    pub ids: Vec<TableId>,
-    /// Their names, upper case.
+    /// The tables, in the order asked, less the excluded, by name, upper
+    /// case.
     pub names: Vec<String>,
     /// The market's constants.
     pub def: MarketDef,
@@ -74,7 +73,6 @@ pub fn select(ctx: &Context, args: &TablesArg) -> Result<Selection> {
         .context("the registry defines no such market")?;
     Ok(Selection {
         names: ids.iter().map(|id| r.table(*id).name.clone()).collect(),
-        ids,
         def,
         kit: market.to_string(),
     })
@@ -157,11 +155,6 @@ pub fn window(args: &WindowArgs, def: &MarketDef) -> Result<Option<Window>> {
         _ => return Ok(None),
     };
     Ok(Some(w))
-}
-
-/// A `--known-at` instant in the market's clock.
-pub fn known_at(text: &str, def: &MarketDef) -> Result<utilake_query::KnownTime> {
-    parse_local::<Known>(text, MarketOffset(def.utc_offset_secs)).map_err(|e| fail(&e))
 }
 
 /// The request line the manifest records.

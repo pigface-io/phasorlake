@@ -1,15 +1,16 @@
 //! The flag tree.
 //!
-//! Three stores, one verb per arrow, and `get` for the whole:
+//! Two stores, one verb per arrow. Reading the lake is the reader's own
+//! SQL, not a command:
 //!
 //! ```text
-//! AEMO ──fetch──▶ archive ──ingest──▶ lake ──▶ output
-//! disk ──import─▶ lake                        get = fetch + ingest + write
+//! AEMO ──fetch──▶ archive ──ingest──▶ lake
+//! disk ──import─▶ lake
 //! ```
 //!
-//! `fetch`, `ingest` and `get` take the same tables and window; `get` adds
-//! how the rows are resolved and written. Every command's `--help` ends
-//! with examples.
+//! `fetch` and `ingest` take the same tables and window; `fetch` reads
+//! what it downloads into the lake unless told `--no-ingest`. Every
+//! command's `--help` ends with examples.
 
 use std::path::PathBuf;
 
@@ -36,8 +37,7 @@ pub struct Cli {
     /// No progress bars.
     #[arg(long, global = true)]
     pub no_progress: bool,
-    /// Never touch the network: `get` reads the lake as it is, `fetch`
-    /// fails.
+    /// Never touch the network: `fetch` fails.
     #[arg(long, global = true)]
     pub offline: bool,
     /// Parse workers (default half the cores), e.g. `--jobs 4`.
@@ -52,20 +52,19 @@ pub struct Cli {
 }
 
 const ABOUT: &str = "\
-Three stores: the archive (AEMO's files, each once, with a record of where and
-when it came from), the lake (Parquet per source file, with a manifest) and the
-output (one square frame per table). One verb per arrow, and `get` for the whole:
+Two stores: the archive (AEMO's files, each once, with a record of where and
+when it came from) and the lake (Parquet per source file, every row with its
+source and times, with a manifest and Iceberg metadata). One verb per arrow;
+reading the lake is your own SQL (docs/reading.md):
 
-  AEMO --fetch--> archive --ingest--> lake --> output
-  disk --import-> lake                         get = fetch + ingest + write
+  AEMO --fetch--> archive --ingest--> lake
+  disk --import-> lake
 
 Examples:
-  utilake get DISPATCHPRICE --from 2026-08-01 --to 2026-08-31
-      August's prices, fetched where AEMO publishes them most finely, read into
-      the lake, written as Parquet parts under ./utilake-get/nem/DISPATCHPRICE/.
-  utilake get DUDETAIL --at 2026-08-15 --offline
-      The version of every unit in force on the 15th, from the lake alone.
-  utilake fetch DISPATCH_UNIT_SCADA --from 2026-07 --to 2026-08
+  utilake fetch DISPATCHPRICE --from 2026-08-01 --to 2026-08-31
+      August's prices, fetched where AEMO publishes them most finely and read
+      into the lake.
+  utilake fetch DISPATCH_UNIT_SCADA --from 2026-07 --to 2026-08 --no-ingest
       Two months of files into the archive, nothing else.
   utilake ingest
       Every archived file not yet in the lake, and every lake file behind its rules.
@@ -76,12 +75,8 @@ Examples:
 /// Top-level commands.
 #[derive(Subcommand, Debug)]
 pub enum Command {
-    /// An interval of some tables, fetched, read into the lake and written
-    /// as Parquet: one row per fact, the versions in force across the window.
-    #[command(after_long_help = GET_EXAMPLES)]
-    Get(GetCmd),
     /// Download the files that cover an interval into the archive, politely,
-    /// each once. Nothing is read into the lake.
+    /// each once, and read them into the lake (`--no-ingest`: download only).
     #[command(after_long_help = FETCH_EXAMPLES)]
     Fetch(FetchCmd),
     /// Read zips or CSVs you already have on disk into the lake. No network.
@@ -93,7 +88,7 @@ pub enum Command {
     #[command(after_long_help = INGEST_EXAMPLES)]
     Ingest(IngestCmd),
     /// What there is: every table, one table's columns, what the lake holds
-    /// of it, the values of an entity column, the files and the archive.
+    /// of it, the files and the archive.
     #[command(visible_alias = "ls", after_long_help = LIST_EXAMPLES)]
     List(ListCmd),
     /// Show a file's blocks, versions, columns and how the registry resolves them.
@@ -212,89 +207,6 @@ impl WindowArgs {
     }
 }
 
-/// Which rows a read returns.
-#[derive(Args, Debug, Clone, Default)]
-pub struct ResolveArgs {
-    /// Keep only what was known by this time, e.g. `--known-at 2026-08-01T16:30`:
-    /// a row is known from its source's publish time, or from its cutoff
-    /// column (LASTCHANGED, RUN_DATETIME) when that is later. With the
-    /// newest rows or `--revisions`; not with `--raw`.
-    #[arg(long, conflicts_with = "raw")]
-    pub known_at: Option<String>,
-    /// Every revision of every fact, each once, instead of the newest.
-    /// Not with `--raw` or `--latest`.
-    #[arg(long, conflicts_with_all = ["raw", "latest"])]
-    pub revisions: bool,
-    /// One row per fact, the newest revision: the default, named for
-    /// `--format sql`, which is raw unless told otherwise.
-    #[arg(long, conflicts_with = "raw")]
-    pub latest: bool,
-    /// Every row of every file, as written, no resolution.
-    #[arg(long)]
-    pub raw: bool,
-    /// The schema to read as, e.g. `--as-of 2` (default: the latest).
-    #[arg(long)]
-    pub as_of: Option<u32>,
-    /// The columns to return, comma separated, e.g. `--columns REGIONID,RRP`
-    /// (default: all). The role columns are always read.
-    #[arg(long, value_delimiter = ',')]
-    pub columns: Vec<String>,
-    /// Keep rows whose column is one of the values, e.g.
-    /// `--where REGIONID=NSW1,VIC1`. May repeat. On an entity column it
-    /// runs before resolution; on any other, after.
-    #[arg(long = "where", value_name = "COL=V,V")]
-    pub filters: Vec<String>,
-}
-
-/// Where and how the rows are written.
-#[derive(Args, Debug, Clone, Default)]
-pub struct OutputArgs {
-    /// Where: a directory of parts, e.g. `-o out/`, or one file when the
-    /// extension names a format, e.g. `-o prices.parquet`; `-o -` prints
-    /// (for `--format sql`). Default `./utilake-get`, laid out as
-    /// `{out}/{market}/{TABLE}/`.
-    #[arg(short, long)]
-    pub out: Option<PathBuf>,
-    /// The format, e.g. `--format csv`; `sql` writes the same read as a
-    /// SQL query instead of running it.
-    #[arg(long, value_enum, default_value_t = FormatArg::Parquet)]
-    pub format: FormatArg,
-    /// For `--format sql`, where the rows come from, e.g. `--dialect postgres`.
-    #[arg(long, value_enum, default_value_t = DialectArg::Duckdb)]
-    pub dialect: DialectArg,
-    /// Parquet compression, e.g. `--compression snappy`.
-    #[arg(long, value_enum, default_value_t = CodecArg::Zstd)]
-    pub compression: CodecArg,
-    /// Under a directory, a new part begins at this many bytes, e.g.
-    /// `--target-file-bytes 268435456` (default 128 MiB).
-    #[arg(long)]
-    pub target_file_bytes: Option<u64>,
-}
-
-/// The output format.
-#[derive(clap::ValueEnum, Debug, Clone, Copy, PartialEq, Eq, Default)]
-pub enum FormatArg {
-    /// Parquet, with the lake's field ids and `utilake.*` footer keys.
-    #[default]
-    Parquet,
-    /// CSV with a header row.
-    Csv,
-    /// An Arrow IPC file.
-    Arrow,
-    /// The read as one SQL query, written, not run.
-    Sql,
-}
-
-/// Where a SQL query's rows come from.
-#[derive(clap::ValueEnum, Debug, Clone, Copy, PartialEq, Eq, Default)]
-pub enum DialectArg {
-    /// The lake's Parquet files, read in place.
-    #[default]
-    Duckdb,
-    /// A relation named for the table whose rows carry `_ul_source`.
-    Postgres,
-}
-
 /// Parquet compression.
 #[derive(clap::ValueEnum, Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub enum CodecArg {
@@ -346,56 +258,7 @@ pub enum SourceArg {
     Daily,
 }
 
-/// `get`: an interval of some tables, straight to Parquet.
-#[derive(Args, Debug, Clone)]
-pub struct GetCmd {
-    /// The tables.
-    #[command(flatten)]
-    pub tables: TablesArg,
-    /// The window.
-    #[command(flatten)]
-    pub window: WindowArgs,
-    /// The resolution.
-    #[command(flatten)]
-    pub resolve: ResolveArgs,
-    /// The output.
-    #[command(flatten)]
-    pub output: OutputArgs,
-    /// The fetch.
-    #[command(flatten)]
-    pub fetch: FetchArgs,
-    /// Plan what would be fetched and read, print it, write nothing.
-    #[arg(long)]
-    pub dry_run: bool,
-    /// Ingest flags.
-    #[command(flatten)]
-    pub ingest: IngestArgs,
-}
-
-const GET_EXAMPLES: &str = "\
-Examples:
-  utilake get DISPATCHPRICE --from 2026-08-01 --to 2026-08-31
-      August's five-minute prices: whole months from the monthly archive, the
-      rest from the report folders, one row per interval and region, under
-      ./utilake-get/nem/DISPATCHPRICE/ with a sidecar naming every source.
-  utilake get DISPATCHPRICE,DISPATCH_UNIT_SCADA --day 2026-08-01
-      One trading day (04:00 to 04:00) of two tables.
-  utilake get DUDETAIL --at 2026-08-15 --offline
-      The version of every unit in force on the 15th, from the lake alone;
-      _ul_valid_to says where each version stops.
-  utilake get DISPATCHPRICE --from 2026-08-01T16:00 --to 2026-08-01T17:00 --known-at 2026-08-01T16:30
-      The prices as they were known at half past four.
-  utilake get DISPATCHPRICE --from 2026-08 --to 2026-08 --revisions --columns REGIONID,RRP --where REGIONID=NSW1,VIC1
-      Every run of two regions, two columns.
-  utilake get DISPATCHPRICE --from 2026-08-01 --to 2026-08-02 -o prices.csv
-      One CSV file; the extension names the format.
-  utilake get DISPATCHPRICE --from 2026-08-01 --to 2026-08-02 --format sql -o -
-      The same read as a SQL query for DuckDB, printed.
-  utilake get DISPATCHPRICE --from 2026-08 --to 2026-08 --dry-run
-      What would be fetched (files, bytes) and read (lake files, units).
-";
-
-/// `fetch`: the files that cover an interval, into the archive.
+/// `fetch`: the files that cover an interval, into the archive and the lake.
 #[derive(Args, Debug, Clone)]
 pub struct FetchCmd {
     /// The tables.
@@ -410,12 +273,20 @@ pub struct FetchCmd {
     /// List what would be fetched and stop.
     #[arg(long)]
     pub dry_run: bool,
+    /// Download into the archive only; read nothing into the lake.
+    #[arg(long)]
+    pub no_ingest: bool,
+    /// Ingest flags.
+    #[command(flatten)]
+    pub ingest: IngestArgs,
 }
 
 const FETCH_EXAMPLES: &str = "\
 Examples:
   utilake fetch DISPATCHPRICE --from 2026-07 --to 2026-08
-      The monthly archive's files of two months.
+      The monthly archive's files of two months, read into the lake.
+  utilake fetch DISPATCHPRICE --day 2026-08-01 --no-ingest
+      One trading day's files into the archive, nothing read.
   utilake fetch DISPATCH_UNIT_SCADA --from 2026-08-28 --to 2026-08-30
       Three days from the report folders (the month is not published yet).
   utilake fetch DISPATCHPRICE --from 2026-08 --to 2026-08 --source daily --dry-run
@@ -561,12 +432,8 @@ pub struct ListCmd {
     pub grep: Option<String>,
     /// For one table, the months the lake holds, the gaps, and which side
     /// of the publication each month came from.
-    #[arg(long, requires = "table", conflicts_with_all = ["values", "files"])]
+    #[arg(long, requires = "table", conflicts_with = "files")]
     pub coverage: bool,
-    /// For one table, the distinct values of an entity column with their
-    /// row counts and spans, e.g. `--values DUID`.
-    #[arg(long, requires = "table", value_name = "COL")]
-    pub values: Option<String>,
     /// The lake's files (of one table, or all), with rows, span and source.
     #[arg(long)]
     pub files: bool,
@@ -582,7 +449,7 @@ pub struct ListCmd {
     /// The latest run.
     #[arg(long)]
     pub runs: bool,
-    /// At most this many rows of ingests or values, e.g. `--limit 20`.
+    /// At most this many rows of ingests, e.g. `--limit 20`.
     #[arg(long, default_value_t = 50)]
     pub limit: usize,
 }
@@ -599,8 +466,6 @@ Examples:
       Its columns: type, role, field id, AEMO's words.
   utilake list DISPATCHPRICE --coverage
       The months the lake holds, the gaps, where each month came from.
-  utilake list DUDETAIL --values DUID
-      Every unit, with its rows and span.
   utilake list DISPATCHPRICE --files
       The lake's files of the table.
   utilake list --archive
@@ -768,49 +633,27 @@ mod tests {
         }
         let c = Cli::try_parse_from([
             "utilake",
-            "get",
+            "fetch",
             "DUDETAIL",
-            "--at",
+            "--day",
             "2024-01-15",
-            "--where",
-            "DUID=A,B",
-            "--columns",
-            "DUID,VERSIONNO",
-            "-o",
-            "d.csv",
-            "--compression",
-            "snappy",
+            "--no-ingest",
             "--offline",
         ])
         .unwrap();
         assert!(c.offline);
         match c.command {
-            Command::Get(g) => {
-                assert_eq!(g.window.at.as_deref(), Some("2024-01-15"));
-                assert_eq!(g.resolve.filters, ["DUID=A,B"]);
-                assert_eq!(g.resolve.columns, ["DUID", "VERSIONNO"]);
-                assert_eq!(g.output.compression, CodecArg::Snappy);
-                assert_eq!(g.output.format, FormatArg::Parquet);
+            Command::Fetch(f) => {
+                assert_eq!(f.window.day.as_deref(), Some("2024-01-15"));
+                assert!(f.no_ingest);
             }
             other => panic!("{other:?}"),
         }
-        assert!(Cli::try_parse_from(["utilake", "get", "T", "--from", "2024-01-01"]).is_err());
+        assert!(Cli::try_parse_from(["utilake", "get", "T", "--day", "2024-01-01"]).is_err());
         assert!(
             Cli::try_parse_from([
                 "utilake",
-                "get",
-                "T",
-                "--at",
-                "2024-01-01",
-                "--raw",
-                "--revisions"
-            ])
-            .is_err()
-        );
-        assert!(
-            Cli::try_parse_from([
-                "utilake",
-                "get",
+                "fetch",
                 "T",
                 "--day",
                 "2024-01-01",
@@ -820,13 +663,9 @@ mod tests {
             .is_err()
         );
         assert!(
-            Cli::try_parse_from(["utilake", "get", "T", "--day", "x", "--downloads", "9"]).is_err()
+            Cli::try_parse_from(["utilake", "fetch", "T", "--day", "x", "--downloads", "9"])
+                .is_err()
         );
-        let c = Cli::try_parse_from(["utilake", "ls", "DUDETAIL", "--values", "DUID"]).unwrap();
-        match c.command {
-            Command::List(l) => assert_eq!(l.values.as_deref(), Some("DUID")),
-            other => panic!("{other:?}"),
-        }
         assert!(Cli::try_parse_from(["utilake", "list", "--coverage"]).is_err());
         assert!(Cli::try_parse_from(["utilake", "list", "--archive", "--files"]).is_err());
         let c = Cli::try_parse_from(["utilake", "verify", "--archive"]).unwrap();

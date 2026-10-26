@@ -1,9 +1,10 @@
-//! `fetch`: the files that cover an interval, into the archive, politely.
+//! `fetch`: the files that cover an interval, into the archive, politely,
+//! and read into the lake unless `--no-ingest`.
 
 use anyhow::{Result, bail};
 use utilake_pipeline::{GetRequest, RunOptions, SourceChoice};
 
-use crate::cli::{Cli, FetchCmd, IngestArgs, SourceArg};
+use crate::cli::{Cli, FetchCmd, SourceArg};
 use crate::context::Context;
 use crate::render;
 
@@ -18,7 +19,7 @@ pub fn source_choice(s: SourceArg) -> SourceChoice {
     }
 }
 
-/// `utilake fetch TABLES --from A --to B`
+/// `utilake fetch TABLES --from A --to B [--no-ingest]`
 pub async fn fetch(cli: &Cli, ctx: &Context, args: &FetchCmd) -> Result<i32> {
     let sel = common::select(ctx, &args.tables)?;
     let Some(w) = common::window(&args.window, &sel.def)? else {
@@ -40,14 +41,8 @@ pub async fn fetch(cli: &Cli, ctx: &Context, args: &FetchCmd) -> Result<i32> {
         request: request.clone(),
     };
     let options = RunOptions {
-        ingest: false,
-        ..super::lake::options(
-            cli,
-            ctx,
-            &IngestArgs::default(),
-            args.fetch.downloads,
-            args.dry_run,
-        )
+        ingest: !args.no_ingest,
+        ..super::lake::options(cli, ctx, &args.ingest, args.fetch.downloads, args.dry_run)
     };
     let (manifest, thread) = ctx.manifest()?;
     let report = super::acquire::run(cli, ctx, manifest, req, options).await;

@@ -16,37 +16,29 @@ a failure is explained.
 
 ```sh
 cargo install --path crates/utilake-cli --locked
-utilake get DISPATCH_UNIT_SCADA --from 2024-01-15 --to 2024-01-18
+utilake fetch DISPATCH_UNIT_SCADA --from 2024-01-15 --to 2024-01-18
 ```
 
-`get` plans the interval across the market's sources (whole published
+`fetch` plans the interval across the market's sources (whole published
 months from the monthly archive, the rest from the report folders a day
-or a five-minute file at a time), downloads only what it needs (a zip
-that holds more than asked is read by its directory and only the entries
-wanted are fetched), reads it all into the lake, and writes one square
-frame per table: every file projected onto one schema, one row per fact,
-the versions in force across the window, as Parquet parts under
-`./utilake-get/nem/DISPATCH_UNIT_SCADA/` with `DISPATCH_UNIT_SCADA.json`
-beside them saying which files its rows came from and what the window
-holds. `--from` and `--to` take a month, a day, a local time
-(`2024-01-15T10:00`, market time) or an RFC 3339 time; a month or a day as
-the end is included through its last interval, a time is where the window
-stops. `--day D` is one trading day (04:00 to 04:00). `--at T` is the
-version in force at an instant. `--offline` reads the lake as it is.
-`--dry-run` shows what would be fetched and read. Every command's `--help`
-ends with examples.
+or a five-minute file at a time), downloads only what it needs into the
+archive (a zip that holds more than asked is read by its directory and
+only the entries wanted are fetched), each file once, politely, and reads
+it all into the lake. `--from` and `--to` take a month, a day, a local
+time (`2024-01-15T10:00`, market time) or an RFC 3339 time; a month or a
+day as the end is included through its last interval. `--day D` is one
+trading day (04:00 to 04:00). `--no-ingest` downloads only. `--dry-run`
+shows what would be fetched. Every command's `--help` ends with examples.
 
-The stages on their own:
+Files already on disk:
 
 ```sh
-utilake fetch DISPATCH_UNIT_SCADA --from 2024-01 --to 2024-01
 utilake ingest DISPATCH_UNIT_SCADA --from 2024-01 --to 2024-01
 utilake import PUBLIC_DVD_DISPATCHPRICE_202401010000.zip
 ```
 
-`fetch` downloads into the archive, each file once, politely; `ingest`
-writes Parquet from what is archived, without the network (with no
-arguments, everything archived and not yet in the lake, and everything
+`ingest` writes Parquet from what is archived, without the network (with
+no arguments, everything archived and not yet in the lake, and everything
 behind its rules); `import` reads files you already have, by the kit
 whose source knows each one, or every one by `--kit gas` when the name
 says nothing of its market. `ingest --source gas-sttm` names which
@@ -64,27 +56,21 @@ from read_parquet('~/.utilake/lake/nem/dispatch_unit_scada/**/*.parquet', hive_p
 Run the same commands again and they finish in milliseconds: the archive has
 the file, and the manifest knows it is already in the lake.
 
-Resolution, projection and the same read as SQL:
-
-```sh
-utilake get DUDETAIL --at 2024-01-15 --columns DUID,REGISTEREDCAPACITY --offline
-utilake get DISPATCHPRICE --day 2024-01-15 --known-at 2024-01-15T12:00 -o prices.parquet
-utilake get DISPATCHPRICE --from 2024-01-15 --to 2024-01-15 --format sql -o -
-utilake list --grep price
-```
-
-`docs/semantics.md` says what a window and a revision mean on each kind of
-table.
+utilake writes the lake and does not read it. Every row keeps every
+revision and copy, with its source and the times that source was stamped
+with, so "latest", "every revision" and "as known at" are questions you
+ask in your own SQL. `docs/semantics.md` says what a window and a
+revision mean on each kind of table, and `utilake list T` names a table's
+roles (its entity, valid time, order and cutoff columns).
 
 ## Commands
 
 | command | what it does |
 |---|---|
-| `utilake get T,T (--from A --to B \| --at T \| --day D) [--known-at K] [--revisions \| --raw] [--as-of N] [--columns A,B] [--where COL=v,v] [-o DIR\|FILE] [--format parquet\|csv\|arrow\|sql] [--compression zstd\|snappy\|none] [--source auto\|monthly\|daily] [--offline] [--dry-run]` | an interval of the tables, fetched where it is published most finely, read into the lake, and written as one frame per table (one row per fact, the versions in force) as Parquet parts under `{out}/{market}/{TABLE}/` with a sidecar of its sources and intervals; `--offline` reads the lake as it is; `--format sql` writes the same read as a query. Times in the market's clock. `docs/semantics.md` |
-| `utilake fetch T,T --from A --to B [--source auto\|monthly\|daily] [--downloads N] [--dry-run]` | the files that cover the window, into the archive, each once; nothing read into the lake |
+| `utilake fetch T,T (--from A --to B \| --at T \| --day D) [--source auto\|monthly\|daily] [--downloads N] [--no-ingest] [--dry-run]` | the files that cover the window, into the archive, each once, and read into the lake; `--no-ingest` downloads only. Times in the market's clock |
 | `utilake import <zip\|csv\|dir>...` | files you already have, into the lake; no network |
 | `utilake ingest [T,T --from A --to B] [--source ID] [--dry-run]` | archived files into the lake, no network; with no arguments, every archived file not yet in the lake and every lake file behind its rules |
-| `utilake list [T] [--market M] [--kind K] [--grep TEXT] [--coverage] [--values COL] [--files] [--archive] [--ingests [--failed]] [--runs]` | every table with its roles and what the lake holds; one table's columns; the months held and the gaps; an entity column's values; the files, the archive, the manifest |
+| `utilake list [T] [--market M] [--kind K] [--grep TEXT] [--coverage] [--files] [--archive] [--ingests [--failed]] [--runs]` | every table with its roles and what the lake holds; one table's columns; the months held and the gaps; the files, the archive, the manifest |
 | `utilake inspect <file>` | every block in a file, its version and how the registry resolves it |
 | `utilake errors [--last] [--table T] [--code C]` | diagnostics recorded by past runs |
 | `utilake verify [--table T] [--archive]` | every Parquet file the manifest lists exists with its size; `--archive` hashes every download again |
@@ -112,11 +98,11 @@ Global flags: `--home DIR` (or `UTILAKE_HOME`), `--json`, `-v`, `--offline`,
 An entry of a zip is the same source whether it was fetched alone (as
 `{zip}!{entry}`) or inside the whole zip: a read of the whole zip leaves
 the entries the lake already holds from a fetch of each alone, and an
-entry fetched alone whose zip was read whole is skipped, so `get` and
-`fetch` never write a row twice. Whole months come from the monthly
+entry fetched alone whose zip was read whole is skipped, so `fetch` and
+`ingest` never write a row twice. Whole months come from the monthly
 archive, the settled publication; days and five-minute files from the
-report folders, the live one; `get` never mixes the two within a month,
-and each frame's sidecar names the vintage of every source.
+report folders, the live one; `fetch` never mixes the two within a
+month, and every row names its source.
 
 Every Parquet file carries the lake schema of its table: every column the
 table has ever had, each with its id as `PARQUET:field_id`, so files of
@@ -279,8 +265,7 @@ that rev, together.
 The registry reads each table through `utilake_iceberg::from_metadata`.
 The table's columns are the history's fields, by id, each typed by its
 Iceberg type; a column takes nulls unless every schema requires it; the
-schema a reader gets today is the metadata's `current-schema-id`, which
-`utilake get` targets unless `--as-of` names another. A block is read with
+schema a reader gets today is the metadata's `current-schema-id`. A block is read with
 the schema `History::resolve` names for its report pair, AEMO version,
 columns in order and the month its source was released in (with no month
 known, the latest run's): of the runs whose schema has exactly its columns,
@@ -379,7 +364,7 @@ server refuses it (HTTP 403, or 429 through every retry) it sends nothing
 more in that run and reports `net.blocked` for what is left.
 
 The lake's Parquet layout is set in `[lake]` in `config.toml`, and the
-first five keys by flags of `ingest`, `import`, `fetch` and `get`
+first five keys by flags of `ingest`, `import` and `fetch`
 (`--lake-file-size-mb`, `--lake-row-group-rows`, `--lake-page-kb`,
 `--lake-compression`, `--lake-zstd-level`). The
 layout changes how files are cut, never what they hold, so changing it
