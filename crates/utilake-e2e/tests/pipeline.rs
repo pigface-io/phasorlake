@@ -1265,6 +1265,66 @@ async fn reading_a_source_again_removes_its_old_quarantine() {
     assert!(walk(&e.home.quarantine()).is_empty());
 }
 
+/// A source read again that fails leaves the earlier read's Parquet in
+/// place: nothing is replaced by a read that wrote nothing.
+#[tokio::test]
+async fn a_failed_read_again_keeps_what_the_earlier_read_wrote() {
+    let e = env();
+    let p = e
+        .home
+        .root()
+        .join("PUBLIC_DVD_DISPATCH_UNIT_SCADA_202401010000.CSV");
+    let write = |b: u32, bad: usize| {
+        let mut csv = String::from(
+            "I,DISPATCH,UNIT_SCADA,1,SETTLEMENTDATE,DUID,SCADAVALUE\nD,DISPATCH,UNIT_SCADA,1,\"2024/01/01 00:05:00\",A,1\nD,DISPATCH,UNIT_SCADA,1,\"2024/01/01 00:10:00\",B,\n",
+        );
+        csv.insert_str(csv.len() - 1, &b.to_string());
+        for i in 0..bad {
+            let _ = writeln!(
+                csv,
+                "D,DISPATCH,UNIT_SCADA,1,\"2024/01/01 00:15:00\",C{i},3,extra"
+            );
+        }
+        std::fs::write(&p, csv).unwrap();
+    };
+    let plan = || Plan {
+        request: "ingest".into(),
+        input: Input::Local(vec![p.clone()]),
+        options: RunOptions {
+            max_bad_rows: 2,
+            ..Default::default()
+        },
+    };
+    write(2, 0);
+    let (rep, _) = run_plan(&e, plan()).await;
+    assert_eq!(rep.exit_code, 0, "{:?}", rep.report.summary_lines());
+    let before = walk(&e.home.lake());
+    assert!(!before.is_empty());
+    // The source changes, and its new read is refused: too many bad rows.
+    write(2, 5);
+    let (rep, _) = run_plan(&e, plan()).await;
+    assert_ne!(rep.exit_code, 0, "{:?}", rep.report.summary_lines());
+    assert!(!rep.report.by_code.contains_key("manifest.superseded"));
+    let parquet = |files: Vec<String>| -> Vec<String> {
+        files
+            .into_iter()
+            .filter(|f| f.ends_with(".parquet"))
+            .collect()
+    };
+    let after = parquet(walk(&e.home.lake()));
+    let kept = parquet(before);
+    assert!(!kept.is_empty());
+    assert_eq!(after, kept, "the earlier read's Parquet stays");
+    // Read again once it is good: the earlier read is replaced, so the lake
+    // holds this read's rows only.
+    write(9, 0);
+    let (rep, _) = run_plan(&e, plan()).await;
+    assert_eq!(rep.exit_code, 0, "{:?}", rep.report.summary_lines());
+    assert!(rep.report.by_code.contains_key("manifest.superseded"));
+    assert_eq!(parquet(walk(&e.home.lake())).len(), kept.len());
+    assert_ne!(parquet(walk(&e.home.lake())), kept);
+}
+
 /// What the manifest records of a source is enough to name it again.
 #[test]
 fn a_recorded_source_becomes_a_file_to_read() {

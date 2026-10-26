@@ -698,6 +698,14 @@ async fn commit(
     }
     summary.bytes_in += local.size;
     let mut stop = false;
+    // The refusal is the entry's own error, not the discard it caused.
+    let refused = rep
+        .entries
+        .iter()
+        .filter_map(|e| e.error.as_ref())
+        .min_by_key(|d| d.code.as_ref() == "store.file_discarded")
+        .map(|d| d.code.to_string());
+    let committed = rep.file_error.is_none() && refused.is_none();
     // What the manifest knew before this file is recorded, to detect a change.
     let previous = deps
         .manifest
@@ -711,7 +719,13 @@ async fn commit(
             source: local.remote.source.to_owned(),
             url: local.remote.url.to_string(),
             cache_path: local.path.display().to_string(),
-            sha256: local.sha256.clone(),
+            // A read that failed did not replace the earlier one, so the
+            // file stays recorded as the bytes that read: a later read
+            // that succeeds then sees the change and replaces it.
+            sha256: match (&previous, committed) {
+                (Some((_, prev)), false) => prev.sha256.clone(),
+                _ => local.sha256.clone(),
+            },
             size: local.size,
             etag: local.etag.clone(),
             last_modified: local.last_modified.clone(),
@@ -729,15 +743,16 @@ async fn commit(
         }
     };
     // A changed source, or changed rules: what the earlier read wrote is
-    // replaced by what this one wrote. A file this read wrote again under
-    // the same name is already the new one and stays.
+    // replaced by what this one wrote, once this read committed. A read
+    // that failed wrote nothing, and the earlier read's files stay. A file
+    // this read wrote again under the same name is already the new one.
     let source_changed = previous
         .as_ref()
         .is_some_and(|(_, prev)| prev.sha256 != local.sha256);
     if let (Some(fid), Some(run), true) = (
         file_id,
         run_id,
-        previous.is_some() && (source_changed || rep.rules_changed),
+        committed && previous.is_some() && (source_changed || rep.rules_changed),
     ) {
         // The files this read wrote again under the same names are
         // already the new ones, and stay.
@@ -822,16 +837,13 @@ async fn commit(
     }
     // One ingest per shape the file read, each with what every entry gave
     // it; failed, without files, when an entry failed.
-    // The refusal is the entry's own error, not the discard it caused.
-    let refused = rep
-        .entries
-        .iter()
-        .filter_map(|e| e.error.as_ref())
-        .min_by_key(|d| d.code.as_ref() == "store.file_discarded")
-        .map(|d| d.code.to_string());
     let mut first_ingest_id = None;
+    // A read again that failed leaves the earlier read on record: its
+    // ingests, and the outputs they own, are only replaced by a read that
+    // commits. The failure is still reported, and its diagnostics kept.
+    let record = committed || previous.is_none();
     for r in &rep.results {
-        if let (Some(fid), Some(run)) = (file_id, run_id) {
+        if let (Some(fid), Some(run), true) = (file_id, run_id, record) {
             let start = IngestStart {
                 run_id: run,
                 file_id: fid,
