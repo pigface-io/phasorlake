@@ -229,6 +229,12 @@ fn ingest_ls_errors_verify_round_trip() {
         "2024-02-01",
     ]);
     assert!(code != 0 && err.contains("not a month, a day"), "{err}");
+    // Documents offline: each refused, said, and the exit says the network.
+    let (code, _, err) = cli.code(&["--offline", "fetch", "--documents"]);
+    assert!(
+        code == 4 && err.contains("Registration-and-Exemption-List"),
+        "{err}"
+    );
     let (code, _, err) = cli.code(&["--offline", "fetch", "NOBODY", "--at", "2024-01-01"]);
     assert!(
         code != 0 && err.contains("No table is named NOBODY"),

@@ -13,6 +13,13 @@ use crate::sources::reports::ReportFolders;
 /// The kit's id, as a command names it.
 pub const KIT_ID: &str = "nem";
 
+/// Documents AEMO republishes in place that the lake's readers join
+/// against: the NEM Registration and Exemption List (every unit, its
+/// station, fuel, technology and region). Each distinct version is kept.
+pub const DOCUMENTS: &[&str] = &[
+    "https://www.aemo.com.au/-/media/files/electricity/nem/Participant_Information/NEM-Registration-and-Exemption-List.xlsx",
+];
+
 /// The tables the kit was built with: the schema tree compiled into the
 /// binary. It stays in the registry crate until a second MMS market needs
 /// a tree of its own.

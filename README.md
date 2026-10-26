@@ -69,6 +69,7 @@ roles (its entity, valid time, order and cutoff columns).
 | command | what it does |
 |---|---|
 | `utilake fetch T,T (--from A --to B \| --at T \| --day D) [--source auto\|monthly\|daily] [--downloads N] [--no-ingest] [--dry-run]` | the files that cover the window, into the archive, each once, and read into the lake; `--no-ingest` downloads only. Times in the market's clock |
+| `utilake fetch --documents` | AEMO's documents (the NEM Registration and Exemption List) fetched again; a version whose bytes are new is kept beside the earlier ones |
 | `utilake import <zip\|csv\|dir>...` | files you already have, into the lake; no network |
 | `utilake ingest [T,T --from A --to B] [--source ID] [--dry-run]` | archived files into the lake, no network; with no arguments, every archived file not yet in the lake and every lake file behind its rules |
 | `utilake list [T] [--market M] [--kind K] [--grep TEXT] [--coverage] [--files] [--archive] [--ingests [--failed]] [--runs]` | every table with its roles and what the lake holds; one table's columns; the months held and the gaps; the files, the archive, the manifest |

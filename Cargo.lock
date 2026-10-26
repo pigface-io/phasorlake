@@ -3007,6 +3007,7 @@ dependencies = [
  "tokio-util",
  "tracing",
  "tracing-subscriber",
+ "url",
  "utilake-acquire",
  "utilake-core",
  "utilake-gas",

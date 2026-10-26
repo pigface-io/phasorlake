@@ -13,7 +13,7 @@ pub mod kit;
 pub mod sources;
 
 pub use config::NemConfig;
-pub use kit::{KIT_ID, kit, registry};
+pub use kit::{DOCUMENTS, KIT_ID, kit, registry};
 pub use sources::mmsdm::{MmsdmArchive, SOURCE_ID, describe_name, period_of_name};
 pub use sources::reports::{REPORTS_SOURCE_ID, ReportFolders, ReportName, parse_report_name};
 pub use utilake_mms_decode::filename as names;

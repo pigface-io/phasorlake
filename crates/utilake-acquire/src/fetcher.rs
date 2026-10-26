@@ -471,17 +471,30 @@ impl Fetcher {
     /// The archived copy of a remote file, or the file downloaded into the
     /// archive whole, with a sidecar that says where it came from.
     pub async fn fetch(&self, remote: &RemoteFile) -> Result<LocalFile, FetchError> {
-        let url = remote.url.as_str();
-        if let Some(found) = self.archive.lookup(url)? {
+        if let Some(found) = self.archive.lookup(remote.url.as_str())? {
             return Ok(LocalFile::from_held(remote, found, true));
         }
+        self.download(remote, false).await
+    }
+
+    /// Fetches a document AEMO changes in place at one URL (a workbook
+    /// it republishes): downloaded every time, kept as a new version
+    /// beside the earlier ones when its bytes are new, else noted as seen
+    /// again on the version it is (`cached`). No version is written over.
+    pub async fn fetch_document(&self, remote: &RemoteFile) -> Result<LocalFile, FetchError> {
+        self.download(remote, true).await
+    }
+
+    async fn download(&self, remote: &RemoteFile, again: bool) -> Result<LocalFile, FetchError> {
+        let url = remote.url.as_str();
         self.ensure_online(url)?;
         let base = self.archive.path_for(url);
         // Files other URLs keep at the path: both listings of a report
-        // folder are one folder. Never written over.
+        // folder are one folder; and, fetched again, the URL's own earlier
+        // versions. Never written over.
         let others: Vec<Held> = Archive::held_at(&base)?
             .into_iter()
-            .filter(|a| !a.provenance.names(url))
+            .filter(|a| again || !a.provenance.names(url))
             .collect();
         make_room(&base)?;
         let part = Archive::part_path(&base);
@@ -504,6 +517,9 @@ impl Fetcher {
                 },
             };
             add_address(&same.path, also)?;
+            if again {
+                return Ok(LocalFile::from_held(remote, same.clone(), true));
+            }
             let found = self.archive.lookup(url)?.unwrap_or_else(|| same.clone());
             return Ok(LocalFile::from_held(remote, found, false));
         }
@@ -980,6 +996,30 @@ mod tests {
         // What else the record held is kept.
         assert_eq!(sc.content.crc32, Some(7));
         assert!(f.fetch(&remote(s2)).await.unwrap().cached);
+    }
+
+    #[tokio::test]
+    async fn a_document_changed_in_place_keeps_every_version() {
+        let dir = tempfile::tempdir().unwrap();
+        let url = "https://h/files/List.xlsx";
+        let t = Arc::new(StaticTransport::default());
+        t.add(url, Canned::ok(b"week one"))
+            .add(url, Canned::ok(b"week two"))
+            .add(url, Canned::ok(b"week one"));
+        let f = Fetcher::new(Arc::new(t.clone()), Archive::new(dir.path()), fast());
+        let first = f.fetch_document(&remote(url)).await.unwrap();
+        let second = f.fetch_document(&remote(url)).await.unwrap();
+        assert!(!first.cached && !second.cached);
+        assert_eq!(first.path, dir.path().join("h/files/List.xlsx"));
+        assert_ne!(first.path, second.path, "a new version beside the first");
+        assert_eq!(std::fs::read(&first.path).unwrap(), b"week one");
+        assert_eq!(std::fs::read(&second.path).unwrap(), b"week two");
+        // Bytes held already: seen again, nothing written.
+        let third = f.fetch_document(&remote(url)).await.unwrap();
+        assert!(third.cached);
+        assert_eq!(third.path, first.path);
+        assert_eq!(Archive::held_at(&first.path).unwrap().len(), 2);
+        assert_eq!(t.request_count(), 3);
     }
 
     #[tokio::test]

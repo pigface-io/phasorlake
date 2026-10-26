@@ -34,6 +34,7 @@ clap.workspace = true
 indicatif.workspace = true
 serde.workspace = true
 serde_json.workspace = true
+url.workspace = true
 tokio = { workspace = true, features = ["rt-multi-thread", "sync", "macros", "signal"] }
 tokio-util.workspace = true
 tracing.workspace = true

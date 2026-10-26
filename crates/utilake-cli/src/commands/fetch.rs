@@ -10,6 +10,46 @@ use crate::render;
 
 use super::common;
 
+/// `utilake fetch --documents`: every document, fetched again; a version
+/// whose bytes are new is kept, one already held is noted as seen.
+async fn documents(ctx: &Context) -> Result<i32> {
+    let fetcher = ctx.fetcher(None)?;
+    let mut code = 0;
+    for url in utilake_nem::DOCUMENTS {
+        let remote = utilake_acquire::RemoteFile {
+            url: url::Url::parse(url)?,
+            source: "aemo-documents",
+            table: None,
+            period: None,
+            size: None,
+            modified: None,
+            modified_at: None,
+        };
+        match fetcher.fetch_document(&remote).await {
+            Ok(local) => {
+                let kept = if local.cached {
+                    "seen again"
+                } else {
+                    "new version"
+                };
+                if ctx.json {
+                    render::json_line(&serde_json::json!({
+                        "type": "document", "url": url, "path": local.path,
+                        "sha256": local.sha256, "new": !local.cached,
+                    }));
+                } else {
+                    println!("{kept}: {} ({})", local.path.display(), &local.sha256[..12]);
+                }
+            }
+            Err(e) => {
+                eprintln!("error: {url}: {e}");
+                code = if code == 0 { 4 } else { code };
+            }
+        }
+    }
+    Ok(code)
+}
+
 /// The pipeline's choice of side.
 pub fn source_choice(s: SourceArg) -> SourceChoice {
     match s {
@@ -21,6 +61,9 @@ pub fn source_choice(s: SourceArg) -> SourceChoice {
 
 /// `utilake fetch TABLES --from A --to B [--no-ingest]`
 pub async fn fetch(cli: &Cli, ctx: &Context, args: &FetchCmd) -> Result<i32> {
+    if args.documents {
+        return documents(ctx).await;
+    }
     let sel = common::select(ctx, &args.tables)?;
     let Some(w) = common::window(&args.window, &sel.def)? else {
         bail!("fetch needs a window: --from and --to, or --day.");

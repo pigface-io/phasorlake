@@ -276,6 +276,11 @@ pub struct FetchCmd {
     /// Download into the archive only; read nothing into the lake.
     #[arg(long)]
     pub no_ingest: bool,
+    /// Fetch AEMO's documents instead (the NEM Registration and Exemption
+    /// List), each time: a version whose bytes are new is kept beside the
+    /// earlier ones. No table or window.
+    #[arg(long, conflicts_with_all = ["tables", "from", "at", "day", "no_ingest"])]
+    pub documents: bool,
     /// Ingest flags.
     #[command(flatten)]
     pub ingest: IngestArgs,
@@ -287,6 +292,8 @@ Examples:
       The monthly archive's files of two months, read into the lake.
   utilake fetch DISPATCHPRICE --day 2026-08-01 --no-ingest
       One trading day's files into the archive, nothing read.
+  utilake fetch --documents
+      AEMO's registration workbook, a new version kept when it changed.
   utilake fetch DISPATCH_UNIT_SCADA --from 2026-08-28 --to 2026-08-30
       Three days from the report folders (the month is not published yet).
   utilake fetch DISPATCHPRICE --from 2026-08 --to 2026-08 --source daily --dry-run
@@ -650,6 +657,9 @@ mod tests {
             other => panic!("{other:?}"),
         }
         assert!(Cli::try_parse_from(["utilake", "get", "T", "--day", "2024-01-01"]).is_err());
+        let c = Cli::try_parse_from(["utilake", "fetch", "--documents"]).unwrap();
+        assert!(matches!(c.command, Command::Fetch(f) if f.documents));
+        assert!(Cli::try_parse_from(["utilake", "fetch", "T", "--documents"]).is_err());
         assert!(
             Cli::try_parse_from([
                 "utilake",
