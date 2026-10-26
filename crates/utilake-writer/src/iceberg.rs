@@ -11,6 +11,10 @@
 //!   file, entry), and each run of outputs under one schema and one AEMO
 //!   version is one snapshot, with that schema current; its summary names
 //!   the run's first and last source file, its months and its version;
+//! - after the runs, the schema of every field the history has, under its
+//!   newest name, is made current ([`union`]): the lake's files hold every
+//!   field, so a reader by field id reads every column of every file, and
+//!   a snapshot keeps its run's schema for a read of the table as it was;
 //! - an output whose block had no schema of the history (a column list no
 //!   run of it fits) is written under the table's last schema, and
 //!   its snapshot says so (`utilake.schema=latest`): a reader takes its
@@ -176,7 +180,45 @@ pub fn build_table(dir: &Path, t: &TableSchemas, outputs: &[LiveOutput]) -> Resu
         built.rows += run.iter().map(|o| o.rows).sum::<u64>();
         i = j;
     }
+    // The table reads as its files hold it: every field of every schema.
+    let all = union(&t.schemas);
+    store.set_schema(&utilake_iceberg::provenance::lake_schema(&all), at + 1)?;
     Ok(built)
+}
+
+/// Every field any schema has, by id in id order (the order the lake's
+/// files hold them), under its newest name: required where every schema
+/// with it requires it, and the identifier fields the schemas' keys share
+/// that stay required. Its id is one past the schemas'.
+pub fn union(schemas: &[Schema]) -> Schema {
+    let mut fields: Vec<utilake_iceberg::Field> = Vec::new();
+    for f in schemas.iter().flat_map(|s| &s.fields) {
+        let required = schemas
+            .iter()
+            .filter_map(|s| s.field(f.id))
+            .all(|g| g.required);
+        let f = utilake_iceberg::Field {
+            required,
+            ..f.clone()
+        };
+        match fields.binary_search_by_key(&f.id, |g| g.id) {
+            Ok(i) => fields[i] = f,
+            Err(i) => fields.insert(i, f),
+        }
+    }
+    let mut identifier_field_ids: Vec<u32> = schemas
+        .iter()
+        .flat_map(|s| s.identifier_field_ids.iter().copied())
+        .filter(|id| fields.iter().any(|f| f.id == *id && f.required))
+        .collect();
+    identifier_field_ids.sort_unstable();
+    identifier_field_ids.dedup();
+    Schema {
+        schema_id: schemas.iter().map(|s| s.schema_id + 1).max().unwrap_or(0),
+        last_column_id: fields.iter().map(|f| f.id).max().unwrap_or(0),
+        fields,
+        identifier_field_ids,
+    }
 }
 
 #[cfg(test)]
@@ -272,6 +314,48 @@ mod tests {
     }
 
     #[test]
+    fn the_union_is_every_field_under_its_newest_name() {
+        let old = Schema {
+            schema_id: 0,
+            fields: vec![
+                field(1, "REGIONID", IcebergType::String, true),
+                field(2, "SPELT", IcebergType::Double, true),
+            ],
+            identifier_field_ids: vec![1],
+            last_column_id: 2,
+        };
+        let new = Schema {
+            schema_id: 3,
+            fields: vec![
+                field(2, "SPELLED", IcebergType::Double, false),
+                field(1, "REGIONID", IcebergType::String, true),
+                field(4, "AREAID", IcebergType::String, true),
+            ],
+            identifier_field_ids: vec![1, 4],
+            last_column_id: 4,
+        };
+        let u = union(&[old.clone(), new]);
+        assert_eq!(u.schema_id, 4);
+        assert_eq!(u.last_column_id, 4);
+        let named: Vec<(u32, &str, bool)> = u
+            .fields
+            .iter()
+            .map(|f| (f.id, f.name.as_str(), f.required))
+            .collect();
+        assert_eq!(
+            named,
+            [
+                (1, "REGIONID", true),
+                (2, "SPELLED", false),
+                (4, "AREAID", true)
+            ]
+        );
+        assert_eq!(u.identifier_field_ids, [1, 4]);
+        assert_eq!(union(&[]).fields, []);
+        assert_eq!(union(std::slice::from_ref(&old)).fields, old.fields);
+    }
+
+    #[test]
     fn runs_of_one_schema_and_version_are_snapshots() {
         let tmp = tempfile::tempdir().unwrap();
         let dir = tmp.path().join("nem").join("dispatchprice");
@@ -307,12 +391,22 @@ mod tests {
         );
         let (version, meta) = Store::at(&dir).current().unwrap();
         let ids: Vec<u32> = meta.schemas.iter().map(|s| s.schema_id).collect();
-        assert_eq!(ids, [0, 1], "the history's schemas, with its ids");
-        let last = meta.schemas[1]
+        assert_eq!(
+            ids,
+            [0, 1, 2],
+            "the history's schemas, with its ids, and their union"
+        );
+        assert_eq!(meta.current_schema_id, 2, "the union is current");
+        let last = meta.schemas[2]
             .fields
             .iter()
             .map(|f| f.name.as_str())
             .collect::<Vec<_>>();
+        assert_eq!(
+            &last[..3],
+            ["REGIONID", "RRP", "RAISE1SECRRP"],
+            "every field, in id order"
+        );
         assert_eq!(
             &last[last.len() - 4..],
             [
