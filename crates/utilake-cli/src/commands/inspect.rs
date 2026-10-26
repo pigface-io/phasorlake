@@ -3,11 +3,12 @@
 use std::path::Path;
 
 use anyhow::Result;
-use utilake_core::Diagnose;
 use utilake_kit::container::walk_csv_entries;
+use utilake_mms_conform::MmsDiagnose;
 use utilake_mms_conform::inspect::{BlockSummary, InspectSink};
 use utilake_mms_decode::scan::{ScanOptions, scan};
 use utilake_mms_registry::{Mode, ResolveOptions};
+use utilake_pipeline::archive_diagnostic;
 
 use crate::context::Context;
 use crate::render;
@@ -63,12 +64,12 @@ fn scan_blocks(ctx: &Context, path: &Path) -> Result<Vec<(String, BlockSummary)>
         })
         .map_err(|e| match e {
             utilake_kit::container::WalkError::Archive(a) => {
-                anyhow::anyhow!("{}", a.diagnostic().render())
+                anyhow::anyhow!("{}", archive_diagnostic(&a).render())
             }
             utilake_kit::container::WalkError::Callback(c) => c,
         })?;
         for a in &walked.failed {
-            eprintln!("{}", a.diagnostic().render());
+            eprintln!("{}", archive_diagnostic(a).render());
         }
         if !skipped.is_empty() && !ctx.json {
             eprintln!(

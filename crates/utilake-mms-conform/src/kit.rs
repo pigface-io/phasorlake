@@ -8,7 +8,7 @@ use std::sync::Arc;
 
 use utilake_core::{Diagnose, Diagnostic, Period, YearMonth};
 
-use crate::error::{RowError, RowFailure, SinkError};
+use crate::error::{MmsDiagnose, RowError, RowFailure, SinkError};
 use utilake_kit::container::has_extension;
 use utilake_kit::{
     Block, BlockSink, Catalog, DecodeCtx, DecodeStats, Decoder, Flow, LoadMode, RowAt, Strictness,

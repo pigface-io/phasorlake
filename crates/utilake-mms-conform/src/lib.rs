@@ -32,6 +32,6 @@ pub mod mmstime;
 pub mod plain;
 
 pub use arrow_sink::{ArrowSink, BlockBatch};
-pub use error::{RowError, RowFailure, ScanError, SinkError, ValueError};
+pub use error::{MmsDiagnose, RowError, RowFailure, ScanError, SinkError, ValueError};
 pub use kit::{MmsCatalog, MmsDecoder};
 pub use plain::{PlainCsvDecoder, SniffedCsv, WemdeDecoder};

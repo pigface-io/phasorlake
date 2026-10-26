@@ -14,7 +14,7 @@ use utilake_mms_registry::{
     Cast, ConformancePlan, Mode, Registry, ResolveOptions, Resolved, TableId,
 };
 
-use crate::error::{RowError, RowFailure, SinkError, ValueError};
+use crate::error::{MmsDiagnose, RowError, RowFailure, SinkError, ValueError};
 use utilake_mms_decode::PREFIX_FIELDS;
 use utilake_mms_decode::fields::Row;
 use utilake_mms_decode::scan::{Flow, Pos, Sink};

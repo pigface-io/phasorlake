@@ -855,8 +855,8 @@ pub fn ingest_file(input: IngestInput) -> FileReport {
             },
             &mut |_| {},
         );
-        let place = |e: &dyn Diagnose| {
-            let mut d = e.diagnostic();
+        let place = |e: &ArchiveError| {
+            let mut d = crate::archive::archive_diagnostic(e);
             d.request = Some(input.request.clone());
             d.url = Some(input.local.remote.url.to_string());
             d.file = Some(path.display().to_string());

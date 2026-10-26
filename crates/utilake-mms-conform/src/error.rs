@@ -125,6 +125,78 @@ pub type RowFailure = utilake_mms_decode::RowFailure<ValueError, SinkError>;
 /// A failure that ends the scan of one file.
 pub type ScanError = utilake_mms_decode::ScanError<ValueError, SinkError>;
 
+/// The diagnostic of a failure the MMS scanner raises. The scanner's
+/// errors are the decoder's types, which know no diagnostics; their codes
+/// are this format's, so they are given here.
+pub trait MmsDiagnose {
+    /// The diagnostic for this error, with whatever context it carries.
+    fn diagnostic(&self) -> Diagnostic;
+}
+
+/// A row the scanner or a sink refused, diagnosed: the scanner's own
+/// faults with their codes, a value's by the value.
+impl MmsDiagnose for RowError {
+    fn diagnostic(&self) -> Diagnostic {
+        row_diagnostic(self)
+    }
+}
+
+/// A scan that ended, diagnosed: the scanner's own failures with their
+/// codes, the sink's by the sink; each with the line it names.
+impl MmsDiagnose for ScanError {
+    fn diagnostic(&self) -> Diagnostic {
+        scan_diagnostic(self)
+    }
+}
+
+fn row_diagnostic(e: &RowError) -> Diagnostic {
+    let msg = e.to_string();
+    match e {
+        RowError::FieldCount { declared, observed } => {
+            Diagnostic::error("csv.field_count_mismatch", Category::Csv, msg)
+                .expected_observed(format!("{declared} fields"), format!("{observed} fields"))
+        }
+        RowError::BlockMismatch { .. } => {
+            Diagnostic::error("csv.block_mismatch", Category::Csv, msg)
+        }
+        RowError::TooShort(_) => Diagnostic::error("csv.row_too_short", Category::Csv, msg),
+        RowError::UnknownRecord(_) => Diagnostic::error("csv.unknown_record", Category::Csv, msg),
+        RowError::Value(v) => v.diagnostic(),
+    }
+}
+
+fn scan_diagnostic(e: &ScanError) -> Diagnostic {
+    use utilake_mms_decode::ScanError as E;
+    let msg = e.to_string();
+    let mut d = match e {
+        E::Io { source, .. } => {
+            Diagnostic::error("csv.read_failed", Category::Csv, msg).caused_by(source)
+        }
+        E::LineTooLong { .. } => Diagnostic::error("csv.line_too_long", Category::Csv, msg),
+        E::DataBeforeHeader { .. } => {
+            Diagnostic::error("csv.data_before_header", Category::Csv, msg)
+        }
+        E::BadHeader { .. } => Diagnostic::error("csv.header_malformed", Category::Csv, msg),
+        E::TooManyBadRows { first, .. } => {
+            // The refusal says exactly what the first bad row had
+            // wrong: its column, what was expected and what was there.
+            let row = row_diagnostic(first);
+            let mut d = Diagnostic::error("csv.too_many_bad_rows", Category::Csv, msg);
+            d.column = row.column;
+            d.expected = row.expected;
+            d.observed = row.observed;
+            d.cause = vec![format!("{} [{}]", row.message, row.code)];
+            d
+        }
+        E::Sink(e) => e.diagnostic(),
+        E::Stopped { .. } => Diagnostic::error("csv.stopped_fail_fast", Category::Csv, msg),
+    };
+    if let Some(l) = e.line() {
+        d.line = Some(l);
+    }
+    d
+}
+
 /// A failure of the thing rows are delivered to; ends the scan.
 #[derive(Debug, thiserror::Error)]
 pub enum SinkError {

@@ -33,8 +33,7 @@
   ],
   "utilake-core": [
     "utilake-mms-decode",
-    "utilake-provenance",
-    "utilake-zip"
+    "utilake-provenance"
   ],
   "utilake-gas": [
     "utilake-acquire",

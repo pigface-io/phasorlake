@@ -13,7 +13,6 @@ workspace = true
 
 [dependencies]
 utilake-mms-decode.workspace = true
-utilake-zip.workspace = true
 utilake-provenance.workspace = true
 fast-float2.workspace = true
 memchr.workspace = true

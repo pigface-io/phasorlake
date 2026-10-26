@@ -52,13 +52,13 @@ Every error and warning utilake reports carries one of these codes. Codes are st
 | code | raised in |
 |---|---|
 | `zip.bad_directory` | `crates/utilake-mirror/src/map.rs` |
-| `zip.bad_entry` | `crates/utilake-mirror/src/map.rs` |
+| `zip.bad_entry` | `crates/utilake-pipeline/src/archive.rs` |
 | `zip.entry_corrupt` | `crates/utilake-acquire/src/error.rs` |
-| `zip.nesting_too_deep` | `crates/utilake-mirror/src/map.rs` |
-| `zip.no_entry` | `crates/utilake-core/src/diag.rs` |
+| `zip.nesting_too_deep` | `crates/utilake-pipeline/src/archive.rs` |
+| `zip.no_entry` | `crates/utilake-pipeline/src/archive.rs` |
 | `zip.not_a_zip` | `crates/utilake-mirror/src/map.rs` |
-| `zip.open_failed` | `crates/utilake-mirror/src/error.rs` |
-| `zip.spool_failed` | `crates/utilake-core/src/diag.rs` |
+| `zip.open_failed` | `crates/utilake-pipeline/src/archive.rs` |
+| `zip.spool_failed` | `crates/utilake-pipeline/src/archive.rs` |
 | `zip.too_big` | `crates/utilake-mirror/src/map.rs` |
 | `zip.too_many_entries` | `crates/utilake-mirror/src/map.rs` |
 
@@ -66,19 +66,19 @@ Every error and warning utilake reports carries one of these codes. Codes are st
 
 | code | raised in |
 |---|---|
-| `csv.block_mismatch` | `crates/utilake-core/src/diag.rs` |
-| `csv.data_before_header` | `crates/utilake-core/src/diag.rs` |
-| `csv.field_count_mismatch` | `crates/utilake-core/src/diag.rs` |
+| `csv.block_mismatch` | `crates/utilake-mms-conform/src/error.rs` |
+| `csv.data_before_header` | `crates/utilake-mms-conform/src/error.rs` |
+| `csv.field_count_mismatch` | `crates/utilake-mms-conform/src/error.rs` |
 | `csv.footer_count_mismatch` | `crates/utilake-pipeline/src/ingest_file.rs` |
-| `csv.header_malformed` | `crates/utilake-mms-conform/src/plain.rs` |
+| `csv.header_malformed` | `crates/utilake-mms-conform/src/error.rs` |
 | `csv.header_missing` | `crates/utilake-mms-conform/src/plain.rs` |
-| `csv.line_too_long` | `crates/utilake-mms-conform/src/plain.rs` |
+| `csv.line_too_long` | `crates/utilake-mms-conform/src/error.rs` |
 | `csv.markup_skipped` | `crates/utilake-mms-conform/src/plain.rs` |
 | `csv.read_failed` | `crates/utilake-pipeline/src/ingest_file.rs` |
-| `csv.row_too_short` | `crates/utilake-core/src/diag.rs` |
-| `csv.stopped_fail_fast` | `crates/utilake-mms-conform/src/plain.rs` |
-| `csv.too_many_bad_rows` | `crates/utilake-mms-conform/src/plain.rs` |
-| `csv.unknown_record` | `crates/utilake-core/src/diag.rs` |
+| `csv.row_too_short` | `crates/utilake-mms-conform/src/error.rs` |
+| `csv.stopped_fail_fast` | `crates/utilake-mms-conform/src/error.rs` |
+| `csv.too_many_bad_rows` | `crates/utilake-mms-conform/src/error.rs` |
+| `csv.unknown_record` | `crates/utilake-mms-conform/src/error.rs` |
 | `csv.unnamed_block` | `crates/utilake-mms-conform/src/plain.rs` |
 
 ## json

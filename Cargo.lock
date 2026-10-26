@@ -3037,7 +3037,6 @@ dependencies = [
  "toml",
  "utilake-mms-decode",
  "utilake-provenance",
- "utilake-zip",
  "xxhash-rust",
 ]
 
