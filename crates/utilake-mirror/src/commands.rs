@@ -1071,10 +1071,13 @@ impl Tracker {
     fn drain(&mut self) {
         use utilake_mirror::net::Event;
         while let Ok(e) = self.events.try_recv() {
-            match e {
-                Event::DownloadStarted { url, .. } => self.flying.insert(url, 0),
-                Event::DownloadProgress { url, bytes } => self.flying.insert(url, bytes),
-            };
+            // A fetcher reports only its downloads.
+            if let Event::DownloadStarted { url, .. } = &e {
+                self.flying.insert(url.clone(), 0);
+            }
+            if let Event::DownloadProgress { url, bytes } = e {
+                self.flying.insert(url, bytes);
+            }
         }
     }
 

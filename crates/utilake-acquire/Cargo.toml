@@ -16,7 +16,7 @@ utilake-plain-decode.workspace = true
 utilake-core.workspace = true
 utilake-zip.workspace = true
 utilake-provenance.workspace = true
-utilake-net = { workspace = true, features = ["http"] }
+utilake-net = { workspace = true, features = ["http", "fetch"] }
 async-trait.workspace = true
 bytes.workspace = true
 crc32fast.workspace = true

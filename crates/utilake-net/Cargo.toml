@@ -12,7 +12,9 @@ publish.workspace = true
 workspace = true
 
 [features]
-default = ["http"]
+default = ["http", "fetch"]
+# Paced, retried requests and bodies streamed to disk, on tokio.
+fetch = ["dep:tokio", "dep:serde", "dep:serde_json", "dep:crc32fast"]
 # The reqwest transport: what reaches a real server.
 http = ["dep:reqwest"]
 # A local HTTP server and archive records for other crates' tests.
@@ -23,11 +25,15 @@ utilake-core.workspace = true
 utilake-provenance.workspace = true
 async-trait.workspace = true
 bytes.workspace = true
+crc32fast = { workspace = true, optional = true }
 futures.workspace = true
 reqwest = { workspace = true, optional = true }
 rustix.workspace = true
+serde = { workspace = true, optional = true }
+serde_json = { workspace = true, optional = true }
 sha2.workspace = true
 thiserror.workspace = true
+tokio = { workspace = true, optional = true, features = ["sync", "time", "rt"] }
 
 [dev-dependencies]
 tempfile.workspace = true

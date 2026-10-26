@@ -1,23 +1,3 @@
-//! What a download reports while it runs.
+//! What a download reports while it runs: the family's events.
 
-use serde::{Deserialize, Serialize};
-
-/// One thing that happened during a download.
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
-#[serde(tag = "event", rename_all = "snake_case")]
-pub enum Event {
-    /// A download began.
-    DownloadStarted {
-        /// The URL.
-        url: String,
-        /// Content-Length when the server sent one.
-        size: Option<u64>,
-    },
-    /// Bytes arrived.
-    DownloadProgress {
-        /// The URL.
-        url: String,
-        /// Bytes received so far.
-        bytes: u64,
-    },
-}
+pub use utilake_core::event::Event;

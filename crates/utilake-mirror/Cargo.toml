@@ -17,7 +17,7 @@ path = "src/main.rs"
 
 [dependencies]
 utilake-core.workspace = true
-utilake-net = { workspace = true, features = ["http"] }
+utilake-net = { workspace = true, features = ["http", "fetch"] }
 utilake-plain-decode.workspace = true
 utilake-zip.workspace = true
 utilake-provenance.workspace = true
@@ -41,7 +41,7 @@ url.workspace = true
 zip.workspace = true
 
 [dev-dependencies]
-utilake-net = { workspace = true, features = ["http", "test-support"] }
+utilake-net = { workspace = true, features = ["http", "fetch", "test-support"] }
 criterion.workspace = true
 
 [[bench]]

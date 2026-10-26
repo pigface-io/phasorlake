@@ -3228,9 +3228,12 @@ version = "0.1.0"
 dependencies = [
  "async-trait",
  "bytes",
+ "crc32fast",
  "futures",
  "reqwest",
  "rustix",
+ "serde",
+ "serde_json",
  "sha2",
  "tempfile",
  "thiserror",

@@ -2,8 +2,11 @@
 
 The archive is where every downloaded file is kept, untransformed. The
 lake reads it; utilake-mirror and the lake's own `fetch` both write it,
-through the one store of `utilake_provenance::archive`, so a file either
-downloads is never downloaded again by the other.
+through the one store of `utilake_provenance::archive` and the one fetcher
+core of `utilake-net`. Give the lake and the mirror the same home
+(`UTILAKE_HOME` and `UTILAKE_MIRROR_HOME`), and a file either downloads is
+never downloaded again by the other: the archive is `{home}/archive/` for
+both, beside the lake's `lake/` and the mirror's `state/`.
 
 ## Layout
 

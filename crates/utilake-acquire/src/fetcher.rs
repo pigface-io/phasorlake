@@ -15,28 +15,23 @@
 //! was. When the picks are most of the zip, or the server ignores ranges,
 //! the zip is downloaded whole instead.
 
-use std::io::{Read as _, Write as _};
+use std::io::Read as _;
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
-use std::time::{Duration, Instant};
 
-use bytes::Bytes;
-use futures::StreamExt;
-use futures::stream::BoxStream;
-use sha2::Digest;
-use tokio::sync::Mutex;
 use utilake_core::event::Event;
 use utilake_core::timetext::{self, Stamp};
 
 use utilake_zip::zipdir::{DirectoryReader, Entry, LOCAL_HEADER, Step, TAIL, local_header_len};
 
 use crate::archive::{
-    Address, Archive, Content, Held, Listed, Provenance, Served, Sha256, Span as ZipSpan, Via,
-    add_address,
+    Address, Archive, Content, Held, Listed, Provenance, Served, Span as ZipSpan, Via, add_address,
 };
 use crate::error::FetchError;
 use crate::source::{Pick, Picks, RemoteFile};
-use crate::transport::{HttpResponse, Span, Transport};
+use crate::transport::{Span, Transport};
+pub use utilake_net::fetch::{FetcherConfig, RangeRead};
+use utilake_net::fetch::{Requests, stream_to_file};
 
 /// A file on disk, ready to read.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -101,19 +96,6 @@ fn listed_of(remote: &RemoteFile) -> Listed {
     }
 }
 
-/// What one ranged request returned.
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub struct RangeRead {
-    /// The span's bytes.
-    pub bytes: Vec<u8>,
-    /// The whole file's size, from `Content-Range`.
-    pub total_size: Option<u64>,
-    /// The file's `ETag`.
-    pub etag: Option<String>,
-    /// The file's `Last-Modified`, as sent.
-    pub last_modified: Option<String>,
-}
-
 /// What [`Fetcher::fetch_picks`] fetched.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Picked {
@@ -139,57 +121,19 @@ impl Picked {
 /// in the same request.
 const SLACK: u64 = 256;
 
-/// Knobs.
-#[derive(Debug, Clone)]
-pub struct FetcherConfig {
-    /// Attempts per request.
-    pub attempts: u32,
-    /// First backoff.
-    pub backoff: Duration,
-    /// Longest backoff.
-    pub max_backoff: Duration,
-    /// Minimum gap between two requests.
-    pub min_interval: Duration,
-}
-
-impl Default for FetcherConfig {
-    fn default() -> Self {
-        Self {
-            attempts: 5,
-            backoff: Duration::from_millis(500),
-            max_backoff: Duration::from_secs(30),
-            min_interval: Duration::from_millis(250),
-        }
-    }
-}
-
 /// Fetches remote files into the archive.
 pub struct Fetcher {
-    transport: Arc<dyn Transport>,
+    requests: Requests,
     archive: Archive,
-    config: FetcherConfig,
-    last_request: Mutex<Option<Instant>>,
     events: Option<tokio::sync::mpsc::Sender<Event>>,
-    /// Set once the server refuses this client (HTTP 403, or 429 through
-    /// every retry): status, the URL refused and the start of its body.
-    /// Every later request fails at once without touching the network.
-    blocked: std::sync::OnceLock<(u16, String, Vec<u8>)>,
 }
-
-/// Chunks in flight between the download and the writer.
-const SPOOL_CHUNKS: usize = 16;
-/// Bytes the writer gathers before each write.
-const WRITE_BUFFER: usize = 1 << 20;
 
 impl Fetcher {
     /// A fetcher over a transport and an archive.
     pub fn new(transport: Arc<dyn Transport>, archive: Archive, config: FetcherConfig) -> Self {
         Self {
-            transport,
+            requests: Requests::new(transport, config),
             archive,
-            config,
-            last_request: Mutex::new(None),
-            blocked: std::sync::OnceLock::new(),
             events: None,
         }
     }
@@ -208,66 +152,23 @@ impl Fetcher {
 
     /// Whether the server has refused this client during this run.
     pub fn is_blocked(&self) -> bool {
-        self.blocked.get().is_some()
-    }
-
-    fn blocked_error(&self, url: &str) -> Option<FetchError> {
-        self.blocked
-            .get()
-            .map(|(status, first_url, body_head)| FetchError::Blocked {
-                url: url.to_owned(),
-                status: *status,
-                first_url: first_url.clone(),
-                body_head: body_head.clone(),
-            })
+        self.requests.is_blocked()
     }
 
     fn ensure_online(&self, url: &str) -> Result<(), FetchError> {
-        if self.transport.is_offline() {
-            return Err(FetchError::Offline {
-                url: url.to_owned(),
-            });
-        }
-        Ok(())
-    }
-
-    async fn pace(&self) {
-        let mut last = self.last_request.lock().await;
-        if let Some(t) = *last {
-            let since = t.elapsed();
-            if since < self.config.min_interval {
-                tokio::time::sleep(self.config.min_interval - since).await;
-            }
-        }
-        *last = Some(Instant::now());
+        self.requests.ensure_online(url)
     }
 
     /// GETs a page (a directory listing, a report page) into memory.
     pub async fn fetch_listing(&self, url: &str) -> Result<Vec<u8>, FetchError> {
-        self.ensure_online(url)?;
-        self.get_with_retries(url, None, |resp| read_all(url, resp))
-            .await
+        self.requests.fetch_listing(url).await
     }
 
     /// GETs one span of `url` into memory, with what the server said of
     /// the whole file. A server that answers with the whole file instead
     /// is [`FetchError::RangeIgnored`].
     pub async fn fetch_range(&self, url: &str, span: Span) -> Result<RangeRead, FetchError> {
-        self.ensure_online(url)?;
-        self.get_with_retries(url, Some(span), |resp| async move {
-            let (total_size, etag, last_modified) = (
-                resp.total_size,
-                resp.etag.clone(),
-                resp.last_modified.clone(),
-            );
-            Ok(RangeRead {
-                bytes: read_all(url, resp).await?,
-                total_size,
-                etag,
-                last_modified,
-            })
-        })
-        .await
+        self.requests.fetch_range(url, span).await
     }
 
     /// The entries of the zip `remote` that `pick` wants, each fetched
@@ -499,13 +400,14 @@ impl Fetcher {
         make_room(&base)?;
         let part = Archive::part_path(&base);
         let streamed = self
+            .requests
             .get_with_retries(url, None, |resp| {
-                stream_to_file(url, resp, &part, self.events.clone())
+                stream_to_file(url, resp, &part, 0, false, self.events.clone())
             })
             .await?;
         if let Some(same) = others
             .iter()
-            .find(|a| a.provenance.content.sha256.hex() == streamed.sha256)
+            .find(|a| a.provenance.content.sha256 == streamed.sha256)
         {
             let _ = std::fs::remove_file(&part);
             let also = Address {
@@ -540,11 +442,8 @@ impl Fetcher {
         let provenance = Provenance::new(
             Content {
                 size: streamed.size,
-                sha256: streamed
-                    .sha256
-                    .parse::<Sha256>()
-                    .expect("the download's own hex"),
-                crc32: None,
+                sha256: streamed.sha256,
+                crc32: Some(streamed.crc32),
             },
             format!("utilake/{}", env!("CARGO_PKG_VERSION")),
             Address {
@@ -569,85 +468,6 @@ impl Fetcher {
             Held { path, provenance },
             false,
         ))
-    }
-
-    /// GETs `url` (one `span` of it when given) and hands a 200 (a 206 for
-    /// a span) to `consume`, pacing every attempt, retrying what is worth
-    /// retrying with backoff, and tripping the breaker on a refusal. A
-    /// span answered with the whole file is not retried: the server
-    /// ignores ranges.
-    async fn get_with_retries<T, F, Fut>(
-        &self,
-        url: &str,
-        span: Option<Span>,
-        consume: F,
-    ) -> Result<T, FetchError>
-    where
-        F: Fn(HttpResponse) -> Fut,
-        Fut: std::future::Future<Output = Result<T, FetchError>>,
-    {
-        let mut last: Option<FetchError> = None;
-        for attempt in 0..self.config.attempts.max(1) {
-            if attempt > 0 {
-                let exp = self
-                    .config
-                    .backoff
-                    .saturating_mul(1u32 << (attempt - 1).min(16));
-                let jitter = Duration::from_millis(u64::from(attempt) * 37 % 250);
-                tokio::time::sleep(exp.min(self.config.max_backoff) + jitter).await;
-            }
-            // A server that has refused us is left alone for the rest of the run.
-            if let Some(e) = self.blocked_error(url) {
-                return Err(e);
-            }
-            self.pace().await;
-            let response = match span {
-                Some(s) => self.transport.get_range(url, s).await,
-                None => self.transport.get(url).await,
-            };
-            let result = match response {
-                Err(e) => Err(e),
-                Ok(resp) if resp.status == 200 && span.is_some() => Err(FetchError::RangeIgnored {
-                    url: url.to_owned(),
-                }),
-                Ok(resp) if resp.status == 200 || (resp.status == 206 && span.is_some()) => {
-                    consume(resp).await
-                }
-                Ok(resp) if resp.status == 403 => {
-                    let head = read_head(resp.body, 256).await;
-                    let _ = self.blocked.set((403, url.to_owned(), head));
-                    return Err(self.blocked_error(url).expect("just set"));
-                }
-                Ok(resp) => Err(FetchError::HttpStatus {
-                    url: url.to_owned(),
-                    status: resp.status,
-                    body_head: read_head(resp.body, 256).await,
-                }),
-            };
-            match result {
-                Ok(v) => return Ok(v),
-                Err(e) if e.is_retryable() => last = Some(e),
-                Err(e) => return Err(e),
-            }
-        }
-        // Too Many Requests through every retry is the same refusal, stated politely.
-        if let Some(FetchError::HttpStatus {
-            status: 429,
-            body_head,
-            ..
-        }) = &last
-        {
-            let _ = self.blocked.set((429, url.to_owned(), body_head.clone()));
-            return Err(self.blocked_error(url).expect("just set"));
-        }
-        Err(FetchError::RetriesExhausted {
-            url: url.to_owned(),
-            attempts: self.config.attempts.max(1),
-            last: Box::new(last.unwrap_or(FetchError::Connect {
-                url: url.to_owned(),
-                message: "no attempt was made".into(),
-            })),
-        })
     }
 }
 
@@ -699,162 +519,11 @@ fn unpack(e: &Entry, data: &[u8]) -> Result<Vec<u8>, String> {
     Ok(bytes)
 }
 
-async fn read_head(mut body: BoxStream<'static, Result<Bytes, String>>, limit: usize) -> Vec<u8> {
-    let mut out = Vec::with_capacity(limit);
-    while out.len() < limit {
-        match body.next().await {
-            Some(Ok(chunk)) => {
-                let take = chunk.len().min(limit - out.len());
-                out.extend_from_slice(&chunk[..take]);
-            }
-            _ => break,
-        }
-    }
-    out
-}
-
-async fn read_all(url: &str, resp: HttpResponse) -> Result<Vec<u8>, FetchError> {
-    let mut body = resp.body;
-    let expected = resp.content_length;
-    let room = expected.map_or(64 << 10, |n| usize::try_from(n).unwrap_or(0));
-    let mut out = Vec::with_capacity(room);
-    while let Some(chunk) = body.next().await {
-        let chunk = chunk.map_err(|message| FetchError::Body {
-            url: url.to_owned(),
-            received: out.len() as u64,
-            message,
-        })?;
-        out.extend_from_slice(&chunk);
-    }
-    if let Some(expected) = expected
-        && expected != out.len() as u64
-    {
-        return Err(FetchError::ContentLength {
-            url: url.to_owned(),
-            expected,
-            received: out.len() as u64,
-        });
-    }
-    Ok(out)
-}
-
-/// A completed download: its bytes' hash and size, and what the server said.
-#[derive(Debug)]
-struct Streamed {
-    sha256: String,
-    size: u64,
-    etag: Option<String>,
-    last_modified: Option<String>,
-}
-
-/// Writes the chunks it receives to `part` through a 1 MiB buffer, hashing
-/// them on the way, and makes the file durable. Runs on a blocking thread.
-fn spool(
-    part: &Path,
-    mut rx: tokio::sync::mpsc::Receiver<Bytes>,
-) -> std::io::Result<(String, u64)> {
-    let file = std::fs::File::create(part)?;
-    let mut out = std::io::BufWriter::with_capacity(WRITE_BUFFER, file);
-    let mut hasher = sha2::Sha256::new();
-    let mut size = 0u64;
-    while let Some(chunk) = rx.blocking_recv() {
-        hasher.update(&chunk);
-        out.write_all(&chunk)?;
-        size += chunk.len() as u64;
-    }
-    let file = out
-        .into_inner()
-        .map_err(std::io::IntoInnerError::into_error)?;
-    file.sync_all()?;
-    Ok((Sha256(hasher.finalize().into()).hex(), size))
-}
-
-async fn stream_to_file(
-    url: &str,
-    resp: HttpResponse,
-    part: &Path,
-    events: Option<tokio::sync::mpsc::Sender<Event>>,
-) -> Result<Streamed, FetchError> {
-    let total = resp.content_length;
-    if let Some(tx) = &events {
-        let _ = tx.try_send(Event::DownloadStarted {
-            url: url.to_owned(),
-            size: total,
-        });
-    }
-    let (tx, rx) = tokio::sync::mpsc::channel::<Bytes>(SPOOL_CHUNKS);
-    let owned = part.to_owned();
-    let writer = tokio::task::spawn_blocking(move || spool(&owned, rx));
-    let mut body = resp.body;
-    let mut received: u64 = 0;
-    let mut last_event = 0u64;
-    let mut broken = None;
-    while let Some(chunk) = body.next().await {
-        let chunk = match chunk {
-            Ok(c) => c,
-            Err(message) => {
-                broken = Some(message);
-                break;
-            }
-        };
-        received += chunk.len() as u64;
-        // The writer stopped: its error says why.
-        if tx.send(chunk).await.is_err() {
-            break;
-        }
-        if received - last_event >= 4 << 20
-            && let Some(tx) = &events
-        {
-            let _ = tx.try_send(Event::DownloadProgress {
-                url: url.to_owned(),
-                bytes: received,
-            });
-            last_event = received;
-        }
-    }
-    drop(tx);
-    let written = writer
-        .await
-        .unwrap_or_else(|e| Err(std::io::Error::other(e)));
-    let fail = |e: FetchError| {
-        let _ = std::fs::remove_file(part);
-        Err(e)
-    };
-    if let Some(message) = broken {
-        return fail(FetchError::Body {
-            url: url.to_owned(),
-            received,
-            message,
-        });
-    }
-    let (sha256, size) = match written {
-        Ok(w) => w,
-        Err(source) => {
-            return fail(FetchError::CacheIo {
-                path: part.display().to_string(),
-                source,
-            });
-        }
-    };
-    if let Some(expected) = total
-        && expected != size
-    {
-        return fail(FetchError::ContentLength {
-            url: url.to_owned(),
-            expected,
-            received: size,
-        });
-    }
-    Ok(Streamed {
-        sha256,
-        size,
-        etag: resp.etag,
-        last_modified: resp.last_modified,
-    })
-}
-
 #[cfg(test)]
 mod tests {
+    use std::time::{Duration, Instant};
+
+    use bytes::Bytes;
     use url::Url;
     use utilake_core::YearMonth;
 
@@ -1195,9 +864,11 @@ mod picks_tests {
     use url::Url;
     use utilake_core::YearMonth;
 
+    use std::time::Duration;
+
     use super::*;
     use crate::source::Query;
-    use crate::transport::{Canned, StaticTransport};
+    use crate::transport::{Canned, HttpResponse, StaticTransport};
 
     const ZIP: &str = "https://h/A/MMSDM_2014_01.zip";
 
@@ -1724,54 +1395,5 @@ mod picks_tests {
             "{e}"
         );
         assert_eq!(t.request_count(), 2);
-    }
-
-    #[tokio::test]
-    async fn streaming_to_a_file_reports_progress_and_a_writer_that_stopped() {
-        let dir = tempfile::tempdir().unwrap();
-        let body = |bytes: Bytes| HttpResponse {
-            status: 200,
-            content_length: Some(bytes.len() as u64),
-            total_size: None,
-            etag: None,
-            last_modified: None,
-            body: futures::stream::iter(
-                (0..bytes.len())
-                    .step_by(1 << 20)
-                    .map(|i| Ok(bytes.slice(i..(i + (1 << 20)).min(bytes.len()))))
-                    .collect::<Vec<_>>(),
-            )
-            .boxed(),
-        };
-        // Five mebibytes in one-mebibyte chunks: one progress event at four.
-        let (tx, mut rx) = tokio::sync::mpsc::channel(8);
-        let big = Bytes::from(vec![7u8; 5 << 20]);
-        let part = dir.path().join("big.part");
-        let s = stream_to_file("https://h/big", body(big), &part, Some(tx))
-            .await
-            .unwrap();
-        assert_eq!(s.size, 5 << 20);
-        let mut progress = 0;
-        while let Ok(ev) = rx.try_recv() {
-            if let Event::DownloadProgress { bytes, .. } = ev {
-                progress += 1;
-                assert_eq!(bytes, 4 << 20);
-            }
-        }
-        assert_eq!(progress, 1);
-        // A part that cannot be created: the writer stops, the download
-        // (more chunks than the channel holds) breaks off, nothing is left
-        // behind.
-        let nowhere = dir.path().join("missing").join("x.part");
-        let e = stream_to_file(
-            "https://h/x",
-            body(Bytes::from(vec![1u8; 20 << 20])),
-            &nowhere,
-            None,
-        )
-        .await
-        .expect_err("no folder");
-        assert!(matches!(e, FetchError::CacheIo { .. }), "{e}");
-        assert!(!nowhere.exists());
     }
 }
