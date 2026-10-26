@@ -1,6 +1,6 @@
 # utilake: index for agents
 
-Layers, pointing down: `crates/utilake-cli` → `crates/utilake-pipeline` → {`crates/utilake-acquire`, `crates/utilake-kit`, `crates/utilake-writer`}; `crates/utilake-mms-conform` (the MMS kit) → {`crates/utilake-mms-registry`, `crates/utilake-kit`} → `crates/utilake-core` → `utilake-mms-decode`. The pipeline runs over the kit's ports and names no format; the decoder never sees the registry; mdff a leaf. The MMS and plain decoders (`utilake-mms-decode`, `utilake-plain-decode`), the Iceberg contract (`utilake-iceberg`), the gates, the census and the histories live in utilake-schemas, pinned by rev in `Cargo.toml`. Async at the edges, sync in the core.
+Layers, pointing down: `crates/utilake-cli` → `crates/utilake-pipeline` → {`crates/utilake-acquire`, `crates/utilake-kit`, `crates/utilake-writer`}; `crates/utilake-mms-conform` (the MMS kit) → {`crates/utilake-mms-registry`, `crates/utilake-kit`} → `crates/utilake-core` → `utilake-mms-decode`. The pipeline runs over the kit's ports and names no format; the decoder never sees the registry. The MMS and plain decoders (`utilake-mms-decode`, `utilake-plain-decode`), the Iceberg contract (`utilake-iceberg`), the gates, the census and the histories live in utilake-schemas, pinned by rev in `Cargo.toml`. Async at the edges, sync in the core.
 Entries name where it starts.
 
 ## Rules a hook or CI enforces
@@ -36,7 +36,6 @@ Entries name where it starts.
 - **Writer**: one source file's write (`crates/utilake-writer/src/session.rs`) over the Hive Parquet writer with atomic rename (`crates/utilake-writer/src/parquet_hive.rs`), month partitioner, quarantine, SQLite manifest and its async actor (`crates/utilake-writer/src/manifest/`).
 - **Pipeline**: list → fetch → ingest on blocking workers → commit (`RunOptions::ingest` false: download only; inputs `Archive`, `Listed`, `Local`). `crates/utilake-pipeline/src/get.rs` plans an interval across a kit's sources. Each ingest records its transform in the Parquet footer and manifest; a source whose plan changed is read again (`Input::Stale`). `crates/utilake-pipeline/src/run.rs`, `crates/utilake-pipeline/src/ingest_file.rs`, `crates/utilake-pipeline/src/report.rs`.
 - **Command**: `fetch` (downloads and ingests; `--no-ingest`), `import`, `ingest`, `list`, `inspect`, `errors`, `verify`, `schema`, `wem`; shared flag structs and `--help` examples (a test holds them) in `crates/utilake-cli/src/cli.rs`; `crates/utilake-cli/src/commands/`.
-- **MDFF**: NEM12/13 codes, units; rules in `reference/mdff/`. `crates/utilake-mdff/src/`.
 - **Gates**: `just cover`, `just bench`, `just bench-fast`, `just budget-check`, `just llm-check`, `just errors-check`, `just schemas-check`. `crates/xtask/src/`, `crates/utilake-bench/src/main.rs`, `bench/budgets.json`, `coverage.json`.
 - **Mirror** (`crates/utilake-mirror/src/`): nemweb's archive folders and any `[[hosts]]` configured (`crates/utilake-mirror/src/hosts.rs`: roots, clock, pace; a fetcher per host, `crates/utilake-mirror/src/net/fetchers.rs`), its records and catalog.
 

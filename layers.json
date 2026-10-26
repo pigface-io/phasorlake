@@ -57,7 +57,6 @@
     "utilake-plain-decode",
     "utilake-zip"
   ],
-  "utilake-mdff": [],
   "utilake-mirror": [
     "utilake-core",
     "utilake-net",

@@ -4,7 +4,6 @@
 #   cli -> {pipeline, query}; pipeline -> {acquire, conform, writer};
 #   query -> {iceberg, registry, writer (the manifest's rows)}; conform -> {decode, registry};
 #   decode -> core; registry -> core. Decode never sees the registry.
-#   mdff is a leaf on std alone: AEMO's meter data file format, not yet used.
 # The bench and xtask crates are tooling and are not default members, so
 # `cargo build` compiles only what ships. The census crate ships: the command
 # takes the census with it, and its binary regenerates schemas/.
@@ -22,7 +21,6 @@ members = [
     "crates/utilake-writer",
     "crates/utilake-pipeline",
     "crates/utilake-cli",
-    "crates/utilake-mdff",
     "crates/utilake-mirror",
     "crates/utilake-net",
     "crates/utilake-iceberg-store",
