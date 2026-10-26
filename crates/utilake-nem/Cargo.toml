@@ -1,6 +1,6 @@
 [package]
 name = "utilake-nem"
-description = "The National Electricity Market kit: nemweb's monthly archive as a source, the MMS decoder and the registry's catalog, assembled for the pipeline."
+description = "The National Electricity Market kit: nemweb's monthly archive and report folders as sources, with the MMS decoder and the registry's catalog."
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true

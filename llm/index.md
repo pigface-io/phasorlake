@@ -1,6 +1,6 @@
 # utilake: index for agents
 
-Layers, pointing down: `crates/utilake-cli` → `crates/utilake-pipeline` → {`crates/utilake-acquire`, `crates/utilake-kit`, `crates/utilake-writer`}; `crates/utilake-mms-conform` (the MMS kit) → {`crates/utilake-registry`, `crates/utilake-kit`} → `crates/utilake-core` → `utilake-mms-decode`. The pipeline runs over the kit's ports and names no format; the decoder never sees the registry. The MMS and plain decoders (`utilake-mms-decode`, `utilake-plain-decode`), the Iceberg contract (`utilake-iceberg`), the gates, the census and the histories live in utilake-schemas, pinned by rev in `Cargo.toml`. Async at the edges, sync in the core.
+Layers, pointing down (`layers.json`, drawn in `CONTRIBUTING.md`): cli/mirror → pipeline → {acquire, writer} → kit → {net, core}; nem/wem/gas → {acquire, `crates/utilake-mms-conform`} → `crates/utilake-registry` → kit. The pipeline runs over the kit's ports and names no format; the decoder never sees the registry. The MMS and plain decoders (`utilake-mms-decode`, `utilake-plain-decode`), the Iceberg contract (`utilake-iceberg`), the gates, the census and the histories live in utilake-schemas, pinned by rev in `Cargo.toml`. Async at the edges, sync in the core.
 Entries name where it starts.
 
 ## Rules a hook or CI enforces

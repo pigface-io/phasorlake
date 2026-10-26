@@ -8,37 +8,37 @@ of both stages on every file, which is exactly what CI runs.
 
 ## Layout
 
+Each crate has one job. `layers.json` declares every dependency between
+them and `just layers` holds the code to it: an edge it does not list fails,
+and so does a listed edge that is gone. Dependencies point down only:
+
 ```
-Generic, for every source:
-crates/utilake-core          L0  vocabulary: calendar and periods, numbers, names, fingerprints, diagnostics, config, home. No I/O.
-crates/utilake-acquire       L1  the Source port, HTTP transport with pacing and a breaker, the archive of downloads (async)
-crates/utilake-kit           L1  the ports a kit implements (Decoder, BlockSink, Catalog, SourceKit), Transform, the zip walker, quarantine
-crates/utilake-writer        L1  Parquet writer, partitioner, SQLite manifest actor, verify
-crates/utilake-pipeline      L2  list → fetch → decode → write → commit as tokio streams, over the kit ports only
-crates/utilake-cli           L3  the command: flags, rendering, exit codes; kits.rs lists the kits a binary reads with
+utilake-schemas (pinned by rev): mms-decode, plain-decode, provenance, zip, iceberg, gates
 
-The MMS format (AEMO's C/I/D rows and SQL*Loader control files):
-crates/utilake-mms-decode    F   the I row, MMS timestamps, scanner, field splitter; no registry
-crates/utilake-registry  F   the table model (file_model), the shape id, the registry: build.rs validates schemas/ (the pulled histories), resolve() on the hot path
-crates/utilake-mms-conform   F   resolves blocks through the registry, casts to typed Arrow batches; the kit's Decoder and Catalog
-
-The markets:
-crates/utilake-nem           M   the NEM kit: nemweb's monthly archive and report folders, AEMO's file names, [sources.nem], kit()
-crates/utilake-wem           M   the WEM kit: the datafiles source and [sources.wem]; no decoder yet
-
-Tooling:
-crates/utilake-bench             end-to-end benchmark harness
-crates/xtask                     the gates
+core            the vocabulary: periods, numbers, names, diagnostics, home, config
+net             HTTP: transports, paced and retried requests, the refusal breaker,
+                bodies streamed to disk, the archive's helpers          -> core
+kit             the ports: Source and Listings, Decoder and BlockSink, Catalog,
+                the file types they pass; no I/O                        -> core, net (no tokio)
+acquire         the adapters: Fetcher (implements Listings), FeedFolders,
+                nemweb's listing pages                                  -> kit, net
+registry        every market's tables, block resolution, the catalog    -> kit, core
+mms-conform     the MMS and plain decoders into typed Arrow batches      -> registry, kit
+nem, wem, gas   a market's kit: its sources, decoders and catalog       -> acquire, mms-conform
+iceberg-store   Iceberg tables on disk                                  -> core
+writer          everything written under the home: the ingest session,
+                quarantine, manifest, supersede, Iceberg, verify        -> iceberg-store, kit
+pipeline        orchestration over the ports and the writer only        -> kit, acquire, writer
+cli, mirror     the binaries
+bench, e2e      tooling and whole-stack tests; nothing depends on them
 ```
 
-Dependencies point down only, and across the three groups in one direction:
-the generic crates never depend on a format or a market crate (`cargo tree -p
-utilake-pipeline` names no `mms`, `nem` or `wem`); a market crate depends on
-the format it reads; the decoder never depends on the registry. Nothing below
-the pipeline knows about tokio except the fetcher and the manifest's async
-handle. Parsing and Parquet
-encoding are synchronous and run on blocking workers, one source file per
-worker; the async and sync worlds meet once per file.
+The pipeline names no format and no market (`cargo tree -p utilake-pipeline`
+shows no `mms`, `nem`, `wem` or `gas`); a market crate depends on the format
+it reads; the decoder never depends on the registry; kit pulls in no reqwest
+and no tokio. Async lives at the edges (the fetcher, the manifest's handle):
+parsing and Parquet encoding are synchronous and run on blocking workers, one
+source file per worker, and the two worlds meet once per file.
 
 ## Test tiers
 

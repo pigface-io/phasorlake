@@ -1,6 +1,6 @@
 [package]
 name = "utilake-cli"
-description = "The utilake command."
+description = "The utilake command: flags, the kits it is assembled with, rendering and exit codes."
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true

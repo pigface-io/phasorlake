@@ -1,6 +1,6 @@
 [package]
 name = "utilake-wem"
-description = "The Wholesale Electricity Market kit: AEMO's WEM datafiles as a source, with no decoder yet."
+description = "The Wholesale Electricity Market kit: the datafiles and the WEMDE documents as sources, with the plain and WEMDE decoders and the registry's catalog."
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true

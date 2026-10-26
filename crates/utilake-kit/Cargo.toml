@@ -1,6 +1,6 @@
 [package]
 name = "utilake-kit"
-description = "The ports a source kit implements: what the pipeline asks of a decoder, a catalog and a source, and the registry that assembles them."
+description = "The ports a market's kit implements and the pipeline runs over: Source and Listings, Decoder and BlockSink, Catalog; the file types they pass. No I/O of its own."
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true

@@ -1,6 +1,6 @@
 [package]
 name = "utilake-mms-conform"
-description = "Conforming decoded MMS rows to the registry's plan: typed Arrow batches, casts, quarantine decisions."
+description = "Reading AEMO's files into typed Arrow batches through the registry: the MMS and plain decoders, casts, quarantine decisions, and what inspect shows."
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true

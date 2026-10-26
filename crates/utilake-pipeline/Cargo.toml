@@ -1,6 +1,6 @@
 [package]
 name = "utilake-pipeline"
-description = "Orchestration of list, fetch, ingest and commit as tokio streams."
+description = "Orchestration only: list, fetch, decode on blocking workers and hand each file's blocks to a writer session, then record the run."
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true

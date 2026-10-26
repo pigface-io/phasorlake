@@ -1,6 +1,6 @@
 [package]
 name = "utilake-writer"
-description = "Writing the lake: Parquet files, partitions, the SQLite manifest."
+description = "Everything utilake writes under the home: one source file's write into the lake, the quarantine, the SQLite manifest, supersede, Iceberg metadata and verify."
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true

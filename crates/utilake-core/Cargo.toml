@@ -1,6 +1,6 @@
 [package]
 name = "utilake-core"
-description = "Vocabulary shared by every utilake crate: identifiers, time, numbers, diagnostics. No I/O."
+description = "The family's vocabulary: periods and the calendar, numbers, names, fingerprints, diagnostics, home and config. No network, no Arrow, no tokio."
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true

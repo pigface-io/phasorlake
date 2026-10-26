@@ -1,6 +1,6 @@
 [package]
 name = "utilake-registry"
-description = "The utilake schema registry: resolves MMS I rows to typed Arrow schemas and casts."
+description = "Every market's tables: their columns and histories, the resolution of a block to the plan its rows are read by, and the tables as a kit's catalog."
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true

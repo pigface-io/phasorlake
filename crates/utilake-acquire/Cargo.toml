@@ -1,6 +1,6 @@
 [package]
 name = "utilake-acquire"
-description = "Where AEMO files live and how to download them: sources, HTTP transport, cache."
+description = "Getting AEMO's files: the fetcher over utilake-net, a feed's folders as a source, nemweb's listing pages; the adapters behind the kit's ports."
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true

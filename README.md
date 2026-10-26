@@ -442,6 +442,17 @@ downloads that resume where they stopped, and a lake that can be read
 again from the archive when a schema changes. Next: live 5-minute feeds
 and compaction; then WEM.
 
+## How the crates fit
+
+Each crate does one job, and `layers.json` holds the dependencies between
+them (drawn in `CONTRIBUTING.md`). A market's kit (nem, wem, gas) brings its
+sources, decoders and catalog through the ports of `utilake-kit`; the
+pipeline runs those ports and hands each file's blocks to the writer, which
+alone decides how the lake is laid out. Every HTTP request goes through
+`utilake-net`, whether the lake's `fetch` or the mirror makes it, and both
+keep what they download in the one archive. The formats' decoders, the
+Iceberg contract and the shared histories come from utilake-schemas.
+
 ## Developing
 
 ```sh

@@ -1,5 +1,6 @@
-//! The schema registry: every table utilake knows, and the resolution of an
-//! MMS I row to a conformance plan.
+//! The registry: every market's tables utilake knows, the resolution of a
+//! block's header to the plan its rows are read by, and the tables as a
+//! kit's [`catalog`].
 //!
 //! The `schemas/` tree, whose NEM tables are the ones utilake-schemas
 //! publishes, is validated and packed by `build.rs`;

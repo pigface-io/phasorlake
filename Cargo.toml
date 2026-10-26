@@ -1,12 +1,9 @@
 # utilake: AEMO market data into a local Parquet lake.
 #
-# Layers, dependencies pointing down only:
-#   cli -> {pipeline, query}; pipeline -> {acquire, conform, writer};
-#   query -> {iceberg, registry, writer (the manifest's rows)}; conform -> {decode, registry};
-#   decode -> core; registry -> core. Decode never sees the registry.
-# The bench and xtask crates are tooling and are not default members, so
-# `cargo build` compiles only what ships. The census crate ships: the command
-# takes the census with it, and its binary regenerates schemas/.
+# Each crate has one job, said in its description; the dependencies between
+# them are the ones layers.json declares (`just layers`), drawn in
+# CONTRIBUTING.md. The bench, e2e and xtask crates are tooling and are not
+# default members, so `cargo build` compiles only what ships.
 [workspace]
 resolver = "3"
 members = [
