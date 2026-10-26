@@ -189,7 +189,7 @@ mod tests {
     async fn finds_missing_and_resized_outputs_and_orphan_quarantine() {
         let dir = tempfile::tempdir().unwrap();
         let (m, thread) = ManifestHandle::spawn(&dir.path().join("m.sqlite")).unwrap();
-        let run = m.begin_run("ingest x").await.unwrap();
+        let run = m.start_run("ingest x").await.unwrap();
         let file_id = m
             .record_file(FileRecord {
                 source: "local".into(),
@@ -298,7 +298,7 @@ mod tests {
 
         let dir = tempfile::tempdir().unwrap();
         let (m, thread) = ManifestHandle::spawn(&dir.path().join("m.sqlite")).unwrap();
-        let run = m.begin_run("ingest z").await.unwrap();
+        let run = m.start_run("ingest z").await.unwrap();
         let url = "https://h/z.zip";
         let file_id = m
             .record_file(FileRecord {

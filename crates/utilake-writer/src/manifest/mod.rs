@@ -437,6 +437,17 @@ impl Manifest {
         Ok(self.conn.last_insert_rowid())
     }
 
+    /// Starts a run: every ingest a run that ended without finishing left
+    /// running is marked aborted, and every file such a run left half
+    /// written in the lake is removed.
+    pub fn start_run(&mut self, argv: &str) -> Result<i64, ManifestError> {
+        self.abort_running()?;
+        if let Some(h) = &self.home {
+            let _ = crate::parquet_hive::sweep_tmp(&h.join("lake"));
+        }
+        self.begin_run(argv)
+    }
+
     /// Finishes a run.
     pub fn finish_run(
         &mut self,
@@ -804,6 +815,29 @@ impl Manifest {
         Ok(n)
     }
 
+    /// Replaces what a file's earlier read wrote. Its Parquet and
+    /// quarantine files are removed, except those in `kept`, which this
+    /// read wrote again under the same names; each directory a removed
+    /// Parquet file leaves empty is removed, up to the lake's root; its
+    /// ingests are marked superseded. Gives how many Parquet files the
+    /// earlier read had.
+    pub fn supersede(&mut self, file_id: i64, kept: &[String]) -> Result<usize, ManifestError> {
+        let old = self.outputs_of_file(file_id)?;
+        let lake = self.home.as_ref().map(|h| h.join("lake"));
+        for p in old.iter().filter(|p| !kept.contains(p)) {
+            remove_output(Path::new(p), lake.as_deref());
+        }
+        for p in self
+            .quarantine_of_file(file_id)?
+            .iter()
+            .filter(|p| !kept.contains(p))
+        {
+            let _ = std::fs::remove_file(p);
+        }
+        self.supersede_file(file_id)?;
+        Ok(old.len())
+    }
+
     /// Starts an ingest; a previous row for the same key is replaced.
     pub fn begin_ingest(&mut self, s: &IngestStart) -> Result<i64, ManifestError> {
         let r = self.conn.execute(
@@ -1079,6 +1113,21 @@ fn parse_partition(seg: &str) -> crate::writer::Partition {
     Partition::Unknown
 }
 
+/// Removes a Parquet file an earlier read wrote, and each directory above
+/// it that is left empty, up to `lake`.
+fn remove_output(path: &Path, lake: Option<&Path>) {
+    let _ = std::fs::remove_file(path);
+    let Some(lake) = lake else { return };
+    let mut dir = path.parent();
+    while let Some(d) = dir {
+        // `remove_dir` refuses a directory that still holds something.
+        if d == lake || !d.starts_with(lake) || std::fs::remove_dir(d).is_err() {
+            break;
+        }
+        dir = d.parent();
+    }
+}
+
 #[cfg(test)]
 mod tests {
     /// One entry's share, its counts left to the ingest's.
@@ -1120,6 +1169,88 @@ mod tests {
             last_modified_at: Some("2024-02-01T00:00:00Z".into()),
             fetched_at: Some("2024-02-01T01:00:00Z".into()),
         }
+    }
+
+    #[test]
+    fn a_superseded_read_leaves_only_what_was_written_again() {
+        let dir = tempfile::tempdir().unwrap();
+        let home = dir.path();
+        let mut m = Manifest::open(&home.join("manifest.sqlite")).unwrap();
+        // A run that ended without finishing left an ingest running and a
+        // file half written.
+        let crashed = m.start_run("ingest").unwrap();
+        let fid = m.record_file(&file("https://h/a.zip", "aaa")).unwrap();
+        let start = IngestStart {
+            run_id: crashed,
+            file_id: fid,
+            table: "T".into(),
+            schema_version: 1,
+            fingerprint: "xxh3:1".into(),
+            transform: transform(),
+        };
+        m.begin_ingest(&start).unwrap();
+        let half = home.join("lake/nem/t/data/year=2024/month=02/.tmp-1.parquet");
+        std::fs::create_dir_all(half.parent().unwrap()).unwrap();
+        std::fs::write(&half, b"x").unwrap();
+        let run = m.start_run("ingest").unwrap();
+        assert!(!half.exists());
+        assert_eq!(
+            m.list_ingests(None, false, 5).unwrap()[0].status,
+            IngestStatus::Aborted
+        );
+        let iid = m
+            .begin_ingest(&IngestStart {
+                run_id: run,
+                ..start
+            })
+            .unwrap();
+        let file_at = |p: &str| {
+            let p = home.join(p);
+            std::fs::create_dir_all(p.parent().unwrap()).unwrap();
+            std::fs::write(&p, b"x").unwrap();
+            p.display().to_string()
+        };
+        let (gone, again) = (
+            file_at("lake/nem/t/data/year=2024/month=01/x.parquet"),
+            file_at("lake/nem/t/data/year=2024/month=03/y.parquet"),
+        );
+        let quarantined = file_at("quarantine/t/a.jsonl");
+        let output = |path: &str| WrittenFile {
+            path: path.to_owned(),
+            partition: Partition::Unknown,
+            rows: 1,
+            bytes: 1,
+            min_time: None,
+            max_time: None,
+            sorted: false,
+        };
+        m.finish_ingest(
+            iid,
+            &IngestEnd {
+                entries: vec![share("A.CSV")],
+                status: IngestStatus::Ok,
+                rows: 2,
+                bad_rows: 1,
+                quarantine_path: Some(quarantined.clone()),
+                outputs: vec![output(&gone), output(&again)],
+                error_code: None,
+            },
+        )
+        .unwrap();
+        assert_eq!(m.supersede(fid, std::slice::from_ref(&again)).unwrap(), 2);
+        // The file not written again is gone, and its emptied partition
+        // with it; the one written again, and the table above, stay.
+        assert!(!Path::new(&gone).exists());
+        assert!(!home.join("lake/nem/t/data/year=2024/month=01").exists());
+        assert!(Path::new(&again).exists());
+        assert!(!Path::new(&quarantined).exists());
+        assert!(m.outputs_of_file(fid).unwrap().is_empty());
+        // In memory, with no home: a file is removed, and nothing above it.
+        let mut mem = Manifest::in_memory().unwrap();
+        mem.start_run("x").unwrap();
+        let lone = file_at("elsewhere/z.parquet");
+        remove_output(Path::new(&lone), None);
+        assert!(!Path::new(&lone).exists() && home.join("elsewhere").exists());
     }
 
     #[test]

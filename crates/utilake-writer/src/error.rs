@@ -85,6 +85,18 @@ pub enum StoreError {
         /// The batch's columns.
         observed: String,
     },
+    /// A batch could not be arranged into its file's columns.
+    #[error("A batch could not be arranged into its file's columns: {0}")]
+    Arrow(#[from] arrow_schema::ArrowError),
+    /// A row the decoder refused could not be kept.
+    #[error("The quarantine file {} could not be written.", path.display())]
+    Quarantine {
+        /// The file.
+        path: std::path::PathBuf,
+        /// Cause.
+        #[source]
+        source: std::io::Error,
+    },
 }
 
 impl Diagnose for StoreError {
@@ -129,6 +141,14 @@ impl Diagnose for StoreError {
             Self::NoProvenance { observed } => {
                 Diagnostic::error("store.no_provenance", Category::Store, msg)
                     .expected_observed("…,_ul_source,_ul_server_last_modified,_ul_zip_entry_modified,_ul_filename_timestamp", observed.clone())
+            }
+            Self::Arrow(source) => {
+                Diagnostic::error("store.arrow", Category::Store, msg).caused_by(source)
+            }
+            Self::Quarantine { path, source } => {
+                Diagnostic::error("store.quarantine_write", Category::Store, msg)
+                    .with_file(path.display().to_string())
+                    .caused_by(source)
             }
         }
     }

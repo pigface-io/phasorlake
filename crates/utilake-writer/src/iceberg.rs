@@ -103,9 +103,17 @@ fn month_ms(period: Option<&str>) -> i64 {
     (era * 146_097 + doe - 719_468) * 86_400_000
 }
 
-/// Builds the Iceberg metadata of table `t` in `dir`, from `outputs` (its
-/// live outputs in manifest order). Any metadata already there is replaced.
-pub fn build_table(dir: &Path, t: &TableSchemas, outputs: &[LiveOutput]) -> Result<Built> {
+/// Builds the Iceberg metadata of table `t`, of `market`, whose files go
+/// under `table_dir`, in the lake at `lake`, from `outputs` (its live
+/// outputs in manifest order). Any metadata already there is replaced.
+pub fn build_table(
+    lake: &Path,
+    market: &str,
+    table_dir: &str,
+    t: &TableSchemas,
+    outputs: &[LiveOutput],
+) -> Result<Built> {
+    let dir = &lake.join(market).join(table_dir);
     let meta = dir.join("metadata");
     if meta.exists() {
         std::fs::remove_dir_all(&meta)?;
@@ -400,7 +408,7 @@ mod tests {
             )]),
             docs: BTreeMap::from([(2, "The regional price".to_owned())]),
         };
-        let built = build_table(&dir, &t, &outs).unwrap();
+        let built = build_table(tmp.path(), "nem", "dispatchprice", &t, &outs).unwrap();
         assert_eq!(
             built,
             Built {
@@ -467,14 +475,17 @@ mod tests {
         let read =
             || std::fs::read(dir.join(format!("metadata/v{version}.metadata.json"))).unwrap();
         let first = read();
-        build_table(&dir, &t, &outs).unwrap();
+        build_table(tmp.path(), "nem", "dispatchprice", &t, &outs).unwrap();
         assert!(first == read(), "a rebuild wrote other metadata");
         // No schemas, no table.
         let none = TableSchemas {
             schemas: Vec::new(),
             ..t
         };
-        assert_eq!(build_table(&dir, &none, &outs).unwrap(), Built::default());
+        assert_eq!(
+            build_table(tmp.path(), "nem", "dispatchprice", &none, &outs).unwrap(),
+            Built::default()
+        );
         assert!(!dir.join("metadata").exists());
     }
 

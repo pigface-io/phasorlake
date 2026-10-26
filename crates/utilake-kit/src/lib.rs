@@ -6,7 +6,6 @@
 //! [`Decoder`] reads an entry into [`Block`]s for a [`BlockSink`], a
 //! [`Catalog`] declares the tables, and a [`SourceKit`] bundles the three
 //! for one market. [`container`] walks the zips the files come in;
-//! [`quarantine`] keeps the rows a decoder rejected.
 //! [`Transform`] is what every lake file records of how it was read.
 //!
 //! No format and no market is named here: those live in their own crates
@@ -17,7 +16,6 @@ pub mod container;
 pub mod decoder;
 pub mod feed_folders;
 pub mod kit;
-pub mod quarantine;
 pub mod transform;
 
 pub use catalog::Catalog;

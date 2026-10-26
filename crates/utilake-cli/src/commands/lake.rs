@@ -320,13 +320,14 @@ fn build_iceberg(
             properties: published.properties,
             docs: published.docs,
         };
-        let dir = ctx
-            .home
-            .lake()
-            .join(r.table(id).market.to_string())
-            .join(r.table_dir(id));
-        let built = utilake_writer::iceberg::build_table(&dir, &t, &outs)
-            .map_err(|e| anyhow::anyhow!("{}", e.diagnostic().render()))?;
+        let built = utilake_writer::iceberg::build_table(
+            &ctx.home.lake(),
+            &r.table(id).market.to_string(),
+            &r.table_dir(id),
+            &t,
+            &outs,
+        )
+        .map_err(|e| anyhow::anyhow!("{}", e.diagnostic().render()))?;
         rows.push(vec![
             name.to_owned(),
             built.snapshots.to_string(),

@@ -197,7 +197,7 @@ pub async fn run(
     let mut summary = Summary::default();
     let request = plan.request.clone();
 
-    let run_id = match deps.manifest.begin_run(&request).await {
+    let run_id = match deps.manifest.start_run(&request).await {
         Ok(id) => Some(id),
         Err(e) => {
             let d = e.diagnostic().with_request(request.clone());
@@ -206,10 +206,6 @@ pub async fn run(
             None
         }
     };
-    if let Err(e) = deps.manifest.abort_running().await {
-        report.emit(e.diagnostic());
-    }
-    let _ = utilake_writer::parquet_hive::sweep_tmp(&deps.home.lake());
 
     // 1. List.
     let remote_listed = |source: &Arc<dyn Source>, query: &Query, files: Vec<RemoteFile>| {
@@ -677,20 +673,6 @@ pub async fn run(
     .await
 }
 
-/// Removes a Parquet file an earlier read wrote, and each directory above
-/// it that is left empty, up to the lake's root.
-fn remove_output(path: &std::path::Path, lake: &std::path::Path) {
-    let _ = std::fs::remove_file(path);
-    let mut dir = path.parent();
-    while let Some(d) = dir {
-        // `remove_dir` refuses a directory that still holds something.
-        if d == lake || !d.starts_with(lake) || std::fs::remove_dir(d).is_err() {
-            break;
-        }
-        dir = d.parent();
-    }
-}
-
 enum Step {
     FetchFailed(RemoteFile, Box<Diagnostic>),
     Downloaded(Box<LocalFile>),
@@ -757,36 +739,19 @@ async fn commit(
         run_id,
         previous.is_some() && (source_changed || rep.rules_changed),
     ) {
-        let written: Vec<&str> = rep
+        // The files this read wrote again under the same names are
+        // already the new ones, and stay.
+        let kept: Vec<String> = rep
             .results
             .iter()
-            .flat_map(|r| &r.outputs)
-            .map(|o| o.path.as_str())
+            .flat_map(|r| {
+                r.outputs
+                    .iter()
+                    .map(|o| o.path.clone())
+                    .chain(r.quarantine_path.clone())
+            })
             .collect();
-        let old = deps.manifest.outputs_of_file(fid).await.unwrap_or_default();
-        let lake = deps.home.lake();
-        for p in old.iter().filter(|p| !written.contains(&p.as_str())) {
-            remove_output(std::path::Path::new(p), &lake);
-        }
-        // So are the rows it quarantined: this read quarantined its own,
-        // under the same names where it had any.
-        let quarantined: Vec<&str> = rep
-            .results
-            .iter()
-            .filter_map(|r| r.quarantine_path.as_deref())
-            .collect();
-        let old_quarantine = deps
-            .manifest
-            .quarantine_of_file(fid)
-            .await
-            .unwrap_or_default();
-        for p in old_quarantine
-            .iter()
-            .filter(|p| !quarantined.contains(&p.as_str()))
-        {
-            let _ = std::fs::remove_file(p);
-        }
-        let _ = deps.manifest.supersede_file(fid).await;
+        let replaced = deps.manifest.supersede(fid, kept).await.unwrap_or_default();
         let d = if source_changed {
             Diagnostic::warning(
                 "manifest.superseded",
@@ -794,7 +759,7 @@ async fn commit(
                 format!(
                     "{} changed since it was last ingested; {} earlier Parquet file(s) were replaced.",
                     local.remote.url,
-                    old.len()
+                    replaced
                 ),
             )
         } else {
@@ -805,7 +770,7 @@ async fn commit(
                     "The rules {} was ingested by have changed, so it was read again from {}; {} earlier Parquet file(s) were replaced.",
                     local.remote.url,
                     local.path.display(),
-                    old.len()
+                    replaced
                 ),
             )
         }

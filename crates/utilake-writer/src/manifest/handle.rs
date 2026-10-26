@@ -15,7 +15,7 @@ use crate::error::ManifestError;
 type Reply<T> = oneshot::Sender<Result<T, ManifestError>>;
 
 enum Cmd {
-    BeginRun(String, Reply<i64>),
+    StartRun(String, Reply<i64>),
     FinishRun(i64, i32, String, Reply<()>),
     RecordFile(FileRecord, Reply<i64>),
     IngestedShapes(String, String, Reply<Option<Vec<IngestShape>>>),
@@ -23,14 +23,11 @@ enum Cmd {
     IsIngestedFrom(String, String, Reply<bool>),
     ListFiles(Reply<Vec<FileRecord>>),
     FileByUrl(String, Reply<Option<(i64, FileRecord)>>),
-    OutputsOfFile(i64, Reply<Vec<String>>),
-    QuarantineOfFile(i64, Reply<Vec<String>>),
     LiveQuarantine(Reply<Vec<String>>),
     LiveOutputs(Option<String>, Reply<Vec<super::LiveOutput>>),
-    SupersedeFile(i64, Reply<usize>),
+    Supersede(i64, Vec<String>, Reply<usize>),
     BeginIngest(IngestStart, Reply<i64>),
     FinishIngest(i64, IngestEnd, Reply<()>),
-    AbortRunning(Reply<usize>),
     RecordDiagnostic(i64, Option<i64>, Box<Diagnostic>, Reply<()>),
     ListIngests(Option<String>, bool, usize, Reply<Vec<IngestRecord>>),
     ListDiagnostics(DiagFilter, Reply<Vec<(i64, Option<i64>, Diagnostic)>>),
@@ -75,8 +72,8 @@ impl ManifestHandle {
             .spawn(move || {
                 while let Some(cmd) = rx.blocking_recv() {
                     match cmd {
-                        Cmd::BeginRun(argv, r) => {
-                            let _ = r.send(manifest.begin_run(&argv));
+                        Cmd::StartRun(argv, r) => {
+                            let _ = r.send(manifest.start_run(&argv));
                         }
                         Cmd::FinishRun(id, code, summary, r) => {
                             let _ = r.send(manifest.finish_run(id, code, &summary));
@@ -99,29 +96,20 @@ impl ManifestHandle {
                         Cmd::FileByUrl(url, r) => {
                             let _ = r.send(manifest.file_by_url(&url));
                         }
-                        Cmd::OutputsOfFile(id, r) => {
-                            let _ = r.send(manifest.outputs_of_file(id));
-                        }
-                        Cmd::QuarantineOfFile(id, r) => {
-                            let _ = r.send(manifest.quarantine_of_file(id));
-                        }
                         Cmd::LiveQuarantine(r) => {
                             let _ = r.send(manifest.live_quarantine());
                         }
                         Cmd::LiveOutputs(t, r) => {
                             let _ = r.send(manifest.live_outputs(t.as_deref()));
                         }
-                        Cmd::SupersedeFile(id, r) => {
-                            let _ = r.send(manifest.supersede_file(id));
+                        Cmd::Supersede(id, kept, r) => {
+                            let _ = r.send(manifest.supersede(id, &kept));
                         }
                         Cmd::BeginIngest(s, r) => {
                             let _ = r.send(manifest.begin_ingest(&s));
                         }
                         Cmd::FinishIngest(id, e, r) => {
                             let _ = r.send(manifest.finish_ingest(id, &e));
-                        }
-                        Cmd::AbortRunning(r) => {
-                            let _ = r.send(manifest.abort_running());
                         }
                         Cmd::RecordDiagnostic(run, ingest, d, r) => {
                             let _ = r.send(manifest.record_diagnostic(run, ingest, &d));
@@ -154,9 +142,9 @@ impl ManifestHandle {
         rx.await.map_err(|_| ManifestError::Closed)?
     }
 
-    /// See [`Manifest::begin_run`].
-    pub async fn begin_run(&self, argv: &str) -> Result<i64, ManifestError> {
-        self.call(|r| Cmd::BeginRun(argv.to_owned(), r)).await
+    /// See [`Manifest::start_run`].
+    pub async fn start_run(&self, argv: &str) -> Result<i64, ManifestError> {
+        self.call(|r| Cmd::StartRun(argv.to_owned(), r)).await
     }
     /// See [`Manifest::finish_run`].
     pub async fn finish_run(
@@ -199,14 +187,6 @@ impl ManifestHandle {
     pub async fn file_by_url(&self, url: &str) -> Result<Option<(i64, FileRecord)>, ManifestError> {
         self.call(|r| Cmd::FileByUrl(url.to_owned(), r)).await
     }
-    /// See [`Manifest::outputs_of_file`].
-    pub async fn outputs_of_file(&self, file_id: i64) -> Result<Vec<String>, ManifestError> {
-        self.call(|r| Cmd::OutputsOfFile(file_id, r)).await
-    }
-    /// See [`Manifest::quarantine_of_file`].
-    pub async fn quarantine_of_file(&self, file_id: i64) -> Result<Vec<String>, ManifestError> {
-        self.call(|r| Cmd::QuarantineOfFile(file_id, r)).await
-    }
     /// See [`Manifest::live_quarantine`].
     pub async fn live_quarantine(&self) -> Result<Vec<String>, ManifestError> {
         self.call(Cmd::LiveQuarantine).await
@@ -219,9 +199,9 @@ impl ManifestHandle {
         self.call(|r| Cmd::LiveOutputs(table.map(str::to_owned), r))
             .await
     }
-    /// See [`Manifest::supersede_file`].
-    pub async fn supersede_file(&self, file_id: i64) -> Result<usize, ManifestError> {
-        self.call(|r| Cmd::SupersedeFile(file_id, r)).await
+    /// See [`Manifest::supersede`].
+    pub async fn supersede(&self, file_id: i64, kept: Vec<String>) -> Result<usize, ManifestError> {
+        self.call(|r| Cmd::Supersede(file_id, kept, r)).await
     }
     /// See [`Manifest::begin_ingest`].
     pub async fn begin_ingest(&self, s: IngestStart) -> Result<i64, ManifestError> {
@@ -230,10 +210,6 @@ impl ManifestHandle {
     /// See [`Manifest::finish_ingest`].
     pub async fn finish_ingest(&self, ingest_id: i64, e: IngestEnd) -> Result<(), ManifestError> {
         self.call(|r| Cmd::FinishIngest(ingest_id, e, r)).await
-    }
-    /// See [`Manifest::abort_running`].
-    pub async fn abort_running(&self) -> Result<usize, ManifestError> {
-        self.call(Cmd::AbortRunning).await
     }
     /// See [`Manifest::record_diagnostic`].
     pub async fn record_diagnostic(
@@ -288,7 +264,7 @@ mod tests {
     #[tokio::test]
     async fn handle_round_trips_through_the_thread() {
         let (h, thread) = ManifestHandle::spawn_with(Manifest::in_memory().unwrap());
-        let run = h.begin_run("x").await.unwrap();
+        let run = h.start_run("x").await.unwrap();
         let fid = h
             .record_file(FileRecord {
                 source: "s".into(),
@@ -356,12 +332,9 @@ mod tests {
             1
         );
         assert_eq!(h.list_ingests(None, false, 5).await.unwrap().len(), 1);
-        assert_eq!(h.outputs_of_file(fid).await.unwrap().len(), 0);
-        assert!(h.quarantine_of_file(fid).await.unwrap().is_empty());
         assert!(h.live_quarantine().await.unwrap().is_empty());
         assert!(h.live_outputs(None).await.unwrap().is_empty());
-        assert_eq!(h.supersede_file(fid).await.unwrap(), 1);
-        assert_eq!(h.abort_running().await.unwrap(), 0);
+        assert_eq!(h.supersede(fid, Vec::new()).await.unwrap(), 0);
         h.finish_run(run, 0, "{}").await.unwrap();
         assert_eq!(h.latest_run().await.unwrap().unwrap().exit_code, Some(0));
         drop(h);

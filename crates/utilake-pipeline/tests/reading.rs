@@ -22,8 +22,8 @@ use arrow_schema::{DataType, SchemaRef};
 use utilake_core::{Fingerprint, source_times, timetext};
 use utilake_kit::Transform;
 use utilake_mms_registry::{Market, Registry};
-use utilake_writer::provenance::{Stamp, Times, lake_schema, stamped};
 use utilake_writer::{FileMeta, LakeWriter, ParquetHive, Partition, PartitionKey};
+use utilake_writer::{Stamp, Times, lake_schema, stamped};
 
 /// The NEM's clock, AEST.
 const NEM: i32 = 36_000;
@@ -253,13 +253,14 @@ impl Lake {
                 .filter(|o| o.table == name)
                 .cloned()
                 .collect();
-            let dir = self
-                .home
-                .path()
-                .join("lake")
-                .join(Market::Nem.to_string())
-                .join(self.registry.table_dir(id));
-            utilake_writer::iceberg::build_table(&dir, &t, &outs).unwrap();
+            utilake_writer::iceberg::build_table(
+                &self.home.path().join("lake"),
+                &Market::Nem.to_string(),
+                &self.registry.table_dir(id),
+                &t,
+                &outs,
+            )
+            .unwrap();
         }
     }
 }

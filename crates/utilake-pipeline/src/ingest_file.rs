@@ -3,32 +3,25 @@
 //! partition, quarantine bad rows. Nothing here touches the manifest or the
 //! network; the result is handed back for the async commit step.
 
-use std::collections::HashMap;
-use std::path::{Path, PathBuf};
+use std::path::PathBuf;
 use std::sync::Arc;
 
 use crate::entry_times::EntryTimes;
-use arrow_array::RecordBatch;
-use arrow_schema::{ArrowError, Field, Schema, SchemaRef};
 use tokio::sync::mpsc;
 use utilake_acquire::LocalFile;
 use utilake_core::event::Event;
 use utilake_core::source_times;
-use utilake_core::{Category, Diagnose, Diagnostic, Fingerprint, YearMonth};
+use utilake_core::{Category, Diagnose, Diagnostic, Fingerprint};
 use utilake_kit::container::{
     Accepts, ArchiveError, WalkError, Walked, has_extension, walk_entries,
 };
-use utilake_kit::quarantine::QuarantineWriter;
 use utilake_kit::{
-    Block, BlockSink, DecodeCtx, DecodeOptions, Flow, KitRegistry, LoadMode, RowAt, SourceKit,
-    TableRef,
+    Block, BlockSink, DecodeCtx, DecodeOptions, Flow, KitRegistry, RowAt, SourceKit, TableRef,
 };
 use utilake_provenance::layout::listing_offset;
 use utilake_writer::manifest::EntryShare;
-use utilake_writer::partition::split_by_month;
-use utilake_writer::provenance::{Stamp, Times};
 use utilake_writer::{
-    FileMeta, LakeWriter, ParquetHive, Partition, PartitionKey, Transform, WriterId, WrittenFile,
+    IngestSession, Shape, Source, Stamp, StoreError, Times, Transform, WrittenFile,
 };
 
 use crate::plan::RunOptions;
@@ -119,10 +112,6 @@ pub struct FileReport {
     pub left: Vec<String>,
 }
 
-/// What tells one open writer from another: table, version, column list
-/// and partition.
-type WriterKey = (String, u16, u128, Partition);
-
 /// Parquet writers all the workers of a run may hold open together. An
 /// operating system gives a process a few hundred open files by default
 /// (256 on macOS), and downloads and the manifest need some.
@@ -138,256 +127,73 @@ pub fn open_writers(jobs: usize) -> usize {
 /// row is in the quarantine file; this bounds what a run prints.
 pub const ROW_ERRORS_KEPT: usize = 20;
 
-/// A writer that is open: its id, when it was last written to (in
-/// batches), and the schema of its file.
-struct OpenWriter {
-    id: WriterId,
-    used: u64,
-    /// The columns its file takes from batches.
-    schema: SchemaRef,
-    /// Those, then each row's source and publish time: the file's schema.
-    lake: SchemaRef,
-}
-
-/// The schema a file must have to take `batch` as well as what it took so
-/// far, when `file` is not it: `file`'s columns, nullable where either is,
-/// then the columns only `batch` has (a column of values kept as text
-/// appears in the batches that need it). `None` when `file` takes `batch`.
-fn widened(file: &Schema, batch: &Schema) -> Option<Schema> {
-    let mut fields: Vec<Field> = file.fields().iter().map(|f| f.as_ref().clone()).collect();
-    let mut wider = false;
-    for b in batch.fields() {
-        match fields.iter_mut().find(|f| f.name() == b.name()) {
-            Some(f) if b.is_nullable() && !f.is_nullable() => {
-                *f = f.clone().with_nullable(true);
-                wider = true;
-            }
-            Some(_) => {}
-            None => {
-                fields.push(b.as_ref().clone());
-                wider = true;
-            }
-        }
-    }
-    wider.then(|| Schema::new_with_metadata(fields, file.metadata().clone()))
-}
-
-/// `batch` in `schema`, which has every column of `batch` and maybe more:
-/// those are null.
-fn fitted(batch: &RecordBatch, schema: &SchemaRef) -> Result<RecordBatch, ArrowError> {
-    zone!(FIT);
-    if batch.schema().fields() == schema.fields() {
-        return Ok(batch.clone());
-    }
-    let columns = schema
-        .fields()
-        .iter()
-        .map(|f| match batch.schema().index_of(f.name()) {
-            Ok(i) => batch.column(i).clone(),
-            Err(_) => arrow_array::new_null_array(f.data_type(), batch.num_rows()),
-        })
-        .collect();
-    RecordBatch::try_new(schema.clone(), columns)
-}
-
-/// Routes batches to Parquet writers and quarantines bad rows.
+/// Hands a source file's blocks to its write into the lake, and keeps
+/// what is said of each entry.
 struct LakeSink<'a> {
-    /// The source file's writer: every entry's rows go to the same files,
+    /// The source file's write: every entry's rows go to the same files,
     /// each row naming its entry, and the files are committed together
     /// once the whole file is read.
-    writer: ParquetHive,
-    /// A file is closed for the next once it holds this many bytes.
-    file_bytes: u64,
-    /// Open writers by table, version, shape and partition. The shape is
-    /// part of the key because two column lists of one version may differ
-    /// in the columns they are written with.
-    writers: HashMap<WriterKey, OpenWriter>,
-    /// How many files each key has had opened, so a further file of a
-    /// partition gets a name of its own.
-    parts: HashMap<WriterKey, u32>,
-    /// The schema a key's next file starts with, when its last file was
-    /// finished for being too narrow.
-    next_schema: HashMap<WriterKey, SchemaRef>,
-    /// At most this many writers are open at once; see [`open_writers`].
-    max_open: usize,
-    /// Counts batches, to tell which writer was used longest ago.
-    tick: u64,
+    session: IngestSession,
     results: Vec<IngestResult>,
     current: Option<usize>,
-    quarantine: HashMap<String, QuarantineWriter>,
-    quarantine_root: &'a Path,
     local: &'a LocalFile,
-    /// The entry being read.
-    entry: String,
-    /// Its source's stamp, built on its first batch.
-    stamp: Option<Stamp>,
-    /// The entry's modified time in its zip's directory, when it was read
-    /// from a zip that records one.
-    zip_entry_modified: Option<i64>,
     /// When each entry first went public, from the records beside the file.
     entry_times: EntryTimes,
-    period: Option<YearMonth>,
-    /// The day the file covers, when the source cuts its files by day: a
-    /// snapshot it carries is the day's.
-    day: Option<utilake_core::CivilDay>,
     warnings: Vec<Diagnostic>,
     row_errors: Vec<Diagnostic>,
     fail_fast: bool,
     events: Option<&'a mpsc::Sender<Event>>,
+    /// The entry being read.
+    entry: String,
 }
 
 impl LakeSink<'_> {
-    fn meta(
-        &self,
-        table: &str,
-        version: u16,
-        fingerprint: Fingerprint,
-        time_column: Option<usize>,
-        transform: Transform,
-        part: u32,
-    ) -> FileMeta {
-        FileMeta {
-            transform,
-            part,
-            table: table.to_owned(),
-            source_stem: self.local.remote.stem(),
-            schema_version: version,
-            fingerprint,
-            source_url: self.local.remote.url.to_string(),
-            source_sha256: self.local.sha256.clone(),
-            time_column,
-        }
-    }
-
-    /// The current entry's source, `url!entry` (the URL alone for a file
-    /// read whole), and its publish time in the market offset given.
-    fn stamp(&mut self) -> &Stamp {
-        if self.stamp.is_none() {
-            let local = self.local;
-            let url = local.remote.url.as_str();
-            let name = if self.entry.is_empty() {
-                url.to_owned()
-            } else {
-                format!("{url}!{}", self.entry)
-            };
-            // Each time as found, none chosen over another: the server's
-            // word for the entry's own bytes where the mirror holds them,
-            // else for the file; the zip's record of the entry; the stamp
-            // in the entry's name (or the file's, read whole), in the
-            // clock of the host that named it.
-            let modified = local.last_modified_at.map(|s| s.rfc3339());
-            let server_last_modified = self
-                .entry_times
-                .server_last_modified(&self.entry)
-                .or_else(|| source_times::server_last_modified(modified.as_deref()));
-            let named = if self.entry.is_empty() {
-                url
-            } else {
-                self.entry.as_str()
-            };
-            let times = Times {
-                server_last_modified,
-                zip_entry_modified: self.zip_entry_modified,
-                filename_timestamp: source_times::filename_timestamp(named, listing_offset(url)),
-            };
-            self.stamp = Some(Stamp::new(&name, times));
-        }
-        self.stamp.as_ref().expect("built above")
-    }
-
-    /// The current entry's share of result `idx`.
-    fn share(&mut self, idx: usize) -> &mut EntryShare {
-        let entries = &mut self.results[idx].entries;
-        let at = match entries.iter().rposition(|e| e.entry == self.entry) {
-            Some(i) => i,
-            None => {
-                entries.push(EntryShare {
-                    entry: self.entry.clone(),
-                    ..EntryShare::default()
-                });
-                entries.len() - 1
-            }
+    /// Entry `entry`'s source, `url!entry` (the URL alone for a file read
+    /// whole), and its publish times. `zip_entry_modified`: its modified
+    /// time in its zip's directory, in microseconds since 1970 (UTC), when
+    /// it has one.
+    fn stamp(&mut self, entry: &str, zip_entry_modified: Option<i64>) -> Stamp {
+        let local = self.local;
+        let url = local.remote.url.as_str();
+        let name = if entry.is_empty() {
+            url.to_owned()
+        } else {
+            format!("{url}!{entry}")
         };
-        &mut entries[at]
+        // Each time as found, none chosen over another: the server's
+        // word for the entry's own bytes where the mirror holds them,
+        // else for the file; the zip's record of the entry; the stamp
+        // in the entry's name (or the file's, read whole), in the
+        // clock of the host that named it.
+        let modified = local.last_modified_at.map(|s| s.rfc3339());
+        let server_last_modified = self
+            .entry_times
+            .server_last_modified(entry)
+            .or_else(|| source_times::server_last_modified(modified.as_deref()));
+        let named = if entry.is_empty() { url } else { entry };
+        let times = Times {
+            server_last_modified,
+            zip_entry_modified,
+            filename_timestamp: source_times::filename_timestamp(named, listing_offset(url)),
+        };
+        Stamp::new(&name, times)
     }
 
     /// Begins entry `entry`: what is said from here on is said of it.
-    /// `zip_entry_modified`: its modified time in its zip's directory, in
-    /// microseconds since 1970 (UTC), when it has one.
     fn begin_entry(&mut self, entry: &str, zip_entry_modified: Option<i64>) {
+        let stamp = self.stamp(entry, zip_entry_modified);
+        self.session.begin_entry(entry, stamp);
         entry.clone_into(&mut self.entry);
-        self.stamp = None;
-        self.zip_entry_modified = zip_entry_modified;
         self.current = None;
     }
 
-    /// Finishes one writer and files what it wrote under its result.
-    fn close_one(
-        &mut self,
-        key: WriterKey,
-        wid: WriterId,
-    ) -> Result<(), utilake_writer::StoreError> {
-        let written = self.writer.close(wid)?;
-        let (table, version, shape, _) = key;
-        if let Some(r) = self
-            .results
-            .iter_mut()
-            .find(|r| r.table == table && r.version == version && r.fingerprint.0 == shape)
-        {
-            r.outputs.push(written);
-        }
-        Ok(())
-    }
-
-    /// Finishes the writer that was written to longest ago, to make room
-    /// for another. Its file is complete; rows that come for its partition
-    /// later go to a further file.
-    fn close_least_recent(&mut self) -> Result<(), utilake_writer::StoreError> {
-        let Some((key, wid)) = self
-            .writers
-            .iter()
-            .min_by_key(|(k, w)| (w.used, (*k).clone()))
-            .map(|(k, w)| (k.clone(), w.id))
-        else {
-            return Ok(());
-        };
-        self.writers.remove(&key);
-        self.close_one(key, wid)
-    }
-
-    fn close_all(&mut self) -> Result<(), utilake_writer::StoreError> {
-        zone!(CLOSE);
-        let mut keys: Vec<_> = self.writers.drain().collect();
-        keys.sort_by(|(a, _), (b, _)| a.cmp(b));
-        for (key, w) in keys {
-            self.close_one(key, w.id)?;
-        }
-        Ok(())
-    }
-
-    /// Discards every Parquet file the file wrote: the writers still
-    /// open, and the files closed and not yet committed. A file with a
-    /// failed entry leaves nothing in the lake; what it quarantined stays,
-    /// to show why.
-    fn abort_all(&mut self) {
-        let ids: Vec<WriterId> = self.writers.drain().map(|(_, w)| w.id).collect();
-        for w in ids {
-            self.writer.abort(w);
-        }
-        self.writer.discard(0);
-        for r in &mut self.results {
-            r.outputs.clear();
-        }
-    }
-
-    fn finish_quarantine(&mut self) {
-        let qs: Vec<(String, QuarantineWriter)> = self.quarantine.drain().collect();
-        for (table, q) in qs {
-            if let Ok(Some(p)) = q.finish()
-                && let Some(r) = self.results.iter_mut().find(|r| r.table == table)
-            {
-                r.quarantine_path = Some(p.display().to_string());
-            }
+    /// The shape of result `idx`.
+    fn shape(&self, idx: usize) -> Shape {
+        let r = &self.results[idx];
+        Shape {
+            table: r.table.clone(),
+            version: r.version,
+            fingerprint: r.fingerprint.0,
         }
     }
 }
@@ -435,145 +241,22 @@ impl BlockSink for LakeSink<'_> {
 
     fn batch(&mut self, b: Block) -> Result<(), Box<Diagnostic>> {
         zone!(BATCH);
-        let table = b.table.clone();
         let Some(idx) = self.current else {
             return Ok(());
         };
         let rows = b.batch.num_rows() as u64;
-        let fail = |e: &(dyn std::error::Error + 'static)| {
+        let table = b.table.name.clone();
+        self.session.write(b).map_err(|e| {
             Box::new(
                 Diagnostic::error(
                     "store.write_failed",
                     Category::Store,
-                    format!("Writing a batch of table {} failed: {e}", table.name),
+                    format!("Writing a batch of table {table} failed: {e}"),
                 )
-                .with_table(table.name.clone())
-                .caused_by(e),
+                .with_table(table.clone())
+                .caused_by(&e),
             )
-        };
-        let parts: Vec<(Partition, arrow_array::RecordBatch)> =
-            match (table.load_mode, table.time_column) {
-                (LoadMode::Snapshot, _) => vec![(
-                    match (self.day, self.period) {
-                        (Some(d), _) => Partition::SnapshotDay {
-                            year: d.month().year(),
-                            month: d.month().month(),
-                            day: d.day(),
-                        },
-                        (None, Some(p)) => Partition::Snapshot {
-                            year: p.year(),
-                            month: p.month(),
-                        },
-                        (None, None) => Partition::Unknown,
-                    },
-                    b.batch,
-                )],
-                (LoadMode::Append, Some(tc)) => {
-                    split_by_month(&b.batch, tc, table.utc_offset_secs).map_err(|e| fail(&e))?
-                }
-                // No time of its own: the month of the file is all there is.
-                (LoadMode::Append, None) => vec![(
-                    self.period
-                        .map_or(Partition::Unknown, |p| Partition::Month {
-                            year: p.year(),
-                            month: p.month(),
-                        }),
-                    b.batch,
-                )],
-            };
-        for (partition, batch) in parts {
-            let key: WriterKey = (table.name.clone(), b.version, b.fingerprint.0, partition);
-            self.tick += 1;
-            // A batch with a column, or a null, its file has no room for
-            // finishes that file; the partition goes on in a further one
-            // whose schema takes both.
-            let open = match self.writers.get_mut(&key) {
-                Some(w) => match widened(&w.schema, &batch.schema()) {
-                    None => {
-                        w.used = self.tick;
-                        Some((w.id, w.schema.clone(), w.lake.clone()))
-                    }
-                    Some(wider) => {
-                        let id = w.id;
-                        self.writers.remove(&key);
-                        self.close_one(key.clone(), id).map_err(|e| fail(&e))?;
-                        self.next_schema.insert(key.clone(), Arc::new(wider));
-                        None
-                    }
-                },
-                None => None,
-            };
-            let (wid, schema, lake) = match open {
-                Some(o) => o,
-                None => {
-                    // Every open writer holds a file and a row group in
-                    // memory. A source whose rows wander over hundreds of
-                    // months would hold hundreds of both.
-                    if self.writers.len() >= self.max_open {
-                        self.close_least_recent().map_err(|e| fail(&e))?;
-                    }
-                    let part = {
-                        let n = self.parts.entry(key.clone()).or_insert(0);
-                        *n += 1;
-                        *n
-                    };
-                    let pk = PartitionKey {
-                        market: table.market.clone(),
-                        table_dir: table.dir.clone(),
-                        partition,
-                    };
-                    let meta = self.meta(
-                        &table.name,
-                        b.version,
-                        b.fingerprint,
-                        table.time_column,
-                        (*b.transform).clone(),
-                        part,
-                    );
-                    // A further file of a key starts as wide as the one
-                    // before it ended.
-                    let schema = match self.next_schema.remove(&key) {
-                        Some(s) => widened(&s, &batch.schema()).map_or(s, Arc::new),
-                        None => batch.schema(),
-                    };
-                    let lake = utilake_writer::provenance::lake_schema(&schema);
-                    let id = self
-                        .writer
-                        .open(&pk, lake.clone(), &meta)
-                        .map_err(|e| fail(&e))?;
-                    self.writers.insert(
-                        key.clone(),
-                        OpenWriter {
-                            id,
-                            used: self.tick,
-                            schema: schema.clone(),
-                            lake: lake.clone(),
-                        },
-                    );
-                    (id, schema, lake)
-                }
-            };
-            let batch = fitted(&batch, &schema).map_err(|e| fail(&e))?;
-            let bounds = table
-                .time_column
-                .map(|tc| utilake_writer::partition::time_bounds(&batch, tc));
-            let stamp = self.stamp().clone();
-            let batch =
-                utilake_writer::provenance::stamped(&batch, &stamp, &lake).map_err(|e| fail(&e))?;
-            self.writer.write(wid, &batch).map_err(|e| fail(&e))?;
-            let share = self.share(idx);
-            let times = stamp.times();
-            share.server_last_modified = times.server_last_modified;
-            share.zip_entry_modified = times.zip_entry_modified;
-            share.filename_timestamp = times.filename_timestamp;
-            share.add(batch.num_rows() as u64, bounds);
-            // A file that has grown to its size is closed; the partition
-            // goes on in a further one.
-            if self.writer.bytes_in_file(wid) >= self.file_bytes {
-                self.writers.remove(&key);
-                self.close_one(key, wid).map_err(|e| fail(&e))?;
-            }
-        }
+        })?;
         self.results[idx].rows += rows;
         Ok(())
     }
@@ -594,31 +277,17 @@ impl BlockSink for LakeSink<'_> {
         };
         d.table = Some(table.clone());
         d.version = version;
-        if let Some(i) = self.current {
+        let shape = self.current.map(|i| {
             self.results[i].bad_rows += 1;
-            self.share(i).bad_rows += 1;
-        }
+            self.shape(i)
+        });
         if self.row_errors.len() < ROW_ERRORS_KEPT {
             self.row_errors.push(d.clone());
         }
-        let stem = self.local.remote.stem();
-        let q = self
-            .quarantine
-            .entry(table.clone())
-            .or_insert_with(|| QuarantineWriter::new(self.quarantine_root, &table, &stem));
-        let source = format!("{}!{}", self.local.remote.url, self.entry);
-        if let Err(e) = q.write(raw, &source, &d) {
-            self.warnings.push(
-                Diagnostic::warning(
-                    "store.quarantine_write",
-                    Category::Store,
-                    format!(
-                        "The quarantine file {} could not be written.",
-                        q.path().display()
-                    ),
-                )
-                .caused_by(&e),
-            );
+        if let Err(e) = self.session.quarantine(&table, shape.as_ref(), raw, &d) {
+            let mut w = e.diagnostic();
+            w.severity = utilake_core::Severity::Warning;
+            self.warnings.push(w);
         }
         if self.fail_fast {
             Flow::Stop
@@ -762,32 +431,33 @@ pub fn ingest_file(input: IngestInput) -> FileReport {
     };
     // One read buffer and one sink for every entry of the file.
     let mut scan_buf = Vec::new();
-    let mut sink = LakeSink {
-        writer: ParquetHive::new(&input.lake_root).with_layout(input.options.layout),
-        file_bytes: u64::from(input.options.layout.file_size_mb) << 20,
-        writers: HashMap::new(),
-        parts: HashMap::new(),
-        next_schema: HashMap::new(),
-        max_open: open_writers(input.options.jobs),
-        tick: 0,
-        results: Vec::new(),
-        current: None,
-        quarantine: HashMap::new(),
-        quarantine_root: &input.quarantine_root,
-        local: &input.local,
-        entry: String::new(),
-        stamp: None,
-        zip_entry_modified: None,
-        entry_times: EntryTimes::new(&input.local),
+    let source = Source {
+        url: input.local.remote.url.to_string(),
+        sha256: input.local.sha256.clone(),
+        stem: input.local.remote.stem(),
         period: input.local.remote.period.map(utilake_core::Period::month),
         day: match input.local.remote.period {
             Some(utilake_core::Period::Day(d)) => Some(d),
             _ => None,
         },
+    };
+    let mut sink = LakeSink {
+        session: IngestSession::new(
+            &input.lake_root,
+            &input.quarantine_root,
+            input.options.layout,
+            open_writers(input.options.jobs),
+            source,
+        ),
+        results: Vec::new(),
+        current: None,
+        local: &input.local,
+        entry_times: EntryTimes::new(&input.local),
         warnings: Vec::new(),
         row_errors: Vec::new(),
         fail_fast: input.options.fail_fast,
         events: input.events.as_ref(),
+        entry: String::new(),
     };
     if kit.decoder_for(&name).is_none() && !has_extension(&name, ".zip") {
         file_error = Some(
@@ -880,26 +550,14 @@ pub fn ingest_file(input: IngestInput) -> FileReport {
             Err(WalkError::Callback(())) => {}
         }
     }
-    let results = finish(
-        &mut sink,
-        &mut entries,
-        file_error.is_some(),
-        &input.request,
-    );
-    let (mut results, kept) = results;
-    if kept && let Err(e) = sink.writer.commit() {
+    let (results, committed) = finish(sink, &mut entries, file_error.is_some(), &input.request);
+    if let Err(e) = committed {
         // Every entry's files at once: none is in place if one is not.
-        for r in &mut results {
-            for o in r.outputs.drain(..) {
-                let _ = std::fs::remove_file(&o.path);
-            }
-        }
         let mut d = e.diagnostic();
         d.file = Some(path.display().to_string());
         d.request = Some(input.request.clone());
         file_error.get_or_insert(d);
     }
-    drop(sink);
     FileReport {
         rules_changed: input.rules_changed,
         left: input.skip,
@@ -910,36 +568,56 @@ pub fn ingest_file(input: IngestInput) -> FileReport {
     }
 }
 
-/// Closes the file's writers and quarantine and gives what it read, with
-/// whether it is kept. When the file or any of its entries failed, its
-/// Parquet files are discarded, its results kept without them, and every
-/// entry that did not fail itself is told why. A file goes into the lake
-/// whole or not at all.
+/// Closes the file's writes and quarantine and gives what it read, with
+/// whether its files were put in place. When the file or any of its
+/// entries failed, its Parquet files are discarded, its results kept
+/// without them, and every entry that did not fail itself is told why. A
+/// file goes into the lake whole or not at all.
 fn finish(
-    sink: &mut LakeSink<'_>,
+    mut sink: LakeSink<'_>,
     entries: &mut [EntryReport],
     file_failed: bool,
     request: &str,
-) -> (Vec<IngestResult>, bool) {
+) -> (Vec<IngestResult>, Result<(), StoreError>) {
     let failed = entries
         .iter()
         .find_map(|e| e.error.as_ref().map(|_| e.entry.clone()));
-    if !file_failed && failed.is_none() {
-        match sink.close_all() {
-            Ok(()) => {
-                sink.finish_quarantine();
-                return (std::mem::take(&mut sink.results), true);
-            }
+    let closed = if !file_failed && failed.is_none() {
+        match sink.session.close() {
+            Ok(()) => true,
             Err(e) => {
                 let d = e.diagnostic();
                 if let Some(first) = entries.first_mut() {
                     first.error = Some(d);
                 }
+                false
             }
         }
+    } else {
+        false
+    };
+    let (mut written, committed) = if closed {
+        sink.session.commit()
+    } else {
+        (sink.session.abort(), Ok(()))
+    };
+    let mut results = sink.results;
+    for r in &mut results {
+        let shape = Shape {
+            table: r.table.clone(),
+            version: r.version,
+            fingerprint: r.fingerprint.0,
+        };
+        let o = written.take(&shape);
+        r.outputs = o.outputs;
+        r.entries = o.entries;
+        if let Some(p) = written.take_quarantine(&r.table) {
+            r.quarantine_path = Some(p);
+        }
     }
-    sink.abort_all();
-    sink.finish_quarantine();
+    if closed {
+        return (results, committed);
+    }
     let url = sink.local.remote.url.to_string();
     for e in entries.iter_mut().filter(|e| e.error.is_none()) {
         let because = failed.as_deref().map_or_else(
@@ -960,5 +638,5 @@ fn finish(
             .with_request(request.to_owned()),
         );
     }
-    (std::mem::take(&mut sink.results), false)
+    (results, Ok(()))
 }

@@ -119,6 +119,7 @@ Every error and warning utilake reports carries one of these codes. Codes are st
 
 | code | raised in |
 |---|---|
+| `store.arrow` | `crates/utilake-writer/src/error.rs` |
 | `store.extract` | `crates/utilake-writer/src/error.rs` |
 | `store.file_discarded` | `crates/utilake-pipeline/src/ingest_file.rs` |
 | `store.iceberg_io` | `crates/utilake-iceberg-store/src/lib.rs` |
@@ -130,7 +131,7 @@ Every error and warning utilake reports carries one of these codes. Codes are st
 | `store.no_provenance` | `crates/utilake-writer/src/error.rs` |
 | `store.parquet_write` | `crates/utilake-writer/src/error.rs` |
 | `store.partition_column_not_timestamp` | `crates/utilake-writer/src/error.rs` |
-| `store.quarantine_write` | `crates/utilake-pipeline/src/ingest_file.rs` |
+| `store.quarantine_write` | `crates/utilake-writer/src/error.rs` |
 | `store.rename` | `crates/utilake-writer/src/error.rs` |
 | `store.schema_mismatch` | `crates/utilake-writer/src/error.rs` |
 | `store.write_failed` | `crates/utilake-pipeline/src/ingest_file.rs` |

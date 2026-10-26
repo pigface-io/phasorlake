@@ -17,3 +17,7 @@ pub static OPEN: Zone = Zone::new(304, "parquet.open");
 pub static SPLIT: Zone = Zone::new(305, "partition.split");
 /// Every closed file made durable by one flush, and renamed into place.
 pub static COMMIT: Zone = Zone::new(306, "parquet.commit");
+/// A batch cast to the schema of the file it goes to.
+pub static FIT: Zone = Zone::new(307, "session.fit");
+/// Closing every open file of a source.
+pub static SESSION_CLOSE: Zone = Zone::new(308, "session.close");

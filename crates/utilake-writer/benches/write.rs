@@ -7,8 +7,7 @@ use arrow_array::{Float64Array, RecordBatch, StringArray, TimestampMicrosecondAr
 use arrow_schema::{DataType, Field, Schema, TimeUnit};
 use criterion::{Criterion, Throughput, criterion_group, criterion_main};
 use utilake_core::Fingerprint;
-use utilake_writer::partition::split_by_month;
-use utilake_writer::{FileMeta, LakeWriter, ParquetHive, Partition, PartitionKey};
+use utilake_writer::{FileMeta, LakeWriter, ParquetHive, Partition, PartitionKey, split_by_month};
 
 const ROWS: usize = 262_144;
 
@@ -27,8 +26,8 @@ fn batch(spill: bool) -> RecordBatch {
         Field::new("SCADAVALUE", DataType::Float64, true),
     ]));
     let duids: Vec<String> = (0..ROWS).map(|i| format!("UNIT{:03}", i % 400)).collect();
-    let lake = utilake_writer::provenance::lake_schema(&schema);
-    let stamp = utilake_writer::provenance::Stamp::new("https://h/s.zip!S.CSV", Default::default());
+    let lake = utilake_writer::lake_schema(&schema);
+    let stamp = utilake_writer::Stamp::new("https://h/s.zip!S.CSV", Default::default());
     let data = RecordBatch::try_new(
         schema,
         vec![
@@ -42,7 +41,7 @@ fn batch(spill: bool) -> RecordBatch {
         ],
     )
     .unwrap();
-    utilake_writer::provenance::stamped(&data, &stamp, &lake).unwrap()
+    utilake_writer::stamped(&data, &stamp, &lake).unwrap()
 }
 
 fn bench(c: &mut Criterion) {
