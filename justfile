@@ -16,12 +16,13 @@ setup:
     @just duckdb
     @just hooks
 
-# the DuckDB CLI the read tests run their SQL through, at the version CI pins
+# the DuckDB CLI the read tests run their SQL through, at the version CI pins, with its iceberg extension
 duckdb:
     #!/usr/bin/env zsh
     set -euo pipefail
     want=1.5.6
     if command -v duckdb >/dev/null && duckdb --version | grep -q "^v$want "; then
+        duckdb -c "INSTALL iceberg" >/dev/null
         exit 0
     fi
     case "$(uname -s)" in
@@ -32,6 +33,7 @@ duckdb:
     *)      echo "no pinned duckdb for $(uname -s)" >&2; exit 1 ;;
     esac
     scripts/fetch-tool.sh "$url" "$sha" duckdb "$HOME/.local/bin"
+    "$HOME/.local/bin/duckdb" -c "INSTALL iceberg" >/dev/null
     echo "make sure $HOME/.local/bin comes first on PATH"
 
 # install the git hooks (pre-commit and pre-push)

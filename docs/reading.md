@@ -16,18 +16,25 @@ utilake home (`{home}`, default `~/.utilake`), where `lake/` is.
 
 Each table is a directory of Hive-partitioned Parquet,
 `lake/{market}/{table}/`, with its Iceberg metadata beside the files in
-`metadata/` (kept current by every ingest). Two ways in:
+`metadata/`, kept current by every ingest. Two ways in:
 
-- **The Iceberg table**, `iceberg_scan('lake/nem/dudetail')` in DuckDB
-  (the `iceberg` extension), or any Iceberg reader. It reads every column
-  by its field id, so across a schema break (a column whose type changed
-  is a new field under the same name) older files give null for the new
-  field, as the table's history says.
-- **The Parquet files**, `read_parquet('lake/nem/dudetail/**/*.parquet',
-  hive_partitioning = true, union_by_name = true)`. It reads columns by
-  name: across a schema break the engine unifies the two types instead,
-  which may silently widen or fail. The examples below read this way
-  because it needs nothing but Parquet.
+- **The Iceberg table** (first choice): `iceberg_scan('lake/nem/dudetail')`
+  in DuckDB, after `INSTALL iceberg; LOAD iceberg;` once, or any Iceberg
+  reader. Its current schema is every field the table has ever had, by
+  field id, under each field's newest name, so every column of every file
+  reads, whatever schema the file came in under. The table's properties
+  carry its roles (`utilake.temporal.*`), key, the columns a table takes
+  when it shares a report pair (`utilake.with-columns`), any breaks
+  (`utilake.breaks`) and the data model's words; each snapshot is a run
+  of AEMO files under one schema, for a read of the table as it was.
+- **The Parquet files**: `read_parquet('lake/nem/dudetail/**/*.parquet',
+  hive_partitioning = true, union_by_name = true)`. Every lake file holds
+  the table's every field too, so this reads the same columns, by name: a
+  file written before a column was renamed holds it under the old name
+  until `utilake ingest` writes it again.
+
+The examples below read the Parquet files unless they say otherwise; each
+reads the same through `iceberg_scan`.
 
 ## A table's roles
 
@@ -258,6 +265,53 @@ WITH times AS (
 )
 SELECT step, count(*) AS seen FROM gaps WHERE step IS NOT NULL GROUP BY step ORDER BY seen DESC, step
 ```
+
+## Across schema changes
+
+AEMO adds columns, drops them, publishes some only in its live reports
+(DISPATCHPRICE's OCD_STATUS and MII_STATUS), renames a few
+(MTPASA_REGIONRESULT's TOTALSEMISCHEDULEDGEN10 became
+TOTALSEMISCHEDULEGEN10) and splits one kind of row off another under the
+same report pair (an area's ROOFTOP/ACTUAL rows beside a region's). The
+lake gives each of these one shape to read:
+
+- A column added later reads null in the files from before it; one
+  dropped reads null in the files after.
+- A renamed column is one field, read under its newest name across the
+  rename.
+- An area's rows are a table of their own (`*_AREA`, keyed on `AREAID`),
+  so a regional table never mixes the two.
+
+BIDDAYOFFER_D dropped MR_FACTOR: its older files carry it, the later ones
+do not, and the Iceberg table reads both:
+
+<!-- example: across-changes -->
+```sql
+SELECT SETTLEMENTDATE, VERSIONNO, MR_FACTOR
+FROM iceberg_scan('lake/nem/biddayoffer_d')
+WHERE BIDTYPE = 'ENERGY' AND VERSIONNO IS DISTINCT FROM CAST('NaN' AS DOUBLE)
+ORDER BY SETTLEMENTDATE, VERSIONNO
+```
+
+Every query on this page reads the Iceberg table the same way; the latest
+revision, for one:
+
+<!-- example: iceberg-latest -->
+```sql
+SELECT SETTLEMENTDATE, RRP
+FROM iceberg_scan('lake/nem/dispatchprice')
+WHERE SETTLEMENTDATE > TIMESTAMPTZ '2024-01-01 00:00:00+10:00'
+  AND SETTLEMENTDATE <= TIMESTAMPTZ '2024-01-01 00:10:00+10:00'
+QUALIFY row_number() OVER (
+    PARTITION BY REGIONID, DISPATCHINTERVAL, INTERVENTION, SETTLEMENTDATE
+    ORDER BY RUNNO DESC NULLS LAST, LASTCHANGED DESC NULLS LAST,
+             _ul_server_last_modified DESC NULLS LAST, _ul_source DESC) = 1
+ORDER BY SETTLEMENTDATE
+```
+
+A column whose values turned to text would be a new field under the
+same name (listed in `utilake.breaks`); no table has one yet, and
+utilake refuses to read such a table until it can tell the two apart.
 
 ## Market time
 

@@ -86,7 +86,12 @@ live outputs. A reingest or a refolded history is a rebuild, never an
 edit. Every schema is added in id order, so the table's ids are the
 history's; each run of outputs under one schema and version is one
 snapshot, with its first and last source file, months and version in the
-summary. The store (`crates/utilake-iceberg-store`) is a single writer:
+summary. After the runs the union of the history's schemas becomes
+current: every field by id, under its newest name, which is what every
+lake file holds. The table's properties are the ones utilake-schemas
+publishes (declaration, roles, key, `with-columns`, breaks, the data
+model's words) and `utilake.lake.format`; the union's fields carry the
+data model's description of each column. The store (`crates/utilake-iceberg-store`) is a single writer:
 versioned metadata files and a `version-hint.text` swapped by rename. The
 bytes come from `utilake_iceberg::table`, written by hand to the spec: the
 metadata as JSON, manifests and manifest lists as Avro object container
@@ -98,9 +103,10 @@ month transform is the UTC month.
 The pointer in `version-hint.text` is the catalog: it needs no server, and
 the tables publish as plain files.
 
-pyiceberg (`StaticTable`) and DuckDB (`iceberg_scan('<dir>')`) read them,
-across schemas, by field id; `scripts/iceberg-readers.py` checks a table
-the store's test keeps with both, and every manifest with fastavro.
+pyiceberg (`StaticTable`) and DuckDB (`iceberg_scan('<dir>')`) read them
+by field id with the union current, so every column of every file reads;
+`scripts/iceberg-readers.py` checks a table the store's test keeps with
+both, and every manifest with fastavro.
 
 ## Reading an interval
 
@@ -108,10 +114,8 @@ the store's test keeps with both, and every manifest with fastavro.
 and projects each onto one target schema by field id: a field the file has
 is read under its name there (cast where the target's type is a promotion),
 a field it lacks is null of the target's type, a field the target lacks is
-left out. The target is the latest schema or any schema of the history.
-`utilake read` runs that plan and resolves the rows by the table's roles
-(`docs/semantics.md`); `utilake sql TABLE --from --to [--as-of N]` prints
-the same read as one DuckDB query over the lake's files.
+left out. utilake itself does not read the lake: `docs/reading.md` gives
+the reads as SQL over the Iceberg tables or the Parquet files.
 
 ## The export
 

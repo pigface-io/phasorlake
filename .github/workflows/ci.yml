@@ -61,6 +61,7 @@ jobs:
             "duckdb" \
             "$HOME/.local/bin"
           echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+          "$HOME/.local/bin/duckdb" -c "INSTALL iceberg"
           pipx install "prek==${PREK_VERSION}"
           cargo install --locked cargo-llvm-cov --version "$CARGO_LLVM_COV_VERSION"
       # The budgets are taken on Apple silicon; the Linux runner only checks that the

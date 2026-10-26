@@ -106,9 +106,14 @@ report folders, the live one; `fetch` never mixes the two within a
 month, and every row names its source.
 
 Every Parquet file carries the lake schema of its table: every column the
-table has ever had, each with its id as `PARQUET:field_id`, so files of
-every schema read as one table and an Iceberg catalogue adopts the column
-ids unchanged.
+table has ever had, each with its id as `PARQUET:field_id` and its newest
+name (a column AEMO renamed is one column), so files of every schema read
+as one table. The table's Iceberg metadata, rebuilt by every ingest, has
+that union as its current schema and the table's roles, key and the data
+model's words as properties, so `iceberg_scan` reads every column of
+every file. Where AEMO publishes two kinds of row under one report pair
+(an area's beside a region's), each kind is a table of its own
+(`with_columns` in the table's declaration).
 
 Nothing a file carries is skipped. A table no schema declares is ingested
 from its own header, every column as text, under
@@ -265,8 +270,9 @@ that rev, together.
 
 The registry reads each table through `utilake_iceberg::from_metadata`.
 The table's columns are the history's fields, by id, each typed by its
-Iceberg type; a column takes nulls unless every schema requires it; the
-schema a reader gets today is the metadata's `current-schema-id`. A block is read with
+Iceberg type, under its newest name; a column takes nulls unless every
+schema requires it. A block goes to the table of its report pair whose
+`with_columns` it holds, and is read with
 the schema `History::resolve` names for its report pair, AEMO version,
 columns in order and the month its source was released in (with no month
 known, the latest run's): of the runs whose schema has exactly its columns,

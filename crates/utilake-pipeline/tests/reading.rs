@@ -113,6 +113,9 @@ struct Source {
     server: Option<&'static str>,
     /// The zip entry's modified time, in the market's clock.
     zip_entry: Option<&'static str>,
+    /// The schema of the table's history its block was read with; the
+    /// latest when none is given.
+    schema_id: Option<u32>,
     rows: Vec<(&'static str, Vec<V>)>,
 }
 
@@ -121,6 +124,8 @@ struct Lake {
     home: tempfile::TempDir,
     registry: Arc<Registry>,
     files: u128,
+    /// What each written file is, as the manifest would list it.
+    outputs: Vec<utilake_writer::manifest::LiveOutput>,
 }
 
 impl Lake {
@@ -129,6 +134,7 @@ impl Lake {
             home: tempfile::tempdir().unwrap(),
             registry: utilake_nem::registry(),
             files: 0,
+            outputs: Vec::new(),
         }
     }
 
@@ -200,8 +206,61 @@ impl Lake {
         let w = hive.open(&key, lake.clone(), &meta).unwrap();
         hive.write(w, &stamped(&batch, &stamp, &lake).unwrap())
             .unwrap();
-        hive.close(w).unwrap();
+        let written = hive.close(w).unwrap();
         hive.commit().unwrap();
+        self.outputs.push(utilake_writer::manifest::LiveOutput {
+            table: table.name.clone(),
+            path: written.path,
+            rows: written.rows,
+            bytes: written.bytes,
+            schema_id: s.schema_id.or_else(|| {
+                self.registry
+                    .history(id)
+                    .map(|h| h.schemas.iter().map(|s| s.schema_id).max().unwrap_or(0))
+            }),
+            source_version: 1,
+            source_period: Some("2024-01".into()),
+            url: s.url.to_owned(),
+            entries: Vec::new(),
+            min_time: written.min_time,
+            max_time: written.max_time,
+            partition: written.partition.to_string(),
+            last_modified_at: s.server.map(str::to_owned),
+        });
+    }
+
+    /// Each table's Iceberg metadata, as an ingest leaves it.
+    fn iceberg(&self) {
+        let mut tables: Vec<&str> = self.outputs.iter().map(|o| o.table.as_str()).collect();
+        tables.sort_unstable();
+        tables.dedup();
+        for name in tables {
+            let id = self.registry.table_by_name(name).unwrap();
+            let Some(h) = self.registry.history(id) else {
+                continue;
+            };
+            let published = self.registry.table(id).published();
+            let t = utilake_writer::iceberg::TableSchemas {
+                table: name.to_owned(),
+                uuid: utilake_writer::iceberg::table_uuid(name),
+                schemas: h.schemas.clone(),
+                properties: published.properties,
+                docs: published.docs,
+            };
+            let outs: Vec<_> = self
+                .outputs
+                .iter()
+                .filter(|o| o.table == name)
+                .cloned()
+                .collect();
+            let dir = self
+                .home
+                .path()
+                .join("lake")
+                .join(Market::Nem.to_string())
+                .join(self.registry.table_dir(id));
+            utilake_writer::iceberg::build_table(&dir, &t, &outs).unwrap();
+        }
     }
 }
 
@@ -231,6 +290,7 @@ fn dispatchprice(lake: &mut Lake) {
         entry: "PUBLIC_DISPATCHIS_202401010005_0000000400000001.CSV",
         server: Some("2023-12-31T14:05:40Z"),
         zip_entry: None,
+        schema_id: None,
         rows: rows(vec![
             (
                 "SETTLEMENTDATE",
@@ -254,6 +314,7 @@ fn dispatchprice(lake: &mut Lake) {
         entry: "PUBLIC_DVD_DISPATCHPRICE_202401010000.CSV",
         server: Some("2024-02-05T00:00:00Z"),
         zip_entry: None,
+        schema_id: None,
         rows: rows(vec![
             (
                 "SETTLEMENTDATE",
@@ -295,6 +356,7 @@ fn dispatchprice(lake: &mut Lake) {
         entry: "PUBLIC_DISPATCHIS_202401010005_0000000400000001.zip",
         server: Some("2026-04-15T00:00:00Z"),
         zip_entry: Some("2024-01-01T00:05:35"),
+        schema_id: None,
         rows: rows(vec![
             ("SETTLEMENTDATE", vec![V::T("2024-01-01T00:05")]),
             ("RUNNO", vec![V::I(1)]),
@@ -314,6 +376,7 @@ fn dudetail(lake: &mut Lake) {
         entry: "PUBLIC_DVD_DUDETAIL_202401010000.CSV",
         server: Some("2024-02-05T00:00:00Z"),
         zip_entry: None,
+        schema_id: None,
         rows: vec![
             ("DUID", vec![V::S("A"), V::S("A"), V::S("B")]),
             (
@@ -338,6 +401,7 @@ fn dudetail(lake: &mut Lake) {
         entry: "PUBLIC_DVD_DUDETAIL_202402010000.CSV",
         server: Some("2024-03-05T00:00:00Z"),
         zip_entry: None,
+        schema_id: None,
         rows: vec![
             (
                 "DUID",
@@ -383,6 +447,7 @@ fn biddayoffer(lake: &mut Lake) {
         entry: "PUBLIC_DVD_BIDDAYOFFER_D_202401010000.CSV",
         server: Some("2024-02-05T00:00:00Z"),
         zip_entry: None,
+        schema_id: None,
         rows: vec![
             (
                 "SETTLEMENTDATE",
@@ -437,6 +502,33 @@ fn biddayoffer(lake: &mut Lake) {
     });
 }
 
+/// An older BIDDAYOFFER_D file, read with the table's first schema: it
+/// still carries MR_FACTOR, which later schemas dropped.
+fn older_bids(lake: &mut Lake) {
+    lake.write(&Source {
+        table: "BIDDAYOFFER_D",
+        partition: Partition::Month {
+            year: 2023,
+            month: 12,
+        },
+        url: "https://nemweb.com.au/Data_Archive/Wholesale_Electricity/MMSDM/2023/MMSDM_2023_12/MMSDM/DATA/PUBLIC_DVD_BIDDAYOFFER_D_202312010000.zip",
+        entry: "PUBLIC_DVD_BIDDAYOFFER_D_202312010000.CSV",
+        server: Some("2024-01-05T00:00:00Z"),
+        zip_entry: None,
+        schema_id: Some(0),
+        rows: vec![
+            ("SETTLEMENTDATE", vec![V::T("2023-12-01T00:00")]),
+            ("DUID", vec![V::S("A")]),
+            ("BIDTYPE", vec![V::S("ENERGY")]),
+            ("OFFERDATE", vec![V::T("2023-11-30T10:00")]),
+            ("VERSIONNO", vec![V::F(1.0)]),
+            ("PRICEBAND1", vec![V::I(5)]),
+            ("MR_FACTOR", vec![V::I(1)]),
+            ("LASTCHANGED", vec![V::T("2023-11-30T10:00")]),
+        ],
+    });
+}
+
 fn keyless(lake: &mut Lake) {
     for (url, server) in [
         (
@@ -455,6 +547,7 @@ fn keyless(lake: &mut Lake) {
             entry: "X.CSV",
             server: Some(server),
             zip_entry: None,
+            schema_id: None,
             rows: vec![
                 (
                     "END_TRADINGDATE",
@@ -492,7 +585,11 @@ fn examples(doc: &str) -> Vec<(String, String)> {
 fn duck(home: &Path, sql: &str) -> String {
     let out = Command::new("duckdb")
         .current_dir(home)
-        .args(["-csv", "-c", &format!("SET TimeZone = 'UTC'; {sql}")])
+        .args([
+            "-csv",
+            "-c",
+            &format!("SET TimeZone = 'UTC'; LOAD iceberg; {sql}"),
+        ])
         .output()
         .expect("the duckdb CLI is on PATH: run `just duckdb`");
     assert!(
@@ -568,6 +665,7 @@ fn expected() -> BTreeMap<&'static str, String> {
             "order-nan",
             lines(&[
                 "SETTLEMENTDATE,DUID,BIDTYPE,VERSIONNO,PRICEBAND1",
+                "2023-11-30 14:00:00+00,A,ENERGY,1.0,5.00",
                 "2023-12-30 14:00:00+00,A,ENERGY,1.0,10.00",
                 "2023-12-31 14:00:00+00,A,ENERGY,2.0,21.00",
                 "2023-12-31 14:00:00+00,A,RAISE6SEC,1.0,22.00",
@@ -578,6 +676,26 @@ fn expected() -> BTreeMap<&'static str, String> {
             lines(&["DUID,BIDTYPE,revisions", "A,ENERGY,3", "A,RAISE6SEC,1"]),
         ),
         ("keyless", String::new()),
+        // Read by field id, the older file's MR_FACTOR is there; the later
+        // ones, which no longer carry it, read null.
+        (
+            "across-changes",
+            lines(&[
+                "SETTLEMENTDATE,VERSIONNO,MR_FACTOR",
+                "2023-11-30 14:00:00+00,1.0,1.000000",
+                "2023-12-30 14:00:00+00,1.0,NULL",
+                "2023-12-31 14:00:00+00,1.0,NULL",
+                "2023-12-31 14:00:00+00,2.0,NULL",
+            ]),
+        ),
+        (
+            "iceberg-latest",
+            lines(&[
+                "SETTLEMENTDATE,RRP",
+                "2023-12-31 14:05:00+00,101.00000",
+                "2023-12-31 14:10:00+00,111.00000",
+            ]),
+        ),
         (
             "sources",
             lines(&[
@@ -607,7 +725,9 @@ fn every_example_in_the_reading_doc_returns_its_rows() {
     dispatchprice(&mut lake);
     dudetail(&mut lake);
     biddayoffer(&mut lake);
+    older_bids(&mut lake);
     keyless(&mut lake);
+    lake.iceberg();
     let mut want = expected();
     let examples = examples(&doc);
     assert!(examples.len() >= 10, "{} examples", examples.len());
