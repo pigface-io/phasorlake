@@ -296,7 +296,7 @@ pub async fn run(
                     None => {
                         let d = Diagnostic::error(
                             "config.bad_path",
-                            Category::Config,
+                            Category::CONFIG,
                             match kit {
                                 Some(k) => format!(
                                     "The path {} is not a file the {k} kit reads.",
@@ -428,7 +428,7 @@ pub async fn run(
                             Box::new(
                                 Diagnostic::error(
                                     "cache.source_missing",
-                                    Category::Cache,
+                                    Category::CACHE,
                                     format!(
                                         "{} was ingested from {}, which can no longer be read, so it cannot be read again from disk. Fetch or ingest it again.",
                                         remote.url,
@@ -445,7 +445,7 @@ pub async fn run(
                             Box::new(
                                 Diagnostic::error(
                                     "csv.read_failed",
-                                    Category::Csv,
+                                    Category::CSV,
                                     format!("The file {} could not be read.", p.display()),
                                 )
                                 .with_file(p.display().to_string())
@@ -638,7 +638,7 @@ pub async fn run(
             Step::Panicked(req, msg) => {
                 let d = Diagnostic::error(
                     "internal.panic",
-                    Category::Internal,
+                    Category::INTERNAL,
                     format!("A parse worker panicked, which is a bug in utilake: {msg}"),
                 )
                 .with_request(req);
@@ -755,7 +755,7 @@ async fn commit(
         let d = if source_changed {
             Diagnostic::warning(
                 "manifest.superseded",
-                Category::Manifest,
+                Category::MANIFEST,
                 format!(
                     "{} changed since it was last ingested; {} earlier Parquet file(s) were replaced.",
                     local.remote.url,
@@ -765,7 +765,7 @@ async fn commit(
         } else {
             Diagnostic::warning(
                 "manifest.rules_changed",
-                Category::Manifest,
+                Category::MANIFEST,
                 format!(
                     "The rules {} was ingested by have changed, so it was read again from {}; {} earlier Parquet file(s) were replaced.",
                     local.remote.url,
@@ -783,7 +783,7 @@ async fn commit(
     if !rep.left.is_empty() {
         let d = Diagnostic::warning(
             "manifest.already_ingested",
-            Category::Manifest,
+            Category::MANIFEST,
             format!(
                 "{} entries of {} were fetched alone and ingested before; the read of the whole file left them as they are: {}",
                 rep.left.len(),

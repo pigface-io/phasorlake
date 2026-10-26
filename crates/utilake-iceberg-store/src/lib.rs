@@ -50,11 +50,11 @@ impl Diagnose for Error {
     fn diagnostic(&self) -> Diagnostic {
         let msg = self.to_string();
         match self {
-            Self::Io(_) => Diagnostic::error("store.iceberg_io", Category::Store, msg),
-            Self::Json(_) => Diagnostic::error("store.iceberg_metadata", Category::Store, msg),
-            Self::Manifest(_) => Diagnostic::error("store.iceberg_manifest", Category::Store, msg),
+            Self::Io(_) => Diagnostic::error("store.iceberg_io", Category::STORE, msg),
+            Self::Json(_) => Diagnostic::error("store.iceberg_metadata", Category::STORE, msg),
+            Self::Manifest(_) => Diagnostic::error("store.iceberg_manifest", Category::STORE, msg),
             Self::Location(path) => {
-                Diagnostic::error("store.iceberg_location", Category::Store, msg).with_file(path)
+                Diagnostic::error("store.iceberg_location", Category::STORE, msg).with_file(path)
             }
         }
     }

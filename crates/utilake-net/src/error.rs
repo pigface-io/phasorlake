@@ -199,16 +199,16 @@ impl Diagnose for FetchError {
         let msg = self.to_string();
         match self {
             Self::Connect { url, .. } => {
-                Diagnostic::error("net.connect", Category::Net, msg).with_url(url.clone())
+                Diagnostic::error("net.connect", Category::NET, msg).with_url(url.clone())
             }
             Self::Timeout { url, .. } => {
-                Diagnostic::error("net.timeout", Category::Net, msg).with_url(url.clone())
+                Diagnostic::error("net.timeout", Category::NET, msg).with_url(url.clone())
             }
             Self::HttpStatus {
                 url,
                 status,
                 body_head,
-            } => Diagnostic::error("net.http_status", Category::Net, msg)
+            } => Diagnostic::error("net.http_status", Category::NET, msg)
                 .with_url(url.clone())
                 .expected_observed("200", status.to_string())
                 .with_sample(body_head),
@@ -216,33 +216,33 @@ impl Diagnose for FetchError {
                 url,
                 expected,
                 received,
-            } => Diagnostic::error("net.content_length_mismatch", Category::Net, msg)
+            } => Diagnostic::error("net.content_length_mismatch", Category::NET, msg)
                 .with_url(url.clone())
                 .expected_observed(expected.to_string(), received.to_string()),
             Self::RetriesExhausted { url, last, .. } => {
-                let mut d = Diagnostic::error("net.retries_exhausted", Category::Net, msg)
+                let mut d = Diagnostic::error("net.retries_exhausted", Category::NET, msg)
                     .with_url(url.clone());
                 d.cause.push(last.to_string());
                 d
             }
             Self::Offline { url } => {
-                Diagnostic::error("net.offline", Category::Net, msg).with_url(url.clone())
+                Diagnostic::error("net.offline", Category::NET, msg).with_url(url.clone())
             }
             Self::Body { url, .. } => {
-                Diagnostic::error("net.body", Category::Net, msg).with_url(url.clone())
+                Diagnostic::error("net.body", Category::NET, msg).with_url(url.clone())
             }
             Self::ListingParse { url, sample } => {
-                Diagnostic::error("listing.parse_failed", Category::Listing, msg)
+                Diagnostic::error("listing.parse_failed", Category::LISTING, msg)
                     .with_url(url.clone())
                     .with_sample(sample)
             }
             Self::NoMatch { url, table, .. } => {
-                Diagnostic::error("listing.no_match", Category::Listing, msg)
+                Diagnostic::error("listing.no_match", Category::LISTING, msg)
                     .with_url(url.clone())
                     .with_table(table.clone())
             }
             Self::MonthMissing { url, .. } => {
-                Diagnostic::error("listing.month_missing", Category::Listing, msg)
+                Diagnostic::error("listing.month_missing", Category::LISTING, msg)
                     .with_url(url.clone())
             }
             Self::Blocked {
@@ -250,34 +250,34 @@ impl Diagnose for FetchError {
                 status,
                 body_head,
                 ..
-            } => Diagnostic::error("net.blocked", Category::Net, msg)
+            } => Diagnostic::error("net.blocked", Category::NET, msg)
                 .with_url(url.clone())
                 .expected_observed("200", status.to_string())
                 .with_sample(body_head),
             Self::RangeIgnored { url } => {
-                Diagnostic::warning("net.range_ignored", Category::Net, msg).with_url(url.clone())
+                Diagnostic::warning("net.range_ignored", Category::NET, msg).with_url(url.clone())
             }
             Self::EntryCorrupt { url, entry, .. } => {
-                Diagnostic::error("zip.entry_corrupt", Category::Zip, msg)
+                Diagnostic::error("zip.entry_corrupt", Category::ZIP, msg)
                     .with_url(url.clone())
                     .with_file(entry.clone())
             }
-            Self::CacheIo { path, source } => Diagnostic::error("cache.io", Category::Cache, msg)
+            Self::CacheIo { path, source } => Diagnostic::error("cache.io", Category::CACHE, msg)
                 .with_file(path.clone())
                 .caused_by(source),
             Self::SidecarCorrupt { path, .. } => {
-                Diagnostic::warning("cache.sidecar_corrupt", Category::Cache, msg)
+                Diagnostic::warning("cache.sidecar_corrupt", Category::CACHE, msg)
                     .with_file(path.clone())
             }
             Self::Sha256Mismatch {
                 path,
                 expected,
                 observed,
-            } => Diagnostic::warning("cache.sha256_mismatch", Category::Cache, msg)
+            } => Diagnostic::warning("cache.sha256_mismatch", Category::CACHE, msg)
                 .with_file(path.clone())
                 .expected_observed(expected.clone(), observed.clone()),
             Self::Parse { url, .. } => {
-                Diagnostic::error("listing.parse_failed", Category::Listing, msg)
+                Diagnostic::error("listing.parse_failed", Category::LISTING, msg)
                     .with_url(url.clone())
             }
         }

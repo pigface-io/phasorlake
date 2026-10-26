@@ -291,7 +291,7 @@ impl Registry {
             warnings.push(
                 Diagnostic::warning(
                     "schema.unseen_version",
-                    Category::Schema,
+                    Category::SCHEMA,
                     format!(
                         "Table {} has no run of AEMO version {} of ({}, {}); the block is read by its columns all the same.",
                         t.name, irow.version, pair.0, pair.1
@@ -324,7 +324,7 @@ impl Registry {
         ));
         let mut d = Diagnostic::warning(
             "schema.deviates",
-            Category::Schema,
+            Category::SCHEMA,
             format!(
                 "No run of table {}'s history has this file's {} columns{}. Against schema {}, the one in force, with {} columns: {} missing (written null), {} not listed (a column of the table feeds its own, any other is kept as text under its own name). If the file is right, the census has not seen it; a table of your own can read it.",
                 t.name,
@@ -351,7 +351,7 @@ impl Registry {
             warnings.push(
                 Diagnostic::warning(
                     "schema.missing_key",
-                    Category::Schema,
+                    Category::SCHEMA,
                     format!(
                         "This file of table {} lacks primary-key column(s) {}; its rows are kept with those columns null, and cannot be told apart by key.",
                         t.name,
@@ -392,7 +392,7 @@ impl Registry {
             ));
             let warning = Diagnostic::warning(
                 "schema.unknown_table",
-                Category::Schema,
+                Category::SCHEMA,
                 format!(
                     "No table in the registry claims report pair ({}, {}). Its rows are kept as the file gives them, every column as text, under {}. Once utilake-schemas publishes a table for it, a utilake built with it reads the pair typed; ingest again then.",
                     irow.report_type,

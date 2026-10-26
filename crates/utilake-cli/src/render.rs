@@ -211,7 +211,7 @@ mod tests {
         };
         let text = summary_text(&s, &Report::new());
         assert!(text.contains("1 listed, 1 ingested"));
-        let d = Diagnostic::error("net.offline", utilake_core::Category::Net, "Offline.")
+        let d = Diagnostic::error("net.offline", utilake_core::Category::NET, "Offline.")
             .with_column("X")
             .expected_observed("a whole number (Int64)", "13.55");
         let line = diagnostic_text(&d);

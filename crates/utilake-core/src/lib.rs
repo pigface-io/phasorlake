@@ -21,4 +21,4 @@ pub mod timetext;
 
 pub use diag::{Category, Diagnose, Diagnostic, Sample, Severity};
 pub use period::{CivilDay, Period, TimeRange, YearMonth};
-pub use utilake_mms_decode::{Fingerprint, normalize_name};
+pub use utilake_decode::{Fingerprint, normalize_name};

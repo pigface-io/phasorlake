@@ -385,7 +385,7 @@ fn bad_rows_fail_and_are_explained() {
         refusal["message"]
             .as_str()
             .unwrap()
-            .contains("The first is line 2"),
+            .contains("the first is line 2"),
         "{refusal}"
     );
     assert!(

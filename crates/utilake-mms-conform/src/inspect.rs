@@ -8,7 +8,7 @@ use utilake_mms_decode::scan::{ScanOptions, scan};
 use utilake_registry::{Mode, Registry, ResolveOptions};
 use utilake_zip::{ArchiveError, WalkError, walk_csv_entries};
 
-use crate::error::MmsDiagnose;
+use utilake_core::Diagnose as _;
 
 use crate::error::{RowError, RowFailure, SinkError, ValueError};
 use utilake_mms_decode::fields::Row;

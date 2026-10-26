@@ -86,7 +86,7 @@ mod tests {
         );
         assert_eq!(q.finish().unwrap(), None, "no rows, no file");
         let mut q = QuarantineWriter::new(dir.path(), "T", "s");
-        let d = Diagnostic::error("parse.float", Category::Parse, "Bad.")
+        let d = Diagnostic::error("parse.float", Category::PARSE, "Bad.")
             .at(7, 70)
             .with_column("X");
         q.write(b"D,1,2", "https://h/a.zip!A.CSV", &d).unwrap();

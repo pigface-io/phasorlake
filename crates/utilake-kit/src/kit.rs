@@ -157,13 +157,13 @@ mod tests {
             })?;
             sink.warning(Diagnostic::warning(
                 "csv.footer_count_mismatch",
-                utilake_core::Category::Csv,
+                utilake_core::Category::CSV,
                 "x",
             ));
             let flow = sink.bad_row(
                 b"D,x",
                 crate::decoder::RowAt::default(),
-                Diagnostic::error("csv.field_count_mismatch", utilake_core::Category::Csv, "x"),
+                Diagnostic::error("csv.field_count_mismatch", utilake_core::Category::CSV, "x"),
             );
             assert_eq!(flow, crate::decoder::Flow::Continue);
             assert_eq!(ctx.entry, "x.csv");

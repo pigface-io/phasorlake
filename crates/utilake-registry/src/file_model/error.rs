@@ -44,23 +44,23 @@ impl Diagnose for SchemaFileError {
         let msg = self.to_string();
         match self {
             Self::Read { path, source } => {
-                Diagnostic::error("schema.file_read", Category::Schema, msg)
+                Diagnostic::error("schema.file_read", Category::SCHEMA, msg)
                     .with_file(path.clone())
                     .caused_by(source)
             }
             Self::Parse { path, line, .. } => {
-                let mut d = Diagnostic::error("schema.file_parse", Category::Schema, msg)
+                let mut d = Diagnostic::error("schema.file_parse", Category::SCHEMA, msg)
                     .with_file(path.clone());
                 d.line = *line;
                 d
             }
             Self::Invalid { path, table, .. } => {
-                Diagnostic::error("schema.file_invalid", Category::Schema, msg)
+                Diagnostic::error("schema.file_invalid", Category::SCHEMA, msg)
                     .with_file(path.clone())
                     .with_table(table.clone())
             }
             Self::Blob(e) => {
-                Diagnostic::error("schema.blob_corrupt", Category::Schema, msg).caused_by(e)
+                Diagnostic::error("schema.blob_corrupt", Category::SCHEMA, msg).caused_by(e)
             }
         }
     }

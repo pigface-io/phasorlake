@@ -253,12 +253,12 @@ impl Diagnose for ConfigError {
     fn diagnostic(&self) -> Diagnostic {
         match self {
             Self::Read { path, source } => {
-                Diagnostic::error("config.read", Category::Config, self.to_string())
+                Diagnostic::error("config.read", Category::CONFIG, self.to_string())
                     .with_file(path.clone())
                     .caused_by(source)
             }
             Self::Parse { path, line, .. } => {
-                let mut d = Diagnostic::error("config.parse", Category::Config, self.to_string())
+                let mut d = Diagnostic::error("config.parse", Category::CONFIG, self.to_string())
                     .with_file(path.clone());
                 if let Some(l) = line {
                     d.line = Some(*l);
@@ -266,7 +266,7 @@ impl Diagnose for ConfigError {
                 d
             }
             Self::Invalid { range, value, .. } => {
-                Diagnostic::error("config.invalid", Category::Config, self.to_string())
+                Diagnostic::error("config.invalid", Category::CONFIG, self.to_string())
                     .expected_observed(range.clone(), value.clone())
             }
         }

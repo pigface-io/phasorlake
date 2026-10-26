@@ -1,6 +1,6 @@
 //! Why a mirror command failed.
 
-use crate::diag::{Category, Diagnose, Diagnostic};
+use crate::diag::{Category, Diagnose, Diagnostic, MIRROR};
 use crate::net::FetchError;
 
 use crate::listing::Unparsed;
@@ -115,43 +115,40 @@ impl Diagnose for MirrorError {
         let msg = self.to_string();
         match self {
             Self::Listing { url, source } => {
-                Diagnostic::error("listing.unparsed_line", Category::Listing, msg)
+                Diagnostic::error("listing.unparsed_line", Category::LISTING, msg)
                     .with_url(url.clone())
                     .with_sample(source.text.as_bytes())
             }
             Self::Fetch(e) => e.diagnostic(),
-            Self::Io { path, source } => Diagnostic::error("mirror.io", Category::Mirror, msg)
+            Self::Io { path, source } => Diagnostic::error("mirror.io", MIRROR, msg)
                 .with_file(path.clone())
                 .caused_by(source),
             Self::Record { path, line, .. } => {
-                let mut d = Diagnostic::error("mirror.record_corrupt", Category::Mirror, msg)
-                    .with_file(path.clone());
+                let mut d =
+                    Diagnostic::error("mirror.record_corrupt", MIRROR, msg).with_file(path.clone());
                 d.line = Some(*line);
                 d
             }
             Self::CrawlIncomplete { path } => {
-                Diagnostic::error("mirror.crawl_incomplete", Category::Mirror, msg)
-                    .with_file(path.clone())
+                Diagnostic::error("mirror.crawl_incomplete", MIRROR, msg).with_file(path.clone())
             }
             Self::Locked { path, .. } => {
-                Diagnostic::error("mirror.locked", Category::Mirror, msg).with_file(path.clone())
+                Diagnostic::error("mirror.locked", MIRROR, msg).with_file(path.clone())
             }
             Self::SummaryStale { path } => {
-                Diagnostic::error("mirror.summary_stale", Category::Mirror, msg)
-                    .with_file(path.clone())
+                Diagnostic::error("mirror.summary_stale", MIRROR, msg).with_file(path.clone())
             }
             Self::Zip { path, .. } => {
-                Diagnostic::error("zip.open_failed", Category::Zip, msg).with_file(path.clone())
+                Diagnostic::error("zip.open_failed", Category::ZIP, msg).with_file(path.clone())
             }
             Self::NotSame { url } => {
-                Diagnostic::error("mirror.not_same", Category::Mirror, msg).with_url(url.clone())
+                Diagnostic::error("mirror.not_same", MIRROR, msg).with_url(url.clone())
             }
             Self::OldLayout { path } => {
-                Diagnostic::error("mirror.old_layout", Category::Mirror, msg)
-                    .with_file(path.clone())
+                Diagnostic::error("mirror.old_layout", MIRROR, msg).with_file(path.clone())
             }
             Self::Root { url } => {
-                Diagnostic::error("config.mirror_root", Category::Config, msg).with_url(url.clone())
+                Diagnostic::error("config.mirror_root", Category::CONFIG, msg).with_url(url.clone())
             }
         }
     }

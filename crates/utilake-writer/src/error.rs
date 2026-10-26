@@ -103,15 +103,15 @@ impl Diagnose for StoreError {
     fn diagnostic(&self) -> Diagnostic {
         let msg = self.to_string();
         match self {
-            Self::Io { path, source } => Diagnostic::error("store.io", Category::Store, msg)
+            Self::Io { path, source } => Diagnostic::error("store.io", Category::STORE, msg)
                 .with_file(path.clone())
                 .caused_by(source),
             Self::Parquet { path, .. } => {
-                Diagnostic::error("store.parquet_write", Category::Store, msg)
+                Diagnostic::error("store.parquet_write", Category::STORE, msg)
                     .with_file(path.clone())
             }
             Self::Rename { to, source, .. } => {
-                Diagnostic::error("store.rename", Category::Store, msg)
+                Diagnostic::error("store.rename", Category::STORE, msg)
                     .with_file(to.clone())
                     .caused_by(source)
             }
@@ -119,34 +119,34 @@ impl Diagnose for StoreError {
                 path,
                 expected,
                 observed,
-            } => Diagnostic::error("store.schema_mismatch", Category::Store, msg)
+            } => Diagnostic::error("store.schema_mismatch", Category::STORE, msg)
                 .with_file(path.clone())
                 .expected_observed(expected.clone(), observed.clone()),
             Self::Extract { table, .. } => {
-                Diagnostic::error("store.extract", Category::Store, msg).with_table(table.clone())
+                Diagnostic::error("store.extract", Category::STORE, msg).with_table(table.clone())
             }
             Self::NoSuchWriter(_) => {
-                Diagnostic::error("internal.no_such_writer", Category::Internal, msg)
+                Diagnostic::error("internal.no_such_writer", Category::INTERNAL, msg)
             }
             Self::PartitionColumnNotTimestamp { column, observed } => {
-                Diagnostic::error("store.partition_column_not_timestamp", Category::Store, msg)
+                Diagnostic::error("store.partition_column_not_timestamp", Category::STORE, msg)
                     .with_column(column.clone())
                     .expected_observed("a timestamp with a zone", observed.clone())
             }
             Self::NaiveTimestamp { column, observed } => {
-                Diagnostic::error("store.naive_timestamp", Category::Store, msg)
+                Diagnostic::error("store.naive_timestamp", Category::STORE, msg)
                     .with_column(column.clone())
                     .expected_observed("Timestamp(Microsecond, Some(offset))", observed.clone())
             }
             Self::NoProvenance { observed } => {
-                Diagnostic::error("store.no_provenance", Category::Store, msg)
+                Diagnostic::error("store.no_provenance", Category::STORE, msg)
                     .expected_observed("…,_ul_source,_ul_server_last_modified,_ul_zip_entry_modified,_ul_filename_timestamp", observed.clone())
             }
             Self::Arrow(source) => {
-                Diagnostic::error("store.arrow", Category::Store, msg).caused_by(source)
+                Diagnostic::error("store.arrow", Category::STORE, msg).caused_by(source)
             }
             Self::Quarantine { path, source } => {
-                Diagnostic::error("store.quarantine_write", Category::Store, msg)
+                Diagnostic::error("store.quarantine_write", Category::STORE, msg)
                     .with_file(path.display().to_string())
                     .caused_by(source)
             }
@@ -195,16 +195,16 @@ impl Diagnose for ManifestError {
         let msg = self.to_string();
         match self {
             Self::Sqlite { path, .. } => {
-                Diagnostic::error("manifest.sqlite", Category::Manifest, msg)
+                Diagnostic::error("manifest.sqlite", Category::MANIFEST, msg)
                     .with_file(path.clone())
             }
             Self::Migration { path, .. } => {
-                Diagnostic::error("manifest.migration_failed", Category::Manifest, msg)
+                Diagnostic::error("manifest.migration_failed", Category::MANIFEST, msg)
                     .with_file(path.clone())
             }
-            Self::Closed => Diagnostic::error("manifest.closed", Category::Manifest, msg),
+            Self::Closed => Diagnostic::error("manifest.closed", Category::MANIFEST, msg),
             Self::NotFound { .. } => {
-                Diagnostic::error("manifest.not_found", Category::Manifest, msg)
+                Diagnostic::error("manifest.not_found", Category::MANIFEST, msg)
             }
         }
     }

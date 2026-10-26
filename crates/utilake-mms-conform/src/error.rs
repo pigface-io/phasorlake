@@ -1,6 +1,6 @@
 //! What the typed sink refuses and fails with. The scanner's own errors
-//! ([`utilake_mms_decode::error`]) carry these through, and are diagnosed
-//! by `utilake-core`, which owns [`Diagnose`].
+//! ([`utilake_mms_decode::error`]) carry these through and diagnose
+//! themselves, each of these by its own [`Diagnose`].
 
 use utilake_core::num::NumberError;
 use utilake_core::{Category, Diagnose, Diagnostic};
@@ -78,11 +78,11 @@ impl Diagnose for ValueError {
         let msg = self.to_string();
         match self {
             Self::NullNotAllowed { column } => {
-                Diagnostic::error("parse.null_not_allowed", Category::Parse, msg)
+                Diagnostic::error("parse.null_not_allowed", Category::PARSE, msg)
                     .with_column(column.clone())
             }
             Self::Timestamp { column, value, .. } => {
-                Diagnostic::error("parse.timestamp", Category::Parse, msg)
+                Diagnostic::error("parse.timestamp", Category::PARSE, msg)
                     .with_column(column.clone())
                     .expected_observed("yyyy/mm/dd hh24:mi:ss", value.clone())
             }
@@ -100,15 +100,15 @@ impl Diagnose for ValueError {
                     ),
                     _ => ("parse.decimal", "a decimal number".to_owned()),
                 };
-                Diagnostic::error(code, Category::Parse, msg)
+                Diagnostic::error(code, Category::PARSE, msg)
                     .with_column(column.clone())
                     .expected_observed(expected, value.clone())
             }
             Self::Utf8 { column } => {
-                Diagnostic::error("parse.utf8", Category::Parse, msg).with_column(column.clone())
+                Diagnostic::error("parse.utf8", Category::PARSE, msg).with_column(column.clone())
             }
             Self::Boolean { column, value } => {
-                Diagnostic::error("parse.boolean", Category::Parse, msg)
+                Diagnostic::error("parse.boolean", Category::PARSE, msg)
                     .with_column(column.clone())
                     .expected_observed("a boolean", value.clone())
             }
@@ -124,78 +124,6 @@ pub type RowFailure = utilake_mms_decode::RowFailure<ValueError, SinkError>;
 
 /// A failure that ends the scan of one file.
 pub type ScanError = utilake_mms_decode::ScanError<ValueError, SinkError>;
-
-/// The diagnostic of a failure the MMS scanner raises. The scanner's
-/// errors are the decoder's types, which know no diagnostics; their codes
-/// are this format's, so they are given here.
-pub trait MmsDiagnose {
-    /// The diagnostic for this error, with whatever context it carries.
-    fn diagnostic(&self) -> Diagnostic;
-}
-
-/// A row the scanner or a sink refused, diagnosed: the scanner's own
-/// faults with their codes, a value's by the value.
-impl MmsDiagnose for RowError {
-    fn diagnostic(&self) -> Diagnostic {
-        row_diagnostic(self)
-    }
-}
-
-/// A scan that ended, diagnosed: the scanner's own failures with their
-/// codes, the sink's by the sink; each with the line it names.
-impl MmsDiagnose for ScanError {
-    fn diagnostic(&self) -> Diagnostic {
-        scan_diagnostic(self)
-    }
-}
-
-fn row_diagnostic(e: &RowError) -> Diagnostic {
-    let msg = e.to_string();
-    match e {
-        RowError::FieldCount { declared, observed } => {
-            Diagnostic::error("csv.field_count_mismatch", Category::Csv, msg)
-                .expected_observed(format!("{declared} fields"), format!("{observed} fields"))
-        }
-        RowError::BlockMismatch { .. } => {
-            Diagnostic::error("csv.block_mismatch", Category::Csv, msg)
-        }
-        RowError::TooShort(_) => Diagnostic::error("csv.row_too_short", Category::Csv, msg),
-        RowError::UnknownRecord(_) => Diagnostic::error("csv.unknown_record", Category::Csv, msg),
-        RowError::Value(v) => v.diagnostic(),
-    }
-}
-
-fn scan_diagnostic(e: &ScanError) -> Diagnostic {
-    use utilake_mms_decode::ScanError as E;
-    let msg = e.to_string();
-    let mut d = match e {
-        E::Io { source, .. } => {
-            Diagnostic::error("csv.read_failed", Category::Csv, msg).caused_by(source)
-        }
-        E::LineTooLong { .. } => Diagnostic::error("csv.line_too_long", Category::Csv, msg),
-        E::DataBeforeHeader { .. } => {
-            Diagnostic::error("csv.data_before_header", Category::Csv, msg)
-        }
-        E::BadHeader { .. } => Diagnostic::error("csv.header_malformed", Category::Csv, msg),
-        E::TooManyBadRows { first, .. } => {
-            // The refusal says exactly what the first bad row had
-            // wrong: its column, what was expected and what was there.
-            let row = row_diagnostic(first);
-            let mut d = Diagnostic::error("csv.too_many_bad_rows", Category::Csv, msg);
-            d.column = row.column;
-            d.expected = row.expected;
-            d.observed = row.observed;
-            d.cause = vec![format!("{} [{}]", row.message, row.code)];
-            d
-        }
-        E::Sink(e) => e.diagnostic(),
-        E::Stopped { .. } => Diagnostic::error("csv.stopped_fail_fast", Category::Csv, msg),
-    };
-    if let Some(l) = e.line() {
-        d.line = Some(l);
-    }
-    d
-}
 
 /// A failure of the thing rows are delivered to; ends the scan.
 #[derive(Debug, thiserror::Error)]
@@ -250,13 +178,13 @@ impl Diagnose for SinkError {
             Self::Refused(d) => (**d).clone(),
             Self::Write { table, cause, .. } => {
                 let mut d =
-                    Diagnostic::error("store.write_failed", Category::Store, self.to_string())
+                    Diagnostic::error("store.write_failed", Category::STORE, self.to_string())
                         .with_table(table.clone());
                 d.cause.clone_from(cause);
                 d
             }
             Self::Arrow { table, .. } => {
-                Diagnostic::error("internal.arrow", Category::Internal, self.to_string())
+                Diagnostic::error("internal.arrow", Category::INTERNAL, self.to_string())
                     .with_table(table.clone())
             }
         }
@@ -453,7 +381,7 @@ mod tests {
         assert_eq!(e.diagnostic().code, "internal.arrow");
         let e = SinkError::Refused(Box::new(Diagnostic::error(
             "schema.unknown_table",
-            Category::Schema,
+            Category::SCHEMA,
             "No table.",
         )));
         assert_eq!(e.diagnostic().code, "schema.unknown_table");

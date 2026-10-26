@@ -34,7 +34,8 @@
     "utilake-zip"
   ],
   "utilake-core": [
-    "utilake-mms-decode",
+    "utilake-decode",
+    "utilake-diag",
     "utilake-provenance"
   ],
   "utilake-e2e": [],

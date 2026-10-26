@@ -230,11 +230,11 @@ mod tests {
     use crate::diag::Category;
 
     fn err(code: &'static str) -> Diagnostic {
-        Diagnostic::error(code, Category::Csv, "Bad.")
+        Diagnostic::error(code, Category::CSV, "Bad.")
     }
 
     fn warn(code: &'static str, table: &str, file: &str) -> Diagnostic {
-        Diagnostic::warning(code, Category::Schema, "Drift.")
+        Diagnostic::warning(code, Category::SCHEMA, "Drift.")
             .with_table(table)
             .with_version(2)
             .with_file(file)

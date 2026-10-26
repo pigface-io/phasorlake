@@ -65,7 +65,7 @@ impl Diagnose for ResolveError {
         let msg = self.to_string();
         match self {
             Self::UnknownTable { .. } => {
-                Diagnostic::error("schema.unknown_table", Category::Schema, msg)
+                Diagnostic::error("schema.unknown_table", Category::SCHEMA, msg)
             }
             Self::Deviates {
                 table,
@@ -73,7 +73,7 @@ impl Diagnose for ResolveError {
                 expected,
                 observed,
                 ..
-            } => Diagnostic::error("schema.deviates", Category::Schema, msg)
+            } => Diagnostic::error("schema.deviates", Category::SCHEMA, msg)
                 .with_table(table.clone())
                 .with_version(*schema)
                 .expected_observed(expected.clone(), observed.clone()),
@@ -81,12 +81,12 @@ impl Diagnose for ResolveError {
                 table,
                 schema,
                 column,
-            } => Diagnostic::error("schema.missing_key", Category::Schema, msg)
+            } => Diagnostic::error("schema.missing_key", Category::SCHEMA, msg)
                 .with_table(table.clone())
                 .with_version(*schema)
                 .with_column(column.clone()),
             Self::NoColumns { version, .. } => {
-                Diagnostic::error("schema.no_columns", Category::Schema, msg).with_version(*version)
+                Diagnostic::error("schema.no_columns", Category::SCHEMA, msg).with_version(*version)
             }
         }
     }

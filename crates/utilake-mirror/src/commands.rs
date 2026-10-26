@@ -409,7 +409,7 @@ async fn run(ctx: &Context, mirror: &Mirror, plan: &RunPlan<'_>) -> Result<i32, 
             // Files failed on the network: another pass fetches only those.
             Ok((_, true)) => utilake_mirror::Diagnostic::error(
                 "mirror.files_failed",
-                utilake_mirror::Category::Mirror,
+                utilake_mirror::diag::MIRROR,
                 "Some files failed on the network; the next pass fetches only those.",
             ),
             Err(MirrorError::Fetch(e)) if waits_out(&e) => e.diagnostic(),

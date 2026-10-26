@@ -129,7 +129,7 @@ fn no_kit(req: &GetRequest) -> Box<Diagnostic> {
     Box::new(
         Diagnostic::error(
             "config.no_decoder",
-            utilake_core::Category::Config,
+            utilake_core::Category::CONFIG,
             format!("No kit named {} was assembled into this binary.", req.kit),
         )
         .with_request(req.request.clone()),
@@ -140,7 +140,7 @@ fn no_source(req: &GetRequest, side: &str) -> Box<Diagnostic> {
     Box::new(
         Diagnostic::error(
             "config.no_decoder",
-            utilake_core::Category::Config,
+            utilake_core::Category::CONFIG,
             format!("The kit {} has no {side} source to read from.", req.kit),
         )
         .with_request(req.request.clone()),

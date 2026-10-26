@@ -317,7 +317,7 @@ mod tests {
         h.record_diagnostic(
             run,
             Some(iid),
-            Diagnostic::warning("schema.x", Category::Schema, "w"),
+            Diagnostic::warning("schema.x", Category::SCHEMA, "w"),
         )
         .await
         .unwrap();

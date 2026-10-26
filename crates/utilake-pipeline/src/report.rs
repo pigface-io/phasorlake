@@ -1,19 +1,22 @@
 //! The outcome of a run and how it becomes an exit code.
 
+use utilake_core::diag::exit;
 use utilake_core::event::Summary;
 use utilake_core::report::Report;
 use utilake_kit::RemoteFile;
 
+// The family's exit codes (`utilake_diag::exit`), as the `i32` a process
+// exits with.
 /// Exit code: success.
-pub const EXIT_OK: i32 = 0;
+pub const EXIT_OK: i32 = exit::OK as i32;
 /// Exit code: nothing succeeded, or the run could not start.
-pub const EXIT_FAILURE: i32 = 1;
+pub const EXIT_FAILURE: i32 = exit::FAILURE as i32;
 /// Exit code: some files failed.
-pub const EXIT_PARTIAL: i32 = 3;
+pub const EXIT_PARTIAL: i32 = exit::PARTIAL as i32;
 /// Exit code: offline and a file was not cached.
-pub const EXIT_OFFLINE: i32 = 4;
+pub const EXIT_OFFLINE: i32 = exit::OFFLINE as i32;
 /// Exit code: a schema could not be resolved in strict mode.
-pub const EXIT_SCHEMA: i32 = 5;
+pub const EXIT_SCHEMA: i32 = exit::SCHEMA as i32;
 
 /// What a run produced.
 #[derive(Debug)]

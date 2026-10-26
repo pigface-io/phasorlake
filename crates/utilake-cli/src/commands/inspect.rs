@@ -3,8 +3,8 @@
 use std::path::Path;
 
 use anyhow::Result;
+use utilake_core::Diagnose as _;
 use utilake_mms_conform::inspect::{self, BlockSummary, InspectError};
-use utilake_pipeline::archive_diagnostic;
 
 use crate::context::Context;
 use crate::render;
@@ -15,13 +15,13 @@ fn scan_blocks(ctx: &Context, path: &Path) -> Result<Vec<(String, BlockSummary)>
     let found = inspect::file(&ctx.registry, path, &ctx.home.tmp()).map_err(|e| match e {
         InspectError::Open(e) => anyhow::Error::from(e),
         InspectError::Scan(d) => anyhow::anyhow!("{}", d.render()),
-        InspectError::Archive(a) => anyhow::anyhow!("{}", archive_diagnostic(&a).render()),
+        InspectError::Archive(a) => anyhow::anyhow!("{}", a.diagnostic().render()),
     })?;
     for (entry, declared, read) in &found.footers {
         eprintln!("warning: {entry}: footer says {declared} lines but {read} were read");
     }
     for a in &found.failed {
-        eprintln!("{}", archive_diagnostic(a).render());
+        eprintln!("{}", a.diagnostic().render());
     }
     let skipped = &found.skipped;
     if !skipped.is_empty() && !ctx.json {

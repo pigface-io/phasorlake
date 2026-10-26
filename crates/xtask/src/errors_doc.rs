@@ -13,6 +13,28 @@ const CATEGORIES: [&str; 14] = [
     "manifest", "verify", "query", "internal",
 ];
 
+/// Codes utilake reports that a utilake-schemas crate raises on its behalf,
+/// with where: the decoders' and the zip walker's own diagnostics. Listed
+/// beside utilake's own, since they reach its users the same way.
+const INHERITED: [(&str, &str); 13] = [
+    ("csv.block_mismatch", MMS_DECODE),
+    ("csv.data_before_header", MMS_DECODE),
+    ("csv.field_count_mismatch", MMS_DECODE),
+    ("csv.header_malformed", MMS_DECODE),
+    ("csv.header_missing", PLAIN_DECODE),
+    ("csv.line_too_long", MMS_DECODE),
+    ("csv.row_too_short", MMS_DECODE),
+    ("csv.too_many_bad_rows", MMS_DECODE),
+    ("csv.unknown_record", MMS_DECODE),
+    ("json.not_wemde", PLAIN_DECODE),
+    ("json.syntax", PLAIN_DECODE),
+    ("zip.no_entry", ZIP),
+    ("zip.spool_failed", ZIP),
+];
+const MMS_DECODE: &str = "utilake-schemas/crates/utilake-mms-decode/src/diagnose.rs";
+const PLAIN_DECODE: &str = "utilake-schemas/crates/utilake-plain-decode/src/diagnose.rs";
+const ZIP: &str = "utilake-schemas/crates/utilake-zip/src/diagnose.rs";
+
 /// Codes that are no longer raised. A code is a promise to whoever matches
 /// on it, so a retired one stays listed and may never be given a new meaning.
 const RETIRED: [(&str, &str); 33] = [
@@ -283,7 +305,12 @@ pub fn render(codes: &BTreeMap<String, String>) -> String {
 
 pub fn run(write: bool, check: bool) -> Result<bool> {
     let root = crate::repo_root();
-    let codes = collect_codes(&root);
+    let mut codes = collect_codes(&root);
+    for (code, from) in INHERITED {
+        codes
+            .entry(code.to_owned())
+            .or_insert_with(|| from.to_owned());
+    }
     let again = reused(&codes);
     if !again.is_empty() {
         eprintln!(
@@ -315,7 +342,7 @@ mod tests {
 
     #[test]
     fn finds_codes() {
-        let src = r#"Diagnostic::error("csv.field_count_mismatch", Category::Csv, "x"); let c = "net.offline"; code: "schema.drift", "not a code", "the file.txt", "config.toml""#;
+        let src = r#"Diagnostic::error("csv.field_count_mismatch", Category::CSV, "x"); let c = "net.offline"; code: "schema.drift", "not a code", "the file.txt", "config.toml""#;
         let l = literals(src);
         assert_eq!(
             l,
@@ -333,7 +360,7 @@ mod tests {
         );
         assert_eq!(reused(&m), ["listing.era_unsupported"]);
         let codes = collect_codes(&crate::repo_root());
-        assert!(codes.contains_key("csv.field_count_mismatch"), "{codes:?}");
+        assert!(codes.contains_key("parse.timestamp"), "{codes:?}");
         assert!(codes.len() > 40);
     }
 }

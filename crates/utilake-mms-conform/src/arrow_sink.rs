@@ -12,7 +12,7 @@ use utilake_core::{Category, Diagnose as _, Diagnostic, Fingerprint};
 use utilake_mms_decode::IRow;
 use utilake_registry::{Cast, ConformancePlan, Mode, Registry, ResolveOptions, Resolved, TableId};
 
-use crate::error::{MmsDiagnose, RowError, RowFailure, SinkError, ValueError};
+use crate::error::{RowError, RowFailure, SinkError, ValueError};
 use utilake_mms_decode::PREFIX_FIELDS;
 use utilake_mms_decode::fields::Row;
 use utilake_mms_decode::scan::{Flow, Pos, Sink};
@@ -262,7 +262,7 @@ impl<'r, B: BatchSink> ArrowSink<'r, B> {
         let plan = &block.resolved.plan;
         let table = self.registry.table(block.resolved.table);
         let warn = |code: &'static str, column: &str, message: String| {
-            Diagnostic::warning(code, Category::Parse, message)
+            Diagnostic::warning(code, Category::PARSE, message)
                 .with_table(table.name.clone())
                 .with_version(block.resolved.version)
                 .with_column(column.to_owned())

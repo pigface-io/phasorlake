@@ -23,8 +23,8 @@ use utilake_kit::{BlockSink, DecodeCtx, DecodeStats, Decoder, Strictness};
 use utilake_mms_decode::{Flow, IRow, Pos, Row, RowError, RowFailure, Sink as _};
 use utilake_plain_decode::names::block_name;
 use utilake_plain_decode::{
-    BlockName, Dedupe, Feed, Format, Header, JsonError, PlainError, PlainOptions, PlainRowError,
-    PlainSink, RowSet, peek, sniff,
+    BlockName, Dedupe, Feed, Format, Header, PlainOptions, PlainRowError, PlainSink, RowSet, peek,
+    sniff,
 };
 use utilake_registry::{Market, Mode, Registry, ResolveOptions};
 use utilake_zip::has_extension;
@@ -145,43 +145,6 @@ fn name_of(
     })
 }
 
-/// A plain scan's failure as a diagnostic; `sink` says what the sink's
-/// own failure is.
-fn plain_diag<F: std::fmt::Display>(
-    e: PlainError<F>,
-    sink: impl FnOnce(F) -> Diagnostic,
-) -> Diagnostic {
-    let msg = e.to_string();
-    let (code, line) = match &e {
-        PlainError::Io(_) => ("csv.read_failed", None),
-        PlainError::RecordTooLong { line, .. } => ("csv.line_too_long", Some(*line)),
-        PlainError::HeaderMissing => ("csv.header_missing", None),
-        PlainError::BadHeader { line, .. } => ("csv.header_malformed", Some(*line)),
-        PlainError::TooManyBadRows { line, .. } => ("csv.too_many_bad_rows", Some(*line)),
-        PlainError::Stopped { line } => ("csv.stopped_fail_fast", Some(*line)),
-        PlainError::Sink(_) => ("", None),
-    };
-    let mut d = match e {
-        PlainError::Sink(f) => return sink(f),
-        PlainError::Io(source) => Diagnostic::error(code, Category::Csv, msg).caused_by(&source),
-        _ => Diagnostic::error(code, Category::Csv, msg),
-    };
-    d.line = line;
-    d
-}
-
-/// A document scan's failure as a diagnostic.
-fn json_diag(e: JsonError<SinkError>) -> Diagnostic {
-    let msg = e.to_string();
-    match e {
-        JsonError::Syntax(source) => {
-            Diagnostic::error("json.syntax", Category::Json, msg).caused_by(&source)
-        }
-        JsonError::Shape(_) => Diagnostic::error("json.not_wemde", Category::Json, msg),
-        JsonError::Sink(f) => f.diagnostic(),
-    }
-}
-
 /// Hands a plain file's blocks and rows to an [`ArrowSink`] as the MMS
 /// scanner would: each header as an I row named by the file, each row
 /// with no prefix.
@@ -293,7 +256,7 @@ impl PlainSink for PlainBridge<'_> {
                     Flow::Stop => Err(SinkError::Refused(Box::new(
                         Diagnostic::error(
                             "csv.stopped_fail_fast",
-                            Category::Csv,
+                            Category::CSV,
                             format!("Stopped at line {}: {e}", pos.line),
                         )
                         .at(pos.line, pos.byte_offset),
@@ -331,7 +294,7 @@ fn previous_rows(
         Box::new(
             Diagnostic::error(
                 "csv.read_failed",
-                Category::Csv,
+                Category::CSV,
                 format!("The previous version of the file, {shown}, could not be read: {e}"),
             )
             .with_file(shown.clone())
@@ -339,7 +302,7 @@ fn previous_rows(
         )
     })?;
     let (_, set) = RowSet::collect_csv(file, opts, feed.time_columns).map_err(|e| {
-        let mut d = plain_diag(e, |never| match never {});
+        let mut d = e.diagnostic();
         d.file = Some(shown);
         Box::new(d)
     })?;
@@ -362,7 +325,7 @@ impl Decoder for PlainCsvDecoder {
         sink: &mut dyn BlockSink,
         _scratch: &mut Vec<u8>,
     ) -> Result<DecodeStats, Box<Diagnostic>> {
-        let name = name_of(self.feed, ctx, "csv.unnamed_block", Category::Csv)?;
+        let name = name_of(self.feed, ctx, "csv.unnamed_block", Category::CSV)?;
         let opts = options(self.feed, ctx, &name.name);
         let previous = previous_rows(self.feed, ctx, &opts)?;
         let mut bridge = PlainBridge::new(&self.registry, self.market, ctx, sink, name, previous);
@@ -379,7 +342,7 @@ impl Decoder for PlainCsvDecoder {
                 footer_declared: None,
             }),
             (Ok(_), Err(e)) => Err(Box::new(e.diagnostic())),
-            (Err(e), _) => Err(Box::new(plain_diag(e, |f| f.diagnostic()))),
+            (Err(e), _) => Err(Box::new(e.diagnostic())),
         }
     }
 }
@@ -400,7 +363,7 @@ impl Decoder for WemdeDecoder {
         sink: &mut dyn BlockSink,
         _scratch: &mut Vec<u8>,
     ) -> Result<DecodeStats, Box<Diagnostic>> {
-        let name = name_of(self.feed, ctx, "json.unnamed_block", Category::Json)?;
+        let name = name_of(self.feed, ctx, "json.unnamed_block", Category::JSON)?;
         let opts = options(self.feed, ctx, &name.name);
         let mut bridge = PlainBridge::new(&self.registry, self.market, ctx, sink, name, None);
         let scanned = utilake_plain_decode::json::scan(reader, &mut bridge, &opts);
@@ -416,7 +379,7 @@ impl Decoder for WemdeDecoder {
                 footer_declared: None,
             }),
             (Ok(_), Err(e)) => Err(Box::new(e.diagnostic())),
-            (Err(e), _) => Err(Box::new(json_diag(e))),
+            (Err(e), _) => Err(Box::new(e.diagnostic())),
         }
     }
 }
@@ -441,7 +404,7 @@ impl Decoder for SniffedCsv {
             Box::new(
                 Diagnostic::error(
                     "csv.read_failed",
-                    Category::Csv,
+                    Category::CSV,
                     format!("Reading the first bytes of the entry failed: {e}"),
                 )
                 .with_entry(ctx.entry.to_owned())
@@ -455,7 +418,7 @@ impl Decoder for SniffedCsv {
                 sink.warning(
                     Diagnostic::warning(
                         "csv.markup_skipped",
-                        Category::Csv,
+                        Category::CSV,
                         format!(
                             "The entry {} is a page (HTML or XML) saved under a .csv name; it carries no rows and is skipped.",
                             ctx.entry
@@ -851,7 +814,7 @@ mod tests {
             options: &opts,
             previous: None,
         };
-        let name = name_of(d.feed, &ctx, "csv.unnamed_block", Category::Csv).unwrap();
+        let name = name_of(d.feed, &ctx, "csv.unnamed_block", Category::CSV).unwrap();
         let small = PlainOptions {
             max_record_bytes: 16,
             ..super::options(d.feed, &ctx, &name.name)
@@ -859,7 +822,7 @@ mod tests {
         let mut bridge = PlainBridge::new(&d.registry, d.market, &ctx, &mut c, name, None);
         let e = utilake_plain_decode::csv::scan(Cursor::new(long.as_bytes()), &mut bridge, &small)
             .unwrap_err();
-        let diag = plain_diag(e, |f: SinkError| f.diagnostic());
+        let diag = e.diagnostic();
         assert_eq!(diag.code, "csv.line_too_long");
         assert_eq!(diag.line, Some(2));
         // The sink stopping at a bad row ends the scan.

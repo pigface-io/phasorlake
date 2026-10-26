@@ -3037,9 +3037,29 @@ dependencies = [
  "tempfile",
  "thiserror",
  "toml",
- "utilake-mms-decode",
+ "utilake-decode",
+ "utilake-diag",
  "utilake-provenance",
  "xxhash-rust",
+]
+
+[[package]]
+name = "utilake-decode"
+version = "0.1.0"
+source = "git+ssh://git@github.com/g0itb4/utilake-schemas.git?rev=ab7ad3197652ad2620b8c674c873d36dca2239c9#ab7ad3197652ad2620b8c674c873d36dca2239c9"
+dependencies = [
+ "serde",
+ "thiserror",
+ "utilake-diag",
+ "xxhash-rust",
+]
+
+[[package]]
+name = "utilake-diag"
+version = "0.1.0"
+source = "git+ssh://git@github.com/g0itb4/utilake-schemas.git?rev=ab7ad3197652ad2620b8c674c873d36dca2239c9#ab7ad3197652ad2620b8c674c873d36dca2239c9"
+dependencies = [
+ "serde",
 ]
 
 [[package]]
@@ -3095,7 +3115,7 @@ dependencies = [
 [[package]]
 name = "utilake-gates"
 version = "0.1.0"
-source = "git+ssh://git@github.com/g0itb4/utilake-schemas.git?rev=374296824b08b77c20f7c6671493d36288047b78#374296824b08b77c20f7c6671493d36288047b78"
+source = "git+ssh://git@github.com/g0itb4/utilake-schemas.git?rev=ab7ad3197652ad2620b8c674c873d36dca2239c9#ab7ad3197652ad2620b8c674c873d36dca2239c9"
 dependencies = [
  "anyhow",
  "serde",
@@ -3105,12 +3125,13 @@ dependencies = [
 [[package]]
 name = "utilake-iceberg"
 version = "0.1.0"
-source = "git+ssh://git@github.com/g0itb4/utilake-schemas.git?rev=374296824b08b77c20f7c6671493d36288047b78#374296824b08b77c20f7c6671493d36288047b78"
+source = "git+ssh://git@github.com/g0itb4/utilake-schemas.git?rev=ab7ad3197652ad2620b8c674c873d36dca2239c9#ab7ad3197652ad2620b8c674c873d36dca2239c9"
 dependencies = [
  "serde",
  "serde_json",
  "sha2",
  "thiserror",
+ "utilake-diag",
 ]
 
 [[package]]
@@ -3198,11 +3219,13 @@ dependencies = [
 [[package]]
 name = "utilake-mms-decode"
 version = "0.1.0"
-source = "git+ssh://git@github.com/g0itb4/utilake-schemas.git?rev=374296824b08b77c20f7c6671493d36288047b78#374296824b08b77c20f7c6671493d36288047b78"
+source = "git+ssh://git@github.com/g0itb4/utilake-schemas.git?rev=ab7ad3197652ad2620b8c674c873d36dca2239c9#ab7ad3197652ad2620b8c674c873d36dca2239c9"
 dependencies = [
  "memchr",
  "serde",
  "thiserror",
+ "utilake-decode",
+ "utilake-diag",
  "xxhash-rust",
  "zonetrace",
 ]
@@ -3269,12 +3292,13 @@ dependencies = [
 [[package]]
 name = "utilake-plain-decode"
 version = "0.1.0"
-source = "git+ssh://git@github.com/g0itb4/utilake-schemas.git?rev=374296824b08b77c20f7c6671493d36288047b78#374296824b08b77c20f7c6671493d36288047b78"
+source = "git+ssh://git@github.com/g0itb4/utilake-schemas.git?rev=ab7ad3197652ad2620b8c674c873d36dca2239c9#ab7ad3197652ad2620b8c674c873d36dca2239c9"
 dependencies = [
  "memchr",
  "serde_json",
  "thiserror",
- "utilake-mms-decode",
+ "utilake-decode",
+ "utilake-diag",
  "utilake-provenance",
  "xxhash-rust",
 ]
@@ -3282,7 +3306,7 @@ dependencies = [
 [[package]]
 name = "utilake-provenance"
 version = "0.1.0"
-source = "git+ssh://git@github.com/g0itb4/utilake-schemas.git?rev=374296824b08b77c20f7c6671493d36288047b78#374296824b08b77c20f7c6671493d36288047b78"
+source = "git+ssh://git@github.com/g0itb4/utilake-schemas.git?rev=ab7ad3197652ad2620b8c674c873d36dca2239c9#ab7ad3197652ad2620b8c674c873d36dca2239c9"
 dependencies = [
  "crc32fast",
  "rustix",
@@ -3290,6 +3314,7 @@ dependencies = [
  "serde_json",
  "sha2",
  "thiserror",
+ "utilake-diag",
 ]
 
 [[package]]
@@ -3361,11 +3386,12 @@ dependencies = [
 [[package]]
 name = "utilake-zip"
 version = "0.1.0"
-source = "git+ssh://git@github.com/g0itb4/utilake-schemas.git?rev=374296824b08b77c20f7c6671493d36288047b78#374296824b08b77c20f7c6671493d36288047b78"
+source = "git+ssh://git@github.com/g0itb4/utilake-schemas.git?rev=ab7ad3197652ad2620b8c674c873d36dca2239c9#ab7ad3197652ad2620b8c674c873d36dca2239c9"
 dependencies = [
  "flate2",
  "tempfile",
  "thiserror",
+ "utilake-diag",
  "utilake-provenance",
  "zip",
  "zonetrace",

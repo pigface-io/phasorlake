@@ -6,7 +6,7 @@ use std::str::FromStr;
 
 use serde::{Deserialize, Serialize};
 
-pub use utilake_mms_decode::month::{YearMonth, YearMonthError};
+pub use utilake_decode::{YearMonth, YearMonthError};
 
 /// A calendar day such as `2024-01-15`.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]

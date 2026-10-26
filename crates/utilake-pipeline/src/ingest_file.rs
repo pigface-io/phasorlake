@@ -248,7 +248,7 @@ impl BlockSink for LakeSink<'_> {
             Box::new(
                 Diagnostic::error(
                     "store.write_failed",
-                    Category::Store,
+                    Category::STORE,
                     format!("Writing a batch of table {table} failed: {e}"),
                 )
                 .with_table(table.clone())
@@ -323,7 +323,7 @@ fn ingest_entry(
     let Some(decoder) = kit.decoder_for(entry) else {
         let mut d = Diagnostic::error(
             "config.no_decoder",
-            Category::Config,
+            Category::CONFIG,
             format!(
                 "The entry {entry} is not one the kit {} reads; no decoder accepts its name.",
                 kit.id
@@ -354,7 +354,7 @@ fn ingest_entry(
         Ok(stats) if stats.footer_mismatch() => {
             let d = Diagnostic::new(
                 "csv.footer_count_mismatch",
-                Category::Csv,
+                Category::CSV,
                 if input.options.strict_footer {
                     utilake_core::Severity::Error
                 } else {
@@ -414,7 +414,7 @@ pub fn ingest_file(input: IngestInput) -> FileReport {
             file_error: Some(
                 Diagnostic::error(
                     "config.no_decoder",
-                    Category::Config,
+                    Category::CONFIG,
                     format!("No kit named {} was assembled into this binary.", input.kit),
                 )
                 .with_file(path.display().to_string())
@@ -461,7 +461,7 @@ pub fn ingest_file(input: IngestInput) -> FileReport {
         file_error = Some(
             Diagnostic::error(
                 "config.no_decoder",
-                Category::Config,
+                Category::CONFIG,
                 format!(
                     "The file {name} is not one the kit {} reads; no decoder accepts its name and it is not a zip.",
                     kit.id
@@ -485,7 +485,7 @@ pub fn ingest_file(input: IngestInput) -> FileReport {
                 file_error = Some(
                     Diagnostic::error(
                         "csv.read_failed",
-                        Category::Csv,
+                        Category::CSV,
                         format!("The file {} could not be opened.", path.display()),
                     )
                     .with_file(path.display().to_string())
@@ -524,7 +524,7 @@ pub fn ingest_file(input: IngestInput) -> FileReport {
             &mut |_| {},
         );
         let place = |e: &ArchiveError| {
-            let mut d = crate::archive::archive_diagnostic(e);
+            let mut d = e.diagnostic();
             d.request = Some(input.request.clone());
             d.url = Some(input.local.remote.url.to_string());
             d.file = Some(path.display().to_string());
@@ -625,7 +625,7 @@ fn finish(
         e.error = Some(
             Diagnostic::error(
                 "store.file_discarded",
-                Category::Store,
+                Category::STORE,
                 format!(
                     "The entry {} was read but not kept: {because}, and a file goes into the lake whole or not at all.",
                     e.entry

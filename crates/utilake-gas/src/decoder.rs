@@ -66,7 +66,7 @@ impl Decoder for GasCsv {
             return Err(Box::new(
                 Diagnostic::error(
                     "csv.unnamed_block",
-                    Category::Csv,
+                    Category::CSV,
                     format!(
                         "The file {path} lies under none of the gas feeds' folders ({}), so no rule names its block.",
                         self.feeds

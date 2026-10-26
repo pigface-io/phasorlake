@@ -325,12 +325,12 @@ impl Diagnose for ConfigError {
     fn diagnostic(&self) -> Diagnostic {
         match self {
             Self::Read { path, source } => {
-                Diagnostic::error("config.read", Category::Config, self.to_string())
+                Diagnostic::error("config.read", Category::CONFIG, self.to_string())
                     .with_file(path.clone())
                     .caused_by(source)
             }
             Self::Parse { path, .. } => {
-                Diagnostic::error("config.parse", Category::Config, self.to_string())
+                Diagnostic::error("config.parse", Category::CONFIG, self.to_string())
                     .with_file(path.clone())
             }
         }

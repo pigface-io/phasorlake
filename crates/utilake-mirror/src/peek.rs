@@ -365,14 +365,13 @@ fn is_zip_name(url: &str) -> bool {
     url.len() >= 4 && url[url.len() - 4..].eq_ignore_ascii_case(".zip")
 }
 
+/// A directory that could not be read, as the record keeps it: the code
+/// and message of its diagnostic.
 fn peek_error(e: &DirError) -> PeekError {
-    let code = match e {
-        DirError::NotAZip(_) => "zip.not_a_zip",
-        DirError::Damaged(_) | DirError::Short { .. } => "zip.bad_directory",
-    };
+    let d = e.diagnostic();
     PeekError {
-        code: code.to_owned(),
-        message: e.to_string(),
+        code: d.code.into_owned(),
+        message: d.message,
     }
 }
 

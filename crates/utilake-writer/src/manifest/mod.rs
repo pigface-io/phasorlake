@@ -1042,7 +1042,7 @@ impl Manifest {
                 let d: Diagnostic = serde_json::from_str(&json).unwrap_or_else(|_| {
                     Diagnostic::error(
                         "internal.diagnostic_json",
-                        utilake_core::Category::Internal,
+                        utilake_core::Category::INTERNAL,
                         "A stored diagnostic could not be decoded.",
                     )
                 });
@@ -1539,14 +1539,14 @@ mod tests {
                 .is_none()
         );
         // Diagnostics.
-        let d = Diagnostic::error("zip.bad_entry", Category::Zip, "Bad.")
+        let d = Diagnostic::error("zip.bad_entry", Category::ZIP, "Bad.")
             .with_table("T")
             .with_url("https://h/a.zip");
         m.record_diagnostic(run, Some(iid2), &d).unwrap();
         m.record_diagnostic(
             run,
             None,
-            &Diagnostic::warning("schema.compatible_drift", Category::Schema, "Drift.")
+            &Diagnostic::warning("schema.compatible_drift", Category::SCHEMA, "Drift.")
                 .with_table("T"),
         )
         .unwrap();

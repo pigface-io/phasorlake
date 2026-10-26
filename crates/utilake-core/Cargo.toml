@@ -12,7 +12,8 @@ publish.workspace = true
 workspace = true
 
 [dependencies]
-utilake-mms-decode.workspace = true
+utilake-diag.workspace = true
+utilake-decode.workspace = true
 utilake-provenance.workspace = true
 fast-float2.workspace = true
 memchr.workspace = true

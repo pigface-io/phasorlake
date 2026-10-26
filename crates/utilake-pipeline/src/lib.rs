@@ -21,7 +21,6 @@ macro_rules! zone {
 #[cfg(feature = "zones")]
 pub mod zones;
 
-pub mod archive;
 mod entry_times;
 pub mod get;
 pub mod ingest_file;
@@ -29,7 +28,6 @@ pub mod plan;
 pub mod report;
 pub mod run;
 
-pub use archive::archive_diagnostic;
 pub use get::{GetPlan, GetReport, GetRequest, SourceChoice, Step, days_of, plan_get, run_get};
 pub use plan::{DEFAULT_BATCH_ROWS, Deps, Input, Plan, RunOptions};
 pub use report::{RunReport, exit_code};
