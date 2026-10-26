@@ -16,7 +16,7 @@ use utilake_core::TimeRange;
 use utilake_core::event::Event;
 use utilake_core::paths::Home;
 use utilake_kit::{Catalog as _, KitRegistry, Strictness};
-use utilake_kit::{Listings, Query, RemoteFile, Source};
+use utilake_kit::{Granularity, Listings, Query, RemoteFile, Source};
 use utilake_pipeline::{Deps, Input, Plan, RunOptions, run};
 use utilake_registry::RegistryCatalog;
 use utilake_registry::file_model::{
@@ -3549,5 +3549,81 @@ async fn each_time_a_source_was_stamped_with_is_kept_on_its_rows() {
             n.filename_timestamp
         ),
         (None, Some(named_zip), Some(named_at))
+    );
+}
+
+/// A feed of a kit: a source of one granularity serving some tables.
+struct Feed(&'static str, Granularity, &'static [&'static str]);
+
+#[async_trait]
+impl Source for Feed {
+    fn id(&self) -> &'static str {
+        self.0
+    }
+    fn granularity(&self) -> Granularity {
+        self.1
+    }
+    fn serves(&self, table: &str) -> bool {
+        self.2.contains(&table)
+    }
+    async fn list(&self, _q: &Query, _f: &dyn Listings) -> Result<Vec<RemoteFile>, FetchError> {
+        Ok(Vec::new())
+    }
+}
+
+/// Tables go with the sources that serve them; with none, a kit of several
+/// feeds reads every feed, and a kit of one monthly and one daily source
+/// reads them as one.
+#[test]
+fn every_feed_a_request_needs_is_read() {
+    use utilake_pipeline::source_groups;
+    let ids =
+        |gs: Vec<utilake_pipeline::SourceGroup>| -> Vec<(Option<&str>, Option<&str>, Vec<String>)> {
+            gs.iter()
+                .map(|g| {
+                    (
+                        g.monthly.as_ref().map(|s| s.id()),
+                        g.daily.as_ref().map(|s| s.id()),
+                        g.tables.clone(),
+                    )
+                })
+                .collect()
+        };
+    let t = |n: &[&str]| n.iter().map(|s| (*s).to_owned()).collect::<Vec<_>>();
+    let gas: Vec<Arc<dyn Source>> = vec![
+        Arc::new(Feed("gsh", Granularity::Month, &["GSH_A"])),
+        Arc::new(Feed("gbb", Granularity::Month, &["GBB_A", "GBB_B"])),
+        Arc::new(Feed("sttm", Granularity::Month, &["STTM_A"])),
+    ];
+    assert_eq!(
+        ids(source_groups(&gas, &[])),
+        [
+            (Some("gsh"), None, t(&[])),
+            (Some("gbb"), None, t(&[])),
+            (Some("sttm"), None, t(&[])),
+        ]
+    );
+    assert_eq!(
+        ids(source_groups(&gas, &t(&["GBB_A", "STTM_A", "GBB_B"]))),
+        [
+            (Some("gbb"), None, t(&["GBB_A", "GBB_B"])),
+            (Some("sttm"), None, t(&["STTM_A"])),
+        ]
+    );
+    let nem: Vec<Arc<dyn Source>> = vec![
+        Arc::new(Feed("mmsdm", Granularity::Month, &["A", "B"])),
+        Arc::new(Feed("reports", Granularity::Day, &["A"])),
+    ];
+    assert_eq!(
+        ids(source_groups(&nem, &[])),
+        [(Some("mmsdm"), Some("reports"), t(&[]))]
+    );
+    assert_eq!(
+        ids(source_groups(&nem, &t(&["A", "B", "C"]))),
+        [
+            (Some("mmsdm"), Some("reports"), t(&["A"])),
+            (Some("mmsdm"), None, t(&["B"])),
+            (None, None, t(&["C"])),
+        ]
     );
 }

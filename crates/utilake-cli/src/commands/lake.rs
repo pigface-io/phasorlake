@@ -189,71 +189,75 @@ pub async fn ingest(cli: &Cli, ctx: &Context, args: &IngestCmd) -> Result<i32> {
         .kits
         .kit(&sel.kit)
         .ok_or_else(|| anyhow::anyhow!("This binary was assembled without the {} kit.", sel.kit))?;
-    let source = match &args.source {
-        Some(id) => kit
-            .sources
-            .iter()
-            .find(|s| s.id() == id)
-            .cloned()
-            .ok_or_else(|| {
-                anyhow::anyhow!(
-                    "The {} kit has no source {id}; it has {}.",
-                    sel.kit,
-                    kit.sources
-                        .iter()
-                        .map(|s| s.id())
-                        .collect::<Vec<_>>()
-                        .join(", ")
-                )
-            })?,
-        // The monthly source that publishes every table, else the first
-        // that does: a kit of several feeds (gas) reads each table from
-        // its own.
-        None => {
-            let serves = |s: &&std::sync::Arc<dyn utilake_kit::Source>| {
-                sel.names.iter().all(|t| s.serves(t))
-            };
+    // Which archived source each table is read from: the one named, else
+    // the monthly source that publishes it, else the first that does. A
+    // kit of several feeds (gas) reads each table from its own, and with
+    // no tables, every feed.
+    let reads: Vec<(std::sync::Arc<dyn utilake_kit::Source>, Vec<String>)> = match &args.source {
+        Some(id) => vec![(
             kit.sources
                 .iter()
-                .filter(serves)
-                .find(|s| s.granularity() == utilake_kit::Granularity::Month)
-                .or_else(|| kit.sources.iter().find(serves))
+                .find(|s| s.id() == id)
                 .cloned()
                 .ok_or_else(|| {
                     anyhow::anyhow!(
-                        "No source of the {} kit publishes {}; name one with --source.",
+                        "The {} kit has no source {id}; it has {}.",
                         sel.kit,
-                        sel.names.join(", ")
+                        kit.sources
+                            .iter()
+                            .map(|s| s.id())
+                            .collect::<Vec<_>>()
+                            .join(", ")
                     )
-                })?
-        }
+                })?,
+            sel.names.clone(),
+        )],
+        None => utilake_pipeline::source_groups(&kit.sources, &sel.names)
+            .into_iter()
+            .map(|g| {
+                g.monthly
+                    .or(g.daily)
+                    .map(|s| (s, g.tables.clone()))
+                    .ok_or_else(|| {
+                        anyhow::anyhow!(
+                            "No source of the {} kit publishes {}; name one with --source.",
+                            sel.kit,
+                            g.tables.join(", ")
+                        )
+                    })
+            })
+            .collect::<Result<_>>()?,
     };
-    // A source cut by day is archived by day, one cut by month by month.
-    let days = w.days(&sel.def);
-    let range = if source.granularity() == utilake_kit::Granularity::Day {
-        days
-    } else {
-        TimeRange::months(days.from.first_day().month(), days.to.last_day().month())
-    };
-    let plan = Plan {
-        request: common::request("ingest", &sel, Some(&w), &sel.def),
-        input: Input::Archive {
-            source,
-            query: Query {
-                tables: sel.names.clone(),
-                exclude: args
-                    .tables
-                    .exclude
-                    .iter()
-                    .map(|t| t.to_ascii_uppercase())
-                    .collect(),
-                range,
-                instants: Some(w.instants),
+    let mut code = 0;
+    for (source, names) in reads {
+        // A source cut by day is archived by day, one cut by month by month.
+        let days = w.days(&sel.def);
+        let range = if source.granularity() == utilake_kit::Granularity::Day {
+            days
+        } else {
+            TimeRange::months(days.from.first_day().month(), days.to.last_day().month())
+        };
+        let plan = Plan {
+            request: common::request("ingest", &sel, Some(&w), &sel.def),
+            input: Input::Archive {
+                source,
+                query: Query {
+                    tables: names,
+                    exclude: args
+                        .tables
+                        .exclude
+                        .iter()
+                        .map(|t| t.to_ascii_uppercase())
+                        .collect(),
+                    range,
+                    instants: Some(w.instants),
+                },
             },
-        },
-        options: options(cli, ctx, &args.ingest, None, args.dry_run),
-    };
-    run_plan(cli, ctx, plan).await
+            options: options(cli, ctx, &args.ingest, None, args.dry_run),
+        };
+        code = code.max(run_plan(cli, ctx, plan).await?);
+    }
+    Ok(code)
 }
 
 /// `utilake iceberg`: each table's Iceberg metadata from the manifest.

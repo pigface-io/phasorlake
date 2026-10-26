@@ -207,19 +207,90 @@ async fn list_months(
     }
 }
 
-/// Plans the request over the kit's sources, listing each once.
+/// The tables of a request that one pair of sources serves: the monthly
+/// source and the daily source each of them is read from.
+#[derive(Clone)]
+pub struct SourceGroup {
+    /// The source cut by month that serves every table of the group.
+    pub monthly: Option<Arc<dyn Source>>,
+    /// The source cut by day that serves every table of the group.
+    pub daily: Option<Arc<dyn Source>>,
+    /// The group's tables; empty means every table of its sources.
+    pub tables: Vec<String>,
+}
+
+/// Splits a request's tables by the sources that serve them: each table
+/// goes with the first source of each granularity that serves it, and
+/// tables with the same pair are read together. With no tables, a kit of
+/// one source of each granularity (NEM) is one group, and a kit of several
+/// feeds (gas, WEM) is one group per source, so every feed is read.
+pub fn source_groups(sources: &[Arc<dyn Source>], tables: &[String]) -> Vec<SourceGroup> {
+    let of = |g: Granularity| sources.iter().filter(move |s| s.granularity() == g);
+    if tables.is_empty() {
+        let (months, days) = (of(Granularity::Month).count(), of(Granularity::Day).count());
+        if months <= 1 && days <= 1 {
+            return vec![SourceGroup {
+                monthly: of(Granularity::Month).next().cloned(),
+                daily: of(Granularity::Day).next().cloned(),
+                tables: Vec::new(),
+            }];
+        }
+        return sources
+            .iter()
+            .map(|s| {
+                let monthly = s.granularity() == Granularity::Month;
+                SourceGroup {
+                    monthly: monthly.then(|| s.clone()),
+                    daily: (!monthly).then(|| s.clone()),
+                    tables: Vec::new(),
+                }
+            })
+            .collect();
+    }
+    let mut groups: Vec<SourceGroup> = Vec::new();
+    let id = |s: &Option<Arc<dyn Source>>| s.as_ref().map(|s| s.id());
+    for t in tables {
+        let serving = |g| of(g).find(|s| s.serves(t)).cloned();
+        let (monthly, daily) = (serving(Granularity::Month), serving(Granularity::Day));
+        match groups
+            .iter_mut()
+            .find(|g| id(&g.monthly) == id(&monthly) && id(&g.daily) == id(&daily))
+        {
+            Some(g) => g.tables.push(t.clone()),
+            None => groups.push(SourceGroup {
+                monthly,
+                daily,
+                tables: vec![t.clone()],
+            }),
+        }
+    }
+    groups
+}
+
+/// Plans the request over the kit's sources, listing each once: each
+/// group of tables from the sources that serve it.
 pub async fn plan_get(req: &GetRequest, deps: &Deps) -> Result<GetPlan, Box<Diagnostic>> {
     let kit = deps.kits.kit(&req.kit).ok_or_else(|| no_kit(req))?;
-    // The first source of each granularity that serves every table asked
-    // for: a kit of several feeds (gas) is read from the table's own.
-    let serving = |g: Granularity| {
-        kit.sources
-            .iter()
-            .find(|s| s.granularity() == g && req.tables.iter().all(|t| s.serves(t)))
-            .cloned()
-    };
-    let monthly = serving(Granularity::Month);
-    let daily = serving(Granularity::Day);
+    let mut plan = GetPlan::default();
+    for group in source_groups(&kit.sources, &req.tables) {
+        let sub = GetRequest {
+            tables: group.tables,
+            ..req.clone()
+        };
+        let part = plan_group(&sub, deps, group.monthly, group.daily).await?;
+        plan.steps.extend(part.steps);
+        plan.notes.extend(part.notes);
+    }
+    Ok(plan)
+}
+
+/// Plans one group's tables from its monthly and daily sources.
+async fn plan_group(
+    req: &GetRequest,
+    deps: &Deps,
+    monthly: Option<Arc<dyn Source>>,
+    daily: Option<Arc<dyn Source>>,
+) -> Result<GetPlan, Box<Diagnostic>> {
     let mut plan = GetPlan::default();
     let (first, last) = (req.range.first_month(), req.range.last_month());
     // Which days go to the daily side, and with which tables.
