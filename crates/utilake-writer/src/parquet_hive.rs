@@ -1,4 +1,8 @@
-//! Hive-partitioned Parquet files under `{lake}/{market}/{table}/{partition}/`.
+//! Hive-partitioned Parquet files under `{lake}/{market}/{table}/data/{partition}/`,
+//! beside the table's Iceberg metadata in `{table}/metadata/`: the layout
+//! Iceberg readers expect, so one finds a table's files again under a lake
+//! moved or copied whole (DuckDB's `allow_moved_paths` re-roots a path at
+//! its `data/` directory).
 //!
 //! Each source file (zip entry) writes one Parquet file per partition it
 //! touches, named `{source_stem}-v{version}-{sha8}.parquet`, so a re-ingest
@@ -62,6 +66,9 @@ pub fn compression(codec: Codec, zstd_level: i32) -> Compression {
     }
 }
 
+/// The directory under a table's that holds its data files.
+pub const DATA: &str = "data";
+
 /// The production lake writer.
 pub struct ParquetHive {
     lake_root: PathBuf,
@@ -105,6 +112,7 @@ impl ParquetHive {
         self.lake_root
             .join(&key.market)
             .join(&key.table_dir)
+            .join(DATA)
             .join(key.partition.path_segment())
     }
 
@@ -632,7 +640,7 @@ mod tests {
             .unwrap();
         let dir_listing: Vec<_> = std::fs::read_dir(
             dir.path()
-                .join("nem/dispatch_unit_scada/year=2024/month=01"),
+                .join("nem/dispatch_unit_scada/data/year=2024/month=01"),
         )
         .unwrap()
         .collect();
@@ -658,7 +666,7 @@ mod tests {
         );
         assert!(
             f.path.ends_with(
-                "year=2024/month=01/public_dvd_dispatch_unit_scada_202401010000-v1-00000007-abcdef01.parquet"
+                "dispatch_unit_scada/data/year=2024/month=01/public_dvd_dispatch_unit_scada_202401010000-v1-00000007-abcdef01.parquet"
             ),
             "{}",
             f.path
@@ -802,7 +810,7 @@ mod tests {
                     .and_then(|k| k.value.clone())
                     .unwrap()
             };
-            assert_eq!(value("utilake.lake_format"), "3");
+            assert_eq!(value("utilake.lake_format"), "4");
             assert_eq!(
                 value("utilake.sources"),
                 r#"[{"rows":2000,"source":"https://x/y.zip!Y.CSV"}]"#
@@ -969,7 +977,7 @@ mod tests {
         assert!(
             std::fs::read_dir(
                 dir.path()
-                    .join("nem/dispatch_unit_scada/year=2024/month=03")
+                    .join("nem/dispatch_unit_scada/data/year=2024/month=03")
             )
             .unwrap()
             .next()
@@ -984,7 +992,7 @@ mod tests {
         let id = w.open(&key(4), schema(), &meta()).unwrap();
         let tmp_dir = dir
             .path()
-            .join("nem/dispatch_unit_scada/year=2024/month=04");
+            .join("nem/dispatch_unit_scada/data/year=2024/month=04");
         assert_eq!(std::fs::read_dir(&tmp_dir).unwrap().count(), 1);
         drop(w);
         assert_eq!(

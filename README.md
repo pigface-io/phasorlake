@@ -45,12 +45,12 @@ says nothing of its market. `ingest --source gas-sttm` names which
 archived source to read; by default it is the one that publishes the
 tables.
 
-The result lands under `~/.utilake/lake/nem/dispatch_unit_scada/year=2024/month=01/`.
+The result lands under `~/.utilake/lake/nem/dispatch_unit_scada/data/year=2024/month=01/`.
 Query it:
 
 ```sql
 select count(*), typeof(settlementdate)
-from read_parquet('~/.utilake/lake/nem/dispatch_unit_scada/**/*.parquet', hive_partitioning = true);
+from read_parquet('~/.utilake/lake/nem/dispatch_unit_scada/data/**/*.parquet', hive_partitioning = true);
 ```
 
 Run the same commands again and they finish in milliseconds: the archive has
@@ -88,13 +88,14 @@ Global flags: `--home DIR` (or `UTILAKE_HOME`), `--json`, `-v`, `--offline`,
 
 ```
 ~/.utilake/
-  lake/nem/{table}/year=YYYY/month=MM/{source}-v{version}-{shape8}-{sha8}.parquet   appended tables, partitioned by market-local month
-  lake/nem/{table}/snapshot=YYYYMM/...                                     standing-data tables (REGION, PARTICIPANT, ...): each month's file is the whole table
+  lake/nem/{table}/data/year=YYYY/month=MM/{source}-v{version}-{shape8}-{sha8}.parquet   appended tables, partitioned by market-local month
+  lake/nem/{table}/data/snapshot=YYYYMM/...                                     standing-data tables (REGION, PARTICIPANT, ...): each month's file is the whole table
+  lake/nem/{table}/metadata/                                                    the table's Iceberg metadata, written for where the lake is now
   archive/{host}/{path of the URL}[.json]                                  every download as the server sent it, with its record; a report folder's CURRENT or ARCHIVE segment dropped, so both listings are one folder
   archive/{host}/{path of a zip}!{entry}[.json]                            one entry of a zip, fetched alone by byte range; its record says where in the zip it was
   cache/tmp/                                                               scratch files of a running ingest, safe to delete
   quarantine/{table}/{source}.jsonl                                        rows whose structure was wrong for their block, with the reason
-  manifest.sqlite                                                          runs, files, ingests, outputs, diagnostics
+  manifest.sqlite                                                          runs, files, ingests, outputs, diagnostics; every path in it relative to the home
 ```
 
 An entry of a zip is the same source whether it was fetched alone (as

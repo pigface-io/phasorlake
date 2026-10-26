@@ -12,6 +12,20 @@ struct Cli {
     home: tempfile::TempDir,
 }
 
+/// Copies the directory `from` into `to`, whole.
+fn copy_dir(from: &std::path::Path, to: &std::path::Path) {
+    std::fs::create_dir_all(to).unwrap();
+    for e in std::fs::read_dir(from).unwrap() {
+        let p = e.unwrap().path();
+        let dest = to.join(p.file_name().unwrap());
+        if p.is_dir() {
+            copy_dir(&p, &dest);
+        } else {
+            std::fs::copy(&p, &dest).unwrap();
+        }
+    }
+}
+
 impl Cli {
     fn new() -> Self {
         Self {
@@ -214,10 +228,36 @@ fn ingest_ls_errors_verify_round_trip() {
     )
     .unwrap();
     assert_eq!(doc["properties"]["utilake.temporal.entity"], r#"["DUID"]"#);
-    assert_eq!(doc["properties"]["utilake.lake.format"], "3");
+    assert_eq!(doc["properties"]["utilake.lake.format"], "4");
     let built = cli.ok(&["--json", "iceberg", "--table", "DISPATCH_UNIT_SCADA"]);
     assert!(built.contains("\"snapshots\":\"1\""), "{built}");
     assert!(meta.is_file());
+    // A home copied whole names its own files: the manifest's paths are the
+    // home's, `iceberg` writes the metadata for where the lake is now, and
+    // nothing of the old place is left in it.
+    let moved = Cli::new();
+    copy_dir(cli.home.path(), moved.home.path());
+    let verify = moved.ok(&["verify"]);
+    assert!(verify.contains("verified, no problems"), "{verify}");
+    moved.ok(&["iceberg", "--table", "DISPATCH_UNIT_SCADA"]);
+    let table = moved.home.path().join("lake/nem/dispatch_unit_scada");
+    let old = cli.home.path().display().to_string();
+    let new = moved.home.path().display().to_string();
+    for e in std::fs::read_dir(table.join("metadata")).unwrap() {
+        let bytes = std::fs::read(e.unwrap().path()).unwrap();
+        let text = String::from_utf8_lossy(&bytes);
+        assert!(!text.contains(&old), "{text}");
+    }
+    let hint = std::fs::read_to_string(table.join("metadata/version-hint.text")).unwrap();
+    let doc =
+        std::fs::read_to_string(table.join(format!("metadata/v{}.metadata.json", hint.trim())))
+            .unwrap();
+    assert!(
+        doc.contains(&format!(
+            "\"location\":\"file://{new}/lake/nem/dispatch_unit_scada\""
+        )),
+        "{doc}"
+    );
     // A window the flags cannot read, and a table nobody declared.
     let (code, _, err) = cli.code(&[
         "--offline",
@@ -283,8 +323,11 @@ fn ingest_ls_errors_verify_round_trip() {
     std::fs::remove_dir_all(cli.home.path().join("lake/nem/region/metadata")).unwrap();
     // Snapshot partition for REGION, month partition for SCADA.
     let lake = cli.home.path().join("lake/nem");
-    assert!(lake.join("region/snapshot=202401").is_dir());
-    assert!(lake.join("dispatch_unit_scada/year=2024/month=01").is_dir());
+    assert!(lake.join("region/data/snapshot=202401").is_dir());
+    assert!(
+        lake.join("dispatch_unit_scada/data/year=2024/month=01")
+            .is_dir()
+    );
     // A directory argument ingests its zips and CSVs; an empty one lists nothing.
     let empty = cli.home.path().join("empty");
     std::fs::create_dir_all(&empty).unwrap();
@@ -675,7 +718,7 @@ fn what_the_registry_does_not_declare_is_kept_not_skipped() {
     let derived = cli
         .home
         .path()
-        .join("lake/nem/_unregistered/utilake_test.nobody/year=2024/month=03");
+        .join("lake/nem/_unregistered/utilake_test.nobody/data/year=2024/month=03");
     assert_eq!(
         std::fs::read_dir(&derived).unwrap().count(),
         1,
@@ -686,7 +729,7 @@ fn what_the_registry_does_not_declare_is_kept_not_skipped() {
     let scada = cli
         .home
         .path()
-        .join("lake/nem/dispatch_unit_scada/year=2024/month=03");
+        .join("lake/nem/dispatch_unit_scada/data/year=2024/month=03");
     assert_eq!(std::fs::read_dir(&scada).unwrap().count(), 1);
     let ls = cli.ok(&["--json", "list", "--ingests"]);
     assert_eq!(ls.lines().count(), 2, "{ls}");

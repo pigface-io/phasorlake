@@ -580,6 +580,20 @@ fn examples(doc: &str) -> Vec<(String, String)> {
     out
 }
 
+/// Copies the directory `from` into `to`, whole.
+fn copy_dir(from: &Path, to: &Path) {
+    std::fs::create_dir_all(to).unwrap();
+    for e in std::fs::read_dir(from).unwrap() {
+        let p = e.unwrap().path();
+        let dest = to.join(p.file_name().unwrap());
+        if p.is_dir() {
+            copy_dir(&p, &dest);
+        } else {
+            std::fs::copy(&p, &dest).unwrap();
+        }
+    }
+}
+
 /// The rows of a query through the DuckDB CLI, as CSV with a header, run
 /// from `home` as the doc says.
 fn duck(home: &Path, sql: &str) -> String {
@@ -696,6 +710,15 @@ fn expected() -> BTreeMap<&'static str, String> {
                 "2023-12-31 14:10:00+00,111.00000",
             ]),
         ),
+        // The same, read from a copy of the home.
+        (
+            "moved",
+            lines(&[
+                "SETTLEMENTDATE,RRP",
+                "2023-12-31 14:05:00+00,101.00000",
+                "2023-12-31 14:10:00+00,111.00000",
+            ]),
+        ),
         (
             "sources",
             lines(&[
@@ -735,6 +758,14 @@ fn every_example_in_the_reading_doc_returns_its_rows() {
         let rows = want
             .remove(name.as_str())
             .unwrap_or_else(|| panic!("no rows written for the example {name}"));
+        if name == "moved" {
+            // Run where the lake was copied to, its metadata naming the
+            // old place: the files are found under each table's `data/`.
+            let copy = tempfile::tempdir().unwrap();
+            copy_dir(&lake.home.path().join("lake"), &copy.path().join("lake"));
+            assert_eq!(duck(copy.path(), sql), rows, "example {name}:\n{sql}");
+            continue;
+        }
         let got = duck(lake.home.path(), sql);
         if name == "keyless" {
             // Two copies of two rows: the two, and every column of the table.

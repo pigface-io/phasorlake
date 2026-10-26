@@ -7,7 +7,7 @@
 
 mod handle;
 
-use std::path::Path;
+use std::path::{Path, PathBuf};
 
 use rusqlite::{Connection, OptionalExtension, params};
 use serde::{Deserialize, Serialize};
@@ -299,9 +299,16 @@ pub struct DiagFilter {
 }
 
 /// The manifest over one connection.
+///
+/// Every path it records under its home (the directory the manifest file is
+/// in) is stored relative to that home and given back absolute, so a home
+/// moved or copied whole still names its own files: cache files, lake
+/// outputs and quarantine files alike. A path outside the home is kept as
+/// it is.
 pub struct Manifest {
     conn: Connection,
     path: String,
+    home: Option<PathBuf>,
 }
 
 /// Now, RFC 3339 UTC to the second: the form of every time the manifest
@@ -324,7 +331,12 @@ impl Manifest {
             path: p.clone(),
             message: e.to_string(),
         })?;
-        let mut m = Self { conn, path: p };
+        let home = path.parent().map(Path::to_path_buf);
+        let mut m = Self {
+            conn,
+            path: p,
+            home,
+        };
         m.exec_batch("PRAGMA journal_mode = WAL; PRAGMA synchronous = NORMAL; PRAGMA foreign_keys = ON; PRAGMA busy_timeout = 5000;")?;
         m.migrate()?;
         Ok(m)
@@ -340,6 +352,7 @@ impl Manifest {
         let mut m = Self {
             conn,
             path: ":memory:".into(),
+            home: None,
         };
         m.exec_batch("PRAGMA foreign_keys = ON;")?;
         m.migrate()?;
@@ -475,6 +488,24 @@ impl Manifest {
         self.sql(r)
     }
 
+    /// `p` as the manifest stores it: relative to the home when under it.
+    fn stored(&self, p: &str) -> String {
+        match &self.home {
+            Some(h) => Path::new(p)
+                .strip_prefix(h)
+                .map_or_else(|_| p.to_owned(), |rel| rel.display().to_string()),
+            None => p.to_owned(),
+        }
+    }
+
+    /// A stored path as callers use it: under the home, wherever it is now.
+    fn resolved(&self, p: String) -> String {
+        match &self.home {
+            Some(h) if Path::new(&p).is_relative() => h.join(p).display().to_string(),
+            _ => p,
+        }
+    }
+
     /// Records (or updates) a fetched file; returns its id.
     pub fn record_file(&mut self, f: &FileRecord) -> Result<i64, ManifestError> {
         let r = self.conn.execute(
@@ -482,7 +513,7 @@ impl Manifest {
              VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9)
              ON CONFLICT(url) DO UPDATE SET cache_path = excluded.cache_path, sha256 = excluded.sha256, size = excluded.size,
                  etag = excluded.etag, last_modified = excluded.last_modified, last_modified_at = excluded.last_modified_at, fetched_at = excluded.fetched_at",
-            params![f.source, f.url, f.cache_path, f.sha256, f.size as i64, f.etag, f.last_modified, f.last_modified_at, f.fetched_at.clone().unwrap_or_else(now)],
+            params![f.source, f.url, self.stored(&f.cache_path), f.sha256, f.size as i64, f.etag, f.last_modified, f.last_modified_at, f.fetched_at.clone().unwrap_or_else(now)],
         );
         self.sql(r)?;
         let r = self
@@ -514,7 +545,10 @@ impl Manifest {
                 ))
             })
             .optional();
-        self.sql(r)
+        Ok(self.sql(r)?.map(|(id, mut f)| {
+            f.cache_path = self.resolved(f.cache_path);
+            (id, f)
+        }))
     }
 
     /// Every file the manifest has recorded, in the order they were first
@@ -537,8 +571,17 @@ impl Manifest {
                     fetched_at: r.get(8)?,
                 })
             })
-            .and_then(Iterator::collect),
+            .and_then(|rows| rows.collect::<rusqlite::Result<Vec<FileRecord>>>()),
         )
+        .map(|files: Vec<FileRecord>| {
+            files
+                .into_iter()
+                .map(|mut f| {
+                    f.cache_path = self.resolved(f.cache_path);
+                    f
+                })
+                .collect()
+        })
     }
 
     /// What was read from a source with this URL and sha256, when it is
@@ -584,7 +627,10 @@ impl Manifest {
             stmt.query_map([file_id], |r| r.get(0))
                 .and_then(Iterator::collect),
         )?;
-        if !paths.iter().all(|p| Path::new(p).is_file()) {
+        if !paths
+            .into_iter()
+            .all(|p| Path::new(&self.resolved(p)).is_file())
+        {
             return Ok(None);
         }
         Ok(Some(rows.into_iter().map(|(_, s)| s).collect()))
@@ -639,27 +685,31 @@ impl Manifest {
     /// Paths of every output a file's ingests wrote, for superseding.
     pub fn outputs_of_file(&self, file_id: i64) -> Result<Vec<String>, ManifestError> {
         let mut stmt = self.sql(self.conn.prepare("SELECT o.parquet_path FROM outputs o JOIN ingests i ON o.ingest_id = i.id WHERE i.file_id = ?1"))?;
-        self.sql(
+        let paths: Vec<String> = self.sql(
             stmt.query_map([file_id], |r| r.get(0))
                 .and_then(Iterator::collect),
-        )
+        )?;
+        Ok(paths.into_iter().map(|p| self.resolved(p)).collect())
     }
 
     /// Paths of the quarantine files a file's current ingests wrote, for
     /// superseding.
     pub fn quarantine_of_file(&self, file_id: i64) -> Result<Vec<String>, ManifestError> {
         let mut stmt = self.sql(self.conn.prepare("SELECT DISTINCT quarantine_path FROM ingests WHERE file_id = ?1 AND quarantine_path IS NOT NULL AND status != 'superseded' ORDER BY quarantine_path"))?;
-        self.sql(
+        let paths: Vec<String> = self.sql(
             stmt.query_map([file_id], |r| r.get(0))
                 .and_then(Iterator::collect),
-        )
+        )?;
+        Ok(paths.into_iter().map(|p| self.resolved(p)).collect())
     }
 
     /// Paths of every quarantine file a current ingest recorded; a file
     /// under the quarantine directory that is not in this list is an orphan.
     pub fn live_quarantine(&self) -> Result<Vec<String>, ManifestError> {
         let mut stmt = self.sql(self.conn.prepare("SELECT DISTINCT quarantine_path FROM ingests WHERE quarantine_path IS NOT NULL AND status != 'superseded' ORDER BY quarantine_path"))?;
-        self.sql(stmt.query_map([], |r| r.get(0)).and_then(Iterator::collect))
+        let paths: Vec<String> =
+            self.sql(stmt.query_map([], |r| r.get(0)).and_then(Iterator::collect))?;
+        Ok(paths.into_iter().map(|p| self.resolved(p)).collect())
     }
 
     /// The entries each ingest read, by ingest, in entry order.
@@ -736,6 +786,7 @@ impl Manifest {
             .into_iter()
             .map(|(mut o, ingest)| {
                 o.entries = entries.get(&ingest).cloned().unwrap_or_default();
+                o.path = self.resolved(o.path);
                 o
             })
             .collect())
@@ -806,6 +857,8 @@ impl Manifest {
                 )
             });
         let path = self.path.clone();
+        let quarantine = e.quarantine_path.as_deref().map(|q| self.stored(q));
+        let outputs: Vec<String> = e.outputs.iter().map(|o| self.stored(&o.path)).collect();
         let tx = self
             .conn
             .transaction()
@@ -816,7 +869,7 @@ impl Manifest {
         let n = tx
             .execute(
                 "UPDATE ingests SET status = ?2, rows = ?3, bad_rows = ?4, quarantine_path = ?5, min_time = ?6, max_time = ?7, finished_at = ?8, error_code = ?9 WHERE id = ?1",
-                params![ingest_id, e.status.as_str(), e.rows as i64, e.bad_rows as i64, e.quarantine_path, min, max, now(), e.error_code],
+                params![ingest_id, e.status.as_str(), e.rows as i64, e.bad_rows as i64, quarantine, min, max, now(), e.error_code],
             )
             .map_err(|er| ManifestError::Sqlite { path: path.clone(), message: er.to_string() })?;
         if n == 0 {
@@ -832,10 +885,10 @@ impl Manifest {
             )
             .map_err(|er| ManifestError::Sqlite { path: path.clone(), message: er.to_string() })?;
         }
-        for o in &e.outputs {
+        for (o, stored) in e.outputs.iter().zip(&outputs) {
             tx.execute(
                 "INSERT OR REPLACE INTO outputs (ingest_id, parquet_path, partition, rows, bytes, min_time, max_time) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7)",
-                params![ingest_id, o.path, o.partition.path_segment(), o.rows as i64, o.bytes as i64, o.min_time, o.max_time],
+                params![ingest_id, stored, o.partition.path_segment(), o.rows as i64, o.bytes as i64, o.min_time, o.max_time],
             )
             .map_err(|er| ManifestError::Sqlite { path: path.clone(), message: er.to_string() })?;
         }
@@ -926,8 +979,11 @@ impl Manifest {
                         sorted: false,
                     })
                 })
-                .and_then(Iterator::collect),
+                .and_then(|rows| rows.collect::<rusqlite::Result<Vec<WrittenFile>>>()),
             )?;
+            for o in &mut rec.outputs {
+                o.path = self.resolved(std::mem::take(&mut o.path));
+            }
         }
         Ok(recs)
     }
@@ -1067,6 +1123,117 @@ mod tests {
     }
 
     #[test]
+    fn paths_under_the_home_are_kept_relative_so_a_moved_home_names_its_own_files() {
+        let dir = tempfile::tempdir().unwrap();
+        let (a, b) = (dir.path().join("a"), dir.path().join("b"));
+        let mut m = Manifest::open(&a.join("manifest.sqlite")).unwrap();
+        let run = m.begin_run("ingest").unwrap();
+        let under = |home: &Path, p: &str| home.join(p).display().to_string();
+        let fid = m
+            .record_file(&FileRecord {
+                cache_path: under(&a, "cache/x.zip"),
+                ..file("https://h/a.zip", "aaa")
+            })
+            .unwrap();
+        let iid = m
+            .begin_ingest(&IngestStart {
+                run_id: run,
+                file_id: fid,
+                table: "T".into(),
+                schema_version: 1,
+                fingerprint: "xxh3:1".into(),
+                transform: transform(),
+            })
+            .unwrap();
+        let output = |path: String| WrittenFile {
+            path,
+            partition: Partition::Month {
+                year: 2024,
+                month: 1,
+            },
+            rows: 1,
+            bytes: 1,
+            min_time: None,
+            max_time: None,
+            sorted: false,
+        };
+        m.finish_ingest(
+            iid,
+            &IngestEnd {
+                entries: vec![share("A.CSV")],
+                status: IngestStatus::Ok,
+                rows: 2,
+                bad_rows: 0,
+                quarantine_path: Some(under(&a, "quarantine/q.jsonl")),
+                outputs: vec![
+                    output(under(&a, "lake/nem/t/data/year=2024/month=01/x.parquet")),
+                    output("/elsewhere/y.parquet".into()),
+                ],
+                error_code: None,
+            },
+        )
+        .unwrap();
+        // Stored relative to the home; a path outside it as it is.
+        let stored: Vec<String> = {
+            let mut st = m
+                .conn
+                .prepare("SELECT parquet_path FROM outputs ORDER BY id")
+                .unwrap();
+            st.query_map([], |r| r.get(0))
+                .unwrap()
+                .map(Result::unwrap)
+                .collect()
+        };
+        assert_eq!(
+            stored,
+            [
+                "lake/nem/t/data/year=2024/month=01/x.parquet",
+                "/elsewhere/y.parquet"
+            ]
+        );
+        drop(m);
+        // The home moved whole: every path is where it is now.
+        std::fs::rename(&a, &b).unwrap();
+        let m = Manifest::open(&b.join("manifest.sqlite")).unwrap();
+        assert_eq!(
+            m.outputs_of_file(fid).unwrap(),
+            [
+                under(&b, "lake/nem/t/data/year=2024/month=01/x.parquet"),
+                "/elsewhere/y.parquet".to_owned()
+            ]
+        );
+        assert_eq!(
+            m.live_outputs(None).unwrap()[0].path,
+            m.outputs_of_file(fid).unwrap()[0]
+        );
+        assert_eq!(
+            m.quarantine_of_file(fid).unwrap(),
+            [under(&b, "quarantine/q.jsonl")]
+        );
+        assert_eq!(
+            m.live_quarantine().unwrap(),
+            [under(&b, "quarantine/q.jsonl")]
+        );
+        assert_eq!(
+            m.file_by_url("https://h/a.zip")
+                .unwrap()
+                .unwrap()
+                .1
+                .cache_path,
+            under(&b, "cache/x.zip")
+        );
+        assert_eq!(
+            m.list_files().unwrap()[0].cache_path,
+            under(&b, "cache/x.zip")
+        );
+        let ingests = m.list_ingests(None, false, 10).unwrap();
+        assert_eq!(
+            ingests[0].outputs[0].path,
+            under(&b, "lake/nem/t/data/year=2024/month=01/x.parquet")
+        );
+    }
+
+    #[test]
     fn migrates_and_round_trips_a_run() {
         let dir = tempfile::tempdir().unwrap();
         let p = dir.path().join("sub").join("manifest.sqlite");
@@ -1153,8 +1320,10 @@ mod tests {
                 .is_none(),
             "sha changed"
         );
-        assert_eq!(m.quarantine_of_file(fid).unwrap(), ["q"]);
-        assert_eq!(m.live_quarantine().unwrap(), ["q"]);
+        // A relative path is the home's.
+        let q = dir.path().join("sub").join("q").display().to_string();
+        assert_eq!(m.quarantine_of_file(fid).unwrap(), std::slice::from_ref(&q));
+        assert_eq!(m.live_quarantine().unwrap(), [q]);
         // The live outputs, as the Iceberg tables take them.
         let live = m.live_outputs(Some("T")).unwrap();
         assert_eq!(live.len(), 1);

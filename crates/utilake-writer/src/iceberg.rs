@@ -422,7 +422,7 @@ mod tests {
             meta.properties["utilake.temporal.entity"],
             r#"["REGIONID"]"#
         );
-        assert_eq!(meta.properties["utilake.lake.format"], "3");
+        assert_eq!(meta.properties["utilake.lake.format"], "4");
         let rrp = meta.schemas[2]
             .fields
             .iter()

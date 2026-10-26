@@ -14,9 +14,9 @@ utilake home (`{home}`, default `~/.utilake`), where `lake/` is.
 
 ## Where to read from
 
-Each table is a directory of Hive-partitioned Parquet,
-`lake/{market}/{table}/`, with its Iceberg metadata beside the files in
-`metadata/`, kept current by every ingest. Two ways in:
+Each table is a directory, `lake/{market}/{table}/`, laid out as Iceberg
+lays a table out: its Hive-partitioned Parquet under `data/`, its Iceberg
+metadata in `metadata/`, kept current by every ingest. Two ways in:
 
 - **The Iceberg table** (first choice): `iceberg_scan('lake/nem/dudetail')`
   in DuckDB, after `INSTALL iceberg; LOAD iceberg;` once, or any Iceberg
@@ -27,7 +27,7 @@ Each table is a directory of Hive-partitioned Parquet,
   when it shares a report pair (`utilake.with-columns`), any breaks
   (`utilake.breaks`) and the data model's words; each snapshot is a run
   of AEMO files under one schema, for a read of the table as it was.
-- **The Parquet files**: `read_parquet('lake/nem/dudetail/**/*.parquet',
+- **The Parquet files**: `read_parquet('lake/nem/dudetail/data/**/*.parquet',
   hive_partitioning = true, union_by_name = true)`. Every lake file holds
   the table's every field too, so this reads the same columns, by name: a
   file written before a column was renamed holds it under the old name
@@ -62,7 +62,7 @@ column loses to any value.
 <!-- example: latest -->
 ```sql
 SELECT SETTLEMENTDATE, INTERVENTION, RUNNO, RRP, _ul_source
-FROM read_parquet('lake/nem/dispatchprice/**/*.parquet', hive_partitioning = true, union_by_name = true)
+FROM read_parquet('lake/nem/dispatchprice/data/**/*.parquet', hive_partitioning = true, union_by_name = true)
 WHERE SETTLEMENTDATE > TIMESTAMPTZ '2024-01-01 00:00:00+10:00'
   AND SETTLEMENTDATE <= TIMESTAMPTZ '2024-01-01 00:15:00+10:00'
 QUALIFY row_number() OVER (
@@ -84,7 +84,7 @@ revision, its copies collapsed to the one published last.
 <!-- example: revisions -->
 ```sql
 SELECT SETTLEMENTDATE, INTERVENTION, RUNNO, RRP
-FROM read_parquet('lake/nem/dispatchprice/**/*.parquet', hive_partitioning = true, union_by_name = true)
+FROM read_parquet('lake/nem/dispatchprice/data/**/*.parquet', hive_partitioning = true, union_by_name = true)
 WHERE SETTLEMENTDATE > TIMESTAMPTZ '2024-01-01 00:00:00+10:00'
   AND SETTLEMENTDATE <= TIMESTAMPTZ '2024-01-01 00:15:00+10:00'
 QUALIFY row_number() OVER (
@@ -104,7 +104,7 @@ as the time a source was public, nothing is ever early:
 <!-- example: known-at -->
 ```sql
 SELECT SETTLEMENTDATE, RRP, _ul_source
-FROM read_parquet('lake/nem/dispatchprice/**/*.parquet', hive_partitioning = true, union_by_name = true)
+FROM read_parquet('lake/nem/dispatchprice/data/**/*.parquet', hive_partitioning = true, union_by_name = true)
 WHERE SETTLEMENTDATE > TIMESTAMPTZ '2024-01-01 00:00:00+10:00'
   AND SETTLEMENTDATE <= TIMESTAMPTZ '2024-01-01 00:15:00+10:00'
   AND greatest(LASTCHANGED, _ul_server_last_modified) <= TIMESTAMPTZ '2024-01-01 00:11:00+10:00'
@@ -128,7 +128,7 @@ the earliest of the three:
 <!-- example: known-at-earliest -->
 ```sql
 SELECT SETTLEMENTDATE, RRP, _ul_source
-FROM read_parquet('lake/nem/dispatchprice/**/*.parquet', hive_partitioning = true, union_by_name = true)
+FROM read_parquet('lake/nem/dispatchprice/data/**/*.parquet', hive_partitioning = true, union_by_name = true)
 WHERE SETTLEMENTDATE > TIMESTAMPTZ '2024-01-01 00:00:00+10:00'
   AND SETTLEMENTDATE <= TIMESTAMPTZ '2024-01-01 00:15:00+10:00'
   AND greatest(LASTCHANGED, least(_ul_server_last_modified, _ul_zip_entry_modified,
@@ -158,7 +158,7 @@ it ends, and leaving that file out would leave the earlier version open.
 ```sql
 WITH versions AS (
     SELECT DUID, EFFECTIVEDATE, VERSIONNO, REGISTEREDCAPACITY
-    FROM read_parquet('lake/nem/dudetail/**/*.parquet', hive_partitioning = true, union_by_name = true)
+    FROM read_parquet('lake/nem/dudetail/data/**/*.parquet', hive_partitioning = true, union_by_name = true)
     QUALIFY row_number() OVER (
         PARTITION BY DUID, EFFECTIVEDATE
         ORDER BY VERSIONNO DESC NULLS LAST, LASTCHANGED DESC NULLS LAST,
@@ -188,7 +188,7 @@ Leave it out before ranking:
 <!-- example: order-nan -->
 ```sql
 SELECT SETTLEMENTDATE, DUID, BIDTYPE, VERSIONNO, PRICEBAND1
-FROM read_parquet('lake/nem/biddayoffer_d/**/*.parquet', hive_partitioning = true, union_by_name = true)
+FROM read_parquet('lake/nem/biddayoffer_d/data/**/*.parquet', hive_partitioning = true, union_by_name = true)
 WHERE VERSIONNO IS DISTINCT FROM CAST('NaN' AS DOUBLE)
 QUALIFY row_number() OVER (
     PARTITION BY DUID, BIDTYPE, SETTLEMENTDATE
@@ -207,7 +207,7 @@ on the 1st to 04:00 on the 2nd. Select a trading day by its label:
 <!-- example: trading-day -->
 ```sql
 SELECT DUID, BIDTYPE, count(*) AS revisions
-FROM read_parquet('lake/nem/biddayoffer_d/**/*.parquet', hive_partitioning = true, union_by_name = true)
+FROM read_parquet('lake/nem/biddayoffer_d/data/**/*.parquet', hive_partitioning = true, union_by_name = true)
 WHERE SETTLEMENTDATE = TIMESTAMPTZ '2024-01-01 00:00:00+10:00'
 GROUP BY DUID, BIDTYPE
 ORDER BY DUID, BIDTYPE
@@ -223,7 +223,7 @@ copies with `DISTINCT` over the table's own columns:
 ```sql
 SELECT DISTINCT * EXCLUDE (_ul_source, _ul_server_last_modified, _ul_zip_entry_modified,
                            _ul_filename_timestamp)
-FROM read_parquet('lake/nem/ssm_enablement_costs/**/*.parquet', union_by_name = true)
+FROM read_parquet('lake/nem/ssm_enablement_costs/data/**/*.parquet', union_by_name = true)
 ORDER BY ENABLEMENT_REASON
 ```
 
@@ -235,7 +235,7 @@ from and when each was public:
 <!-- example: sources -->
 ```sql
 SELECT _ul_source, count(*) AS rows, any_value(_ul_server_last_modified) AS public_by_server
-FROM read_parquet('lake/nem/dispatchprice/**/*.parquet', hive_partitioning = true, union_by_name = true)
+FROM read_parquet('lake/nem/dispatchprice/data/**/*.parquet', hive_partitioning = true, union_by_name = true)
 GROUP BY _ul_source
 ORDER BY _ul_source
 ```
@@ -245,7 +245,7 @@ ORDER BY _ul_source
 <!-- example: entity-values -->
 ```sql
 SELECT DUID, count(*) AS rows, min(EFFECTIVEDATE) AS first, max(EFFECTIVEDATE) AS last
-FROM read_parquet('lake/nem/dudetail/**/*.parquet', hive_partitioning = true, union_by_name = true)
+FROM read_parquet('lake/nem/dudetail/data/**/*.parquet', hive_partitioning = true, union_by_name = true)
 GROUP BY DUID
 ORDER BY DUID
 ```
@@ -259,7 +259,7 @@ The most common gap between distinct valid times is a table's interval
 ```sql
 WITH times AS (
     SELECT DISTINCT SETTLEMENTDATE
-    FROM read_parquet('lake/nem/dispatchprice/**/*.parquet', hive_partitioning = true, union_by_name = true)
+    FROM read_parquet('lake/nem/dispatchprice/data/**/*.parquet', hive_partitioning = true, union_by_name = true)
 ), gaps AS (
     SELECT SETTLEMENTDATE - lag(SETTLEMENTDATE) OVER (ORDER BY SETTLEMENTDATE) AS step FROM times
 )
@@ -300,6 +300,28 @@ revision, for one:
 ```sql
 SELECT SETTLEMENTDATE, RRP
 FROM iceberg_scan('lake/nem/dispatchprice')
+WHERE SETTLEMENTDATE > TIMESTAMPTZ '2024-01-01 00:00:00+10:00'
+  AND SETTLEMENTDATE <= TIMESTAMPTZ '2024-01-01 00:10:00+10:00'
+QUALIFY row_number() OVER (
+    PARTITION BY REGIONID, DISPATCHINTERVAL, INTERVENTION, SETTLEMENTDATE
+    ORDER BY RUNNO DESC NULLS LAST, LASTCHANGED DESC NULLS LAST,
+             _ul_server_last_modified DESC NULLS LAST, _ul_source DESC) = 1
+ORDER BY SETTLEMENTDATE
+```
+
+## A lake that moved
+
+A home copied or moved whole (a new disk, a backup restored) reads as it
+did. Its manifest names every file relative to the home, so `utilake
+verify` and every later ingest find them where they are now. The Iceberg
+metadata still names the old place until `utilake iceberg` writes it for
+the new one; until then, DuckDB finds each file by its path under the
+table's `data/` directory:
+
+<!-- example: moved -->
+```sql
+SELECT SETTLEMENTDATE, RRP
+FROM iceberg_scan('lake/nem/dispatchprice', allow_moved_paths = true)
 WHERE SETTLEMENTDATE > TIMESTAMPTZ '2024-01-01 00:00:00+10:00'
   AND SETTLEMENTDATE <= TIMESTAMPTZ '2024-01-01 00:10:00+10:00'
 QUALIFY row_number() OVER (

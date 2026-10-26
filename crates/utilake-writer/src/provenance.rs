@@ -23,9 +23,11 @@ use utilake_iceberg::provenance::{
     FILENAME_TIMESTAMP, SERVER_LAST_MODIFIED, SOURCE, ZIP_ENTRY_MODIFIED,
 };
 
-/// The format of a lake file: 3 since every row carries each time its
-/// source was stamped with, under the `_ul_` prefix.
-pub const LAKE_FORMAT: &str = "3";
+/// The format of a lake file: 4 since a table's files are under its
+/// `data/` directory, as Iceberg lays a table out, so a reader finds them
+/// in a lake moved whole; every row carries each time its source was
+/// stamped with, under the `_ul_` prefix, since 3.
+pub const LAKE_FORMAT: &str = "4";
 
 /// The names of the three time columns, in the order a file holds them.
 pub const TIME_COLUMNS: [&str; 3] = [

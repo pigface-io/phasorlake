@@ -281,7 +281,7 @@ async fn a_table_without_a_time_column_is_partitioned_by_its_file_month() {
     assert_eq!(files.len(), 2, "{files:?}");
     assert!(
         files.iter().any(|f| f.contains(
-            "nem/utilake_test_notime/year=2024/month=03/public_dvd_notime_202403010000-v0-"
+            "nem/utilake_test_notime/data/year=2024/month=03/public_dvd_notime_202403010000-v0-"
         )),
         "{files:?}"
     );
@@ -329,7 +329,7 @@ async fn local_zip_ingests_idempotently_and_records_manifest() {
         e.home.lake().display(),
         walk(e.home.root())
     );
-    assert!(files[0].contains("nem/dispatch_unit_scada/year=2024/month=01/public_dvd_dispatch_unit_scada_202401010000-v0-"), "{}", files[0]);
+    assert!(files[0].contains("nem/dispatch_unit_scada/data/year=2024/month=01/public_dvd_dispatch_unit_scada_202401010000-v0-"), "{}", files[0]);
     assert_eq!(parquet_rows(&files[0]), 20);
     let ingests = e.deps.manifest.list_ingests(None, false, 10).await.unwrap();
     assert_eq!(ingests.len(), 1);
@@ -1535,7 +1535,7 @@ async fn a_zip_with_a_bad_entry_is_refused_whole_and_every_entry_is_read() {
     assert!(
         files
             .iter()
-            .any(|f| f.contains("nem/region/snapshot=202401/")),
+            .any(|f| f.contains("nem/region/data/snapshot=202401/")),
         "{files:?}"
     );
     assert!(!files.iter().any(|f| f.contains(".tmp-")), "{files:?}");
@@ -1784,7 +1784,7 @@ async fn remote_source_downloads_then_serves_from_cache_and_reports_fetch_failur
     let files = walk(&e.home.lake());
     assert!(
         files.iter().any(|f| f.contains(
-            "nem/tradingprice/year=2024/month=01/public_dvd_tradingprice_202401010000-v1-"
+            "nem/tradingprice/data/year=2024/month=01/public_dvd_tradingprice_202401010000-v1-"
         )),
         "{files:?}"
     );
@@ -2681,7 +2681,7 @@ async fn a_days_snapshot_is_partitioned_by_its_day() {
     assert!(
         files
             .iter()
-            .any(|f| f.contains("nem/region/snapshot=20240107/")),
+            .any(|f| f.contains("nem/region/data/snapshot=20240107/")),
         "{files:?}"
     );
     let outputs = e.deps.manifest.live_outputs(Some("REGION")).await.unwrap();
@@ -2785,7 +2785,7 @@ async fn a_restated_file_adds_only_its_new_rows() {
     assert!(
         files
             .iter()
-            .all(|f| f.contains("gas/gbb_actual_flow_storage/year=2026/month=09/")),
+            .all(|f| f.contains("gas/gbb_actual_flow_storage/data/year=2026/month=09/")),
         "{files:?}"
     );
     let ingests = e.deps.manifest.list_ingests(None, false, 10).await.unwrap();
