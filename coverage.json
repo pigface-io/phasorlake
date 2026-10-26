@@ -2,7 +2,8 @@
   "exclude": [
     "crates/xtask/",
     "crates/utilake-bench/",
-    "crates/utilake-cli/src/main.rs"
+    "crates/utilake-cli/src/main.rs",
+    "crates/utilake-e2e/"
   ],
   "floors": {
     "crates/utilake-core/src": 96,

@@ -3043,6 +3043,37 @@ dependencies = [
 ]
 
 [[package]]
+name = "utilake-e2e"
+version = "0.1.0"
+dependencies = [
+ "arrow-array",
+ "arrow-schema",
+ "arrow-select",
+ "async-trait",
+ "futures",
+ "parquet",
+ "serde_json",
+ "tempfile",
+ "tokio",
+ "tokio-util",
+ "url",
+ "utilake-acquire",
+ "utilake-core",
+ "utilake-gas",
+ "utilake-kit",
+ "utilake-mms-conform",
+ "utilake-mms-decode",
+ "utilake-nem",
+ "utilake-pipeline",
+ "utilake-provenance",
+ "utilake-registry",
+ "utilake-wem",
+ "utilake-writer",
+ "utilake-zip",
+ "zip",
+]
+
+[[package]]
 name = "utilake-gas"
 version = "0.1.0"
 dependencies = [
@@ -3155,7 +3186,6 @@ dependencies = [
  "tempfile",
  "thiserror",
  "url",
- "utilake-acquire",
  "utilake-core",
  "utilake-kit",
  "utilake-mms-decode",
@@ -3222,28 +3252,17 @@ version = "0.1.0"
 dependencies = [
  "arrow-array",
  "arrow-schema",
- "arrow-select",
- "async-trait",
  "futures",
- "parquet",
  "serde_json",
- "tempfile",
  "tokio",
  "tokio-util",
  "url",
  "utilake-acquire",
  "utilake-core",
- "utilake-gas",
  "utilake-kit",
- "utilake-mms-conform",
- "utilake-mms-decode",
- "utilake-nem",
  "utilake-provenance",
- "utilake-registry",
- "utilake-wem",
  "utilake-writer",
  "utilake-zip",
- "zip",
  "zonetrace",
 ]
 

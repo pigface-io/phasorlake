@@ -27,19 +27,6 @@ tokio = { workspace = true, features = ["rt-multi-thread", "sync", "macros", "ti
 tokio-util.workspace = true
 url.workspace = true
 
-[dev-dependencies]
-utilake-mms-conform.workspace = true
-utilake-nem.workspace = true
-utilake-gas.workspace = true
-utilake-wem.workspace = true
-utilake-mms-decode.workspace = true
-utilake-registry.workspace = true
-arrow-select.workspace = true
-async-trait.workspace = true
-parquet.workspace = true
-tempfile.workspace = true
-zip.workspace = true
-
 [features]
 # Times the work in zones of zonetrace.
 zones = ["dep:zonetrace", "utilake-writer/zones"]

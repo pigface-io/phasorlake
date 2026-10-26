@@ -25,6 +25,7 @@ members = [
     "crates/utilake-net",
     "crates/utilake-iceberg-store",
     "crates/utilake-bench",
+    "crates/utilake-e2e",
     "crates/xtask",
 ]
 default-members = [
