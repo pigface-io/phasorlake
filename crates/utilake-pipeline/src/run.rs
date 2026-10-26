@@ -7,12 +7,12 @@ use futures::StreamExt;
 use tokio::sync::mpsc;
 use tokio_util::sync::CancellationToken;
 use url::Url;
-use utilake_acquire::{LocalFile, Query, RemoteFile, Source};
 use utilake_core::Diagnose;
 use utilake_core::event::{Event, Summary};
 use utilake_core::report::{DiagSink, Flow, Report, SourceOutcome, SourceStatus};
 use utilake_core::{Category, Diagnostic};
 use utilake_kit::{KitRegistry, SourceKit, Transform};
+use utilake_kit::{LocalFile, Query, RemoteFile, Source};
 use utilake_writer::manifest::{FileRecord, IngestEnd, IngestShape, IngestStart, IngestStatus};
 
 use crate::ingest_file::{FileReport, IngestInput, ingest_file};
@@ -48,7 +48,7 @@ pub fn local_remote(
     }
     // A zip is walked for the entries the decoders read; its own name
     // says nothing. Any other file must have a decoder for its name.
-    let is_zip = utilake_kit::container::has_extension(&name, ".zip");
+    let is_zip = utilake_zip::has_extension(&name, ".zip");
     let kit = kits
         .kits()
         .iter()
@@ -84,7 +84,7 @@ pub fn local_remote_in(
     let name = name.to_owned();
     let mut url = Url::from_file_path(abs.with_file_name(&name)).ok()?;
     url.set_fragment(stamp);
-    let is_zip = utilake_kit::container::has_extension(&name, ".zip");
+    let is_zip = utilake_zip::has_extension(&name, ".zip");
     if !is_zip && k.decoder_for(&name).is_none() {
         return None;
     }
@@ -229,7 +229,7 @@ pub async fn run(
             query,
             files,
         } => remote_listed(source, query, files.clone()),
-        Input::Remote { source, query } => match source.list(query, &deps.fetcher).await {
+        Input::Remote { source, query } => match source.list(query, deps.fetcher.as_ref()).await {
             Ok(files) => remote_listed(source, query, files),
             Err(e) => {
                 let d = e.diagnostic().with_request(request.clone());
@@ -396,7 +396,7 @@ pub async fn run(
                 // A zip read by its directory: the entries the source
                 // picks, each a file of its own, or the zip whole.
                 if let Some((source, query)) = picks {
-                    let pick = |entries: &[utilake_acquire::Entry]| source.pick(&remote, entries, &query);
+                    let pick = |entries: &[utilake_kit::Entry]| source.pick(&remote, entries, &query);
                     return match fetcher.fetch_picks(&remote, &pick).await {
                         Ok(picked) => picked
                             .files()

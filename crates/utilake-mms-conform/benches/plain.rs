@@ -9,12 +9,12 @@ use std::sync::Arc;
 
 use criterion::{Criterion, Throughput, criterion_group, criterion_main};
 use url::Url;
-use utilake_acquire::{LocalFile, RemoteFile};
 use utilake_core::Diagnostic;
 use utilake_kit::{
     Block, BlockSink, DecodeCtx, DecodeOptions, Decoder, Flow, RowAt, Strictness, TableRef,
     Transform,
 };
+use utilake_kit::{LocalFile, RemoteFile};
 use utilake_mms_conform::plain::{PlainCsvDecoder, WemdeDecoder};
 use utilake_mms_decode::Fingerprint;
 use utilake_mms_registry::Registry;

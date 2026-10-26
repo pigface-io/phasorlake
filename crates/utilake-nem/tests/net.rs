@@ -5,9 +5,10 @@
 use std::sync::Arc;
 use std::time::Duration;
 
-use utilake_acquire::{Archive, Fetcher, FetcherConfig, Query, ReqwestTransport, Source};
+use utilake_acquire::{Archive, Fetcher, FetcherConfig, ReqwestTransport};
 use utilake_core::TimeRange;
 use utilake_core::YearMonth;
+use utilake_kit::{Query, Source};
 use utilake_nem::MmsdmArchive;
 
 #[tokio::test]

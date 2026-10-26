@@ -23,6 +23,7 @@ utilake-nem.workspace = true
 utilake-wem.workspace = true
 utilake-gas.workspace = true
 utilake-kit.workspace = true
+utilake-zip.workspace = true
 utilake-mms-registry.workspace = true
 utilake-mms-decode.workspace = true
 utilake-mms-conform.workspace = true

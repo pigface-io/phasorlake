@@ -9,7 +9,6 @@ use std::sync::Arc;
 use utilake_core::{Diagnose, Diagnostic, Period, YearMonth};
 
 use crate::error::{MmsDiagnose, RowError, RowFailure, SinkError};
-use utilake_kit::container::has_extension;
 use utilake_kit::{
     Block, BlockSink, Catalog, DecodeCtx, DecodeStats, Decoder, Flow, LoadMode, RowAt, Strictness,
     TableRef, Transform,
@@ -18,6 +17,7 @@ use utilake_mms_decode::IRow;
 use utilake_mms_decode::scan::{Flow as ScanFlow, Pos, ScanOptions, ScanStats, scan_with};
 use utilake_mms_registry::file_model::Market;
 use utilake_mms_registry::{Mode, Registry, ResolveOptions, Resolved, TableId};
+use utilake_zip::has_extension;
 
 use crate::arrow_sink::{ArrowSink, BatchSink, BlockBatch};
 

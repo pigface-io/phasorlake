@@ -11,11 +11,12 @@ use async_trait::async_trait;
 use tokio_util::sync::CancellationToken;
 use url::Url;
 use utilake_acquire::transport::{Canned, StaticTransport};
-use utilake_acquire::{Archive, FetchError, Fetcher, FetcherConfig, Query, RemoteFile, Source};
+use utilake_acquire::{Archive, FetchError, Fetcher, FetcherConfig};
 use utilake_core::TimeRange;
 use utilake_core::event::Event;
 use utilake_core::paths::Home;
 use utilake_kit::{Catalog as _, KitRegistry, Strictness};
+use utilake_kit::{Listings, Query, RemoteFile, Source};
 use utilake_mms_conform::MmsCatalog;
 use utilake_mms_registry::file_model::{
     Column, ColumnId, LakeType, Market, RoleOrigin, Run, Table, TableSchema, Temporal, ValidAxis,
@@ -1656,7 +1657,7 @@ impl Source for OneFile {
     fn id(&self) -> &'static str {
         "test-one"
     }
-    async fn list(&self, _q: &Query, _f: &Fetcher) -> Result<Vec<RemoteFile>, FetchError> {
+    async fn list(&self, _q: &Query, _f: &dyn Listings) -> Result<Vec<RemoteFile>, FetchError> {
         Ok(self.0.clone())
     }
 }
@@ -1668,7 +1669,7 @@ impl Source for Broken {
     fn id(&self) -> &'static str {
         "test-broken"
     }
-    async fn list(&self, _q: &Query, _f: &Fetcher) -> Result<Vec<RemoteFile>, FetchError> {
+    async fn list(&self, _q: &Query, _f: &dyn Listings) -> Result<Vec<RemoteFile>, FetchError> {
         Err(FetchError::Offline {
             url: "https://h/".into(),
         })
@@ -1878,7 +1879,7 @@ impl Source for RangedMonth {
     fn id(&self) -> &'static str {
         "nem-mmsdm"
     }
-    async fn list(&self, _q: &Query, _f: &Fetcher) -> Result<Vec<RemoteFile>, FetchError> {
+    async fn list(&self, _q: &Query, _f: &dyn Listings) -> Result<Vec<RemoteFile>, FetchError> {
         Ok(vec![RemoteFile {
             url: self.url.clone(),
             source: "nem-mmsdm",
@@ -1895,18 +1896,18 @@ impl Source for RangedMonth {
     fn pick(
         &self,
         remote: &RemoteFile,
-        entries: &[utilake_acquire::Entry],
+        entries: &[utilake_kit::Entry],
         query: &Query,
-    ) -> utilake_acquire::Picks {
+    ) -> utilake_kit::Picks {
         if self.whole {
-            return utilake_acquire::Picks::Whole;
+            return utilake_kit::Picks::Whole;
         }
-        utilake_acquire::Picks::Entries(
+        utilake_kit::Picks::Entries(
             entries
                 .iter()
                 .enumerate()
                 .filter(|(_, e)| query.tables.iter().any(|t| e.name.contains(t.as_str())))
-                .map(|(index, e)| utilake_acquire::Pick {
+                .map(|(index, e)| utilake_kit::Pick {
                     index,
                     remote: utilake_nem::describe_name(
                         Url::parse(&format!("{}!{}", remote.url, e.name)).unwrap(),
@@ -2097,7 +2098,7 @@ impl Source for OddMonthly {
     fn id(&self) -> &'static str {
         "nem-mmsdm"
     }
-    async fn list(&self, _q: &Query, _f: &Fetcher) -> Result<Vec<RemoteFile>, FetchError> {
+    async fn list(&self, _q: &Query, _f: &dyn Listings) -> Result<Vec<RemoteFile>, FetchError> {
         Err(FetchError::MonthMissing {
             period: "no such".into(),
             url: "https://h/year/".into(),
@@ -2111,7 +2112,7 @@ impl Source for Monthly {
     fn id(&self) -> &'static str {
         "nem-mmsdm"
     }
-    async fn list(&self, q: &Query, _f: &Fetcher) -> Result<Vec<RemoteFile>, FetchError> {
+    async fn list(&self, q: &Query, _f: &dyn Listings) -> Result<Vec<RemoteFile>, FetchError> {
         let mut out = Vec::new();
         for m in q.range.months_iter() {
             if self.unpublished_from.is_some_and(|u| m >= u) {
@@ -2153,15 +2154,15 @@ impl Source for Monthly {
     fn pick(
         &self,
         remote: &RemoteFile,
-        entries: &[utilake_acquire::Entry],
+        entries: &[utilake_kit::Entry],
         query: &Query,
-    ) -> utilake_acquire::Picks {
-        utilake_acquire::Picks::Entries(
+    ) -> utilake_kit::Picks {
+        utilake_kit::Picks::Entries(
             entries
                 .iter()
                 .enumerate()
                 .filter(|(_, e)| query.tables.iter().any(|t| e.name.contains(t.as_str())))
-                .map(|(index, e)| utilake_acquire::Pick {
+                .map(|(index, e)| utilake_kit::Pick {
                     index,
                     remote: utilake_nem::describe_name(
                         Url::parse(&format!("{}!{}", remote.url, e.name)).unwrap(),
@@ -2181,10 +2182,10 @@ impl Source for Daily {
     fn id(&self) -> &'static str {
         "nem-reports"
     }
-    fn granularity(&self) -> utilake_acquire::Granularity {
-        utilake_acquire::Granularity::Day
+    fn granularity(&self) -> utilake_kit::Granularity {
+        utilake_kit::Granularity::Day
     }
-    async fn list(&self, q: &Query, _f: &Fetcher) -> Result<Vec<RemoteFile>, FetchError> {
+    async fn list(&self, q: &Query, _f: &dyn Listings) -> Result<Vec<RemoteFile>, FetchError> {
         if q.tables.iter().any(|t| t == "BROKEN") {
             return Err(FetchError::Offline {
                 url: "https://h/Reports/".into(),

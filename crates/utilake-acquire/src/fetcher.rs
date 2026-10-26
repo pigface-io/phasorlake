@@ -16,7 +16,7 @@
 //! the zip is downloaded whole instead.
 
 use std::io::Read as _;
-use std::path::{Path, PathBuf};
+use std::path::Path;
 use std::sync::Arc;
 
 use utilake_core::event::Event;
@@ -28,59 +28,10 @@ use crate::archive::{
     Address, Archive, Content, Held, Listed, Provenance, Served, Span as ZipSpan, Via, add_address,
 };
 use crate::error::FetchError;
-use crate::source::{Pick, Picks, RemoteFile};
 use crate::transport::{Span, Transport};
+use utilake_kit::{Listings, LocalFile, Pick, Picks, RemoteFile};
 pub use utilake_net::fetch::{FetcherConfig, RangeRead};
 use utilake_net::fetch::{Requests, stream_to_file};
-
-/// A file on disk, ready to read.
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub struct LocalFile {
-    /// What was asked for.
-    pub remote: RemoteFile,
-    /// Where the bytes are.
-    pub path: PathBuf,
-    /// sha256 hex.
-    pub sha256: String,
-    /// Bytes.
-    pub size: u64,
-    /// Whether it was in the archive already, with no request.
-    pub cached: bool,
-    /// ETag.
-    pub etag: Option<String>,
-    /// The server's `Last-Modified`, as sent (an HTTP date).
-    pub last_modified: Option<String>,
-    /// `last_modified` as an instant (UTC).
-    pub last_modified_at: Option<Stamp>,
-    /// When the bytes were fetched, as their record says; none for a file
-    /// that is not from the archive.
-    pub fetched_at: Option<Stamp>,
-    /// The version of the same file published before this one, when the
-    /// source keeps versions and knows it: a feed whose files restate the
-    /// one before is read against it, so only the rows new to this version
-    /// are ingested.
-    pub previous: Option<PathBuf>,
-}
-
-impl LocalFile {
-    /// An archived file as the answer to `remote`: its bytes as its record
-    /// gives them, `cached` when no request was made for them.
-    pub fn from_held(remote: &RemoteFile, found: Held, cached: bool) -> Self {
-        let p = &found.provenance;
-        Self {
-            remote: remote.clone(),
-            sha256: p.content.sha256.hex(),
-            size: p.content.size,
-            cached,
-            etag: p.etag().map(str::to_owned),
-            last_modified: p.modified().map(Stamp::http_date),
-            last_modified_at: p.modified(),
-            fetched_at: Some(p.fetched_at()),
-            previous: None,
-            path: found.path,
-        }
-    }
-}
 
 /// The listing line a remote file was listed with: its time as an
 /// instant, read from the listing's text in the host's clock when the
@@ -126,6 +77,13 @@ pub struct Fetcher {
     requests: Requests,
     archive: Archive,
     events: Option<tokio::sync::mpsc::Sender<Event>>,
+}
+
+#[async_trait::async_trait]
+impl Listings for Fetcher {
+    async fn fetch_listing(&self, url: &str) -> Result<Vec<u8>, FetchError> {
+        self.requests.fetch_listing(url).await
+    }
 }
 
 impl Fetcher {
@@ -867,8 +825,8 @@ mod picks_tests {
     use std::time::Duration;
 
     use super::*;
-    use crate::source::Query;
     use crate::transport::{Canned, HttpResponse, StaticTransport};
+    use utilake_kit::Query;
 
     const ZIP: &str = "https://h/A/MMSDM_2014_01.zip";
 

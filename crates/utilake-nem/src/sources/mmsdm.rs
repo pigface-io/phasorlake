@@ -28,10 +28,8 @@ use async_trait::async_trait;
 use url::Url;
 use utilake_core::YearMonth;
 
-use utilake_acquire::{
-    Archive, Entry, FetchError, Fetcher, Held, LocalFile, Pick, Picks, Query, RemoteFile, Source,
-    listing,
-};
+use utilake_acquire::{Archive, FetchError, Held, listing};
+use utilake_kit::{Entry, Listings, LocalFile, Pick, Picks, Query, RemoteFile, Source};
 
 /// The source id.
 pub const SOURCE_ID: &str = "nem-mmsdm";
@@ -117,7 +115,7 @@ impl MmsdmArchive {
     pub async fn month_layout(
         &self,
         ym: YearMonth,
-        fetcher: &Fetcher,
+        fetcher: &dyn Listings,
     ) -> Result<MonthLayout, FetchError> {
         let year_url = self.year_root(ym.year())?;
         let missing = |available: String| FetchError::MonthMissing {
@@ -170,7 +168,7 @@ impl MmsdmArchive {
     async fn month_files(
         &self,
         ym: YearMonth,
-        fetcher: &Fetcher,
+        fetcher: &dyn Listings,
     ) -> Result<MonthFiles, FetchError> {
         // From 2015 the month has a directory; try it first and fall back to
         // the year listing when it is not there.
@@ -232,7 +230,7 @@ impl MmsdmArchive {
     async fn directory_files(
         &self,
         ym: YearMonth,
-        fetcher: &Fetcher,
+        fetcher: &dyn Listings,
     ) -> Result<MonthFiles, FetchError> {
         let dirs = self.data_dirs(ym)?;
         let mut out = Vec::new();
@@ -498,7 +496,11 @@ impl Source for MmsdmArchive {
         Picks::Entries(picks)
     }
 
-    async fn list(&self, query: &Query, fetcher: &Fetcher) -> Result<Vec<RemoteFile>, FetchError> {
+    async fn list(
+        &self,
+        query: &Query,
+        fetcher: &dyn Listings,
+    ) -> Result<Vec<RemoteFile>, FetchError> {
         let mut out = Vec::new();
         let upper = |names: &[String]| -> Vec<String> {
             names.iter().map(|t| t.to_ascii_uppercase()).collect()
@@ -575,6 +577,7 @@ impl Source for MmsdmArchive {
 mod tests {
     use std::sync::Arc;
     use std::time::Duration;
+    use utilake_acquire::Fetcher;
 
     use super::*;
     use utilake_acquire::FetcherConfig;

@@ -9,7 +9,8 @@ use std::time::Duration;
 use criterion::{BatchSize, Criterion, Throughput, criterion_group, criterion_main};
 use url::Url;
 use utilake_acquire::transport::{Canned, StaticTransport};
-use utilake_acquire::{Archive, Fetcher, FetcherConfig, RemoteFile};
+use utilake_acquire::{Archive, Fetcher, FetcherConfig};
+use utilake_kit::RemoteFile;
 
 const LISTING_ROWS: usize = 10_000;
 const DOWNLOAD_BYTES: usize = 64 << 20;

@@ -8,13 +8,10 @@ use std::sync::Arc;
 
 use crate::entry_times::EntryTimes;
 use tokio::sync::mpsc;
-use utilake_acquire::LocalFile;
 use utilake_core::event::Event;
 use utilake_core::source_times;
 use utilake_core::{Category, Diagnose, Diagnostic, Fingerprint};
-use utilake_kit::container::{
-    Accepts, ArchiveError, WalkError, Walked, has_extension, walk_entries,
-};
+use utilake_kit::LocalFile;
 use utilake_kit::{
     Block, BlockSink, DecodeCtx, DecodeOptions, Flow, KitRegistry, RowAt, SourceKit, TableRef,
 };
@@ -23,6 +20,7 @@ use utilake_writer::manifest::EntryShare;
 use utilake_writer::{
     IngestSession, Shape, Source, Stamp, StoreError, Times, Transform, WrittenFile,
 };
+use utilake_zip::{Accepts, ArchiveError, WalkError, Walked, has_extension, walk_entries};
 
 use crate::plan::RunOptions;
 

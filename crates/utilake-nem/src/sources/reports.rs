@@ -16,10 +16,9 @@ use std::sync::Arc;
 use async_trait::async_trait;
 use url::Url;
 use utilake_acquire::listing;
-use utilake_acquire::{
-    Archive, Entry, FetchError, Fetcher, LocalFile, Pick, Picks, Query, RemoteFile, Source,
-};
+use utilake_acquire::{Archive, FetchError};
 use utilake_core::{CivilDay, Period};
+use utilake_kit::{Entry, Listings, LocalFile, Pick, Picks, Query, RemoteFile, Source};
 use utilake_mms_registry::{Registry, Side};
 
 /// The source id, as the manifest records it.
@@ -184,7 +183,7 @@ impl ReportFolders {
         &self,
         sides: &[Side],
         query: &Query,
-        fetcher: &Fetcher,
+        fetcher: &dyn Listings,
     ) -> Result<Vec<RemoteFile>, FetchError> {
         let days: Vec<CivilDay> = query.range.days_iter().collect();
         let mut out = Vec::new();
@@ -269,11 +268,15 @@ impl Source for ReportFolders {
         REPORTS_SOURCE_ID
     }
 
-    fn granularity(&self) -> utilake_acquire::Granularity {
-        utilake_acquire::Granularity::Day
+    fn granularity(&self) -> utilake_kit::Granularity {
+        utilake_kit::Granularity::Day
     }
 
-    async fn list(&self, query: &Query, fetcher: &Fetcher) -> Result<Vec<RemoteFile>, FetchError> {
+    async fn list(
+        &self,
+        query: &Query,
+        fetcher: &dyn Listings,
+    ) -> Result<Vec<RemoteFile>, FetchError> {
         let mut out = Vec::new();
         for sides in self.folders_for(query)?.values() {
             out.extend(self.folder_files(sides, query, fetcher).await?);
@@ -402,6 +405,7 @@ mod tests {
     use std::path::Path;
     use std::sync::Arc;
     use std::time::Duration;
+    use utilake_acquire::Fetcher;
 
     use utilake_acquire::transport::{Canned, StaticTransport};
     use utilake_acquire::{Archive, FetcherConfig};
@@ -523,7 +527,7 @@ mod tests {
         let (_dir, registry) = registry();
         let src = ReportFolders::new("https://h", registry.clone()).unwrap();
         assert_eq!(src.id(), REPORTS_SOURCE_ID);
-        assert_eq!(src.granularity(), utilake_acquire::Granularity::Day);
+        assert_eq!(src.granularity(), utilake_kit::Granularity::Day);
         let t = Arc::new(StaticTransport::default());
         t.add(
             "https://h/Reports/ARCHIVE/Dispatch_SCADA/",

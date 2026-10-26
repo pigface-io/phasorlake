@@ -16,10 +16,11 @@ use std::sync::Arc;
 
 use async_trait::async_trait;
 use url::Url;
-use utilake_acquire::{
-    Archive, Entry, FetchError, Fetcher, Held, LocalFile, Pick, Picks, Query, RemoteFile, Source,
-    listing,
-};
+use utilake_kit::{Entry, Listings, LocalFile, Pick, Picks, Query, RemoteFile, Source};
+
+use crate::archive::{Archive, Held};
+use crate::error::FetchError;
+use crate::listing;
 use utilake_core::calendar::local_year_month;
 use utilake_core::timetext::{Stamp, parse_iis_listing};
 use utilake_core::{Period, YearMonth};
@@ -184,7 +185,11 @@ impl Source for FeedFolders {
 
     /// Every file under the feed's roots the query asks for, by their
     /// listings, folders the feed skips left out.
-    async fn list(&self, query: &Query, fetcher: &Fetcher) -> Result<Vec<RemoteFile>, FetchError> {
+    async fn list(
+        &self,
+        query: &Query,
+        fetcher: &dyn Listings,
+    ) -> Result<Vec<RemoteFile>, FetchError> {
         let mut out = Vec::new();
         let mut queue: Vec<Url> = self.roots()?;
         let mut seen: BTreeSet<String> = BTreeSet::new();
@@ -242,7 +247,7 @@ impl Source for FeedFolders {
         for root in self.roots()? {
             let dir = archive.path_for(root.as_str());
             let mut by_url: BTreeMap<String, Vec<Held>> = BTreeMap::new();
-            for a in utilake_acquire::archive::entries_under(archive, Some(&dir)) {
+            for a in crate::archive::entries_under(archive, Some(&dir)) {
                 by_url
                     .entry(a.provenance.url().to_owned())
                     .or_default()
@@ -363,8 +368,8 @@ mod tests {
     use std::sync::Arc;
     use std::time::Duration;
 
-    use utilake_acquire::FetcherConfig;
-    use utilake_acquire::transport::{Canned, StaticTransport};
+    use crate::transport::{Canned, StaticTransport};
+    use crate::{Fetcher, FetcherConfig};
     use utilake_core::TimeRange;
     use utilake_plain_decode::feeds::feed;
 
@@ -614,12 +619,12 @@ mod tests {
         let v1 = serde_json::json!({
             "url": url,
             "size": bytes.len(),
-            "sha256": utilake_acquire::archive::sha256_hex(bytes),
+            "sha256": crate::archive::sha256_hex(bytes),
             "fetched_at": "2026-10-21T12:00:00Z",
             "listed_modified": listed,
             "tool": "test",
         });
-        let record = utilake_acquire::Provenance::from_json(v1.to_string().as_bytes()).unwrap();
+        let record = crate::Provenance::from_json(v1.to_string().as_bytes()).unwrap();
         Archive::write(&path, &record).unwrap();
         path
     }
@@ -694,15 +699,23 @@ mod tests {
         );
         // A version without a stamp in its name or listing is numbered.
         let bare = archived(&archive, other, Some("x"), b"y\n", None);
-        let mut tagless =
-            utilake_acquire::archive::entries_under(&archive, Some(bare.parent().unwrap()));
+        let mut tagless = crate::archive::entries_under(&archive, Some(bare.parent().unwrap()));
         tagless.retain(|a| a.path == bare);
         assert_eq!(FeedFolders::version_tag(&tagless[0]).as_deref(), Some("x"));
-        let plain = utilake_acquire::archive::entries_under(&archive, None)
+        let plain = crate::archive::entries_under(&archive, None)
             .into_iter()
             .find(|a| a.provenance.url() == ignored)
             .unwrap();
         assert_eq!(FeedFolders::version_tag(&plain), None);
+        // One with no stamp in its name is tagged by when it was listed.
+        let listed = crate::archive::entries_under(&archive, None)
+            .into_iter()
+            .find(|a| a.provenance.url() == other && !a.path.to_string_lossy().contains('@'))
+            .unwrap();
+        assert_eq!(
+            FeedFolders::version_tag(&listed).as_deref(),
+            Some("20261021T221100+1000")
+        );
         // A sidecar whose URL does not parse, and a file in a folder the
         // feed skips, are left out.
         let sttm = feed("sttm").unwrap();
@@ -774,24 +787,23 @@ mod tests {
             s.pick(&zip, &entries, &query(&[], months("2026-10", "2026-10"))),
             Picks::Whole
         );
-        let Picks::Entries(p) = s.pick(
+        let picked = s.pick(
             &zip,
             &entries,
             &query(
                 &["STTM_INT651_EX_ANTE_MARKET_PRICE"],
                 months("2026-10", "2026-10"),
             ),
-        ) else {
-            panic!("entries")
-        };
-        assert_eq!(p.len(), 1);
-        assert_eq!(p[0].index, 0);
-        assert_eq!(
-            p[0].remote.url.as_str(),
-            "https://h/Reports/CURRENT/STTM/Day01.zip!int651_v1_ex_ante_market_price_rpt_1~20261001113227.csv"
         );
-        assert_eq!(p[0].remote.size, Some(10));
-        assert_eq!(s.granularity(), utilake_acquire::Granularity::Month);
+        let one = "https://h/Reports/CURRENT/STTM/Day01.zip!int651_v1_ex_ante_market_price_rpt_1~20261001113227.csv";
+        assert!(
+            matches!(&picked, Picks::Entries(p) if p.len() == 1
+                && p[0].index == 0
+                && p[0].remote.url.as_str() == one
+                && p[0].remote.size == Some(10)),
+            "{picked:?}"
+        );
+        assert_eq!(s.granularity(), utilake_kit::Granularity::Month);
         assert!(s.serves("ANYTHING"), "every table until told otherwise");
         let s = s.with_tables_served(Arc::new(|t: &str| t.starts_with("STTM_")));
         assert!(s.serves("STTM_INT651_EX_ANTE_MARKET_PRICE") && !s.serves("GBB_FACILITIES"));

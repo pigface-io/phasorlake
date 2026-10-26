@@ -3,9 +3,10 @@
 use std::path::PathBuf;
 use std::sync::Arc;
 
-use utilake_acquire::{Fetcher, Query, Source};
+use utilake_acquire::Fetcher;
 use utilake_core::paths::Home;
 use utilake_kit::{KitRegistry, Strictness};
+use utilake_kit::{Query, Source};
 use utilake_writer::ManifestHandle;
 
 /// Rows per batch by default.
@@ -70,7 +71,7 @@ pub enum Input {
         /// The query it listed them for.
         query: Query,
         /// The files.
-        files: Vec<utilake_acquire::RemoteFile>,
+        files: Vec<utilake_kit::RemoteFile>,
     },
     /// The archived files of a source for a query: what `fetch`
     /// downloaded, read from disk, never from the network.

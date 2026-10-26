@@ -15,9 +15,10 @@ use std::sync::Arc;
 
 use tokio::sync::mpsc;
 use tokio_util::sync::CancellationToken;
-use utilake_acquire::{FetchError, Granularity, Query, RemoteFile, Source};
+use utilake_acquire::FetchError;
 use utilake_core::event::Event;
 use utilake_core::{CivilDay, Diagnose as _, Diagnostic, Period, TimeRange, YearMonth};
+use utilake_kit::{Granularity, Query, RemoteFile, Source};
 
 use crate::plan::{Deps, Input, Plan, RunOptions};
 use crate::report::RunReport;
@@ -161,7 +162,7 @@ async fn list_months(
     let mut unpublished = None;
     loop {
         let query = monthly_query(req, from, to);
-        match source.list(&query, &deps.fetcher).await {
+        match source.list(&query, deps.fetcher.as_ref()).await {
             Ok(files) => {
                 return Ok((
                     Some(Step {
@@ -286,7 +287,7 @@ pub async fn plan_get(req: &GetRequest, deps: &Deps) -> Result<GetPlan, Box<Diag
     let mut fallback: Vec<String> = Vec::new();
     for t in &req.tables {
         let q = daily_query(req, std::slice::from_ref(t), probe);
-        match daily.list(&q, &deps.fetcher).await {
+        match daily.list(&q, deps.fetcher.as_ref()).await {
             Ok(_) => {}
             Err(FetchError::NoMatch { nearest, .. }) if nearest.contains("monthly archive") => {
                 plan.notes.push(format!(
@@ -302,7 +303,7 @@ pub async fn plan_get(req: &GetRequest, deps: &Deps) -> Result<GetPlan, Box<Diag
         for run in &day_runs {
             let query = daily_query(req, &daily_tables, *run);
             let files = daily
-                .list(&query, &deps.fetcher)
+                .list(&query, deps.fetcher.as_ref())
                 .await
                 .map_err(|e| Box::new(e.diagnostic().with_request(req.request.clone())))?;
             plan.steps.push(Step {

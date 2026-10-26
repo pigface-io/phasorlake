@@ -3,8 +3,8 @@
 
 use std::sync::Arc;
 
+use crate::source::{RemoteFile, Source};
 use url::Url;
-use utilake_acquire::{RemoteFile, Source};
 
 use crate::catalog::Catalog;
 use crate::decoder::Decoder;
@@ -87,7 +87,9 @@ mod tests {
     use std::path::Path;
 
     use async_trait::async_trait;
-    use utilake_acquire::{FetchError, Fetcher, Query};
+    use utilake_net::FetchError;
+
+    use crate::source::{Listings, Query};
     use utilake_core::Diagnostic;
 
     use super::*;
@@ -101,7 +103,7 @@ mod tests {
         fn id(&self) -> &'static str {
             self.0
         }
-        async fn list(&self, _: &Query, _: &Fetcher) -> Result<Vec<RemoteFile>, FetchError> {
+        async fn list(&self, _: &Query, _: &dyn Listings) -> Result<Vec<RemoteFile>, FetchError> {
             Ok(Vec::new())
         }
         fn describe(&self, url: &Url) -> Option<RemoteFile> {
@@ -134,12 +136,7 @@ mod tests {
             sink: &mut dyn BlockSink,
             scratch: &mut Vec<u8>,
         ) -> Result<DecodeStats, Box<Diagnostic>> {
-            let bytes = reader.read_to_end(scratch).map_err(|e| {
-                Box::new(
-                    Diagnostic::error("csv.read_failed", utilake_core::Category::Csv, "x")
-                        .caused_by(&e),
-                )
-            })?;
+            let bytes = reader.read_to_end(scratch).unwrap_or_default();
             let table = Arc::new(TableRef {
                 market: "t".into(),
                 name: "T".into(),
@@ -201,13 +198,16 @@ mod tests {
 
     #[tokio::test]
     async fn the_fakes_answer() {
-        use utilake_acquire::{Archive, FetcherConfig, OfflineTransport};
         let dir = tempfile::tempdir().unwrap();
-        let fetcher = Fetcher::new(
-            Arc::new(OfflineTransport),
-            Archive::new(dir.path()),
-            FetcherConfig::default(),
-        );
+        struct NoPages;
+        #[async_trait]
+        impl Listings for NoPages {
+            async fn fetch_listing(&self, url: &str) -> Result<Vec<u8>, FetchError> {
+                Err(FetchError::Offline {
+                    url: url.to_owned(),
+                })
+            }
+        }
         let q = Query {
             tables: Vec::new(),
             exclude: Vec::new(),
@@ -217,7 +217,8 @@ mod tests {
             ),
             instants: None,
         };
-        assert!(Src("s").list(&q, &fetcher).await.unwrap().is_empty());
+        assert!(Src("s").list(&q, &NoPages).await.unwrap().is_empty());
+        assert!(NoPages.fetch_listing("https://h/").await.is_err());
         struct Sink;
         impl BlockSink for Sink {
             fn block_started(
@@ -242,7 +243,7 @@ mod tests {
                 crate::decoder::Flow::Continue
             }
         }
-        let local = utilake_acquire::LocalFile {
+        let local = crate::source::LocalFile {
             remote: RemoteFile {
                 url: Url::parse("https://h/x.csv").unwrap(),
                 source: "s",

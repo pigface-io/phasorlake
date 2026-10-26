@@ -9,7 +9,7 @@
 use std::collections::HashSet;
 use std::path::PathBuf;
 
-use utilake_acquire::LocalFile;
+use utilake_kit::LocalFile;
 use utilake_provenance::archive::Archive;
 
 /// The records beside one source file, read once, for its entries' times.

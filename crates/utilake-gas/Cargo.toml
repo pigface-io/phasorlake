@@ -15,6 +15,7 @@ workspace = true
 utilake-core.workspace = true
 utilake-acquire.workspace = true
 utilake-kit.workspace = true
+utilake-zip.workspace = true
 utilake-mms-conform.workspace = true
 utilake-mms-registry.workspace = true
 utilake-plain-decode.workspace = true

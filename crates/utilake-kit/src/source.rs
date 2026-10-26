@@ -1,15 +1,73 @@
-//! What a request asks for and what a source answers with.
+//! What a request asks for, what a source answers with, and the file a
+//! fetch hands back.
+
+use std::path::PathBuf;
 
 use async_trait::async_trait;
 use serde::{Deserialize, Serialize};
 use url::Url;
 use utilake_core::timetext::Stamp;
 use utilake_core::{Period, TimeRange};
+use utilake_net::FetchError;
+use utilake_net::archive::{Archive, Held};
 pub use utilake_zip::zipdir::Entry;
 
-use crate::archive::Archive;
-use crate::error::FetchError;
-use crate::fetcher::{Fetcher, LocalFile};
+/// What a source asks of the network to list its files: a page (a
+/// directory listing, a report page) into memory.
+#[async_trait]
+pub trait Listings: Send + Sync {
+    /// GETs the page at `url`.
+    async fn fetch_listing(&self, url: &str) -> Result<Vec<u8>, FetchError>;
+}
+
+/// A file on disk, ready to read.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct LocalFile {
+    /// What was asked for.
+    pub remote: RemoteFile,
+    /// Where the bytes are.
+    pub path: PathBuf,
+    /// sha256 hex.
+    pub sha256: String,
+    /// Bytes.
+    pub size: u64,
+    /// Whether it was in the archive already, with no request.
+    pub cached: bool,
+    /// ETag.
+    pub etag: Option<String>,
+    /// The server's `Last-Modified`, as sent (an HTTP date).
+    pub last_modified: Option<String>,
+    /// `last_modified` as an instant (UTC).
+    pub last_modified_at: Option<Stamp>,
+    /// When the bytes were fetched, as their record says; none for a file
+    /// that is not from the archive.
+    pub fetched_at: Option<Stamp>,
+    /// The version of the same file published before this one, when the
+    /// source keeps versions and knows it: a feed whose files restate the
+    /// one before is read against it, so only the rows new to this version
+    /// are ingested.
+    pub previous: Option<PathBuf>,
+}
+
+impl LocalFile {
+    /// An archived file as the answer to `remote`: its bytes as its record
+    /// gives them, `cached` when no request was made for them.
+    pub fn from_held(remote: &RemoteFile, found: Held, cached: bool) -> Self {
+        let p = &found.provenance;
+        Self {
+            remote: remote.clone(),
+            sha256: p.content.sha256.hex(),
+            size: p.content.size,
+            cached,
+            etag: p.etag().map(str::to_owned),
+            last_modified: p.modified().map(Stamp::http_date),
+            last_modified_at: p.modified(),
+            fetched_at: Some(p.fetched_at()),
+            previous: None,
+            path: found.path,
+        }
+    }
+}
 
 /// What the user asked for.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -131,7 +189,11 @@ pub trait Source: Send + Sync {
     fn id(&self) -> &'static str;
 
     /// The files a query needs, in a stable order.
-    async fn list(&self, query: &Query, fetcher: &Fetcher) -> Result<Vec<RemoteFile>, FetchError>;
+    async fn list(
+        &self,
+        query: &Query,
+        listings: &dyn Listings,
+    ) -> Result<Vec<RemoteFile>, FetchError>;
 
     /// The archived files of `query`, from their sidecars: nothing is
     /// hashed, nothing downloaded. A source whose archive is not read
@@ -189,7 +251,7 @@ mod tests {
         fn id(&self) -> &'static str {
             "bare"
         }
-        async fn list(&self, _q: &Query, _f: &Fetcher) -> Result<Vec<RemoteFile>, FetchError> {
+        async fn list(&self, _q: &Query, _l: &dyn Listings) -> Result<Vec<RemoteFile>, FetchError> {
             Ok(Vec::new())
         }
     }
@@ -216,12 +278,17 @@ mod tests {
                 .is_none()
         );
         assert_eq!(Bare.id(), "bare");
-        let f = Fetcher::new(
-            std::sync::Arc::new(crate::transport::OfflineTransport),
-            Archive::new(dir.path()),
-            crate::fetcher::FetcherConfig::default(),
-        );
-        assert!(Bare.list(&q, &f).await.unwrap().is_empty());
+        struct NoPages;
+        #[async_trait]
+        impl Listings for NoPages {
+            async fn fetch_listing(&self, url: &str) -> Result<Vec<u8>, FetchError> {
+                Err(FetchError::Offline {
+                    url: url.to_owned(),
+                })
+            }
+        }
+        assert!(Bare.list(&q, &NoPages).await.unwrap().is_empty());
+        assert!(NoPages.fetch_listing("https://h/").await.is_err());
         // No ranges, and the whole zip, unless a source says otherwise.
         let r = RemoteFile {
             url: Url::parse("https://h/MMSDM_2014_01.zip").unwrap(),

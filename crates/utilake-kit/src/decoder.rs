@@ -9,8 +9,8 @@
 use std::io::Read;
 use std::sync::Arc;
 
+use crate::source::LocalFile;
 use arrow_array::RecordBatch;
-use utilake_acquire::LocalFile;
 use utilake_core::{Diagnostic, Fingerprint, Period};
 
 use crate::transform::Transform;

@@ -17,6 +17,7 @@ arrow-array.workspace = true
 arrow-schema.workspace = true
 utilake-core.workspace = true
 utilake-kit.workspace = true
+utilake-zip.workspace = true
 utilake-acquire.workspace = true
 utilake-provenance.workspace = true
 utilake-writer.workspace = true

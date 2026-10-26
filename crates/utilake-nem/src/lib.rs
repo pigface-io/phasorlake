@@ -1,7 +1,7 @@
 //! The National Electricity Market kit.
 //!
 //! What the NEM brings to the lake: nemweb's monthly archive as a
-//! [`Source`](utilake_acquire::Source) ([`MmsdmArchive`]), the names AEMO
+//! [`Source`](utilake_kit::Source) ([`MmsdmArchive`]), the names AEMO
 //! gives its files ([`names`]), its settings ([`NemConfig`]), its command
 //! line ([`cli`]), and the [`kit()`] that bundles them with the MMS decoder
 //! and the registry's catalog for the pipeline. Nothing here reads rows:

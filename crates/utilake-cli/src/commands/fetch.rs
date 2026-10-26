@@ -16,7 +16,7 @@ async fn documents(ctx: &Context) -> Result<i32> {
     let fetcher = ctx.fetcher(None)?;
     let mut code = 0;
     for url in utilake_nem::DOCUMENTS {
-        let remote = utilake_acquire::RemoteFile {
+        let remote = utilake_kit::RemoteFile {
             url: url::Url::parse(url)?,
             source: "aemo-documents",
             table: None,

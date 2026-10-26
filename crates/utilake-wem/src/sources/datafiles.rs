@@ -16,13 +16,14 @@ use std::sync::Arc;
 use async_trait::async_trait;
 use serde::Deserialize;
 use url::Url;
+use utilake_acquire::{FeedFolders, TableOf};
 use utilake_core::YearMonth;
 use utilake_core::calendar::WEM_OFFSET_SECS;
 use utilake_core::timetext::{self, Stamp};
-use utilake_kit::{FeedFolders, TableOf};
 use utilake_plain_decode::feeds::feed;
 
-use utilake_acquire::{Archive, FetchError, Fetcher, LocalFile, Query, RemoteFile, Source};
+use utilake_acquire::{Archive, FetchError};
+use utilake_kit::{Listings, LocalFile, Query, RemoteFile, Source};
 
 /// The source id.
 pub const SOURCE_ID: &str = "wem-datafiles";
@@ -199,7 +200,11 @@ impl Source for WemDatafiles {
         self.folders.archived(archive, query)
     }
 
-    async fn list(&self, query: &Query, fetcher: &Fetcher) -> Result<Vec<RemoteFile>, FetchError> {
+    async fn list(
+        &self,
+        query: &Query,
+        fetcher: &dyn Listings,
+    ) -> Result<Vec<RemoteFile>, FetchError> {
         let mut out = Vec::new();
         for ds in &self.datasets {
             let murl = self.manifest_url(ds)?;
@@ -237,6 +242,7 @@ impl Source for WemDatafiles {
 mod tests {
     use std::sync::Arc;
     use std::time::Duration;
+    use utilake_acquire::Fetcher;
 
     use super::*;
     use utilake_acquire::transport::{Canned, StaticTransport};

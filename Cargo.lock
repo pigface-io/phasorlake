@@ -2963,6 +2963,7 @@ dependencies = [
  "tokio",
  "url",
  "utilake-core",
+ "utilake-kit",
  "utilake-net",
  "utilake-plain-decode",
  "utilake-provenance",
@@ -3021,6 +3022,7 @@ dependencies = [
  "utilake-pipeline",
  "utilake-wem",
  "utilake-writer",
+ "utilake-zip",
  "zip",
 ]
 
@@ -3057,6 +3059,7 @@ dependencies = [
  "utilake-mms-decode",
  "utilake-mms-registry",
  "utilake-plain-decode",
+ "utilake-zip",
 ]
 
 [[package]]
@@ -3101,19 +3104,16 @@ dependencies = [
  "arrow-array",
  "arrow-schema",
  "async-trait",
- "crc32fast",
- "flate2",
  "serde",
  "serde_json",
  "tempfile",
  "thiserror",
  "tokio",
  "url",
- "utilake-acquire",
  "utilake-core",
+ "utilake-net",
  "utilake-plain-decode",
  "utilake-zip",
- "zip",
 ]
 
 [[package]]
@@ -3166,6 +3166,7 @@ dependencies = [
  "utilake-mms-decode",
  "utilake-mms-registry",
  "utilake-plain-decode",
+ "utilake-zip",
  "zonetrace",
 ]
 
@@ -3268,6 +3269,7 @@ dependencies = [
  "utilake-provenance",
  "utilake-wem",
  "utilake-writer",
+ "utilake-zip",
  "zip",
  "zonetrace",
 ]

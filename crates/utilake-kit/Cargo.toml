@@ -14,7 +14,7 @@ workspace = true
 [dependencies]
 utilake-zip.workspace = true
 utilake-core.workspace = true
-utilake-acquire.workspace = true
+utilake-net.workspace = true
 utilake-plain-decode.workspace = true
 async-trait.workspace = true
 arrow-array.workspace = true
@@ -24,9 +24,6 @@ serde_json.workspace = true
 tempfile.workspace = true
 thiserror.workspace = true
 url.workspace = true
-zip.workspace = true
-flate2.workspace = true
-crc32fast.workspace = true
 
 [dev-dependencies]
 tempfile.workspace = true

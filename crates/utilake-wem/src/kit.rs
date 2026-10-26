@@ -3,8 +3,10 @@
 
 use std::sync::Arc;
 
-use utilake_acquire::{FetchError, Source};
-use utilake_kit::{FeedFolders, SourceKit, TableOf};
+use utilake_acquire::FetchError;
+use utilake_acquire::{FeedFolders, TableOf};
+use utilake_kit::Source;
+use utilake_kit::SourceKit;
 use utilake_mms_conform::{MmsCatalog, PlainCsvDecoder, WemdeDecoder};
 use utilake_mms_registry::{Market, Registry};
 use utilake_plain_decode::BlockName;

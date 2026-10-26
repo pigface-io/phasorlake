@@ -11,12 +11,12 @@ use std::io::Read;
 use std::sync::Arc;
 
 use utilake_core::{Category, Diagnostic};
-use utilake_kit::container::has_extension;
 use utilake_kit::{BlockSink, DecodeCtx, DecodeStats, Decoder};
 use utilake_mms_conform::SniffedCsv;
 use utilake_mms_registry::Registry;
 use utilake_plain_decode::Feed;
 use utilake_plain_decode::feeds::feeds_of;
+use utilake_zip::has_extension;
 
 /// The gas feeds' `.csv` reader.
 pub struct GasCsv {
@@ -88,8 +88,8 @@ mod tests {
     use std::io::Cursor;
 
     use url::Url;
-    use utilake_acquire::{LocalFile, RemoteFile};
     use utilake_kit::{Block, DecodeOptions, Flow, RowAt, Strictness, TableRef, Transform};
+    use utilake_kit::{LocalFile, RemoteFile};
     use utilake_mms_decode::Fingerprint;
 
     use super::*;

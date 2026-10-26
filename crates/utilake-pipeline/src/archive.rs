@@ -3,7 +3,7 @@
 //! failures their codes.
 
 use utilake_core::diag::{Category, Diagnostic};
-use utilake_kit::container::ArchiveError;
+use utilake_zip::ArchiveError;
 
 /// An archive that could not be walked, or an entry of it that could not
 /// be read, diagnosed.

@@ -19,7 +19,6 @@ use std::io::Read;
 use std::sync::Arc;
 
 use utilake_core::{Category, Diagnose, Diagnostic, Period};
-use utilake_kit::container::has_extension;
 use utilake_kit::{BlockSink, DecodeCtx, DecodeStats, Decoder, Strictness};
 use utilake_mms_decode::{Flow, IRow, Pos, Row, RowError, RowFailure, Sink as _};
 use utilake_mms_registry::{Market, Mode, Registry, ResolveOptions};
@@ -28,6 +27,7 @@ use utilake_plain_decode::{
     BlockName, Dedupe, Feed, Format, Header, JsonError, PlainError, PlainOptions, PlainRowError,
     PlainSink, RowSet, peek, sniff,
 };
+use utilake_zip::has_extension;
 
 use crate::arrow_sink::ArrowSink;
 use crate::error::SinkError;
@@ -475,8 +475,8 @@ mod tests {
 
     use arrow_array::Array as _;
     use url::Url;
-    use utilake_acquire::{LocalFile, RemoteFile};
     use utilake_kit::{Block, DecodeOptions, Flow as KitFlow, RowAt, TableRef, Transform};
+    use utilake_kit::{LocalFile, RemoteFile};
     use utilake_mms_decode::Fingerprint;
     use utilake_plain_decode::feeds::feed;
 

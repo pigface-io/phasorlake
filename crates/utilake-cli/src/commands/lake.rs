@@ -5,9 +5,9 @@ use std::path::PathBuf;
 
 use anyhow::Result;
 use tokio_util::sync::CancellationToken;
-use utilake_acquire::Query;
 use utilake_core::Diagnose;
 use utilake_core::TimeRange;
+use utilake_kit::Query;
 use utilake_pipeline::{Input, Plan, RunOptions};
 
 use crate::cli::{Cli, IngestArgs, IngestCmd};
@@ -210,13 +210,13 @@ pub async fn ingest(cli: &Cli, ctx: &Context, args: &IngestCmd) -> Result<i32> {
         // that does: a kit of several feeds (gas) reads each table from
         // its own.
         None => {
-            let serves = |s: &&std::sync::Arc<dyn utilake_acquire::Source>| {
+            let serves = |s: &&std::sync::Arc<dyn utilake_kit::Source>| {
                 sel.names.iter().all(|t| s.serves(t))
             };
             kit.sources
                 .iter()
                 .filter(serves)
-                .find(|s| s.granularity() == utilake_acquire::Granularity::Month)
+                .find(|s| s.granularity() == utilake_kit::Granularity::Month)
                 .or_else(|| kit.sources.iter().find(serves))
                 .cloned()
                 .ok_or_else(|| {
@@ -230,7 +230,7 @@ pub async fn ingest(cli: &Cli, ctx: &Context, args: &IngestCmd) -> Result<i32> {
     };
     // A source cut by day is archived by day, one cut by month by month.
     let days = w.days(&sel.def);
-    let range = if source.granularity() == utilake_acquire::Granularity::Day {
+    let range = if source.granularity() == utilake_kit::Granularity::Day {
         days
     } else {
         TimeRange::months(days.from.first_day().month(), days.to.last_day().month())

@@ -2,8 +2,8 @@
 //! file list.
 
 use anyhow::Result;
-use utilake_acquire::{Query, Source};
 use utilake_core::{Diagnose, Severity, YearMonth};
+use utilake_kit::{Query, Source};
 use utilake_wem::WemDatafiles;
 use utilake_writer::manifest::DiagFilter;
 
@@ -81,7 +81,7 @@ pub async fn wem(ctx: &Context, cmd: &WemCmd) -> Result<i32> {
                         range: utilake_core::TimeRange::months(from, to),
                         instants: None,
                     },
-                    &fetcher,
+                    fetcher.as_ref(),
                 )
                 .await
                 .map_err(|e| anyhow::anyhow!("{}", e.diagnostic().render()))?;

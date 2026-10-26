@@ -1,8 +1,8 @@
 //! The outcome of a run and how it becomes an exit code.
 
-use utilake_acquire::RemoteFile;
 use utilake_core::event::Summary;
 use utilake_core::report::Report;
+use utilake_kit::RemoteFile;
 
 /// Exit code: success.
 pub const EXIT_OK: i32 = 0;
