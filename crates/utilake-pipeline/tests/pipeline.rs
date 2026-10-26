@@ -120,6 +120,8 @@ fn text_table(
         name: name.into(),
         description: None,
         report_pairs: vec![(pair.0.into(), pair.1.into())],
+        with_columns: Vec::new(),
+        older_names: Vec::new(),
         load_mode: LoadMode::Append,
         temporal: Temporal {
             origin: RoleOrigin::Hand,
@@ -3220,6 +3222,19 @@ async fn every_real_head_survives_the_lake() {
     assert!(failed.is_empty(), "{} failed: {failed:#?}", failed.len());
     assert_eq!(rep.summary.bad_rows, 0, "{:#?}", rep.report.summary_lines());
     let lake = walk(&e.home.lake());
+    // AEMO's area reports share report pairs with the regional ones; each
+    // kind of row lands in its own table.
+    for t in [
+        "rooftop_pv_actual_area",
+        "rooftop_pv_forecast_area",
+        "demandoperationalactual_area",
+        "demandoperationalforecast_area",
+    ] {
+        assert!(
+            lake.iter().any(|f| f.contains(&format!("/nem/{t}/"))),
+            "no lake file of {t}"
+        );
+    }
     let mut raw = Vec::new();
     for f in &lake {
         let b = parquet_batch(f);

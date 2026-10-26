@@ -19,7 +19,7 @@
   ],
   "properties": {
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.headers": "{\"1\":\"effective_from_date\",\"2\":\"effective_to_date\",\"3\":\"hub_identifier\",\"4\":\"hub_name\",\"5\":\"facility_identifier\",\"6\":\"facility_name\",\"7\":\"default_capacity\",\"8\":\"maximum_capacity\",\"9\":\"high_capacity_threshold\",\"10\":\"low_capacity_threshold\",\"11\":\"last_update_datetime\",\"12\":\"report_datetime\"}",
     "utilake.key": "[]",
     "utilake.load": "append",

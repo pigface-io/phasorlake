@@ -20,7 +20,7 @@
   "properties": {
     "comment": "GENCONSET sets out generic constraint sets that are invoked and revoked, and may contain many generic constraints (GENCONDATA).",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"GENCONSETID\",\"EFFECTIVEDATE\",\"VERSIONNO\",\"GENCONID\"]",
     "utilake.load": "append",
     "utilake.model-types": "{\"1\":\"VARCHAR(20)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"NUMERIC(3,0)\",\"4\":\"VARCHAR(20)\",\"5\":\"TIMESTAMP(0)\",\"6\":\"NUMERIC(3,0)\",\"7\":\"TIMESTAMP(0)\"}",

@@ -19,7 +19,7 @@
   ],
   "properties": {
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.headers": "{\"1\":\"ap_run_id\",\"2\":\"gas_date\",\"3\":\"schedule_no\",\"4\":\"ancillary_amt_gst_ex\",\"5\":\"current_date\"}",
     "utilake.key": "[]",
     "utilake.load": "append",

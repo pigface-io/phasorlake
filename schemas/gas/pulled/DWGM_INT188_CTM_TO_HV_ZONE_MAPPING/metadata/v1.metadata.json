@@ -19,7 +19,7 @@
   ],
   "properties": {
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.headers": "{\"1\":\"mirn\",\"2\":\"site_company\",\"3\":\"hv_zone\",\"4\":\"hv_zone_desc\",\"5\":\"effective_from\",\"6\":\"current_date\"}",
     "utilake.key": "[]",
     "utilake.load": "append",

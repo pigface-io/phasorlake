@@ -19,7 +19,7 @@
   ],
   "properties": {
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.headers": "{\"1\":\"network_name\",\"2\":\"version_id\",\"3\":\"fro_name\",\"4\":\"distributor_name\",\"5\":\"withdrawal_zone\",\"6\":\"curr_cum_date\",\"7\":\"curr_cum_imb_position\",\"8\":\"current_date\"}",
     "utilake.key": "[]",
     "utilake.load": "append",

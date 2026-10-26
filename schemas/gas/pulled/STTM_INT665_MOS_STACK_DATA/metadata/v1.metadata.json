@@ -19,7 +19,7 @@
   ],
   "properties": {
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.headers": "{\"1\":\"effective_from_date\",\"2\":\"effective_to_date\",\"3\":\"stack_identifier\",\"4\":\"hub_identifier\",\"5\":\"hub_name\",\"6\":\"facility_identifier\",\"7\":\"facility_name\",\"8\":\"stack_type\",\"9\":\"estimated_maximum_quantity\",\"10\":\"stack_step_identifier\",\"11\":\"trading_participant_identifier\",\"12\":\"trading_participant_name\",\"13\":\"step_quantity\",\"14\":\"step_price\",\"15\":\"report_datetime\"}",
     "utilake.key": "[]",
     "utilake.load": "append",

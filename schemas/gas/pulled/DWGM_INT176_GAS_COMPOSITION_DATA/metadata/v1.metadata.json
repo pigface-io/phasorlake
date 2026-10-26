@@ -19,7 +19,7 @@
   ],
   "properties": {
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.headers": "{\"1\":\"hv_zone\",\"2\":\"hv_zone_desc\",\"3\":\"gas_date\",\"4\":\"methane\",\"5\":\"ethane\",\"6\":\"propane\",\"7\":\"butane_i\",\"8\":\"butane_n\",\"9\":\"pentane_i\",\"10\":\"pentane_n\",\"11\":\"pentane_neo\",\"12\":\"hexane\",\"13\":\"nitrogen\",\"14\":\"carbon_dioxide\",\"15\":\"hydrogen\",\"16\":\"spec_gravity\",\"17\":\"current_date\"}",
     "utilake.key": "[]",
     "utilake.load": "append",

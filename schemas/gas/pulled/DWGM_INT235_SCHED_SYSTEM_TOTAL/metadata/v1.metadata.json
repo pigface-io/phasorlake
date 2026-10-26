@@ -19,7 +19,7 @@
   ],
   "properties": {
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.headers": "{\"1\":\"transmission_id\",\"2\":\"gas_date\",\"3\":\"flag\",\"4\":\"day_in_advance\",\"5\":\"data_type\",\"6\":\"detail\",\"7\":\"transmission_doc_id\",\"8\":\"id\",\"9\":\"value\",\"10\":\"current_date\"}",
     "utilake.key": "[]",
     "utilake.load": "append",

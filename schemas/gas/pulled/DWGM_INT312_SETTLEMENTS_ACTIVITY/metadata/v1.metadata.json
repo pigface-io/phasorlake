@@ -19,7 +19,7 @@
   ],
   "properties": {
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.headers": "{\"1\":\"gas_date\",\"2\":\"uafg_28_days_pct\",\"3\":\"total_scheduled_inj_gj\",\"4\":\"total_scheduled_wdl_gj\",\"5\":\"total_actual_inj_gj\",\"6\":\"total_actual_wdl_gj\",\"7\":\"total_uplift_amt\",\"8\":\"su_uplift_amt\",\"9\":\"cu_uplift_amt\",\"10\":\"vu_uplift_amt\",\"11\":\"tu_uplift_amt\",\"12\":\"ru_uplift_amt\"}",
     "utilake.key": "[]",
     "utilake.load": "append",

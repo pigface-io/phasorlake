@@ -20,7 +20,7 @@
   "properties": {
     "comment": "SETCPDATAREGION sets out summary meter settlement data for each region. The table is populated for participants using Data Model 5.2. For participants using Data Model 5.3 or higher, SET_ENERGY_REGION_SUMMARY replace SETCPDATAREGION.",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"SETTLEMENTDATE\",\"VERSIONNO\",\"PERIODID\",\"REGIONID\"]",
     "utilake.load": "append",
     "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(22,10)\",\"3\":\"NUMERIC(22,10)\",\"4\":\"VARCHAR(10)\",\"5\":\"NUMERIC(27,5)\",\"6\":\"NUMERIC(27,5)\",\"7\":\"NUMERIC(27,5)\",\"8\":\"NUMERIC(27,5)\",\"9\":\"NUMERIC(22,0)\",\"10\":\"NUMERIC(22,0)\",\"11\":\"TIMESTAMP(0)\",\"12\":\"NUMERIC(15,5)\"}",

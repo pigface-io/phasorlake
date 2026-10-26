@@ -20,7 +20,7 @@
   "properties": {
     "comment": "Records details of the settlement process for the cancellation and purchase of SRA Auction Units",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"SRA_YEAR\",\"SRA_QUARTER\",\"SRA_RUNNO\"]",
     "utilake.load": "append",
     "utilake.model-types": "{\"1\":\"NUMERIC(4)\",\"2\":\"NUMERIC(3)\",\"3\":\"NUMERIC(3)\",\"4\":\"VARCHAR(20)\",\"5\":\"TIMESTAMP(0)\",\"6\":\"TIMESTAMP(0)\",\"7\":\"NUMERIC(3)\",\"8\":\"NUMERIC(3)\",\"9\":\"TIMESTAMP(0)\"}",

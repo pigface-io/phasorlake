@@ -19,7 +19,7 @@
   ],
   "properties": {
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.headers": "{\"1\":\"transfer_id\",\"2\":\"zone_id\",\"3\":\"zone_name\",\"4\":\"start_date\",\"5\":\"end_date\",\"6\":\"transferred_qty_gj\",\"7\":\"current_date\"}",
     "utilake.key": "[]",
     "utilake.load": "append",

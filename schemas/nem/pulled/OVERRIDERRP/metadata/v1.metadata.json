@@ -20,7 +20,7 @@
   "properties": {
     "comment": "OVERRIDERRP shows details of override price periods.",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"REGIONID\",\"STARTDATE\",\"STARTPERIOD\"]",
     "utilake.load": "snapshot",
     "utilake.model-types": "{\"1\":\"VARCHAR(10)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"NUMERIC(3,0)\",\"4\":\"TIMESTAMP(0)\",\"5\":\"NUMERIC(3,0)\",\"6\":\"NUMERIC(15,0)\",\"7\":\"VARCHAR(128)\",\"8\":\"VARCHAR(15)\",\"9\":\"VARCHAR(15)\",\"10\":\"TIMESTAMP(0)\"}",

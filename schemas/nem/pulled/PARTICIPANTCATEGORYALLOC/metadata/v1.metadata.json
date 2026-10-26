@@ -20,7 +20,7 @@
   "properties": {
     "comment": "PARTICIPANTCATEGORYALLOC sets out the assignment of participants to particular categories.",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"PARTICIPANTCATEGORYID\",\"PARTICIPANTID\"]",
     "utilake.load": "snapshot",
     "utilake.model-types": "{\"1\":\"VARCHAR(10)\",\"2\":\"VARCHAR(10)\",\"3\":\"TIMESTAMP(0)\"}",

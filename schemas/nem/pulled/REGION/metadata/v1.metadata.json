@@ -20,7 +20,7 @@
   "properties": {
     "comment": "REGION sets out valid region IDs.",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"REGIONID\"]",
     "utilake.load": "snapshot",
     "utilake.model-types": "{\"1\":\"VARCHAR(10)\",\"2\":\"VARCHAR(64)\",\"3\":\"VARCHAR(8)\",\"4\":\"TIMESTAMP(0)\"}",

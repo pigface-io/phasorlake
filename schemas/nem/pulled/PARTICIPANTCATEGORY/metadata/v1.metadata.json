@@ -20,7 +20,7 @@
   "properties": {
     "comment": "PARTICIPANTCATEGORY sets out valid participant categories.",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"PARTICIPANTCATEGORYID\"]",
     "utilake.load": "snapshot",
     "utilake.model-types": "{\"1\":\"VARCHAR(10)\",\"2\":\"VARCHAR(64)\",\"3\":\"TIMESTAMP(0)\"}",

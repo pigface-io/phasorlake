@@ -20,7 +20,7 @@
   "properties": {
     "comment": "SETGENDATAREGION sets out summary settlement data for generation within the specified region. The table is populated for participants using Data Model 5.2. For participants using Data Model 5.3 or higher, SET_ENERGY_REGION_SUMMARY replace SETGENDATAREGION.",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"SETTLEMENTDATE\",\"VERSIONNO\",\"PERIODID\",\"REGIONID\"]",
     "utilake.load": "append",
     "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(22,10)\",\"3\":\"NUMERIC(22,10)\",\"4\":\"VARCHAR(10)\",\"5\":\"NUMERIC(22,0)\",\"6\":\"NUMERIC(22,0)\",\"7\":\"NUMERIC(22,0)\",\"8\":\"NUMERIC(22,0)\",\"9\":\"NUMERIC(27,5)\",\"10\":\"NUMERIC(27,5)\",\"11\":\"NUMERIC(27,5)\",\"12\":\"NUMERIC(27,6)\",\"13\":\"NUMERIC(27,6)\",\"14\":\"TIMESTAMP(0)\"}",

@@ -20,7 +20,7 @@
   "properties": {
     "comment": "Constraint solution data from the MCC dispatch rerun process. Note only constraints with a non-zero marginal value are published.",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"RUN_DATETIME\",\"CONSTRAINTID\"]",
     "utilake.load": "append",
     "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"VARCHAR(20)\",\"3\":\"NUMERIC(15,5)\",\"4\":\"NUMERIC(15,5)\"}",

@@ -20,7 +20,7 @@
   "properties": {
     "comment": "GENCONSETTRK assists in determining the correct version of a generic constraint set that has been invoked in GENCONSETINVOKE.",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"GENCONSETID\",\"EFFECTIVEDATE\",\"VERSIONNO\"]",
     "utilake.load": "append",
     "utilake.model-types": "{\"1\":\"VARCHAR(20)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"NUMERIC(3,0)\",\"4\":\"VARCHAR(256)\",\"5\":\"VARCHAR(15)\",\"6\":\"TIMESTAMP(0)\",\"7\":\"TIMESTAMP(0)\",\"8\":\"VARCHAR(64)\",\"9\":\"VARCHAR(256)\",\"10\":\"VARCHAR(1)\",\"11\":\"VARCHAR(256)\"}",

@@ -20,7 +20,7 @@
   "properties": {
     "comment": "BIDDAYOFFER shows the Energy and Ancillary Service bid data for each Market Day. BIDDAYOFFER is the parent table to BIDOFFERPERIOD. BIDDAYOFFER is a child table to BIDOFFERFILETRK",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"DUID\",\"BIDTYPE\",\"SETTLEMENTDATE\",\"OFFERDATE\"]",
     "utilake.load": "append",
     "utilake.model-types": "{\"1\":\"VARCHAR(10)\",\"2\":\"VARCHAR(10)\",\"3\":\"TIMESTAMP(0)\",\"4\":\"TIMESTAMP(3)\",\"5\":\"NUMERIC(22,0)\",\"6\":\"VARCHAR(10)\",\"7\":\"NUMERIC(12,6)\",\"8\":\"VARCHAR(500)\",\"9\":\"NUMERIC(9,2)\",\"10\":\"NUMERIC(9,2)\",\"11\":\"NUMERIC(9,2)\",\"12\":\"NUMERIC(9,2)\",\"13\":\"NUMERIC(9,2)\",\"14\":\"NUMERIC(9,2)\",\"15\":\"NUMERIC(9,2)\",\"16\":\"NUMERIC(9,2)\",\"17\":\"NUMERIC(9,2)\",\"18\":\"NUMERIC(9,2)\",\"19\":\"NUMERIC(22,0)\",\"20\":\"NUMERIC(22,0)\",\"21\":\"NUMERIC(22,0)\",\"22\":\"NUMERIC(22,0)\",\"23\":\"NUMERIC(22,0)\",\"24\":\"VARCHAR(3)\",\"25\":\"TIMESTAMP(0)\",\"26\":\"VARCHAR(20)\",\"27\":\"VARCHAR(20)\",\"28\":\"VARCHAR(20)\",\"29\":\"VARCHAR(20)\",\"30\":\"VARCHAR(1)\",\"31\":\"VARCHAR(100)\",\"32\":\"VARCHAR(20)\",\"33\":\"NUMERIC(16,6)\"}",

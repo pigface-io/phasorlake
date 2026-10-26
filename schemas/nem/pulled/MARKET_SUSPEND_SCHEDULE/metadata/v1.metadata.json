@@ -20,7 +20,7 @@
   "properties": {
     "comment": "Trading prices that will apply in the event of a market suspension event updated weekly.",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"EFFECTIVEDATE\",\"DAY_TYPE\",\"REGIONID\",\"PERIODID\"]",
     "utilake.load": "append",
     "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"VARCHAR(20)\",\"3\":\"VARCHAR(20)\",\"4\":\"NUMERIC(3,0)\",\"5\":\"NUMERIC(15,5)\",\"6\":\"NUMERIC(15,5)\",\"7\":\"NUMERIC(15,5)\",\"8\":\"NUMERIC(15,5)\",\"9\":\"NUMERIC(15,5)\",\"10\":\"NUMERIC(15,5)\",\"11\":\"NUMERIC(15,5)\",\"12\":\"NUMERIC(15,5)\",\"13\":\"NUMERIC(15,5)\",\"14\":\"TIMESTAMP(0)\",\"15\":\"NUMERIC(15,5)\",\"16\":\"NUMERIC(15,5)\"}",

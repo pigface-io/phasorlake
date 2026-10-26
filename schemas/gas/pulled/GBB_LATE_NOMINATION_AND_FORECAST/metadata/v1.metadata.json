@@ -20,7 +20,7 @@
   "properties": {
     "comment": "Provides the aggregate of forecast and nominations by location.",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.headers": "{\"1\":\"GasDate\",\"2\":\"FacilityName\",\"3\":\"FacilityId\",\"4\":\"ConnectionPointId\",\"5\":\"EarliestSubmissionDate\",\"6\":\"LateTimeSpan\"}",
     "utilake.key": "[]",
     "utilake.load": "append",

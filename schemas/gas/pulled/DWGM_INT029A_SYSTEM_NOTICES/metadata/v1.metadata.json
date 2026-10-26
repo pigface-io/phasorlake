@@ -19,7 +19,7 @@
   ],
   "properties": {
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.headers": "{\"1\":\"system_wide_notice_id\",\"2\":\"critical_notice_flag\",\"3\":\"system_message\",\"4\":\"system_email_message\",\"5\":\"notice_start_date\",\"6\":\"notice_end_date\",\"7\":\"url_path\",\"8\":\"current_date\"}",
     "utilake.key": "[\"SYSTEM_WIDE_NOTICE_ID\"]",
     "utilake.load": "snapshot",

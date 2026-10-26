@@ -19,7 +19,7 @@
   ],
   "properties": {
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.headers": "{\"1\":\"compressor_id\",\"2\":\"compressor_name\",\"3\":\"pipe_segment_id\",\"4\":\"min_pressure_delta\",\"5\":\"most_efficient_pressure_delta\",\"6\":\"max_pressure_delta\",\"7\":\"max_compressor_power\",\"8\":\"min_compressor_power\",\"9\":\"compressor_efficiency\",\"10\":\"compressor_efficiency_at_min\",\"11\":\"efficiency_coefficient\",\"12\":\"super_compressability_factor\",\"13\":\"compressor_station_id\",\"14\":\"station_name\",\"15\":\"last_mod_date\",\"16\":\"current_date\"}",
     "utilake.key": "[\"COMPRESSOR_ID\",\"PIPE_SEGMENT_ID\",\"COMPRESSOR_STATION_ID\"]",
     "utilake.load": "snapshot",

@@ -20,7 +20,7 @@
   "properties": {
     "comment": "PARTICIPANT sets out Participant ID, name and class for all participants.",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"PARTICIPANTID\"]",
     "utilake.load": "snapshot",
     "utilake.model-types": "{\"1\":\"VARCHAR(10)\",\"2\":\"VARCHAR(20)\",\"3\":\"VARCHAR(80)\",\"4\":\"VARCHAR(64)\",\"5\":\"VARCHAR(9)\",\"6\":\"VARCHAR(40)\",\"7\":\"TIMESTAMP(0)\"}",

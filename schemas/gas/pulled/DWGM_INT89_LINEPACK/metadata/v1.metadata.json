@@ -19,7 +19,7 @@
   ],
   "properties": {
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.headers": "{\"1\":\"gas_date\",\"2\":\"total_inj_gj\",\"3\":\"total_wd_gj\",\"4\":\"eod_linepack_gj\",\"5\":\"linepack_acct_gj\",\"6\":\"linepack_acct_pmt_GST_Ex\",\"7\":\"adjust_linepack_acct_pmt_GST_Ex\",\"8\":\"linepack_acct_bal_GST_Ex\",\"9\":\"market_price_GST_Ex\",\"10\":\"adm_price_flag\",\"11\":\"current_date\"}",
     "utilake.key": "[]",
     "utilake.load": "append",

@@ -20,7 +20,7 @@
   "properties": {
     "comment": "Summary record for an Upper MW Limit submission for an intermittent generating unit for a Trading Day",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"TRADINGDATE\",\"DUID\",\"OFFERDATETIME\"]",
     "utilake.load": "append",
     "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"VARCHAR(20)\",\"3\":\"TIMESTAMP(0)\",\"4\":\"VARCHAR(20)\",\"5\":\"TIMESTAMP(0)\",\"6\":\"VARCHAR(20)\",\"7\":\"VARCHAR(20)\"}",

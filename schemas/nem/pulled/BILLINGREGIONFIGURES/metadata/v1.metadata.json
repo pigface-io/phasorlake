@@ -20,7 +20,7 @@
   "properties": {
     "comment": "BILLINGREGIONFIGURES sets out additional summary region details including ancillary service amounts for each billing run.",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"CONTRACTYEAR\",\"WEEKNO\",\"BILLRUNNO\",\"REGIONID\"]",
     "utilake.load": "append",
     "utilake.model-types": "{\"1\":\"NUMERIC(4,0)\",\"2\":\"NUMERIC(3,0)\",\"3\":\"NUMERIC(3,0)\",\"4\":\"VARCHAR(10)\",\"5\":\"NUMERIC(16,6)\",\"6\":\"NUMERIC(16,6)\",\"7\":\"NUMERIC(16,6)\",\"8\":\"NUMERIC(16,6)\",\"9\":\"NUMERIC(16,6)\",\"10\":\"NUMERIC(16,6)\",\"11\":\"NUMERIC(16,6)\",\"12\":\"NUMERIC(16,6)\",\"13\":\"NUMERIC(16,6)\",\"14\":\"NUMERIC(16,6)\",\"15\":\"NUMERIC(16,6)\",\"16\":\"TIMESTAMP(0)\",\"17\":\"NUMERIC(18,8)\",\"18\":\"NUMERIC(18,8)\"}",

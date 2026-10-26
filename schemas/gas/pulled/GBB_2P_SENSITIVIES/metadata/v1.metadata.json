@@ -19,7 +19,7 @@
   ],
   "properties": {
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.headers": "{\"1\":\"PeriodID\",\"2\":\"State\",\"3\":\"Increase\",\"4\":\"Decrease\"}",
     "utilake.key": "[]",
     "utilake.load": "append",

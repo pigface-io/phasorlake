@@ -20,7 +20,7 @@
   "properties": {
     "comment": "GENERICEQUATIONDESC defines a generic equation identifier with a description. The formulation of the generic equation is detailed in GENERICEQUATIONRHS.",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"EQUATIONID\"]",
     "utilake.load": "snapshot",
     "utilake.model-types": "{\"1\":\"VARCHAR(20)\",\"2\":\"VARCHAR(256)\",\"3\":\"TIMESTAMP(0)\",\"4\":\"VARCHAR(64)\",\"5\":\"VARCHAR(128)\",\"6\":\"VARCHAR(64)\",\"7\":\"VARCHAR(256)\",\"8\":\"VARCHAR(256)\",\"9\":\"VARCHAR(256)\"}",

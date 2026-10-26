@@ -20,7 +20,7 @@
   "properties": {
     "comment": "MTPASA solution header table",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"RUN_DATETIME\",\"RUN_NO\"]",
     "utilake.load": "append",
     "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(4)\",\"3\":\"VARCHAR(20)\",\"4\":\"TIMESTAMP(0)\"}",

@@ -20,7 +20,7 @@
   "properties": {
     "comment": "Wholesale Demand Response Reimbursement Rate Calendar",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[]",
     "utilake.load": "append",
     "utilake.model-types": "{\"1\":\"VARCHAR(20)\",\"2\":\"VARCHAR(20)\",\"3\":\"TIMESTAMP(3)\",\"4\":\"TIMESTAMP(0)\",\"5\":\"TIMESTAMP(0)\",\"6\":\"TIMESTAMP(3)\"}",

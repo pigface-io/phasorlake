@@ -20,7 +20,7 @@
   "properties": {
     "comment": "The Five-Minute Pre-Dispatch (P5Min) is a MMS system providing projected dispatch for 12 Dispatch cycles (one hour). The Five-Minute Pre-dispatch cycle runs every 5-minutes to produce a dispatch and pricing schedule to a 5-minute resolution covering the next hour, a total of twelve periods.\nP5MIN_CONSTRAINTSOLUTION shows binding and violated constraint results from the capacity evaluation, including the RHS value.",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"RUN_DATETIME\",\"INTERVAL_DATETIME\",\"CONSTRAINTID\"]",
     "utilake.load": "append",
     "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"VARCHAR(20)\",\"4\":\"NUMERIC(15,5)\",\"5\":\"NUMERIC(15,5)\",\"6\":\"NUMERIC(15,5)\",\"7\":\"TIMESTAMP(0)\",\"9\":\"TIMESTAMP(0)\",\"10\":\"NUMERIC(22,0)\",\"11\":\"NUMERIC(15,5)\",\"12\":\"NUMERIC(2,0)\",\"13\":\"VARCHAR(20)\"}",

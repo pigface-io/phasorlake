@@ -20,7 +20,7 @@
   "properties": {
     "comment": "DUALLOC cross references dispatch unit identifier to genset ID for each participant.",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"EFFECTIVEDATE\",\"VERSIONNO\",\"DUID\",\"GENSETID\"]",
     "utilake.load": "snapshot",
     "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(3,0)\",\"3\":\"VARCHAR(10)\",\"4\":\"VARCHAR(20)\",\"5\":\"TIMESTAMP(0)\"}",

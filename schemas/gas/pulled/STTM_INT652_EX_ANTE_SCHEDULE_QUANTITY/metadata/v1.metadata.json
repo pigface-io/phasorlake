@@ -19,7 +19,7 @@
   ],
   "properties": {
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.headers": "{\"1\":\"gas_date\",\"2\":\"hub_identifier\",\"3\":\"hub_name\",\"4\":\"schedule_identifier\",\"5\":\"facility_identifier\",\"6\":\"facility_name\",\"7\":\"scheduled_qty\",\"8\":\"firm_gas_scheduled_qty\",\"9\":\"as_available_scheduled_qty\",\"10\":\"flow_direction\",\"11\":\"price_taker_bid_qty\",\"12\":\"price_taker_bid_not_sched_qty\",\"13\":\"approval_datetime\",\"14\":\"report_datetime\"}",
     "utilake.key": "[]",
     "utilake.load": "append",

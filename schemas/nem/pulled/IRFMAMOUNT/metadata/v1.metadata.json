@@ -20,7 +20,7 @@
   "properties": {
     "comment": "IRFMAMOUNT sets out settlement amounts associated with Industrial Relations Forced Majeure events.",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"IRFMID\",\"VERSIONNO\",\"PERIODID\"]",
     "utilake.load": "snapshot",
     "utilake.model-types": "{\"1\":\"VARCHAR(10)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"NUMERIC(3,0)\",\"4\":\"NUMERIC(4,0)\",\"5\":\"NUMERIC(15,5)\",\"6\":\"VARCHAR(15)\",\"7\":\"TIMESTAMP(0)\",\"8\":\"TIMESTAMP(0)\"}",

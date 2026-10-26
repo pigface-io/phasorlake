@@ -20,7 +20,7 @@
   "properties": {
     "comment": "BILLSMELTERRATE is standing data, setting out the rates used in smelter reduction calculations.",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"EFFECTIVEDATE\",\"VERSIONNO\",\"CONTRACTYEAR\"]",
     "utilake.load": "snapshot",
     "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(3,0)\",\"3\":\"NUMERIC(22,0)\",\"4\":\"NUMERIC(6,2)\",\"5\":\"NUMERIC(6,2)\",\"6\":\"TIMESTAMP(0)\",\"7\":\"VARCHAR(10)\",\"8\":\"TIMESTAMP(0)\"}",

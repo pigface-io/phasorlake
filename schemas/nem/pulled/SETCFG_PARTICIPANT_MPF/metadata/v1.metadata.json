@@ -20,7 +20,7 @@
   "properties": {
     "comment": "SETCFG_PARTICIPANT_MPF shows the Market Participation Factors (MPF) for each participant for each connection point. The MPF values are used to determine recovery amounts for regulation FCAS.",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"PARTICIPANTID\",\"EFFECTIVEDATE\",\"VERSIONNO\",\"PARTICIPANTCATEGORYID\",\"CONNECTIONPOINTID\"]",
     "utilake.load": "append",
     "utilake.model-types": "{\"1\":\"VARCHAR(10)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"NUMERIC(3,0)\",\"4\":\"VARCHAR(10)\",\"5\":\"VARCHAR(10)\",\"6\":\"NUMERIC(15,5)\",\"7\":\"TIMESTAMP(0)\"}",

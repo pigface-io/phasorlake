@@ -19,7 +19,7 @@
   ],
   "properties": {
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.headers": "{\"1\":\"gas_date\",\"2\":\"hub_identifier\",\"3\":\"hub_name\",\"4\":\"facility_identifier\",\"5\":\"facility_name\",\"6\":\"contingency_gas_called_identifier\",\"7\":\"flow_direction\",\"8\":\"contingency_gas_bid_offer_type\",\"9\":\"company_identifier\",\"10\":\"company_name\",\"11\":\"contingency_gas_bid_offer_identifier\",\"12\":\"contingency_gas_bid_offer_step_number\",\"13\":\"contingency_gas_bid_offer_step_price\",\"14\":\"contingency_gas_bid_offer_step_quantity\",\"15\":\"contingency_gas_bid_offer_confirmed_step_quantity\",\"16\":\"contingency_gas_bid_offer_called_step_quantity\",\"17\":\"approval_datetime\",\"18\":\"report_datetime\"}",
     "utilake.key": "[]",
     "utilake.load": "append",

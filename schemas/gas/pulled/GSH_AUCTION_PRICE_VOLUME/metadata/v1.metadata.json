@@ -20,7 +20,7 @@
   "properties": {
     "comment": "The cleared quantity, cleared price and price sensitivity for each auction product component following each auction run",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"AUCTION_DATE\",\"FACILITY_ID\",\"GAS_DATE\",\"LIMIT_ID\"]",
     "utilake.load": "append",
     "utilake.market": "gas",

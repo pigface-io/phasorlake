@@ -19,7 +19,7 @@
   ],
   "properties": {
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.headers": "{\"1\":\"supply_source\",\"2\":\"gas_date\",\"3\":\"ssc_id\",\"4\":\"ti\",\"5\":\"hourly_constraint\",\"6\":\"mod_datetime\",\"7\":\"current_date\"}",
     "utilake.key": "[]",
     "utilake.load": "append",

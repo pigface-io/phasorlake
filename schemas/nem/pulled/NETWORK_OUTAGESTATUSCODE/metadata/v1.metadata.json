@@ -20,7 +20,7 @@
   "properties": {
     "comment": "NETWORK_OUTAGESTATUSCODE describes the different outage status codes",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"OUTAGESTATUSCODE\"]",
     "utilake.load": "append",
     "utilake.model-types": "{\"1\":\"VARCHAR(10)\",\"2\":\"VARCHAR(100)\",\"3\":\"TIMESTAMP(0)\"}",

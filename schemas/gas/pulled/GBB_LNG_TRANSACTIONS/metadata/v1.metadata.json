@@ -20,7 +20,7 @@
   "properties": {
     "comment": "This table displays LNG transaction aggregated data",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.headers": "{\"1\":\"TransactionMonth\",\"2\":\"VolWeightPrice\",\"3\":\"VolumePJ\",\"4\":\"SupplyStartDate\",\"5\":\"SupplyEndDate\"}",
     "utilake.key": "[]",
     "utilake.load": "append",

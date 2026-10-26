@@ -20,7 +20,7 @@
   "properties": {
     "comment": "BILLINGDAYTRK is key for matching settlement versions with billing runs. BILLINGDAYTRK displays the billrunnos per billing week, and the settlement version numbers per settlement day comprising the billrunno.",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"CONTRACTYEAR\",\"WEEKNO\",\"BILLRUNNO\",\"SETTLEMENTDATE\"]",
     "utilake.load": "append",
     "utilake.model-types": "{\"1\":\"NUMERIC(4,0)\",\"2\":\"NUMERIC(3,0)\",\"3\":\"NUMERIC(3,0)\",\"4\":\"TIMESTAMP(0)\",\"5\":\"NUMERIC(3,0)\",\"6\":\"TIMESTAMP(0)\"}",

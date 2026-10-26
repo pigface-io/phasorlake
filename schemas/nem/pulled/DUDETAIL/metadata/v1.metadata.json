@@ -20,7 +20,7 @@
   "properties": {
     "comment": "DUDETAIL sets out a records specific details for each unit including start type and whether normally on or off load. Much of this data is information only and is not used in dispatch or settlements.",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"DUID\",\"EFFECTIVEDATE\",\"VERSIONNO\"]",
     "utilake.load": "snapshot",
     "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"VARCHAR(10)\",\"3\":\"NUMERIC(3,0)\",\"4\":\"VARCHAR(10)\",\"5\":\"VARCHAR(10)\",\"6\":\"NUMERIC(6,0)\",\"7\":\"VARCHAR(1)\",\"8\":\"VARCHAR(20)\",\"9\":\"NUMERIC(6,0)\",\"10\":\"VARCHAR(20)\",\"11\":\"VARCHAR(1)\",\"12\":\"VARCHAR(1)\",\"13\":\"VARCHAR(1)\",\"14\":\"VARCHAR(15)\",\"15\":\"TIMESTAMP(0)\",\"16\":\"TIMESTAMP(0)\",\"17\":\"VARCHAR(1)\",\"18\":\"VARCHAR(1)\",\"19\":\"NUMERIC(6,0)\",\"20\":\"NUMERIC(6,0)\",\"21\":\"VARCHAR(20)\",\"22\":\"VARCHAR(20)\",\"23\":\"NUMERIC(6,0)\",\"24\":\"NUMERIC(6,0)\",\"25\":\"NUMERIC(6,0)\",\"26\":\"NUMERIC(6,0)\",\"27\":\"NUMERIC(15,5)\",\"28\":\"NUMERIC(15,5)\",\"29\":\"NUMERIC(15,5)\",\"30\":\"NUMERIC(6,0)\",\"31\":\"NUMERIC(6,0)\",\"32\":\"NUMERIC(6,0)\",\"33\":\"NUMERIC(6,0)\",\"34\":\"NUMERIC(1,0)\"}",

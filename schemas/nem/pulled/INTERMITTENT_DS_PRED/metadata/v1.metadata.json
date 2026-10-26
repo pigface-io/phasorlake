@@ -20,7 +20,7 @@
   "properties": {
     "comment": "Unconstrained Intermittent Generation Forecasts (UIGF) for Dispatch",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"RUN_DATETIME\",\"DUID\",\"OFFERDATETIME\",\"INTERVAL_DATETIME\",\"ORIGIN\",\"FORECAST_PRIORITY\"]",
     "utilake.load": "append",
     "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"VARCHAR(20)\",\"3\":\"VARCHAR(20)\",\"4\":\"NUMERIC(10,0)\",\"5\":\"TIMESTAMP(0)\",\"6\":\"TIMESTAMP(0)\",\"7\":\"NUMERIC(18,8)\",\"8\":\"NUMERIC(18,8)\",\"9\":\"NUMERIC(18,8)\",\"10\":\"NUMERIC(18,8)\"}",

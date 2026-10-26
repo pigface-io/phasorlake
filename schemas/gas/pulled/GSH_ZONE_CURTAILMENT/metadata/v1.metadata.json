@@ -20,7 +20,7 @@
   "properties": {
     "comment": "Contains details of curtailment of nominations against secondary firm rights (CTP trades) for service points (receipt and delivery points).",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"FACILITY_ID\",\"GAS_DATE\",\"SERVICE_POINT_ID\"]",
     "utilake.load": "append",
     "utilake.market": "gas",

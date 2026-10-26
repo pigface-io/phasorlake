@@ -20,7 +20,7 @@
   "properties": {
     "comment": "MARKETFEEDATA sets out actual fee rates, as adjusted from time to time.",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"MARKETFEEID\",\"MARKETFEEVERSIONNO\",\"EFFECTIVEDATE\"]",
     "utilake.load": "snapshot",
     "utilake.model-types": "{\"1\":\"VARCHAR(10)\",\"2\":\"NUMERIC(3,0)\",\"3\":\"TIMESTAMP(0)\",\"4\":\"NUMERIC(22,8)\",\"5\":\"TIMESTAMP(0)\"}",

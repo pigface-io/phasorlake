@@ -20,7 +20,7 @@
   "properties": {
     "comment": "The Settlement Price for SAPS Energy in each Region",
     "utilake.declared": "false",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"VARCHAR(20)\",\"4\":\"TIMESTAMP(0)\",\"5\":\"NUMERIC(18,8)\",\"6\":\"NUMERIC(3,0)\",\"7\":\"TIMESTAMP(0)\"}",
     "utilake.table": "SETCFG_SAPS_SETT_PRICE"
   },

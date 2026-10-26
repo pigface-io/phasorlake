@@ -20,7 +20,7 @@
   "properties": {
     "comment": "The registered user list of responsible contact persons for each BB Participant organisation as identified at registration or otherwise",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.headers": "{\"1\":\"PersonId\",\"2\":\"PersonName\",\"3\":\"CompanyId\",\"4\":\"CompanyName\",\"5\":\"Position\",\"6\":\"Email\",\"7\":\"LastUpdated\"}",
     "utilake.key": "[\"PERSONID\",\"COMPANYID\"]",
     "utilake.load": "snapshot",

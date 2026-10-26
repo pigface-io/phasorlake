@@ -20,7 +20,7 @@
   "properties": {
     "comment": "This table displays a list of all LNG shipments",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.headers": "{\"1\":\"TransactionId\",\"2\":\"FacilityId\",\"3\":\"FacilityName\",\"4\":\"VolumePJ\",\"5\":\"ShipmentDate\",\"6\":\"VersionDateTime\"}",
     "utilake.key": "[]",
     "utilake.load": "append",

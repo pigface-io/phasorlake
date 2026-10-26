@@ -20,7 +20,7 @@
   "properties": {
     "comment": "This report delivers the calculated RCR for each constraint for each 5 minute trading interval",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[]",
     "utilake.load": "append",
     "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"VARCHAR(20)\",\"3\":\"NUMERIC(5)\",\"4\":\"VARCHAR(10)\",\"5\":\"NUMERIC(18,5)\",\"6\":\"NUMERIC(5)\",\"7\":\"TIMESTAMP(0)\"}",

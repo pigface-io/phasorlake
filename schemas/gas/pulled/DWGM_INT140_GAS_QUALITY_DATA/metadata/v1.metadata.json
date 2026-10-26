@@ -19,7 +19,7 @@
   ],
   "properties": {
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.headers": "{\"1\":\"mirn\",\"2\":\"gas_date\",\"3\":\"ti\",\"4\":\"quality_type\",\"5\":\"unit\",\"6\":\"quantity\",\"7\":\"meter_no\",\"8\":\"site_company\",\"9\":\"current_date\"}",
     "utilake.key": "[]",
     "utilake.load": "append",

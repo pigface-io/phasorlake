@@ -20,7 +20,7 @@
   "properties": {
     "comment": "The report provides a summary of all trades executed in the current gas day per product. It provides information on the high/low open/close prices, total traded quantities and number of trades.",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"CURRENTDATE\",\"FROM_GAS_DATE\",\"PRODUCT_LOCATION\",\"PRODUCT_TYPE\",\"TO_GAS_DATE\"]",
     "utilake.load": "append",
     "utilake.market": "gas",

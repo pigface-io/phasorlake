@@ -20,7 +20,7 @@
   "properties": {
     "comment": "Lists all production and demand locations within the Bulletin Board system.",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.headers": "{\"1\":\"LocationName\",\"2\":\"LocationId\",\"3\":\"LocationType\",\"4\":\"State\",\"5\":\"Description\",\"6\":\"LastUpdated\"}",
     "utilake.key": "[\"LOCATIONID\"]",
     "utilake.load": "snapshot",

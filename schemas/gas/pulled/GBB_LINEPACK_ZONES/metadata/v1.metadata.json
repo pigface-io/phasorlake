@@ -20,7 +20,7 @@
   "properties": {
     "comment": "Lists all production and demand locations within the Bulletin Board system.",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.headers": "{\"1\":\"Operator\",\"2\":\"LinepackZone\",\"3\":\"LinepackZoneDescription\"}",
     "utilake.key": "[]",
     "utilake.load": "append",

@@ -20,7 +20,7 @@
   "properties": {
     "comment": "Field Interest annual reporting date",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.headers": "{\"1\":\"FieldInterestId\",\"2\":\"FieldName\",\"3\":\"CompanyId\",\"4\":\"CompanyName\",\"5\":\"Description\",\"6\":\"EffectiveDate\",\"7\":\"PetroleumTenements\",\"8\":\"TenementShare\",\"9\":\"ProcessingFacilities\",\"10\":\"ResourceClassification\",\"11\":\"ResourceSubClassification\",\"12\":\"NatureOfGas\",\"13\":\"AnnualReportingDate\",\"14\":\"BasinId\",\"15\":\"BasinName\",\"16\":\"State\",\"17\":\"OperatingState\",\"18\":\"VersionDateTime\"}",
     "utilake.key": "[\"FIELDINTERESTID\",\"COMPANYID\",\"BASINID\"]",
     "utilake.load": "snapshot",

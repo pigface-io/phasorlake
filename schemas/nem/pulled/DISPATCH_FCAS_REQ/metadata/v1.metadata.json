@@ -20,7 +20,7 @@
   "properties": {
     "comment": "DISPATCH_FCAS_REQ shows Dispatch Constraint tracking for Regional FCAS recovery.",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"SETTLEMENTDATE\",\"RUNNO\",\"INTERVENTION\",\"GENCONID\",\"REGIONID\",\"BIDTYPE\"]",
     "utilake.load": "append",
     "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(3,0)\",\"3\":\"NUMERIC(2,0)\",\"4\":\"VARCHAR(20)\",\"5\":\"VARCHAR(10)\",\"6\":\"VARCHAR(10)\",\"7\":\"TIMESTAMP(0)\",\"8\":\"NUMERIC(3,0)\",\"9\":\"NUMERIC(16,6)\",\"10\":\"TIMESTAMP(0)\",\"11\":\"NUMERIC(18,8)\",\"12\":\"NUMERIC(18,8)\",\"13\":\"NUMERIC(18,8)\",\"14\":\"NUMERIC(18,8)\",\"15\":\"NUMERIC(18,8)\",\"16\":\"NUMERIC(18,8)\"}",

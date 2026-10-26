@@ -20,7 +20,7 @@
   "properties": {
     "comment": "PREDISPATCH_FCAS_REQ shows Predispatch Constraint tracking for Regional FCAS Requirements.",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"GENCONID\",\"REGIONID\",\"BIDTYPE\",\"DATETIME\"]",
     "utilake.load": "append",
     "utilake.model-types": "{\"1\":\"VARCHAR(20)\",\"2\":\"NUMERIC(3,0)\",\"3\":\"NUMERIC(2,0)\",\"4\":\"VARCHAR(20)\",\"5\":\"VARCHAR(20)\",\"6\":\"VARCHAR(10)\",\"7\":\"VARCHAR(10)\",\"8\":\"TIMESTAMP(0)\",\"9\":\"NUMERIC(3,0)\",\"10\":\"NUMERIC(16,6)\",\"11\":\"TIMESTAMP(0)\",\"12\":\"TIMESTAMP(0)\",\"13\":\"NUMERIC(18,8)\",\"14\":\"NUMERIC(18,8)\",\"15\":\"NUMERIC(18,8)\",\"16\":\"NUMERIC(18,8)\",\"17\":\"NUMERIC(18,8)\",\"18\":\"NUMERIC(18,8)\"}",

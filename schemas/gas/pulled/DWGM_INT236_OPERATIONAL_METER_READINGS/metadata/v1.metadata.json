@@ -19,7 +19,7 @@
   ],
   "properties": {
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.headers": "{\"1\":\"gas_date\",\"2\":\"direction_code_name\",\"3\":\"direction\",\"4\":\"commencement_datetime\",\"5\":\"termination_datetime\",\"6\":\"quantity\",\"7\":\"time_sort_order\",\"8\":\"mod_datetime\",\"9\":\"current_date\"}",
     "utilake.key": "[]",
     "utilake.load": "append",

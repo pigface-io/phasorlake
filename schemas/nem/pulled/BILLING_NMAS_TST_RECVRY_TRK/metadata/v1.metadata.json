@@ -20,7 +20,7 @@
   "properties": {
     "comment": "BILLING_NMAS_TEST_RECVRY_TRK tracks the energy data used to allocate the test payment recovery over the recovery period. This Table may also be used for NSCAS and Type 1 transitional services procured by AEMO under the ISF framework during 2025 and prior to the implementation of all system changes. During this time descriptions in these tables may not be correct.",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"CONTRACTYEAR\",\"WEEKNO\",\"BILLRUNNO\",\"RECOVERY_CONTRACTYEAR\",\"RECOVERY_WEEKNO\",\"RECOVERY_BILLRUNNO\"]",
     "utilake.load": "append",
     "utilake.model-types": "{\"1\":\"NUMERIC(4,0)\",\"2\":\"NUMERIC(3,0)\",\"3\":\"NUMERIC(3,0)\",\"4\":\"NUMERIC(4,0)\",\"5\":\"NUMERIC(3,0)\",\"6\":\"NUMERIC(3,0)\"}",

@@ -20,7 +20,7 @@
   "properties": {
     "comment": "Provide the nameplate rating of each facility or information about any planned permanent capacity reduction or expansion due to modification of the facility.",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.headers": "{\"1\":\"facilityname\",\"2\":\"facilityid\",\"3\":\"facilitytype\",\"4\":\"capacitytype\",\"5\":\"receiptlocation\",\"6\":\"ReceiptLocationName\",\"7\":\"deliverylocation\",\"8\":\"DeliveryLocationName\",\"9\":\"capacitydescription\",\"10\":\"flowdirection\",\"11\":\"capacityquantity\",\"12\":\"effectivedate\",\"13\":\"description\",\"14\":\"LastUpdated\"}",
     "utilake.key": "[]",
     "utilake.load": "append",

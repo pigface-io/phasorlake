@@ -20,7 +20,7 @@
   "properties": {
     "comment": "Provides on each gas day D, the BB facility operator’s daily gas flow data for injections and withdrawals at each connection point for gas day D-1.",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.headers": "{\"1\":\"GasDate\",\"2\":\"FacilityName\",\"3\":\"FacilityId\",\"4\":\"FacilityType\",\"5\":\"Demand\",\"6\":\"Supply\",\"7\":\"TransferIn\",\"8\":\"TransferOut\",\"9\":\"HeldInStorage\",\"10\":\"CushionGasStorage\",\"11\":\"State\",\"12\":\"LocationName\",\"13\":\"LocationId\",\"14\":\"LastUpdated\"}",
     "utilake.key": "[]",
     "utilake.load": "append",

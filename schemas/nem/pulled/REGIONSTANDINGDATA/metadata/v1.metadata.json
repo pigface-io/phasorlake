@@ -20,7 +20,7 @@
   "properties": {
     "comment": "REGIONSTANDINGDATA sets out standing region data including the region reference node.",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"EFFECTIVEDATE\",\"VERSIONNO\",\"REGIONID\"]",
     "utilake.load": "snapshot",
     "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(3,0)\",\"3\":\"VARCHAR(10)\",\"4\":\"VARCHAR(10)\",\"5\":\"VARCHAR(10)\",\"6\":\"NUMERIC(3,0)\",\"7\":\"TIMESTAMP(0)\",\"8\":\"VARCHAR(15)\",\"9\":\"NUMERIC(15,5)\",\"10\":\"TIMESTAMP(0)\"}",

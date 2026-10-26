@@ -20,7 +20,7 @@
   "properties": {
     "comment": "This report delivers the curated 4 second frequency deviation and frequency measure data for each region",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[]",
     "utilake.load": "append",
     "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"VARCHAR(20)\",\"4\":\"NUMERIC(5)\",\"5\":\"NUMERIC(18,8)\",\"6\":\"NUMERIC(5)\",\"7\":\"NUMERIC(18,8)\",\"8\":\"NUMERIC(5)\",\"9\":\"TIMESTAMP(0)\"}",

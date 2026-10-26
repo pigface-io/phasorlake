@@ -20,7 +20,7 @@
   "properties": {
     "comment": "SPDINTERCONNECTORCONSTRAINT contains details on the interconnector constraint factors used in dispatch, predispatch and STPASA. The details set a LHS value.",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"INTERCONNECTORID\",\"EFFECTIVEDATE\",\"VERSIONNO\",\"GENCONID\"]",
     "utilake.load": "append",
     "utilake.model-types": "{\"1\":\"VARCHAR(10)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"NUMERIC(3,0)\",\"4\":\"VARCHAR(20)\",\"5\":\"NUMERIC(16,6)\",\"6\":\"TIMESTAMP(0)\"}",

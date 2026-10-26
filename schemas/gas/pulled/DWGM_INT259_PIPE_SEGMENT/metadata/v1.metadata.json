@@ -19,7 +19,7 @@
   ],
   "properties": {
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.headers": "{\"1\":\"pipe_segment_id\",\"2\":\"pipe_segment_name\",\"3\":\"linepack_zone_id\",\"4\":\"commencement_date\",\"5\":\"termination_date\",\"6\":\"node_destination_id\",\"7\":\"node_origin_id\",\"8\":\"diameter\",\"9\":\"diameter_paired\",\"10\":\"length\",\"11\":\"max_pressure\",\"12\":\"min_pressure\",\"13\":\"max_pressure_delta\",\"14\":\"pressure_at_regulator_outlet\",\"15\":\"regulator_at_origin\",\"16\":\"reverse_flow\",\"17\":\"compressor\",\"18\":\"mean_pipe_altitude\",\"19\":\"last_mod_date\",\"20\":\"current_date\"}",
     "utilake.key": "[\"PIPE_SEGMENT_ID\",\"LINEPACK_ZONE_ID\",\"NODE_DESTINATION_ID\",\"NODE_ORIGIN_ID\"]",
     "utilake.load": "snapshot",

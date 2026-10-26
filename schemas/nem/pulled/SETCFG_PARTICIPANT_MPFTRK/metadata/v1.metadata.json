@@ -20,7 +20,7 @@
   "properties": {
     "comment": "SETCFG_PARTICIPANT_MPFTRK is the tracking table for Market Participation Factors (MPF) data stored in the SETCFG_PARTICIPANT_MPF table for each participant.",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"PARTICIPANTID\",\"EFFECTIVEDATE\",\"VERSIONNO\"]",
     "utilake.load": "append",
     "utilake.model-types": "{\"1\":\"VARCHAR(10)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"NUMERIC(3,0)\",\"4\":\"VARCHAR(15)\",\"5\":\"TIMESTAMP(0)\",\"6\":\"TIMESTAMP(0)\"}",

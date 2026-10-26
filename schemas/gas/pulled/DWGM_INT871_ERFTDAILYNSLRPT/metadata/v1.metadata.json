@@ -19,7 +19,7 @@
   ],
   "properties": {
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.headers": "{\"1\":\"network_id\",\"2\":\"gas_date\",\"3\":\"gas_date_historical\",\"4\":\"nsl_mj\",\"5\":\"total_meter_count_basic\",\"6\":\"normalisation_factor\",\"7\":\"current_date\"}",
     "utilake.key": "[]",
     "utilake.load": "append",

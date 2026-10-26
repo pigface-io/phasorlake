@@ -20,7 +20,7 @@
   "properties": {
     "comment": "Dispatchable unit MW from SCADA at the start of the dispatch interval. The table includes all scheduled and semi-scheduled (and non-scheduled units where SCADA is available)",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"SETTLEMENTDATE\",\"DUID\"]",
     "utilake.load": "append",
     "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"VARCHAR(20)\",\"3\":\"NUMERIC(16,6)\",\"4\":\"TIMESTAMP(0)\"}",

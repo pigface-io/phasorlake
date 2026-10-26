@@ -19,7 +19,7 @@
   ],
   "properties": {
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.headers": "{\"1\":\"gas_date\",\"2\":\"hub_identifier\",\"3\":\"hub_name\",\"4\":\"schedule_identifier\",\"5\":\"imbalance_qty\",\"6\":\"ex_post_imbalance_price\",\"7\":\"schedule_type_code\",\"8\":\"imbalance_type\",\"9\":\"schedule_imbalance_price\",\"10\":\"approval_datetime\",\"11\":\"report_datetime\"}",
     "utilake.key": "[]",
     "utilake.load": "append",

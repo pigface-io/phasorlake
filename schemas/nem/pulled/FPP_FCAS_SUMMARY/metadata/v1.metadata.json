@@ -20,7 +20,7 @@
   "properties": {
     "comment": "This report delivers a summary of FCAS requirements as used by the FPP calculation (i.e. only RAISEREG / LOWERREG bid types)",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[]",
     "utilake.load": "append",
     "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(5)\",\"3\":\"TIMESTAMP(0)\",\"4\":\"VARCHAR(20)\",\"5\":\"NUMERIC(10)\",\"6\":\"VARCHAR(10)\",\"7\":\"VARCHAR(200)\",\"8\":\"NUMERIC(18,8)\",\"9\":\"NUMERIC(18,8)\",\"10\":\"NUMERIC(18,8)\",\"11\":\"NUMERIC(18,8)\",\"12\":\"NUMERIC(18,8)\",\"13\":\"NUMERIC(18,8)\",\"14\":\"NUMERIC(18,5)\",\"15\":\"NUMERIC(18,8)\",\"16\":\"NUMERIC(18,8)\",\"17\":\"TIMESTAMP(0)\"}",

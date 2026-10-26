@@ -20,7 +20,7 @@
   "properties": {
     "comment": "STPASA_CASESOLUTION holds one record containing results pertaining to each entire solution",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"RUN_DATETIME\"]",
     "utilake.load": "append",
     "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"VARCHAR(10)\",\"3\":\"NUMERIC(1,0)\",\"4\":\"NUMERIC(1,0)\",\"5\":\"NUMERIC(12,3)\",\"6\":\"NUMERIC(12,3)\",\"7\":\"NUMERIC(12,3)\",\"8\":\"NUMERIC(12,3)\",\"9\":\"NUMERIC(12,3)\",\"10\":\"TIMESTAMP(0)\",\"11\":\"NUMERIC(12,3)\",\"12\":\"NUMERIC(12,3)\",\"13\":\"NUMERIC(12,3)\",\"14\":\"VARCHAR(10)\",\"15\":\"VARCHAR(10)\",\"16\":\"VARCHAR(10)\",\"17\":\"NUMERIC(3,0)\",\"18\":\"NUMERIC(3,0)\",\"19\":\"NUMERIC(3,0)\"}",

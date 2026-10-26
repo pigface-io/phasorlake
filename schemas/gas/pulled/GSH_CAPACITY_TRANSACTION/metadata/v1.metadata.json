@@ -20,7 +20,7 @@
   "properties": {
     "comment": "Consolidated list of all secondary capacity trades which includes GSH trades (screen traded and off-market trades) and Bilateral trades submitted into the GBB",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"TRANSACTION_ID\",\"VERSION_DATETIME\"]",
     "utilake.load": "append",
     "utilake.market": "gas",

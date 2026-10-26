@@ -20,7 +20,7 @@
   "properties": {
     "comment": "BILLINGREGIONEXPORTS sets out the region summary table of overall energy exported to and from each region for each billing run.",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"CONTRACTYEAR\",\"WEEKNO\",\"BILLRUNNO\",\"REGIONID\",\"EXPORTTO\"]",
     "utilake.load": "append",
     "utilake.model-types": "{\"1\":\"NUMERIC(4,0)\",\"2\":\"NUMERIC(3,0)\",\"3\":\"NUMERIC(3,0)\",\"4\":\"VARCHAR(10)\",\"5\":\"VARCHAR(10)\",\"6\":\"NUMERIC(16,6)\",\"7\":\"NUMERIC(15,5)\",\"8\":\"NUMERIC(16,6)\",\"9\":\"NUMERIC(15,5)\",\"10\":\"TIMESTAMP(0)\"}",

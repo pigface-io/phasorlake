@@ -19,7 +19,7 @@
   ],
   "properties": {
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.headers": "{\"1\":\"gas_date\",\"2\":\"total_imb_pmt\",\"3\":\"total_dev_pmt\",\"4\":\"linepack_acct_pmt_gst_ex\",\"5\":\"linepack_acct_bal_gst_ex\",\"6\":\"current_date\"}",
     "utilake.key": "[]",
     "utilake.load": "append",

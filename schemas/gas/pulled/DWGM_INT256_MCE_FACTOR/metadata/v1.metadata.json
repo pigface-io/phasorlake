@@ -19,7 +19,7 @@
   ],
   "properties": {
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.headers": "{\"1\":\"general_information_id\",\"2\":\"r_factor\",\"3\":\"super_compressability_factor\",\"4\":\"t_factor\",\"5\":\"viscosity\",\"6\":\"voll_price\",\"7\":\"number_of_steps\",\"8\":\"eod_linepack_min\",\"9\":\"eod_linepack_max\",\"10\":\"commencement_date\",\"11\":\"termination_date\",\"12\":\"last_mod_date\",\"13\":\"current_date\"}",
     "utilake.key": "[\"GENERAL_INFORMATION_ID\"]",
     "utilake.load": "snapshot",

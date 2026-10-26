@@ -20,7 +20,7 @@
   "properties": {
     "comment": "PD7DAY intereconnector solution",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[]",
     "utilake.load": "append",
     "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(2,0)\",\"3\":\"TIMESTAMP(0)\",\"4\":\"VARCHAR(20)\",\"5\":\"NUMERIC(15,5)\",\"6\":\"NUMERIC(15,5)\",\"7\":\"NUMERIC(15,5)\",\"8\":\"NUMERIC(15,5)\",\"9\":\"NUMERIC(15,5)\",\"10\":\"NUMERIC(15,5)\",\"11\":\"NUMERIC(15,5)\",\"12\":\"NUMERIC(15,5)\",\"13\":\"VARCHAR(20)\",\"14\":\"VARCHAR(20)\",\"15\":\"NUMERIC(15,5)\",\"16\":\"NUMERIC(15,5)\",\"17\":\"NUMERIC(10,2)\",\"18\":\"NUMERIC(1,0)\",\"19\":\"NUMERIC(10,2)\",\"20\":\"NUMERIC(1,0)\",\"21\":\"TIMESTAMP(0)\"}",

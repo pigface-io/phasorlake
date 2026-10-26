@@ -20,7 +20,7 @@
   "properties": {
     "comment": "Details of all Facility Developments",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.headers": "{\"1\":\"DevFacilityId\",\"2\":\"ProposedName\",\"3\":\"EffectiveDate\",\"4\":\"FacilityType\",\"5\":\"MinNameplate\",\"6\":\"MaxNameplate\",\"7\":\"Location\",\"8\":\"PlannedCommissionFrom\",\"9\":\"PlannedCommissionTo\",\"10\":\"DevelopmentStage\",\"11\":\"RelatedFacilityId\",\"12\":\"RelatedFacilityName\",\"13\":\"Comments\",\"14\":\"ReportingEntity\"}",
     "utilake.key": "[\"DEVFACILITYID\",\"RELATEDFACILITYID\"]",
     "utilake.load": "snapshot",

@@ -20,7 +20,7 @@
   "properties": {
     "comment": "The PDPASA region solution data.Note that the OUTAGE_LRC Run Type is no longer reported from 31 July 2025.",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"RUN_DATETIME\",\"INTERVAL_DATETIME\",\"REGIONID\",\"RUNTYPE\"]",
     "utilake.load": "append",
     "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"VARCHAR(10)\",\"4\":\"NUMERIC(12,2)\",\"5\":\"NUMERIC(12,2)\",\"6\":\"NUMERIC(12,2)\",\"7\":\"NUMERIC(12,2)\",\"8\":\"NUMERIC(12,2)\",\"9\":\"NUMERIC(12,2)\",\"10\":\"NUMERIC(12,0)\",\"11\":\"NUMERIC(12,0)\",\"12\":\"NUMERIC(12,2)\",\"13\":\"NUMERIC(12,2)\",\"14\":\"NUMERIC(12,2)\",\"15\":\"NUMERIC(1,0)\",\"16\":\"NUMERIC(12,2)\",\"17\":\"NUMERIC(12,2)\",\"18\":\"NUMERIC(1,0)\",\"19\":\"NUMERIC(12,2)\",\"20\":\"NUMERIC(12,2)\",\"21\":\"TIMESTAMP(0)\",\"22\":\"NUMERIC(12,0)\",\"23\":\"VARCHAR(20)\",\"24\":\"NUMERIC(12,2)\",\"25\":\"NUMERIC(16,6)\",\"26\":\"NUMERIC(16,6)\",\"27\":\"NUMERIC(12,2)\",\"28\":\"NUMERIC(12,2)\",\"29\":\"NUMERIC(15,5)\",\"30\":\"NUMERIC(15,5)\",\"31\":\"NUMERIC(12,2)\",\"32\":\"NUMERIC(12,2)\",\"33\":\"NUMERIC(12,2)\",\"34\":\"NUMERIC(16,6)\",\"35\":\"NUMERIC(16,6)\",\"36\":\"NUMERIC(16,6)\",\"37\":\"NUMERIC(12,2)\",\"38\":\"NUMERIC(12,2)\",\"39\":\"NUMERIC(12,2)\",\"40\":\"NUMERIC(12,2)\",\"41\":\"NUMERIC(12,2)\",\"42\":\"NUMERIC(12,2)\",\"43\":\"NUMERIC(12,2)\",\"44\":\"NUMERIC(12,2)\",\"45\":\"NUMERIC(12,2)\"}",

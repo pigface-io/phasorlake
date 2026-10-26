@@ -20,7 +20,7 @@
   "properties": {
     "comment": "MARKETSUSPENSION is obsolete from 2017 End of Year DM4.27 Release. \nMARKETSUSPENSION sets out a start and end periods of any market suspension and the reason.",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"SUSPENSIONID\"]",
     "utilake.load": "snapshot",
     "utilake.model-types": "{\"1\":\"VARCHAR(10)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"NUMERIC(3,0)\",\"4\":\"TIMESTAMP(0)\",\"5\":\"NUMERIC(3,0)\",\"6\":\"VARCHAR(64)\",\"7\":\"VARCHAR(15)\",\"8\":\"VARCHAR(15)\",\"9\":\"TIMESTAMP(0)\"}",

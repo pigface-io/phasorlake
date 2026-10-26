@@ -20,7 +20,7 @@
   "properties": {
     "comment": "APEVENT is the driving data defining the existence and timeframes of an administered pricing event.",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"APEVENTID\"]",
     "utilake.load": "append",
     "utilake.model-types": "{\"1\":\"NUMERIC(22,0)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"TIMESTAMP(0)\",\"4\":\"VARCHAR(2000)\",\"5\":\"VARCHAR(15)\",\"6\":\"TIMESTAMP(0)\",\"7\":\"VARCHAR(15)\",\"8\":\"TIMESTAMP(0)\",\"9\":\"TIMESTAMP(0)\"}",

@@ -19,7 +19,7 @@
   ],
   "properties": {
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.headers": "{\"1\":\"gas_date\",\"2\":\"hub_identifier\",\"3\":\"hub_name\",\"4\":\"variation_qty\",\"5\":\"variation_charge\",\"6\":\"mos_capacity_payment\",\"7\":\"mos_cashout_payment\",\"8\":\"mos_cashout_charge\",\"9\":\"report_datetime\"}",
     "utilake.key": "[]",
     "utilake.load": "append",

@@ -19,7 +19,7 @@
   ],
   "properties": {
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.headers": "{\"1\":\"settlement_run_identifier\",\"2\":\"gas_date\",\"3\":\"hub_identifier\",\"4\":\"hub_name\",\"5\":\"facility_identifier\",\"6\":\"facility_name\",\"7\":\"stack_identifier\",\"8\":\"stack_type\",\"9\":\"stack_step_identifier\",\"10\":\"report_datetime\"}",
     "utilake.key": "[]",
     "utilake.load": "append",

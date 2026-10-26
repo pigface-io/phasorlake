@@ -20,7 +20,7 @@
   "properties": {
     "comment": "Provides the aggregate of forecast and nominations by location.",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.headers": "{\"1\":\"Gasdate\",\"2\":\"FacilityId\",\"3\":\"FacilityName\",\"4\":\"FacilityType\",\"5\":\"LocationId\",\"6\":\"LocationName\",\"7\":\"State\",\"8\":\"Demand\",\"9\":\"Supply\",\"10\":\"TransferIn\",\"11\":\"TransferOut\",\"12\":\"LastUpdated\"}",
     "utilake.key": "[]",
     "utilake.load": "append",

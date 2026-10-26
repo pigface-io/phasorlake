@@ -20,7 +20,7 @@
   "properties": {
     "comment": "RESIDUE_PUBLIC_DATA shows the public auction results.\nRESIDUE_PUBLIC_DATA supports the Settlement Residue Auction, by holding the public details of the auction for a given contract. RESIDUE_PUBLIC_DATA joins to RESIDUE_CON_DATA and RESIDUE.",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"CONTRACTID\",\"VERSIONNO\",\"INTERCONNECTORID\",\"FROMREGIONID\"]",
     "utilake.load": "append",
     "utilake.model-types": "{\"1\":\"VARCHAR(30)\",\"2\":\"NUMERIC(3,0)\",\"3\":\"VARCHAR(10)\",\"4\":\"VARCHAR(10)\",\"5\":\"NUMERIC(5,0)\",\"6\":\"NUMERIC(16,6)\",\"7\":\"NUMERIC(17,5)\",\"8\":\"NUMERIC(17,5)\",\"9\":\"TIMESTAMP(0)\"}",

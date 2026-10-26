@@ -221,12 +221,16 @@ fn schemas(t: &Table, out: &mut Vec<Issue>) {
 pub fn validate_set<'a>(tables: impl IntoIterator<Item = &'a Table>) -> Vec<Issue> {
     let mut out = Vec::new();
     let mut names: BTreeMap<&str, usize> = BTreeMap::new();
-    let mut pairs: BTreeMap<(&str, &str), &str> = BTreeMap::new();
+    // Two tables of a pair with as many `with_columns` could each take a
+    // block.
+    let mut pairs: BTreeMap<(&str, &str, usize), &str> = BTreeMap::new();
     for t in tables {
         *names.entry(t.name.as_str()).or_default() += 1;
         for (a, b) in &t.report_pairs {
-            if let Some(other) = pairs.insert((a.as_str(), b.as_str()), t.name.as_str())
-                && other != t.name
+            if let Some(other) = pairs.insert(
+                (a.as_str(), b.as_str(), t.with_columns.len()),
+                t.name.as_str(),
+            ) && other != t.name
             {
                 out.push(Issue {
                     table: String::new(),

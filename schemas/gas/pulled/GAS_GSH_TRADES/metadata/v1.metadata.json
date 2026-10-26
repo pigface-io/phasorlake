@@ -20,7 +20,7 @@
   "properties": {
     "comment": "Provides participants (buyer and seller) a confirmation whenever a trade is executed through auto matching of bids and offers or by off-market trades. Also provides participants with a list of all their future trades when triggered daily after the end of the trades for the current day",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"LOCATION\",\"PRODUCT\",\"TRADE_DATE\",\"TRADE_PRICE\",\"TYPE\"]",
     "utilake.load": "append",
     "utilake.market": "gas",

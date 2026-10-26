@@ -20,7 +20,7 @@
   "properties": {
     "comment": "Each Dispatch instruction (GD instruct) has a type and subtype. INSTRUCTIONSUBTYPE, together with INSTRUCTIONTYPE, sets out valid instruction types.",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"INSTRUCTIONTYPEID\",\"INSTRUCTIONSUBTYPEID\"]",
     "utilake.load": "snapshot",
     "utilake.model-types": "{\"1\":\"VARCHAR(10)\",\"2\":\"VARCHAR(10)\",\"3\":\"VARCHAR(64)\",\"4\":\"TIMESTAMP(0)\"}",

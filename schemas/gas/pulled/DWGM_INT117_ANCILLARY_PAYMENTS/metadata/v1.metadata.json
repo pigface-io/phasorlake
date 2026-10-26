@@ -19,7 +19,7 @@
   ],
   "properties": {
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.headers": "{\"1\":\"ap_run_id\",\"2\":\"Run_Type\",\"3\":\"gas_date\",\"4\":\"Daily_Amount_GST_Ex\",\"5\":\"Current_Date\"}",
     "utilake.key": "[]",
     "utilake.load": "append",

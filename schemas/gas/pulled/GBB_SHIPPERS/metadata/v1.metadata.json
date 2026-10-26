@@ -20,7 +20,7 @@
   "properties": {
     "comment": "A list of shippers who have contracted primary Storage, Compression or Pipeline capacity",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.headers": "{\"1\":\"EffectiveDate\",\"2\":\"FacilityId\",\"3\":\"FacilityName\",\"4\":\"FacilityType\",\"5\":\"CompanyId\",\"6\":\"OperatorName\",\"7\":\"ShipperName\",\"8\":\"LastUpdated\"}",
     "utilake.key": "[\"FACILITYID\",\"COMPANYID\"]",
     "utilake.load": "snapshot",

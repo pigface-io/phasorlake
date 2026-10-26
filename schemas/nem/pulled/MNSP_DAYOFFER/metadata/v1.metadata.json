@@ -20,7 +20,7 @@
   "properties": {
     "comment": "MNSP_DAYOFFER updates as bids are processed. All bids are available as part of next day market data. MNSP_DAYOFFER is the parent table to MNSP_BIDOFFERPERIOD, and joins to BIDOFFERFILETRK for 5MS Bids.",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"SETTLEMENTDATE\",\"OFFERDATE\",\"VERSIONNO\",\"PARTICIPANTID\",\"LINKID\"]",
     "utilake.load": "append",
     "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"TIMESTAMP(3)\",\"3\":\"NUMERIC(3,0)\",\"4\":\"VARCHAR(10)\",\"5\":\"VARCHAR(10)\",\"6\":\"VARCHAR(20)\",\"7\":\"VARCHAR(500)\",\"8\":\"NUMERIC(9,2)\",\"9\":\"NUMERIC(9,2)\",\"10\":\"NUMERIC(9,2)\",\"11\":\"NUMERIC(9,2)\",\"12\":\"NUMERIC(9,2)\",\"13\":\"NUMERIC(9,2)\",\"14\":\"NUMERIC(9,2)\",\"15\":\"NUMERIC(9,2)\",\"16\":\"NUMERIC(9,2)\",\"17\":\"NUMERIC(9,2)\",\"18\":\"TIMESTAMP(0)\",\"19\":\"VARCHAR(20)\",\"20\":\"VARCHAR(20)\",\"21\":\"VARCHAR(20)\",\"22\":\"VARCHAR(1)\",\"23\":\"VARCHAR(100)\",\"24\":\"NUMERIC(16,6)\"}",

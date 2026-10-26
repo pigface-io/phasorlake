@@ -19,7 +19,7 @@
   ],
   "properties": {
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.headers": "{\"1\":\"gas_date\",\"2\":\"declared_heating_value\",\"3\":\"current_date\"}",
     "utilake.key": "[]",
     "utilake.load": "append",

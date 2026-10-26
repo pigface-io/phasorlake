@@ -19,7 +19,7 @@
   ],
   "properties": {
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.headers": "{\"1\":\"schedule_identifier\",\"2\":\"gas_date\",\"3\":\"hub_identifier\",\"4\":\"hub_name\",\"5\":\"schedule_type\",\"6\":\"schedule_day\",\"7\":\"creation_datetime\",\"8\":\"bid_offer_cut_off_datetime\",\"9\":\"facility_hub_capacity_cut_off_datetime\",\"10\":\"pipeline_allocation_cut_off_datetime\",\"11\":\"approval_datetime\",\"12\":\"report_datetime\"}",
     "utilake.key": "[]",
     "utilake.load": "append",

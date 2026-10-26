@@ -20,7 +20,7 @@
   "properties": {
     "comment": "MT PASA input table defining a MT PASA Reserve Requirement within a single set. An MT PASA Reserve Requirement can span more than one region.",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"EFFECTIVEDATE\",\"VERSION_DATETIME\",\"RESERVELIMITID\"]",
     "utilake.load": "append",
     "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"VARCHAR(20)\",\"4\":\"VARCHAR(200)\",\"5\":\"NUMERIC(16,6)\",\"6\":\"TIMESTAMP(0)\"}",

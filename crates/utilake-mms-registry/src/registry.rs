@@ -77,7 +77,9 @@ pub struct Registry {
     from_user: Vec<bool>,
     by_name: HashMap<String, TableId>,
     /// Each report pair's table, and the pair's place in its list.
-    by_pair: hashbrown::HashMap<PairKey, (TableId, u16)>,
+    /// The tables of each pair with the pair's place in each one's list,
+    /// the most `with_columns` first.
+    by_pair: hashbrown::HashMap<PairKey, Vec<(TableId, u16)>>,
     /// The lake schema, the history and the plans of each table's schemas,
     /// built the first time the table is used. A run reads a handful of
     /// tables; building them for every table the registry knows would cost
@@ -256,7 +258,13 @@ impl Registry {
             let id = TableId(i as u32);
             by_name.insert(t.name.clone(), id);
             for (k, (a, b)) in t.report_pairs.iter().enumerate() {
-                by_pair.insert(PairKey(t.market, a.clone(), b.clone()), (id, k as u16));
+                let of_pair: &mut Vec<(TableId, u16)> = by_pair
+                    .entry(PairKey(t.market, a.clone(), b.clone()))
+                    .or_default();
+                of_pair.push((id, k as u16));
+                of_pair.sort_by_key(|(id, _)| {
+                    std::cmp::Reverse(tables[id.0 as usize].with_columns.len())
+                });
             }
         }
         // A market no file defines gets the definition its name implies.
@@ -430,20 +438,32 @@ impl Registry {
             .or_else(|| self.by_name.get(&name.to_ascii_uppercase()).copied())
     }
 
-    /// The handle for a report pair of `market`, without allocating: a
-    /// table of the registry, or failing that one derived earlier in this
-    /// run.
+    /// The handle for a report pair of `market`, without allocating: the
+    /// registry's table that takes every block of the pair (else its
+    /// first), or failing that one derived earlier in this run. A block's
+    /// own table depends on its columns: [`Registry::table_for_block`].
     pub fn table_by_pair(
         &self,
         market: Market,
         report_type: &str,
         report_subtype: &str,
     ) -> Option<TableId> {
-        if let Some((id, _)) = self
-            .by_pair
-            .get(&PairRef(market, report_type, report_subtype))
-        {
-            return Some(*id);
+        self.table_for_block(market, report_type, report_subtype, None)
+    }
+
+    /// The handle for a block of a report pair of `market` with
+    /// `columns`: the most specific of the pair's tables whose
+    /// `with_columns` the block holds (with no columns given, the one that
+    /// takes every block), or failing that one derived earlier in this run.
+    pub fn table_for_block(
+        &self,
+        market: Market,
+        report_type: &str,
+        report_subtype: &str,
+        columns: Option<&[&str]>,
+    ) -> Option<TableId> {
+        if let Some((id, _)) = self.pair(market, report_type, report_subtype, columns) {
+            return Some(id);
         }
         self.derived_pairs
             .lock()
@@ -461,20 +481,36 @@ impl Registry {
         report_type: &str,
         report_subtype: &str,
     ) -> Option<TableId> {
-        self.pair(market, report_type, report_subtype)
+        self.pair(market, report_type, report_subtype, None)
             .map(|(id, _)| id)
     }
 
-    /// The table the registry declares for a report pair of `market`, and
-    /// the pair's place in the table's list.
+    /// The table the registry declares for a report pair of `market` and
+    /// a block of `columns` (see [`Registry::table_for_block`]), and the
+    /// pair's place in the table's list.
     pub(crate) fn pair(
         &self,
         market: Market,
         report_type: &str,
         report_subtype: &str,
+        columns: Option<&[&str]>,
     ) -> Option<(TableId, u16)> {
-        self.by_pair
-            .get(&PairRef(market, report_type, report_subtype))
+        let of_pair = self
+            .by_pair
+            .get(&PairRef(market, report_type, report_subtype))?;
+        let holds = |id: TableId| {
+            let want = &self.tables[id.0 as usize].with_columns;
+            match columns {
+                Some(cs) => want
+                    .iter()
+                    .all(|w| cs.iter().any(|c| c.eq_ignore_ascii_case(w))),
+                None => want.is_empty(),
+            }
+        };
+        of_pair
+            .iter()
+            .find(|(id, _)| holds(*id))
+            .or_else(|| columns.is_none().then(|| of_pair.first()).flatten())
             .copied()
     }
 
@@ -593,6 +629,8 @@ fn derived_table(market: Market, irow: &IRow<'_>) -> Table {
             "Derived from the file: no table in the registry claims this report pair.".into(),
         ),
         report_pairs: vec![(irow.report_type.to_owned(), irow.report_subtype.to_owned())],
+        with_columns: Vec::new(),
+        older_names: Vec::new(),
         load_mode: LoadMode::Append,
         temporal: crate::file_model::Temporal {
             origin: crate::file_model::RoleOrigin::Derived,
@@ -657,11 +695,12 @@ mod tests {
         let h = r.history(id).unwrap();
         assert!(h.schemas.len() >= 2 && !h.runs.is_empty());
         assert_eq!(h.table, "DISPATCH_UNIT_SCADA");
-        // Every table the data model declares, and nothing it does not;
-        // the gas tables beside them.
+        // Every table the data model declares and the four area tables
+        // its regional ones share report pairs with, and nothing else; the
+        // gas tables beside them.
         assert_eq!(
             r.tables().filter(|(_, t)| t.market == Market::Nem).count(),
-            241
+            245
         );
         assert_eq!(
             r.tables().filter(|(_, t)| t.market == Market::Gas).count(),

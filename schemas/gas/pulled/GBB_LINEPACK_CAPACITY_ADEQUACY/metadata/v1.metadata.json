@@ -20,7 +20,7 @@
   "properties": {
     "comment": "The linepack adequacy (flag) for each of the (non-exempt) BB pipelines",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.headers": "{\"1\":\"FacilityName\",\"2\":\"FacilityId\",\"3\":\"FacilityType\",\"4\":\"GasDate\",\"5\":\"Flag\",\"6\":\"Description\",\"7\":\"LastUpdated\"}",
     "utilake.key": "[]",
     "utilake.load": "append",

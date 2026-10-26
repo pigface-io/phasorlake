@@ -20,7 +20,7 @@
   "properties": {
     "comment": "This table displays information about Field Reserves and Resources",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.headers": "{\"1\":\"FieldId\",\"2\":\"FieldName\",\"3\":\"FieldInterestId\",\"4\":\"DevelopedReserve1P\",\"5\":\"DevelopedReserve2P\",\"6\":\"DevelopedReserve3P\",\"7\":\"UndevelopedReserve1P\",\"8\":\"UndevelopedReserve2P\",\"9\":\"UndevelopedReserve3P\",\"10\":\"Resources2C\",\"11\":\"ProductionChangeReserve2P\",\"12\":\"ProvedAreaExtensionReserve2P\",\"13\":\"PercentageChangeReserve2P\",\"14\":\"UpwardRevisionFrom3PReserveTo2P\",\"15\":\"DownwardRevisionFrom2PReserveTo3P\",\"16\":\"OtherRevisionsReserve2P\",\"17\":\"MaturitySubClass2P\",\"18\":\"MaturitySubClass2C\",\"19\":\"MinDate2P\",\"20\":\"MaxDate2P\",\"21\":\"MinDate2C\",\"22\":\"MaxDate2C\",\"23\":\"ExpectedBarriers2C\",\"24\":\"ResourcesEstimateMethod\",\"25\":\"ConversionFactorQtyTCFtoPJ\",\"26\":\"EconomicAssumption\",\"27\":\"UpdateReason\",\"28\":\"PreparedBy\",\"29\":\"PreparationIndependenceStatement\",\"30\":\"EffectiveDate\",\"31\":\"VersionDateTime\"}",
     "utilake.key": "[\"FIELDID\",\"FIELDINTERESTID\"]",
     "utilake.load": "snapshot",

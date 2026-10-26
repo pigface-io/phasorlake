@@ -20,7 +20,7 @@
   "properties": {
     "comment": "STPASA_CONSTRAINTSOLUTION shows binding and violated constraint results from the capacity evaluation, including the RHS value.",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"RUN_DATETIME\",\"INTERVAL_DATETIME\",\"CONSTRAINTID\",\"RUNTYPE\"]",
     "utilake.load": "append",
     "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"VARCHAR(20)\",\"4\":\"NUMERIC(12,2)\",\"5\":\"NUMERIC(12,2)\",\"6\":\"NUMERIC(12,2)\",\"7\":\"TIMESTAMP(0)\",\"8\":\"VARCHAR(20)\",\"9\":\"VARCHAR(20)\"}",

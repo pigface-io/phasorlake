@@ -20,7 +20,7 @@
   "properties": {
     "comment": "EMSMASTER provides a description of the SCADA measurements that are associated with the SPD_ID points utilised in generic equation RHS terms",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"SPD_ID\",\"SPD_TYPE\"]",
     "utilake.load": "snapshot",
     "utilake.model-types": "{\"1\":\"VARCHAR(21)\",\"2\":\"VARCHAR(1)\",\"3\":\"VARCHAR(255)\",\"4\":\"VARCHAR(20)\",\"5\":\"TIMESTAMP(0)\"}",

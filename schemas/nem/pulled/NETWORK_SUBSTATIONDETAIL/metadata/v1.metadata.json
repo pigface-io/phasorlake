@@ -20,7 +20,7 @@
   "properties": {
     "comment": "NETWORK_SUBSTATIONDETAIL sets out the attributes of sub-stations across time",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"SUBSTATIONID\",\"VALIDFROM\"]",
     "utilake.load": "append",
     "utilake.model-types": "{\"1\":\"VARCHAR(30)\",\"2\":\"TIMESTAMP(3)\",\"3\":\"TIMESTAMP(3)\",\"4\":\"VARCHAR(100)\",\"5\":\"VARCHAR(10)\",\"6\":\"VARCHAR(30)\",\"7\":\"TIMESTAMP(3)\"}",

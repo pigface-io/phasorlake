@@ -1,13 +1,13 @@
 {
-  "current-schema-id": 2,
-  "current-snapshot-id": 4563272144595900565,
+  "current-schema-id": 1,
+  "current-snapshot-id": 4410921495329411123,
   "default-sort-order-id": 0,
   "default-spec-id": 0,
   "format-version": 3,
-  "last-column-id": 7,
+  "last-column-id": 6,
   "last-partition-id": 999,
-  "last-sequence-number": 70,
-  "last-updated-ms": 1790776800069,
+  "last-sequence-number": 28,
+  "last-updated-ms": 1788184800027,
   "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DEMANDOPERATIONALACTUAL",
   "metadata-log": [],
   "next-row-id": 0,
@@ -20,7 +20,7 @@
   "properties": {
     "comment": "Shows Actual Operational Demand for a particular date time interval.",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"INTERVAL_DATETIME\",\"REGIONID\"]",
     "utilake.load": "append",
     "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"VARCHAR(20)\",\"3\":\"NUMERIC(10,0)\",\"4\":\"TIMESTAMP(0)\",\"5\":\"NUMERIC(10,0)\",\"6\":\"NUMERIC(10)\"}",
@@ -38,7 +38,7 @@
   },
   "refs": {
     "main": {
-      "snapshot-id": 4563272144595900565,
+      "snapshot-id": 4410921495329411123,
       "type": "branch"
     }
   },
@@ -146,56 +146,6 @@
       ],
       "schema-id": 1,
       "type": "struct"
-    },
-    {
-      "fields": [
-        {
-          "id": 7,
-          "name": "AREAID",
-          "required": false,
-          "type": "string"
-        },
-        {
-          "doc": "Date time interval for operational demand value",
-          "id": 1,
-          "name": "INTERVAL_DATETIME",
-          "required": true,
-          "type": "timestamptz"
-        },
-        {
-          "doc": "Average 30-minute measured operational demand MW value (unadjusted)",
-          "id": 3,
-          "name": "OPERATIONAL_DEMAND",
-          "required": false,
-          "type": "decimal(10, 0)"
-        },
-        {
-          "doc": "Adjustment value containing the estimated amount of activated RERT and involuntary load shedding that occurred as a result of a NER 4.8.9 instruction for load shedding from AEMO.",
-          "id": 5,
-          "name": "OPERATIONAL_DEMAND_ADJUSTMENT",
-          "required": false,
-          "type": "decimal(10, 0)"
-        },
-        {
-          "doc": "Estimated average 30-minute MW amount of Wholesale Demand Response that occurred",
-          "id": 6,
-          "name": "WDR_ESTIMATE",
-          "required": false,
-          "type": "decimal(10, 0)"
-        },
-        {
-          "doc": "Last date and time record changed",
-          "id": 4,
-          "name": "LASTCHANGED",
-          "required": false,
-          "type": "timestamptz"
-        }
-      ],
-      "identifier-field-ids": [
-        1
-      ],
-      "schema-id": 2,
-      "type": "struct"
     }
   ],
   "snapshot-log": [
@@ -208,276 +158,108 @@
       "timestamp-ms": 1756648800001
     },
     {
-      "snapshot-id": 2136337555385930834,
+      "snapshot-id": 611125610031940845,
       "timestamp-ms": 1756648800002
     },
     {
-      "snapshot-id": 611125610031940845,
+      "snapshot-id": 3454573047022003492,
       "timestamp-ms": 1756648800003
     },
     {
-      "snapshot-id": 3454573047022003492,
-      "timestamp-ms": 1756648800004
-    },
-    {
-      "snapshot-id": 3600145537445759638,
-      "timestamp-ms": 1756648800005
-    },
-    {
-      "snapshot-id": 9163484394795761728,
-      "timestamp-ms": 1759240800006
-    },
-    {
-      "snapshot-id": 7883164147944706129,
-      "timestamp-ms": 1759240800007
-    },
-    {
       "snapshot-id": 1282339828317660910,
-      "timestamp-ms": 1759240800008
+      "timestamp-ms": 1759240800004
     },
     {
       "snapshot-id": 4656152933386384987,
-      "timestamp-ms": 1759240800009
-    },
-    {
-      "snapshot-id": 2968992989232916,
-      "timestamp-ms": 1759240800010
-    },
-    {
-      "snapshot-id": 2997540950518770910,
-      "timestamp-ms": 1761919200011
-    },
-    {
-      "snapshot-id": 2478844147027941223,
-      "timestamp-ms": 1761919200012
+      "timestamp-ms": 1759240800005
     },
     {
       "snapshot-id": 8336463527918787205,
-      "timestamp-ms": 1761919200013
+      "timestamp-ms": 1761919200006
     },
     {
       "snapshot-id": 6066432261573144320,
-      "timestamp-ms": 1761919200014
-    },
-    {
-      "snapshot-id": 3775666357791616324,
-      "timestamp-ms": 1761919200015
-    },
-    {
-      "snapshot-id": 5042497521892216699,
-      "timestamp-ms": 1764511200016
-    },
-    {
-      "snapshot-id": 3674122113742700147,
-      "timestamp-ms": 1764511200017
+      "timestamp-ms": 1761919200007
     },
     {
       "snapshot-id": 1772404962641430563,
-      "timestamp-ms": 1764511200018
+      "timestamp-ms": 1764511200008
     },
     {
       "snapshot-id": 2442649556129135029,
-      "timestamp-ms": 1764511200019
-    },
-    {
-      "snapshot-id": 3842094535335738952,
-      "timestamp-ms": 1764511200020
-    },
-    {
-      "snapshot-id": 8595681305460784451,
-      "timestamp-ms": 1767189600021
-    },
-    {
-      "snapshot-id": 4890849480897111509,
-      "timestamp-ms": 1767189600022
+      "timestamp-ms": 1764511200009
     },
     {
       "snapshot-id": 8373614003501106659,
-      "timestamp-ms": 1767189600023
+      "timestamp-ms": 1767189600010
     },
     {
       "snapshot-id": 1727597021958022314,
-      "timestamp-ms": 1767189600024
-    },
-    {
-      "snapshot-id": 1689050998678363731,
-      "timestamp-ms": 1767189600025
-    },
-    {
-      "snapshot-id": 7550651519864631368,
-      "timestamp-ms": 1769868000026
-    },
-    {
-      "snapshot-id": 2352403795971713057,
-      "timestamp-ms": 1769868000027
+      "timestamp-ms": 1767189600011
     },
     {
       "snapshot-id": 5482080548847723715,
-      "timestamp-ms": 1769868000028
+      "timestamp-ms": 1769868000012
     },
     {
       "snapshot-id": 6988146516985052373,
-      "timestamp-ms": 1769868000029
-    },
-    {
-      "snapshot-id": 5685953199588252804,
-      "timestamp-ms": 1769868000030
-    },
-    {
-      "snapshot-id": 3430741111445970316,
-      "timestamp-ms": 1772287200031
-    },
-    {
-      "snapshot-id": 4198127193027450481,
-      "timestamp-ms": 1772287200032
+      "timestamp-ms": 1769868000013
     },
     {
       "snapshot-id": 3890735797714807193,
-      "timestamp-ms": 1772287200033
+      "timestamp-ms": 1772287200014
     },
     {
       "snapshot-id": 90928780881029014,
-      "timestamp-ms": 1772287200034
-    },
-    {
-      "snapshot-id": 8696173326575314720,
-      "timestamp-ms": 1772287200035
-    },
-    {
-      "snapshot-id": 3252356069636587212,
-      "timestamp-ms": 1774965600036
-    },
-    {
-      "snapshot-id": 2314161182246079954,
-      "timestamp-ms": 1774965600037
+      "timestamp-ms": 1772287200015
     },
     {
       "snapshot-id": 8031766639106722602,
-      "timestamp-ms": 1774965600038
+      "timestamp-ms": 1774965600016
     },
     {
       "snapshot-id": 343673334729830005,
-      "timestamp-ms": 1774965600039
-    },
-    {
-      "snapshot-id": 8916353381551935346,
-      "timestamp-ms": 1774965600040
-    },
-    {
-      "snapshot-id": 7051352936321459442,
-      "timestamp-ms": 1777557600041
-    },
-    {
-      "snapshot-id": 3112766436907107235,
-      "timestamp-ms": 1777557600042
+      "timestamp-ms": 1774965600017
     },
     {
       "snapshot-id": 5943748480908300456,
-      "timestamp-ms": 1777557600043
+      "timestamp-ms": 1777557600018
     },
     {
       "snapshot-id": 6842247518540036528,
-      "timestamp-ms": 1777557600044
-    },
-    {
-      "snapshot-id": 410402756599269211,
-      "timestamp-ms": 1777557600045
-    },
-    {
-      "snapshot-id": 3024194000836993604,
-      "timestamp-ms": 1780236000046
-    },
-    {
-      "snapshot-id": 1919053827678926952,
-      "timestamp-ms": 1780236000047
+      "timestamp-ms": 1777557600019
     },
     {
       "snapshot-id": 7046542674128928204,
-      "timestamp-ms": 1780236000048
+      "timestamp-ms": 1780236000020
     },
     {
       "snapshot-id": 2507014967979487622,
-      "timestamp-ms": 1780236000049
-    },
-    {
-      "snapshot-id": 7422863522030726719,
-      "timestamp-ms": 1780236000050
-    },
-    {
-      "snapshot-id": 1053600570944675071,
-      "timestamp-ms": 1782828000051
-    },
-    {
-      "snapshot-id": 7673113947159354518,
-      "timestamp-ms": 1782828000052
+      "timestamp-ms": 1780236000021
     },
     {
       "snapshot-id": 4421949376174368085,
-      "timestamp-ms": 1782828000053
+      "timestamp-ms": 1782828000022
     },
     {
       "snapshot-id": 3221503870325429605,
-      "timestamp-ms": 1782828000054
-    },
-    {
-      "snapshot-id": 1551484625230050262,
-      "timestamp-ms": 1782828000055
-    },
-    {
-      "snapshot-id": 6969029408492805499,
-      "timestamp-ms": 1785506400056
-    },
-    {
-      "snapshot-id": 7468357951284168393,
-      "timestamp-ms": 1785506400057
+      "timestamp-ms": 1782828000023
     },
     {
       "snapshot-id": 5191890719775444657,
-      "timestamp-ms": 1785506400058
+      "timestamp-ms": 1785506400024
     },
     {
       "snapshot-id": 4496465071791235181,
-      "timestamp-ms": 1785506400059
-    },
-    {
-      "snapshot-id": 3801091972159414435,
-      "timestamp-ms": 1785506400060
-    },
-    {
-      "snapshot-id": 5936898614029017189,
-      "timestamp-ms": 1788184800061
-    },
-    {
-      "snapshot-id": 3124007916542066649,
-      "timestamp-ms": 1788184800062
+      "timestamp-ms": 1785506400025
     },
     {
       "snapshot-id": 8572135684141097013,
-      "timestamp-ms": 1788184800063
+      "timestamp-ms": 1788184800026
     },
     {
       "snapshot-id": 4410921495329411123,
-      "timestamp-ms": 1788184800064
-    },
-    {
-      "snapshot-id": 1346881888066082840,
-      "timestamp-ms": 1788184800065
-    },
-    {
-      "snapshot-id": 3014169498734176744,
-      "timestamp-ms": 1790776800066
-    },
-    {
-      "snapshot-id": 2551032921488752579,
-      "timestamp-ms": 1790776800067
-    },
-    {
-      "snapshot-id": 1057954578753477528,
-      "timestamp-ms": 1790776800068
-    },
-    {
-      "snapshot-id": 4563272144595900565,
-      "timestamp-ms": 1790776800069
+      "timestamp-ms": 1788184800027
     }
   ],
   "snapshots": [
@@ -539,38 +321,10 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DEMANDOPERATIONALACTUAL/metadata/snap-2136337555385930834-3-f131c13a-b7d3-81f3-a8a4-024ac9318d8d.avro",
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DEMANDOPERATIONALACTUAL/metadata/snap-611125610031940845-3-f131c13a-b7d3-81f3-a8a4-024ac9318d8d.avro",
       "parent-snapshot-id": 7627227369479839701,
-      "schema-id": 2,
-      "sequence-number": 3,
-      "snapshot-id": 2136337555385930834,
-      "summary": {
-        "operation": "append",
-        "utilake.files": "48",
-        "utilake.from.file": "PUBLIC_ACTUAL_OPERATIONAL_DEMAND_HH_AREA_20250930.zip",
-        "utilake.from.release": "2025-09",
-        "utilake.from.sha256": "627dc4badb1e8626f91f1acec6ba46a9d4033048aa0998f24f11dbc9fab0af8f",
-        "utilake.from.time": "2025-09-30T00:00:00+10:00",
-        "utilake.kinds": "[\"reports\"]",
-        "utilake.report-subtype": "ACTUAL",
-        "utilake.report-type": "OPERATIONAL_DEMAND",
-        "utilake.rows": "384",
-        "utilake.to.file": "PUBLIC_ACTUAL_OPERATIONAL_DEMAND_HH_AREA_20250930.zip",
-        "utilake.to.release": "2025-09",
-        "utilake.to.sha256": "627dc4badb1e8626f91f1acec6ba46a9d4033048aa0998f24f11dbc9fab0af8f",
-        "utilake.to.time": "2025-09-30T23:30:00+10:00",
-        "utilake.total-rows": "96144",
-        "utilake.version": "1"
-      },
-      "timestamp-ms": 1756648800002
-    },
-    {
-      "added-rows": 0,
-      "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DEMANDOPERATIONALACTUAL/metadata/snap-611125610031940845-4-f131c13a-b7d3-81f3-a8a4-024ac9318d8d.avro",
-      "parent-snapshot-id": 2136337555385930834,
       "schema-id": 0,
-      "sequence-number": 4,
+      "sequence-number": 3,
       "snapshot-id": 611125610031940845,
       "summary": {
         "operation": "append",
@@ -587,22 +341,22 @@
         "utilake.to.release": "2025-09",
         "utilake.to.sha256": "064d30a46578a783a6193bce21d8a72c16fb6eb5400a8ca7641265c6c2dbf1b0",
         "utilake.to.time": "2025-10-01T00:00:00+10:00",
-        "utilake.total-rows": "103344",
+        "utilake.total-rows": "102960",
         "utilake.version": "3"
       },
-      "timestamp-ms": 1756648800003
+      "timestamp-ms": 1756648800002
     },
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DEMANDOPERATIONALACTUAL/metadata/snap-3454573047022003492-5-f131c13a-b7d3-81f3-a8a4-024ac9318d8d.avro",
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DEMANDOPERATIONALACTUAL/metadata/snap-3454573047022003492-4-f131c13a-b7d3-81f3-a8a4-024ac9318d8d.avro",
       "parent-snapshot-id": 611125610031940845,
       "schema-id": 1,
-      "sequence-number": 5,
+      "sequence-number": 4,
       "snapshot-id": 3454573047022003492,
       "summary": {
         "operation": "append",
-        "utilake.files": "30",
+        "utilake.files": "1518",
         "utilake.from.file": "PUBLIC_ACTUAL_OPERATIONAL_DEMAND_DAILY_20250901.zip",
         "utilake.from.release": "2025-09",
         "utilake.from.sha256": "4966412f4fbe090b31a2b6b499792c7e21cfe18567aa3236a4a82e3c9635970e",
@@ -610,107 +364,23 @@
         "utilake.kinds": "[\"reports\"]",
         "utilake.report-subtype": "ACTUAL",
         "utilake.report-type": "OPERATIONAL_DEMAND",
-        "utilake.rows": "7200",
-        "utilake.to.file": "PUBLIC_ACTUAL_OPERATIONAL_DEMAND_DAILY_20250901.zip",
-        "utilake.to.release": "2025-09",
-        "utilake.to.sha256": "4966412f4fbe090b31a2b6b499792c7e21cfe18567aa3236a4a82e3c9635970e",
-        "utilake.to.time": "2025-10-01T04:00:00+10:00",
-        "utilake.total-rows": "110544",
-        "utilake.version": "3"
-      },
-      "timestamp-ms": 1756648800004
-    },
-    {
-      "added-rows": 0,
-      "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DEMANDOPERATIONALACTUAL/metadata/snap-3600145537445759638-6-f131c13a-b7d3-81f3-a8a4-024ac9318d8d.avro",
-      "parent-snapshot-id": 3454573047022003492,
-      "schema-id": 2,
-      "sequence-number": 6,
-      "snapshot-id": 3600145537445759638,
-      "summary": {
-        "operation": "append",
-        "utilake.files": "30",
-        "utilake.from.file": "PUBLIC_ACTUAL_OPERATIONAL_DEMAND_DAILY_AREA_20250901.zip",
-        "utilake.from.release": "2025-09",
-        "utilake.from.sha256": "2b2c2f39277a0a355cc72262e610ed43f041898c9d6e9d9be10fa5500fe3c38f",
-        "utilake.from.time": "2025-09-01T04:30:00+10:00",
-        "utilake.kinds": "[\"reports\"]",
-        "utilake.report-subtype": "ACTUAL",
-        "utilake.report-type": "OPERATIONAL_DEMAND",
-        "utilake.rows": "11520",
-        "utilake.to.file": "PUBLIC_ACTUAL_OPERATIONAL_DEMAND_DAILY_AREA_20250901.zip",
-        "utilake.to.release": "2025-09",
-        "utilake.to.sha256": "2b2c2f39277a0a355cc72262e610ed43f041898c9d6e9d9be10fa5500fe3c38f",
-        "utilake.to.time": "2025-10-01T04:00:00+10:00",
-        "utilake.total-rows": "122064",
-        "utilake.version": "1"
-      },
-      "timestamp-ms": 1756648800005
-    },
-    {
-      "added-rows": 0,
-      "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DEMANDOPERATIONALACTUAL/metadata/snap-9163484394795761728-7-f131c13a-b7d3-81f3-a8a4-024ac9318d8d.avro",
-      "parent-snapshot-id": 3600145537445759638,
-      "schema-id": 1,
-      "sequence-number": 7,
-      "snapshot-id": 9163484394795761728,
-      "summary": {
-        "operation": "append",
-        "utilake.files": "1488",
-        "utilake.from.file": "PUBLIC_ACTUAL_OPERATIONAL_DEMAND_HH_20250928.zip",
-        "utilake.from.release": "2025-10",
-        "utilake.from.sha256": "51a0f3f8b6618ea6a8ed34025a23f8b7108b524217f6bf07590dcb68c36fe63e",
-        "utilake.from.time": "2025-10-01T00:00:00+10:00",
-        "utilake.kinds": "[\"reports\"]",
-        "utilake.report-subtype": "ACTUAL",
-        "utilake.report-type": "OPERATIONAL_DEMAND",
-        "utilake.rows": "7440",
+        "utilake.rows": "14640",
         "utilake.to.file": "PUBLIC_ACTUAL_OPERATIONAL_DEMAND_HH_20251026.zip",
         "utilake.to.release": "2025-10",
         "utilake.to.sha256": "d34e12d85a69f0a35a6c8fd74cfca53b021d337202f35b88a948eddf901870de",
         "utilake.to.time": "2025-10-31T23:30:00+10:00",
-        "utilake.total-rows": "129504",
+        "utilake.total-rows": "117600",
         "utilake.version": "3"
       },
-      "timestamp-ms": 1759240800006
+      "timestamp-ms": 1756648800003
     },
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DEMANDOPERATIONALACTUAL/metadata/snap-7883164147944706129-8-f131c13a-b7d3-81f3-a8a4-024ac9318d8d.avro",
-      "parent-snapshot-id": 9163484394795761728,
-      "schema-id": 2,
-      "sequence-number": 8,
-      "snapshot-id": 7883164147944706129,
-      "summary": {
-        "operation": "append",
-        "utilake.files": "1488",
-        "utilake.from.file": "PUBLIC_ACTUAL_OPERATIONAL_DEMAND_HH_AREA_20250930.zip",
-        "utilake.from.release": "2025-10",
-        "utilake.from.sha256": "627dc4badb1e8626f91f1acec6ba46a9d4033048aa0998f24f11dbc9fab0af8f",
-        "utilake.from.time": "2025-10-01T00:00:00+10:00",
-        "utilake.kinds": "[\"reports\"]",
-        "utilake.report-subtype": "ACTUAL",
-        "utilake.report-type": "OPERATIONAL_DEMAND",
-        "utilake.rows": "11904",
-        "utilake.to.file": "PUBLIC_ACTUAL_OPERATIONAL_DEMAND_HH_AREA_20251028.zip",
-        "utilake.to.release": "2025-10",
-        "utilake.to.sha256": "d4b41939d6eeb88cae90250546f6a9cc5539d1c99f5e9f3a9a8f521ee6708aef",
-        "utilake.to.time": "2025-10-31T23:30:00+10:00",
-        "utilake.total-rows": "141408",
-        "utilake.version": "1"
-      },
-      "timestamp-ms": 1759240800007
-    },
-    {
-      "added-rows": 0,
-      "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DEMANDOPERATIONALACTUAL/metadata/snap-1282339828317660910-9-f131c13a-b7d3-81f3-a8a4-024ac9318d8d.avro",
-      "parent-snapshot-id": 7883164147944706129,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DEMANDOPERATIONALACTUAL/metadata/snap-1282339828317660910-5-f131c13a-b7d3-81f3-a8a4-024ac9318d8d.avro",
+      "parent-snapshot-id": 3454573047022003492,
       "schema-id": 0,
-      "sequence-number": 9,
+      "sequence-number": 5,
       "snapshot-id": 1282339828317660910,
       "summary": {
         "operation": "append",
@@ -727,22 +397,22 @@
         "utilake.to.release": "2025-10",
         "utilake.to.sha256": "5cd1ab8ce003df9227c5c35e981769c7cd6523b44e792800d36920d57bf53536",
         "utilake.to.time": "2025-11-01T00:00:00+10:00",
-        "utilake.total-rows": "148848",
+        "utilake.total-rows": "125040",
         "utilake.version": "3"
       },
-      "timestamp-ms": 1759240800008
+      "timestamp-ms": 1759240800004
     },
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DEMANDOPERATIONALACTUAL/metadata/snap-4656152933386384987-10-f131c13a-b7d3-81f3-a8a4-024ac9318d8d.avro",
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DEMANDOPERATIONALACTUAL/metadata/snap-4656152933386384987-6-f131c13a-b7d3-81f3-a8a4-024ac9318d8d.avro",
       "parent-snapshot-id": 1282339828317660910,
       "schema-id": 1,
-      "sequence-number": 10,
+      "sequence-number": 6,
       "snapshot-id": 4656152933386384987,
       "summary": {
         "operation": "append",
-        "utilake.files": "31",
+        "utilake.files": "1471",
         "utilake.from.file": "PUBLIC_ACTUAL_OPERATIONAL_DEMAND_DAILY_20251001.zip",
         "utilake.from.release": "2025-10",
         "utilake.from.sha256": "9358740bd43343aeb3aa5d6e270b3aaa320697f05c008452430b86ce44e92fe2",
@@ -750,107 +420,23 @@
         "utilake.kinds": "[\"reports\"]",
         "utilake.report-subtype": "ACTUAL",
         "utilake.report-type": "OPERATIONAL_DEMAND",
-        "utilake.rows": "7440",
-        "utilake.to.file": "PUBLIC_ACTUAL_OPERATIONAL_DEMAND_DAILY_20251001.zip",
-        "utilake.to.release": "2025-10",
-        "utilake.to.sha256": "9358740bd43343aeb3aa5d6e270b3aaa320697f05c008452430b86ce44e92fe2",
-        "utilake.to.time": "2025-11-01T04:00:00+10:00",
-        "utilake.total-rows": "156288",
-        "utilake.version": "3"
-      },
-      "timestamp-ms": 1759240800009
-    },
-    {
-      "added-rows": 0,
-      "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DEMANDOPERATIONALACTUAL/metadata/snap-2968992989232916-11-f131c13a-b7d3-81f3-a8a4-024ac9318d8d.avro",
-      "parent-snapshot-id": 4656152933386384987,
-      "schema-id": 2,
-      "sequence-number": 11,
-      "snapshot-id": 2968992989232916,
-      "summary": {
-        "operation": "append",
-        "utilake.files": "31",
-        "utilake.from.file": "PUBLIC_ACTUAL_OPERATIONAL_DEMAND_DAILY_AREA_20251001.zip",
-        "utilake.from.release": "2025-10",
-        "utilake.from.sha256": "f884bf928c8631da52fa2830277720791164c3911f06966c39d973387b5fb580",
-        "utilake.from.time": "2025-10-01T04:30:00+10:00",
-        "utilake.kinds": "[\"reports\"]",
-        "utilake.report-subtype": "ACTUAL",
-        "utilake.report-type": "OPERATIONAL_DEMAND",
-        "utilake.rows": "11904",
-        "utilake.to.file": "PUBLIC_ACTUAL_OPERATIONAL_DEMAND_DAILY_AREA_20251001.zip",
-        "utilake.to.release": "2025-10",
-        "utilake.to.sha256": "f884bf928c8631da52fa2830277720791164c3911f06966c39d973387b5fb580",
-        "utilake.to.time": "2025-11-01T04:00:00+10:00",
-        "utilake.total-rows": "168192",
-        "utilake.version": "1"
-      },
-      "timestamp-ms": 1759240800010
-    },
-    {
-      "added-rows": 0,
-      "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DEMANDOPERATIONALACTUAL/metadata/snap-2997540950518770910-12-f131c13a-b7d3-81f3-a8a4-024ac9318d8d.avro",
-      "parent-snapshot-id": 2968992989232916,
-      "schema-id": 1,
-      "sequence-number": 12,
-      "snapshot-id": 2997540950518770910,
-      "summary": {
-        "operation": "append",
-        "utilake.files": "1440",
-        "utilake.from.file": "PUBLIC_ACTUAL_OPERATIONAL_DEMAND_HH_20251026.zip",
-        "utilake.from.release": "2025-11",
-        "utilake.from.sha256": "d34e12d85a69f0a35a6c8fd74cfca53b021d337202f35b88a948eddf901870de",
-        "utilake.from.time": "2025-11-01T00:00:00+10:00",
-        "utilake.kinds": "[\"reports\"]",
-        "utilake.report-subtype": "ACTUAL",
-        "utilake.report-type": "OPERATIONAL_DEMAND",
-        "utilake.rows": "7200",
+        "utilake.rows": "14640",
         "utilake.to.file": "PUBLIC_ACTUAL_OPERATIONAL_DEMAND_HH_20251130.zip",
         "utilake.to.release": "2025-11",
         "utilake.to.sha256": "d9d9196a5c136719cb3012306357e03f6ec9a7ac402ebc610537f69b49e38e61",
         "utilake.to.time": "2025-11-30T23:30:00+10:00",
-        "utilake.total-rows": "175392",
+        "utilake.total-rows": "139680",
         "utilake.version": "3"
       },
-      "timestamp-ms": 1761919200011
+      "timestamp-ms": 1759240800005
     },
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DEMANDOPERATIONALACTUAL/metadata/snap-2478844147027941223-13-f131c13a-b7d3-81f3-a8a4-024ac9318d8d.avro",
-      "parent-snapshot-id": 2997540950518770910,
-      "schema-id": 2,
-      "sequence-number": 13,
-      "snapshot-id": 2478844147027941223,
-      "summary": {
-        "operation": "append",
-        "utilake.files": "1440",
-        "utilake.from.file": "PUBLIC_ACTUAL_OPERATIONAL_DEMAND_HH_AREA_20251028.zip",
-        "utilake.from.release": "2025-11",
-        "utilake.from.sha256": "d4b41939d6eeb88cae90250546f6a9cc5539d1c99f5e9f3a9a8f521ee6708aef",
-        "utilake.from.time": "2025-11-01T00:00:00+10:00",
-        "utilake.kinds": "[\"reports\"]",
-        "utilake.report-subtype": "ACTUAL",
-        "utilake.report-type": "OPERATIONAL_DEMAND",
-        "utilake.rows": "11520",
-        "utilake.to.file": "PUBLIC_ACTUAL_OPERATIONAL_DEMAND_HH_AREA_20251125.zip",
-        "utilake.to.release": "2025-11",
-        "utilake.to.sha256": "6088394ad7270dff93300d0f48b35ab171ed8f01078dbed4a6cbdb3a07e95856",
-        "utilake.to.time": "2025-11-30T23:30:00+10:00",
-        "utilake.total-rows": "186912",
-        "utilake.version": "1"
-      },
-      "timestamp-ms": 1761919200012
-    },
-    {
-      "added-rows": 0,
-      "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DEMANDOPERATIONALACTUAL/metadata/snap-8336463527918787205-14-f131c13a-b7d3-81f3-a8a4-024ac9318d8d.avro",
-      "parent-snapshot-id": 2478844147027941223,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DEMANDOPERATIONALACTUAL/metadata/snap-8336463527918787205-7-f131c13a-b7d3-81f3-a8a4-024ac9318d8d.avro",
+      "parent-snapshot-id": 4656152933386384987,
       "schema-id": 0,
-      "sequence-number": 14,
+      "sequence-number": 7,
       "snapshot-id": 8336463527918787205,
       "summary": {
         "operation": "append",
@@ -867,22 +453,22 @@
         "utilake.to.release": "2025-11",
         "utilake.to.sha256": "c3db548af30b42022796c92b4fc55e1c311cd2dedb306904e81e12b110d5a022",
         "utilake.to.time": "2025-12-01T00:00:00+10:00",
-        "utilake.total-rows": "194112",
+        "utilake.total-rows": "146880",
         "utilake.version": "3"
       },
-      "timestamp-ms": 1761919200013
+      "timestamp-ms": 1761919200006
     },
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DEMANDOPERATIONALACTUAL/metadata/snap-6066432261573144320-15-f131c13a-b7d3-81f3-a8a4-024ac9318d8d.avro",
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DEMANDOPERATIONALACTUAL/metadata/snap-6066432261573144320-8-f131c13a-b7d3-81f3-a8a4-024ac9318d8d.avro",
       "parent-snapshot-id": 8336463527918787205,
       "schema-id": 1,
-      "sequence-number": 15,
+      "sequence-number": 8,
       "snapshot-id": 6066432261573144320,
       "summary": {
         "operation": "append",
-        "utilake.files": "30",
+        "utilake.files": "1518",
         "utilake.from.file": "PUBLIC_ACTUAL_OPERATIONAL_DEMAND_DAILY_20251101.zip",
         "utilake.from.release": "2025-11",
         "utilake.from.sha256": "270765afb8f886aec32e8da890bb0258664adc98f64697446c5d13107eae9612",
@@ -890,107 +476,23 @@
         "utilake.kinds": "[\"reports\"]",
         "utilake.report-subtype": "ACTUAL",
         "utilake.report-type": "OPERATIONAL_DEMAND",
-        "utilake.rows": "7200",
-        "utilake.to.file": "PUBLIC_ACTUAL_OPERATIONAL_DEMAND_DAILY_20251101.zip",
-        "utilake.to.release": "2025-11",
-        "utilake.to.sha256": "270765afb8f886aec32e8da890bb0258664adc98f64697446c5d13107eae9612",
-        "utilake.to.time": "2025-12-01T04:00:00+10:00",
-        "utilake.total-rows": "201312",
-        "utilake.version": "3"
-      },
-      "timestamp-ms": 1761919200014
-    },
-    {
-      "added-rows": 0,
-      "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DEMANDOPERATIONALACTUAL/metadata/snap-3775666357791616324-16-f131c13a-b7d3-81f3-a8a4-024ac9318d8d.avro",
-      "parent-snapshot-id": 6066432261573144320,
-      "schema-id": 2,
-      "sequence-number": 16,
-      "snapshot-id": 3775666357791616324,
-      "summary": {
-        "operation": "append",
-        "utilake.files": "30",
-        "utilake.from.file": "PUBLIC_ACTUAL_OPERATIONAL_DEMAND_DAILY_AREA_20251101.zip",
-        "utilake.from.release": "2025-11",
-        "utilake.from.sha256": "79aacd743cc4a1b87b63aa194de6415d8b3c73e5d44344cb832a63a53c0a55d2",
-        "utilake.from.time": "2025-11-01T04:30:00+10:00",
-        "utilake.kinds": "[\"reports\"]",
-        "utilake.report-subtype": "ACTUAL",
-        "utilake.report-type": "OPERATIONAL_DEMAND",
-        "utilake.rows": "11520",
-        "utilake.to.file": "PUBLIC_ACTUAL_OPERATIONAL_DEMAND_DAILY_AREA_20251101.zip",
-        "utilake.to.release": "2025-11",
-        "utilake.to.sha256": "79aacd743cc4a1b87b63aa194de6415d8b3c73e5d44344cb832a63a53c0a55d2",
-        "utilake.to.time": "2025-12-01T04:00:00+10:00",
-        "utilake.total-rows": "212832",
-        "utilake.version": "1"
-      },
-      "timestamp-ms": 1761919200015
-    },
-    {
-      "added-rows": 0,
-      "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DEMANDOPERATIONALACTUAL/metadata/snap-5042497521892216699-17-f131c13a-b7d3-81f3-a8a4-024ac9318d8d.avro",
-      "parent-snapshot-id": 3775666357791616324,
-      "schema-id": 1,
-      "sequence-number": 17,
-      "snapshot-id": 5042497521892216699,
-      "summary": {
-        "operation": "append",
-        "utilake.files": "1488",
-        "utilake.from.file": "PUBLIC_ACTUAL_OPERATIONAL_DEMAND_HH_20251130.zip",
-        "utilake.from.release": "2025-12",
-        "utilake.from.sha256": "d9d9196a5c136719cb3012306357e03f6ec9a7ac402ebc610537f69b49e38e61",
-        "utilake.from.time": "2025-12-01T00:00:00+10:00",
-        "utilake.kinds": "[\"reports\"]",
-        "utilake.report-subtype": "ACTUAL",
-        "utilake.report-type": "OPERATIONAL_DEMAND",
-        "utilake.rows": "7440",
+        "utilake.rows": "14640",
         "utilake.to.file": "PUBLIC_ACTUAL_OPERATIONAL_DEMAND_HH_20251228.zip",
         "utilake.to.release": "2025-12",
         "utilake.to.sha256": "11c3649fab8060fd3ebe9f54f1db4d0d7dc867b67170124206e93b14dda58b7f",
         "utilake.to.time": "2025-12-31T23:30:00+10:00",
-        "utilake.total-rows": "220272",
+        "utilake.total-rows": "161520",
         "utilake.version": "3"
       },
-      "timestamp-ms": 1764511200016
+      "timestamp-ms": 1761919200007
     },
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DEMANDOPERATIONALACTUAL/metadata/snap-3674122113742700147-18-f131c13a-b7d3-81f3-a8a4-024ac9318d8d.avro",
-      "parent-snapshot-id": 5042497521892216699,
-      "schema-id": 2,
-      "sequence-number": 18,
-      "snapshot-id": 3674122113742700147,
-      "summary": {
-        "operation": "append",
-        "utilake.files": "1488",
-        "utilake.from.file": "PUBLIC_ACTUAL_OPERATIONAL_DEMAND_HH_AREA_20251125.zip",
-        "utilake.from.release": "2025-12",
-        "utilake.from.sha256": "6088394ad7270dff93300d0f48b35ab171ed8f01078dbed4a6cbdb3a07e95856",
-        "utilake.from.time": "2025-12-01T00:00:00+10:00",
-        "utilake.kinds": "[\"reports\"]",
-        "utilake.report-subtype": "ACTUAL",
-        "utilake.report-type": "OPERATIONAL_DEMAND",
-        "utilake.rows": "11904",
-        "utilake.to.file": "PUBLIC_ACTUAL_OPERATIONAL_DEMAND_HH_AREA_20251230.zip",
-        "utilake.to.release": "2025-12",
-        "utilake.to.sha256": "b03647315ef61cf927244cac52e0b8da6f8daaf95d28620e4ad481423e657abc",
-        "utilake.to.time": "2025-12-31T23:30:00+10:00",
-        "utilake.total-rows": "232176",
-        "utilake.version": "1"
-      },
-      "timestamp-ms": 1764511200017
-    },
-    {
-      "added-rows": 0,
-      "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DEMANDOPERATIONALACTUAL/metadata/snap-1772404962641430563-19-f131c13a-b7d3-81f3-a8a4-024ac9318d8d.avro",
-      "parent-snapshot-id": 3674122113742700147,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DEMANDOPERATIONALACTUAL/metadata/snap-1772404962641430563-9-f131c13a-b7d3-81f3-a8a4-024ac9318d8d.avro",
+      "parent-snapshot-id": 6066432261573144320,
       "schema-id": 0,
-      "sequence-number": 19,
+      "sequence-number": 9,
       "snapshot-id": 1772404962641430563,
       "summary": {
         "operation": "append",
@@ -1007,22 +509,22 @@
         "utilake.to.release": "2025-12",
         "utilake.to.sha256": "3b1f5d381c19e131f60b44e0ce21862af1f79f065b46acaba00617b4a9f7f9f4",
         "utilake.to.time": "2026-01-01T00:00:00+10:00",
-        "utilake.total-rows": "239616",
+        "utilake.total-rows": "168960",
         "utilake.version": "3"
       },
-      "timestamp-ms": 1764511200018
+      "timestamp-ms": 1764511200008
     },
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DEMANDOPERATIONALACTUAL/metadata/snap-2442649556129135029-20-f131c13a-b7d3-81f3-a8a4-024ac9318d8d.avro",
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DEMANDOPERATIONALACTUAL/metadata/snap-2442649556129135029-10-f131c13a-b7d3-81f3-a8a4-024ac9318d8d.avro",
       "parent-snapshot-id": 1772404962641430563,
       "schema-id": 1,
-      "sequence-number": 20,
+      "sequence-number": 10,
       "snapshot-id": 2442649556129135029,
       "summary": {
         "operation": "append",
-        "utilake.files": "31",
+        "utilake.files": "1519",
         "utilake.from.file": "PUBLIC_ACTUAL_OPERATIONAL_DEMAND_DAILY_20251201.zip",
         "utilake.from.release": "2025-12",
         "utilake.from.sha256": "591b87cc5d3831cd03cd5b0c4034aa4a0894129104e91e7bd9b06fb172a5db22",
@@ -1030,107 +532,23 @@
         "utilake.kinds": "[\"reports\"]",
         "utilake.report-subtype": "ACTUAL",
         "utilake.report-type": "OPERATIONAL_DEMAND",
-        "utilake.rows": "7440",
-        "utilake.to.file": "PUBLIC_ACTUAL_OPERATIONAL_DEMAND_DAILY_20251201.zip",
-        "utilake.to.release": "2025-12",
-        "utilake.to.sha256": "591b87cc5d3831cd03cd5b0c4034aa4a0894129104e91e7bd9b06fb172a5db22",
-        "utilake.to.time": "2026-01-01T04:00:00+10:00",
-        "utilake.total-rows": "247056",
-        "utilake.version": "3"
-      },
-      "timestamp-ms": 1764511200019
-    },
-    {
-      "added-rows": 0,
-      "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DEMANDOPERATIONALACTUAL/metadata/snap-3842094535335738952-21-f131c13a-b7d3-81f3-a8a4-024ac9318d8d.avro",
-      "parent-snapshot-id": 2442649556129135029,
-      "schema-id": 2,
-      "sequence-number": 21,
-      "snapshot-id": 3842094535335738952,
-      "summary": {
-        "operation": "append",
-        "utilake.files": "31",
-        "utilake.from.file": "PUBLIC_ACTUAL_OPERATIONAL_DEMAND_DAILY_AREA_20251201.zip",
-        "utilake.from.release": "2025-12",
-        "utilake.from.sha256": "8efd4997d6bc074416be5a8e3669b60f92ca30b421f27f14c2e199daa4323a6c",
-        "utilake.from.time": "2025-12-01T04:30:00+10:00",
-        "utilake.kinds": "[\"reports\"]",
-        "utilake.report-subtype": "ACTUAL",
-        "utilake.report-type": "OPERATIONAL_DEMAND",
-        "utilake.rows": "11904",
-        "utilake.to.file": "PUBLIC_ACTUAL_OPERATIONAL_DEMAND_DAILY_AREA_20251201.zip",
-        "utilake.to.release": "2025-12",
-        "utilake.to.sha256": "8efd4997d6bc074416be5a8e3669b60f92ca30b421f27f14c2e199daa4323a6c",
-        "utilake.to.time": "2026-01-01T04:00:00+10:00",
-        "utilake.total-rows": "258960",
-        "utilake.version": "1"
-      },
-      "timestamp-ms": 1764511200020
-    },
-    {
-      "added-rows": 0,
-      "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DEMANDOPERATIONALACTUAL/metadata/snap-8595681305460784451-22-f131c13a-b7d3-81f3-a8a4-024ac9318d8d.avro",
-      "parent-snapshot-id": 3842094535335738952,
-      "schema-id": 1,
-      "sequence-number": 22,
-      "snapshot-id": 8595681305460784451,
-      "summary": {
-        "operation": "append",
-        "utilake.files": "1488",
-        "utilake.from.file": "PUBLIC_ACTUAL_OPERATIONAL_DEMAND_HH_20251228.zip",
-        "utilake.from.release": "2026-01",
-        "utilake.from.sha256": "11c3649fab8060fd3ebe9f54f1db4d0d7dc867b67170124206e93b14dda58b7f",
-        "utilake.from.time": "2026-01-01T00:00:00+10:00",
-        "utilake.kinds": "[\"reports\"]",
-        "utilake.report-subtype": "ACTUAL",
-        "utilake.report-type": "OPERATIONAL_DEMAND",
-        "utilake.rows": "7440",
+        "utilake.rows": "14880",
         "utilake.to.file": "PUBLIC_ACTUAL_OPERATIONAL_DEMAND_HH_20260125.zip",
         "utilake.to.release": "2026-01",
         "utilake.to.sha256": "c509f3521ec2327e8f929cc6dafed32797efd44f98868ef47712bb2e5425b19c",
         "utilake.to.time": "2026-01-31T23:30:00+10:00",
-        "utilake.total-rows": "266400",
+        "utilake.total-rows": "183840",
         "utilake.version": "3"
       },
-      "timestamp-ms": 1767189600021
+      "timestamp-ms": 1764511200009
     },
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DEMANDOPERATIONALACTUAL/metadata/snap-4890849480897111509-23-f131c13a-b7d3-81f3-a8a4-024ac9318d8d.avro",
-      "parent-snapshot-id": 8595681305460784451,
-      "schema-id": 2,
-      "sequence-number": 23,
-      "snapshot-id": 4890849480897111509,
-      "summary": {
-        "operation": "append",
-        "utilake.files": "1488",
-        "utilake.from.file": "PUBLIC_ACTUAL_OPERATIONAL_DEMAND_HH_AREA_20251230.zip",
-        "utilake.from.release": "2026-01",
-        "utilake.from.sha256": "b03647315ef61cf927244cac52e0b8da6f8daaf95d28620e4ad481423e657abc",
-        "utilake.from.time": "2026-01-01T00:00:00+10:00",
-        "utilake.kinds": "[\"reports\"]",
-        "utilake.report-subtype": "ACTUAL",
-        "utilake.report-type": "OPERATIONAL_DEMAND",
-        "utilake.rows": "11904",
-        "utilake.to.file": "PUBLIC_ACTUAL_OPERATIONAL_DEMAND_HH_AREA_20260127.zip",
-        "utilake.to.release": "2026-01",
-        "utilake.to.sha256": "333061bae983b6e949b796e3581e14c927cb8aaa6a437d5b5808c6e54da6d263",
-        "utilake.to.time": "2026-01-31T23:30:00+10:00",
-        "utilake.total-rows": "278304",
-        "utilake.version": "1"
-      },
-      "timestamp-ms": 1767189600022
-    },
-    {
-      "added-rows": 0,
-      "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DEMANDOPERATIONALACTUAL/metadata/snap-8373614003501106659-24-f131c13a-b7d3-81f3-a8a4-024ac9318d8d.avro",
-      "parent-snapshot-id": 4890849480897111509,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DEMANDOPERATIONALACTUAL/metadata/snap-8373614003501106659-11-f131c13a-b7d3-81f3-a8a4-024ac9318d8d.avro",
+      "parent-snapshot-id": 2442649556129135029,
       "schema-id": 0,
-      "sequence-number": 24,
+      "sequence-number": 11,
       "snapshot-id": 8373614003501106659,
       "summary": {
         "operation": "append",
@@ -1147,22 +565,22 @@
         "utilake.to.release": "2026-01",
         "utilake.to.sha256": "5961be3a4471c026f3ac7a022dbee31484a9c004f9bece3dff2b65d824003941",
         "utilake.to.time": "2026-02-01T00:00:00+10:00",
-        "utilake.total-rows": "285744",
+        "utilake.total-rows": "191280",
         "utilake.version": "3"
       },
-      "timestamp-ms": 1767189600023
+      "timestamp-ms": 1767189600010
     },
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DEMANDOPERATIONALACTUAL/metadata/snap-1727597021958022314-25-f131c13a-b7d3-81f3-a8a4-024ac9318d8d.avro",
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DEMANDOPERATIONALACTUAL/metadata/snap-1727597021958022314-12-f131c13a-b7d3-81f3-a8a4-024ac9318d8d.avro",
       "parent-snapshot-id": 8373614003501106659,
       "schema-id": 1,
-      "sequence-number": 25,
+      "sequence-number": 12,
       "snapshot-id": 1727597021958022314,
       "summary": {
         "operation": "append",
-        "utilake.files": "31",
+        "utilake.files": "1375",
         "utilake.from.file": "PUBLIC_ACTUAL_OPERATIONAL_DEMAND_DAILY_20260101.zip",
         "utilake.from.release": "2026-01",
         "utilake.from.sha256": "45dfff02846ba2035b309349eea18d31a062ee02e25d59e3393d74fda835d9d3",
@@ -1170,107 +588,23 @@
         "utilake.kinds": "[\"reports\"]",
         "utilake.report-subtype": "ACTUAL",
         "utilake.report-type": "OPERATIONAL_DEMAND",
-        "utilake.rows": "7440",
-        "utilake.to.file": "PUBLIC_ACTUAL_OPERATIONAL_DEMAND_DAILY_20260101.zip",
-        "utilake.to.release": "2026-01",
-        "utilake.to.sha256": "45dfff02846ba2035b309349eea18d31a062ee02e25d59e3393d74fda835d9d3",
-        "utilake.to.time": "2026-02-01T04:00:00+10:00",
-        "utilake.total-rows": "293184",
-        "utilake.version": "3"
-      },
-      "timestamp-ms": 1767189600024
-    },
-    {
-      "added-rows": 0,
-      "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DEMANDOPERATIONALACTUAL/metadata/snap-1689050998678363731-26-f131c13a-b7d3-81f3-a8a4-024ac9318d8d.avro",
-      "parent-snapshot-id": 1727597021958022314,
-      "schema-id": 2,
-      "sequence-number": 26,
-      "snapshot-id": 1689050998678363731,
-      "summary": {
-        "operation": "append",
-        "utilake.files": "31",
-        "utilake.from.file": "PUBLIC_ACTUAL_OPERATIONAL_DEMAND_DAILY_AREA_20260101.zip",
-        "utilake.from.release": "2026-01",
-        "utilake.from.sha256": "99051e4a2c0f701e7574dacc0ea981698ca3ba0c2f40fb3f9a80142391cc7b64",
-        "utilake.from.time": "2026-01-01T04:30:00+10:00",
-        "utilake.kinds": "[\"reports\"]",
-        "utilake.report-subtype": "ACTUAL",
-        "utilake.report-type": "OPERATIONAL_DEMAND",
-        "utilake.rows": "11904",
-        "utilake.to.file": "PUBLIC_ACTUAL_OPERATIONAL_DEMAND_DAILY_AREA_20260101.zip",
-        "utilake.to.release": "2026-01",
-        "utilake.to.sha256": "99051e4a2c0f701e7574dacc0ea981698ca3ba0c2f40fb3f9a80142391cc7b64",
-        "utilake.to.time": "2026-02-01T04:00:00+10:00",
-        "utilake.total-rows": "305088",
-        "utilake.version": "1"
-      },
-      "timestamp-ms": 1767189600025
-    },
-    {
-      "added-rows": 0,
-      "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DEMANDOPERATIONALACTUAL/metadata/snap-7550651519864631368-27-f131c13a-b7d3-81f3-a8a4-024ac9318d8d.avro",
-      "parent-snapshot-id": 1689050998678363731,
-      "schema-id": 1,
-      "sequence-number": 27,
-      "snapshot-id": 7550651519864631368,
-      "summary": {
-        "operation": "append",
-        "utilake.files": "1344",
-        "utilake.from.file": "PUBLIC_ACTUAL_OPERATIONAL_DEMAND_HH_20260201.zip",
-        "utilake.from.release": "2026-02",
-        "utilake.from.sha256": "815385fde9569a805e0e37699c040b746fee03a77c6726a7f48b354022cca430",
-        "utilake.from.time": "2026-02-01T00:00:00+10:00",
-        "utilake.kinds": "[\"reports\"]",
-        "utilake.report-subtype": "ACTUAL",
-        "utilake.report-type": "OPERATIONAL_DEMAND",
-        "utilake.rows": "6720",
+        "utilake.rows": "14160",
         "utilake.to.file": "PUBLIC_ACTUAL_OPERATIONAL_DEMAND_HH_20260222.zip",
         "utilake.to.release": "2026-02",
         "utilake.to.sha256": "7608ba0161afa94138740fb0770e24a869eea9cd8409a6e67d1275d4b39593d2",
         "utilake.to.time": "2026-02-28T23:30:00+10:00",
-        "utilake.total-rows": "311808",
+        "utilake.total-rows": "205440",
         "utilake.version": "3"
       },
-      "timestamp-ms": 1769868000026
+      "timestamp-ms": 1767189600011
     },
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DEMANDOPERATIONALACTUAL/metadata/snap-2352403795971713057-28-f131c13a-b7d3-81f3-a8a4-024ac9318d8d.avro",
-      "parent-snapshot-id": 7550651519864631368,
-      "schema-id": 2,
-      "sequence-number": 28,
-      "snapshot-id": 2352403795971713057,
-      "summary": {
-        "operation": "append",
-        "utilake.files": "1344",
-        "utilake.from.file": "PUBLIC_ACTUAL_OPERATIONAL_DEMAND_HH_AREA_20260127.zip",
-        "utilake.from.release": "2026-02",
-        "utilake.from.sha256": "333061bae983b6e949b796e3581e14c927cb8aaa6a437d5b5808c6e54da6d263",
-        "utilake.from.time": "2026-02-01T00:00:00+10:00",
-        "utilake.kinds": "[\"reports\"]",
-        "utilake.report-subtype": "ACTUAL",
-        "utilake.report-type": "OPERATIONAL_DEMAND",
-        "utilake.rows": "10752",
-        "utilake.to.file": "PUBLIC_ACTUAL_OPERATIONAL_DEMAND_HH_AREA_20260224.zip",
-        "utilake.to.release": "2026-02",
-        "utilake.to.sha256": "2db89d6cd176452dc67331ce1dccb1d8aa5662c197c20dda054d9c1a36b38109",
-        "utilake.to.time": "2026-02-28T23:30:00+10:00",
-        "utilake.total-rows": "322560",
-        "utilake.version": "1"
-      },
-      "timestamp-ms": 1769868000027
-    },
-    {
-      "added-rows": 0,
-      "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DEMANDOPERATIONALACTUAL/metadata/snap-5482080548847723715-29-f131c13a-b7d3-81f3-a8a4-024ac9318d8d.avro",
-      "parent-snapshot-id": 2352403795971713057,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DEMANDOPERATIONALACTUAL/metadata/snap-5482080548847723715-13-f131c13a-b7d3-81f3-a8a4-024ac9318d8d.avro",
+      "parent-snapshot-id": 1727597021958022314,
       "schema-id": 0,
-      "sequence-number": 29,
+      "sequence-number": 13,
       "snapshot-id": 5482080548847723715,
       "summary": {
         "operation": "append",
@@ -1287,22 +621,22 @@
         "utilake.to.release": "2026-02",
         "utilake.to.sha256": "08f38a9d1c4949be6b51d4746039bd81f14bdba5dff9ba5563c313fb1716660a",
         "utilake.to.time": "2026-03-01T00:00:00+10:00",
-        "utilake.total-rows": "329280",
+        "utilake.total-rows": "212160",
         "utilake.version": "3"
       },
-      "timestamp-ms": 1769868000028
+      "timestamp-ms": 1769868000012
     },
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DEMANDOPERATIONALACTUAL/metadata/snap-6988146516985052373-30-f131c13a-b7d3-81f3-a8a4-024ac9318d8d.avro",
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DEMANDOPERATIONALACTUAL/metadata/snap-6988146516985052373-14-f131c13a-b7d3-81f3-a8a4-024ac9318d8d.avro",
       "parent-snapshot-id": 5482080548847723715,
       "schema-id": 1,
-      "sequence-number": 30,
+      "sequence-number": 14,
       "snapshot-id": 6988146516985052373,
       "summary": {
         "operation": "append",
-        "utilake.files": "28",
+        "utilake.files": "1516",
         "utilake.from.file": "PUBLIC_ACTUAL_OPERATIONAL_DEMAND_DAILY_20260201.zip",
         "utilake.from.release": "2026-02",
         "utilake.from.sha256": "79d238bc88fd67b29c053487baebc8308086bcec8e49a97a243a7f6879318afa",
@@ -1310,107 +644,23 @@
         "utilake.kinds": "[\"reports\"]",
         "utilake.report-subtype": "ACTUAL",
         "utilake.report-type": "OPERATIONAL_DEMAND",
-        "utilake.rows": "6720",
-        "utilake.to.file": "PUBLIC_ACTUAL_OPERATIONAL_DEMAND_DAILY_20260201.zip",
-        "utilake.to.release": "2026-02",
-        "utilake.to.sha256": "79d238bc88fd67b29c053487baebc8308086bcec8e49a97a243a7f6879318afa",
-        "utilake.to.time": "2026-03-01T04:00:00+10:00",
-        "utilake.total-rows": "336000",
-        "utilake.version": "3"
-      },
-      "timestamp-ms": 1769868000029
-    },
-    {
-      "added-rows": 0,
-      "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DEMANDOPERATIONALACTUAL/metadata/snap-5685953199588252804-31-f131c13a-b7d3-81f3-a8a4-024ac9318d8d.avro",
-      "parent-snapshot-id": 6988146516985052373,
-      "schema-id": 2,
-      "sequence-number": 31,
-      "snapshot-id": 5685953199588252804,
-      "summary": {
-        "operation": "append",
-        "utilake.files": "28",
-        "utilake.from.file": "PUBLIC_ACTUAL_OPERATIONAL_DEMAND_DAILY_AREA_20260201.zip",
-        "utilake.from.release": "2026-02",
-        "utilake.from.sha256": "555571fe690aad828cfa7f72c125638dfcead9b1562c5e8dad810a46cee51953",
-        "utilake.from.time": "2026-02-01T04:30:00+10:00",
-        "utilake.kinds": "[\"reports\"]",
-        "utilake.report-subtype": "ACTUAL",
-        "utilake.report-type": "OPERATIONAL_DEMAND",
-        "utilake.rows": "10752",
-        "utilake.to.file": "PUBLIC_ACTUAL_OPERATIONAL_DEMAND_DAILY_AREA_20260201.zip",
-        "utilake.to.release": "2026-02",
-        "utilake.to.sha256": "555571fe690aad828cfa7f72c125638dfcead9b1562c5e8dad810a46cee51953",
-        "utilake.to.time": "2026-03-01T04:00:00+10:00",
-        "utilake.total-rows": "346752",
-        "utilake.version": "1"
-      },
-      "timestamp-ms": 1769868000030
-    },
-    {
-      "added-rows": 0,
-      "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DEMANDOPERATIONALACTUAL/metadata/snap-3430741111445970316-32-f131c13a-b7d3-81f3-a8a4-024ac9318d8d.avro",
-      "parent-snapshot-id": 5685953199588252804,
-      "schema-id": 1,
-      "sequence-number": 32,
-      "snapshot-id": 3430741111445970316,
-      "summary": {
-        "operation": "append",
-        "utilake.files": "1488",
-        "utilake.from.file": "PUBLIC_ACTUAL_OPERATIONAL_DEMAND_HH_20260301.zip",
-        "utilake.from.release": "2026-03",
-        "utilake.from.sha256": "b1e147758555b6e37439f8bbaca1c404c4411d1f1a388bb49e80483c96a174c4",
-        "utilake.from.time": "2026-03-01T00:00:00+10:00",
-        "utilake.kinds": "[\"reports\"]",
-        "utilake.report-subtype": "ACTUAL",
-        "utilake.report-type": "OPERATIONAL_DEMAND",
-        "utilake.rows": "7440",
+        "utilake.rows": "14160",
         "utilake.to.file": "PUBLIC_ACTUAL_OPERATIONAL_DEMAND_HH_20260329.zip",
         "utilake.to.release": "2026-03",
         "utilake.to.sha256": "62f54d305877226379ef97ca141ed5ee5b945273ae4c0736e0990d13734f2f1d",
         "utilake.to.time": "2026-03-31T23:30:00+10:00",
-        "utilake.total-rows": "354192",
+        "utilake.total-rows": "226320",
         "utilake.version": "3"
       },
-      "timestamp-ms": 1772287200031
+      "timestamp-ms": 1769868000013
     },
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DEMANDOPERATIONALACTUAL/metadata/snap-4198127193027450481-33-f131c13a-b7d3-81f3-a8a4-024ac9318d8d.avro",
-      "parent-snapshot-id": 3430741111445970316,
-      "schema-id": 2,
-      "sequence-number": 33,
-      "snapshot-id": 4198127193027450481,
-      "summary": {
-        "operation": "append",
-        "utilake.files": "1488",
-        "utilake.from.file": "PUBLIC_ACTUAL_OPERATIONAL_DEMAND_HH_AREA_20260224.zip",
-        "utilake.from.release": "2026-03",
-        "utilake.from.sha256": "2db89d6cd176452dc67331ce1dccb1d8aa5662c197c20dda054d9c1a36b38109",
-        "utilake.from.time": "2026-03-01T00:00:00+10:00",
-        "utilake.kinds": "[\"reports\"]",
-        "utilake.report-subtype": "ACTUAL",
-        "utilake.report-type": "OPERATIONAL_DEMAND",
-        "utilake.rows": "11904",
-        "utilake.to.file": "PUBLIC_ACTUAL_OPERATIONAL_DEMAND_HH_AREA_20260331.zip",
-        "utilake.to.release": "2026-03",
-        "utilake.to.sha256": "adb8e5ff896fdf43fde6cd9d2a5ef79041c144cdb6a4ede73a6b5859db0dea03",
-        "utilake.to.time": "2026-03-31T23:30:00+10:00",
-        "utilake.total-rows": "366096",
-        "utilake.version": "1"
-      },
-      "timestamp-ms": 1772287200032
-    },
-    {
-      "added-rows": 0,
-      "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DEMANDOPERATIONALACTUAL/metadata/snap-3890735797714807193-34-f131c13a-b7d3-81f3-a8a4-024ac9318d8d.avro",
-      "parent-snapshot-id": 4198127193027450481,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DEMANDOPERATIONALACTUAL/metadata/snap-3890735797714807193-15-f131c13a-b7d3-81f3-a8a4-024ac9318d8d.avro",
+      "parent-snapshot-id": 6988146516985052373,
       "schema-id": 0,
-      "sequence-number": 34,
+      "sequence-number": 15,
       "snapshot-id": 3890735797714807193,
       "summary": {
         "operation": "append",
@@ -1427,22 +677,22 @@
         "utilake.to.release": "2026-03",
         "utilake.to.sha256": "72d8813631145a0a8ee16bba8b3022000ba060811d9c087387771acff54a6eb7",
         "utilake.to.time": "2026-04-01T00:00:00+10:00",
-        "utilake.total-rows": "373536",
+        "utilake.total-rows": "233760",
         "utilake.version": "3"
       },
-      "timestamp-ms": 1772287200033
+      "timestamp-ms": 1772287200014
     },
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DEMANDOPERATIONALACTUAL/metadata/snap-90928780881029014-35-f131c13a-b7d3-81f3-a8a4-024ac9318d8d.avro",
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DEMANDOPERATIONALACTUAL/metadata/snap-90928780881029014-16-f131c13a-b7d3-81f3-a8a4-024ac9318d8d.avro",
       "parent-snapshot-id": 3890735797714807193,
       "schema-id": 1,
-      "sequence-number": 35,
+      "sequence-number": 16,
       "snapshot-id": 90928780881029014,
       "summary": {
         "operation": "append",
-        "utilake.files": "31",
+        "utilake.files": "1471",
         "utilake.from.file": "PUBLIC_ACTUAL_OPERATIONAL_DEMAND_DAILY_20260301.zip",
         "utilake.from.release": "2026-03",
         "utilake.from.sha256": "24ea97ba52b67668c4d1b4b8dccf39391466af4e3a23a28669b9223a707a4c74",
@@ -1450,107 +700,23 @@
         "utilake.kinds": "[\"reports\"]",
         "utilake.report-subtype": "ACTUAL",
         "utilake.report-type": "OPERATIONAL_DEMAND",
-        "utilake.rows": "7440",
-        "utilake.to.file": "PUBLIC_ACTUAL_OPERATIONAL_DEMAND_DAILY_20260301.zip",
-        "utilake.to.release": "2026-03",
-        "utilake.to.sha256": "24ea97ba52b67668c4d1b4b8dccf39391466af4e3a23a28669b9223a707a4c74",
-        "utilake.to.time": "2026-04-01T04:00:00+10:00",
-        "utilake.total-rows": "380976",
-        "utilake.version": "3"
-      },
-      "timestamp-ms": 1772287200034
-    },
-    {
-      "added-rows": 0,
-      "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DEMANDOPERATIONALACTUAL/metadata/snap-8696173326575314720-36-f131c13a-b7d3-81f3-a8a4-024ac9318d8d.avro",
-      "parent-snapshot-id": 90928780881029014,
-      "schema-id": 2,
-      "sequence-number": 36,
-      "snapshot-id": 8696173326575314720,
-      "summary": {
-        "operation": "append",
-        "utilake.files": "31",
-        "utilake.from.file": "PUBLIC_ACTUAL_OPERATIONAL_DEMAND_DAILY_AREA_20260301.zip",
-        "utilake.from.release": "2026-03",
-        "utilake.from.sha256": "ca7318845fcd9cb9254f853240716f933688c3fb22ee2a5df5906b4e4dd75d55",
-        "utilake.from.time": "2026-03-01T04:30:00+10:00",
-        "utilake.kinds": "[\"reports\"]",
-        "utilake.report-subtype": "ACTUAL",
-        "utilake.report-type": "OPERATIONAL_DEMAND",
-        "utilake.rows": "11904",
-        "utilake.to.file": "PUBLIC_ACTUAL_OPERATIONAL_DEMAND_DAILY_AREA_20260301.zip",
-        "utilake.to.release": "2026-03",
-        "utilake.to.sha256": "ca7318845fcd9cb9254f853240716f933688c3fb22ee2a5df5906b4e4dd75d55",
-        "utilake.to.time": "2026-04-01T04:00:00+10:00",
-        "utilake.total-rows": "392880",
-        "utilake.version": "1"
-      },
-      "timestamp-ms": 1772287200035
-    },
-    {
-      "added-rows": 0,
-      "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DEMANDOPERATIONALACTUAL/metadata/snap-3252356069636587212-37-f131c13a-b7d3-81f3-a8a4-024ac9318d8d.avro",
-      "parent-snapshot-id": 8696173326575314720,
-      "schema-id": 1,
-      "sequence-number": 37,
-      "snapshot-id": 3252356069636587212,
-      "summary": {
-        "operation": "append",
-        "utilake.files": "1440",
-        "utilake.from.file": "PUBLIC_ACTUAL_OPERATIONAL_DEMAND_HH_20260329.zip",
-        "utilake.from.release": "2026-04",
-        "utilake.from.sha256": "62f54d305877226379ef97ca141ed5ee5b945273ae4c0736e0990d13734f2f1d",
-        "utilake.from.time": "2026-04-01T00:00:00+10:00",
-        "utilake.kinds": "[\"reports\"]",
-        "utilake.report-subtype": "ACTUAL",
-        "utilake.report-type": "OPERATIONAL_DEMAND",
-        "utilake.rows": "7200",
+        "utilake.rows": "14640",
         "utilake.to.file": "PUBLIC_ACTUAL_OPERATIONAL_DEMAND_HH_20260426.zip",
         "utilake.to.release": "2026-04",
         "utilake.to.sha256": "b61da34e55f911ac930d0d5b95d1ffd953e9fb4d9cb8d48e80f63ae5fc49076d",
         "utilake.to.time": "2026-04-30T23:30:00+10:00",
-        "utilake.total-rows": "400080",
+        "utilake.total-rows": "248400",
         "utilake.version": "3"
       },
-      "timestamp-ms": 1774965600036
+      "timestamp-ms": 1772287200015
     },
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DEMANDOPERATIONALACTUAL/metadata/snap-2314161182246079954-38-f131c13a-b7d3-81f3-a8a4-024ac9318d8d.avro",
-      "parent-snapshot-id": 3252356069636587212,
-      "schema-id": 2,
-      "sequence-number": 38,
-      "snapshot-id": 2314161182246079954,
-      "summary": {
-        "operation": "append",
-        "utilake.files": "1440",
-        "utilake.from.file": "PUBLIC_ACTUAL_OPERATIONAL_DEMAND_HH_AREA_20260331.zip",
-        "utilake.from.release": "2026-04",
-        "utilake.from.sha256": "adb8e5ff896fdf43fde6cd9d2a5ef79041c144cdb6a4ede73a6b5859db0dea03",
-        "utilake.from.time": "2026-04-01T00:00:00+10:00",
-        "utilake.kinds": "[\"reports\"]",
-        "utilake.report-subtype": "ACTUAL",
-        "utilake.report-type": "OPERATIONAL_DEMAND",
-        "utilake.rows": "11520",
-        "utilake.to.file": "PUBLIC_ACTUAL_OPERATIONAL_DEMAND_HH_AREA_20260428.zip",
-        "utilake.to.release": "2026-04",
-        "utilake.to.sha256": "15b90cb684a43c7c2361f7a0442b73a75a6d0cff28221e4e5852557d2281e73a",
-        "utilake.to.time": "2026-04-30T23:30:00+10:00",
-        "utilake.total-rows": "411600",
-        "utilake.version": "1"
-      },
-      "timestamp-ms": 1774965600037
-    },
-    {
-      "added-rows": 0,
-      "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DEMANDOPERATIONALACTUAL/metadata/snap-8031766639106722602-39-f131c13a-b7d3-81f3-a8a4-024ac9318d8d.avro",
-      "parent-snapshot-id": 2314161182246079954,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DEMANDOPERATIONALACTUAL/metadata/snap-8031766639106722602-17-f131c13a-b7d3-81f3-a8a4-024ac9318d8d.avro",
+      "parent-snapshot-id": 90928780881029014,
       "schema-id": 0,
-      "sequence-number": 39,
+      "sequence-number": 17,
       "snapshot-id": 8031766639106722602,
       "summary": {
         "operation": "append",
@@ -1567,22 +733,22 @@
         "utilake.to.release": "2026-04",
         "utilake.to.sha256": "0070ea94e4eb1017f20c5fda84af8ee540851d87c6f0e8b1271a422451247eb2",
         "utilake.to.time": "2026-05-01T00:00:00+10:00",
-        "utilake.total-rows": "418800",
+        "utilake.total-rows": "255600",
         "utilake.version": "3"
       },
-      "timestamp-ms": 1774965600038
+      "timestamp-ms": 1774965600016
     },
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DEMANDOPERATIONALACTUAL/metadata/snap-343673334729830005-40-f131c13a-b7d3-81f3-a8a4-024ac9318d8d.avro",
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DEMANDOPERATIONALACTUAL/metadata/snap-343673334729830005-18-f131c13a-b7d3-81f3-a8a4-024ac9318d8d.avro",
       "parent-snapshot-id": 8031766639106722602,
       "schema-id": 1,
-      "sequence-number": 40,
+      "sequence-number": 18,
       "snapshot-id": 343673334729830005,
       "summary": {
         "operation": "append",
-        "utilake.files": "30",
+        "utilake.files": "1518",
         "utilake.from.file": "PUBLIC_ACTUAL_OPERATIONAL_DEMAND_DAILY_20260401.zip",
         "utilake.from.release": "2026-04",
         "utilake.from.sha256": "9812274b1b0e848c978b81d14f72d45ba7e06d2d23ce6d468f1815777364da20",
@@ -1590,107 +756,23 @@
         "utilake.kinds": "[\"reports\"]",
         "utilake.report-subtype": "ACTUAL",
         "utilake.report-type": "OPERATIONAL_DEMAND",
-        "utilake.rows": "7200",
-        "utilake.to.file": "PUBLIC_ACTUAL_OPERATIONAL_DEMAND_DAILY_20260401.zip",
-        "utilake.to.release": "2026-04",
-        "utilake.to.sha256": "9812274b1b0e848c978b81d14f72d45ba7e06d2d23ce6d468f1815777364da20",
-        "utilake.to.time": "2026-05-01T04:00:00+10:00",
-        "utilake.total-rows": "426000",
-        "utilake.version": "3"
-      },
-      "timestamp-ms": 1774965600039
-    },
-    {
-      "added-rows": 0,
-      "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DEMANDOPERATIONALACTUAL/metadata/snap-8916353381551935346-41-f131c13a-b7d3-81f3-a8a4-024ac9318d8d.avro",
-      "parent-snapshot-id": 343673334729830005,
-      "schema-id": 2,
-      "sequence-number": 41,
-      "snapshot-id": 8916353381551935346,
-      "summary": {
-        "operation": "append",
-        "utilake.files": "30",
-        "utilake.from.file": "PUBLIC_ACTUAL_OPERATIONAL_DEMAND_DAILY_AREA_20260401.zip",
-        "utilake.from.release": "2026-04",
-        "utilake.from.sha256": "48e4d7155d030308957f55a27f2f70f6201682ce64280010ea6dab34ef639491",
-        "utilake.from.time": "2026-04-01T04:30:00+10:00",
-        "utilake.kinds": "[\"reports\"]",
-        "utilake.report-subtype": "ACTUAL",
-        "utilake.report-type": "OPERATIONAL_DEMAND",
-        "utilake.rows": "11520",
-        "utilake.to.file": "PUBLIC_ACTUAL_OPERATIONAL_DEMAND_DAILY_AREA_20260401.zip",
-        "utilake.to.release": "2026-04",
-        "utilake.to.sha256": "48e4d7155d030308957f55a27f2f70f6201682ce64280010ea6dab34ef639491",
-        "utilake.to.time": "2026-05-01T04:00:00+10:00",
-        "utilake.total-rows": "437520",
-        "utilake.version": "1"
-      },
-      "timestamp-ms": 1774965600040
-    },
-    {
-      "added-rows": 0,
-      "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DEMANDOPERATIONALACTUAL/metadata/snap-7051352936321459442-42-f131c13a-b7d3-81f3-a8a4-024ac9318d8d.avro",
-      "parent-snapshot-id": 8916353381551935346,
-      "schema-id": 1,
-      "sequence-number": 42,
-      "snapshot-id": 7051352936321459442,
-      "summary": {
-        "operation": "append",
-        "utilake.files": "1488",
-        "utilake.from.file": "PUBLIC_ACTUAL_OPERATIONAL_DEMAND_HH_20260426.zip",
-        "utilake.from.release": "2026-05",
-        "utilake.from.sha256": "b61da34e55f911ac930d0d5b95d1ffd953e9fb4d9cb8d48e80f63ae5fc49076d",
-        "utilake.from.time": "2026-05-01T00:00:00+10:00",
-        "utilake.kinds": "[\"reports\"]",
-        "utilake.report-subtype": "ACTUAL",
-        "utilake.report-type": "OPERATIONAL_DEMAND",
-        "utilake.rows": "7440",
+        "utilake.rows": "14640",
         "utilake.to.file": "PUBLIC_ACTUAL_OPERATIONAL_DEMAND_HH_20260531.zip",
         "utilake.to.release": "2026-05",
         "utilake.to.sha256": "aef0417bafbb6a2d1ec46592abf309025d60fcdfecf5a5b15f13d20b665117d4",
         "utilake.to.time": "2026-05-31T23:30:00+10:00",
-        "utilake.total-rows": "444960",
+        "utilake.total-rows": "270240",
         "utilake.version": "3"
       },
-      "timestamp-ms": 1777557600041
+      "timestamp-ms": 1774965600017
     },
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DEMANDOPERATIONALACTUAL/metadata/snap-3112766436907107235-43-f131c13a-b7d3-81f3-a8a4-024ac9318d8d.avro",
-      "parent-snapshot-id": 7051352936321459442,
-      "schema-id": 2,
-      "sequence-number": 43,
-      "snapshot-id": 3112766436907107235,
-      "summary": {
-        "operation": "append",
-        "utilake.files": "1488",
-        "utilake.from.file": "PUBLIC_ACTUAL_OPERATIONAL_DEMAND_HH_AREA_20260428.zip",
-        "utilake.from.release": "2026-05",
-        "utilake.from.sha256": "15b90cb684a43c7c2361f7a0442b73a75a6d0cff28221e4e5852557d2281e73a",
-        "utilake.from.time": "2026-05-01T00:00:00+10:00",
-        "utilake.kinds": "[\"reports\"]",
-        "utilake.report-subtype": "ACTUAL",
-        "utilake.report-type": "OPERATIONAL_DEMAND",
-        "utilake.rows": "11904",
-        "utilake.to.file": "PUBLIC_ACTUAL_OPERATIONAL_DEMAND_HH_AREA_20260526.zip",
-        "utilake.to.release": "2026-05",
-        "utilake.to.sha256": "e886071a6d7ed70abdd18e0ff47cdf4bea6b2fa6d3b07d94360a7988cb129092",
-        "utilake.to.time": "2026-05-31T23:30:00+10:00",
-        "utilake.total-rows": "456864",
-        "utilake.version": "1"
-      },
-      "timestamp-ms": 1777557600042
-    },
-    {
-      "added-rows": 0,
-      "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DEMANDOPERATIONALACTUAL/metadata/snap-5943748480908300456-44-f131c13a-b7d3-81f3-a8a4-024ac9318d8d.avro",
-      "parent-snapshot-id": 3112766436907107235,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DEMANDOPERATIONALACTUAL/metadata/snap-5943748480908300456-19-f131c13a-b7d3-81f3-a8a4-024ac9318d8d.avro",
+      "parent-snapshot-id": 343673334729830005,
       "schema-id": 0,
-      "sequence-number": 44,
+      "sequence-number": 19,
       "snapshot-id": 5943748480908300456,
       "summary": {
         "operation": "append",
@@ -1707,22 +789,22 @@
         "utilake.to.release": "2026-05",
         "utilake.to.sha256": "330233d2023a54499b33e8a7c284b7ed1038a289b02a981de1911e11eab6a49a",
         "utilake.to.time": "2026-06-01T00:00:00+10:00",
-        "utilake.total-rows": "464304",
+        "utilake.total-rows": "277680",
         "utilake.version": "3"
       },
-      "timestamp-ms": 1777557600043
+      "timestamp-ms": 1777557600018
     },
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DEMANDOPERATIONALACTUAL/metadata/snap-6842247518540036528-45-f131c13a-b7d3-81f3-a8a4-024ac9318d8d.avro",
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DEMANDOPERATIONALACTUAL/metadata/snap-6842247518540036528-20-f131c13a-b7d3-81f3-a8a4-024ac9318d8d.avro",
       "parent-snapshot-id": 5943748480908300456,
       "schema-id": 1,
-      "sequence-number": 45,
+      "sequence-number": 20,
       "snapshot-id": 6842247518540036528,
       "summary": {
         "operation": "append",
-        "utilake.files": "31",
+        "utilake.files": "1471",
         "utilake.from.file": "PUBLIC_ACTUAL_OPERATIONAL_DEMAND_DAILY_20260501.zip",
         "utilake.from.release": "2026-05",
         "utilake.from.sha256": "d55c00548e6236e5659f1d460e828c31b31eb201b5c30256ef932008b268c80a",
@@ -1730,107 +812,23 @@
         "utilake.kinds": "[\"reports\"]",
         "utilake.report-subtype": "ACTUAL",
         "utilake.report-type": "OPERATIONAL_DEMAND",
-        "utilake.rows": "7440",
-        "utilake.to.file": "PUBLIC_ACTUAL_OPERATIONAL_DEMAND_DAILY_20260501.zip",
-        "utilake.to.release": "2026-05",
-        "utilake.to.sha256": "d55c00548e6236e5659f1d460e828c31b31eb201b5c30256ef932008b268c80a",
-        "utilake.to.time": "2026-06-01T04:00:00+10:00",
-        "utilake.total-rows": "471744",
-        "utilake.version": "3"
-      },
-      "timestamp-ms": 1777557600044
-    },
-    {
-      "added-rows": 0,
-      "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DEMANDOPERATIONALACTUAL/metadata/snap-410402756599269211-46-f131c13a-b7d3-81f3-a8a4-024ac9318d8d.avro",
-      "parent-snapshot-id": 6842247518540036528,
-      "schema-id": 2,
-      "sequence-number": 46,
-      "snapshot-id": 410402756599269211,
-      "summary": {
-        "operation": "append",
-        "utilake.files": "31",
-        "utilake.from.file": "PUBLIC_ACTUAL_OPERATIONAL_DEMAND_DAILY_AREA_20260501.zip",
-        "utilake.from.release": "2026-05",
-        "utilake.from.sha256": "826284da082f11a659203865a8ee1636712989432140c4e19d0a291a9d7dc6d1",
-        "utilake.from.time": "2026-05-01T04:30:00+10:00",
-        "utilake.kinds": "[\"reports\"]",
-        "utilake.report-subtype": "ACTUAL",
-        "utilake.report-type": "OPERATIONAL_DEMAND",
-        "utilake.rows": "11904",
-        "utilake.to.file": "PUBLIC_ACTUAL_OPERATIONAL_DEMAND_DAILY_AREA_20260501.zip",
-        "utilake.to.release": "2026-05",
-        "utilake.to.sha256": "826284da082f11a659203865a8ee1636712989432140c4e19d0a291a9d7dc6d1",
-        "utilake.to.time": "2026-06-01T04:00:00+10:00",
-        "utilake.total-rows": "483648",
-        "utilake.version": "1"
-      },
-      "timestamp-ms": 1777557600045
-    },
-    {
-      "added-rows": 0,
-      "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DEMANDOPERATIONALACTUAL/metadata/snap-3024194000836993604-47-f131c13a-b7d3-81f3-a8a4-024ac9318d8d.avro",
-      "parent-snapshot-id": 410402756599269211,
-      "schema-id": 1,
-      "sequence-number": 47,
-      "snapshot-id": 3024194000836993604,
-      "summary": {
-        "operation": "append",
-        "utilake.files": "1440",
-        "utilake.from.file": "PUBLIC_ACTUAL_OPERATIONAL_DEMAND_HH_20260531.zip",
-        "utilake.from.release": "2026-06",
-        "utilake.from.sha256": "aef0417bafbb6a2d1ec46592abf309025d60fcdfecf5a5b15f13d20b665117d4",
-        "utilake.from.time": "2026-06-01T00:00:00+10:00",
-        "utilake.kinds": "[\"reports\"]",
-        "utilake.report-subtype": "ACTUAL",
-        "utilake.report-type": "OPERATIONAL_DEMAND",
-        "utilake.rows": "7200",
+        "utilake.rows": "14640",
         "utilake.to.file": "PUBLIC_ACTUAL_OPERATIONAL_DEMAND_HH_20260628.zip",
         "utilake.to.release": "2026-06",
         "utilake.to.sha256": "dc23137b2de03e933ca4329753988f61618528414ce9990724c098351f55cc05",
         "utilake.to.time": "2026-06-30T23:30:00+10:00",
-        "utilake.total-rows": "490848",
+        "utilake.total-rows": "292320",
         "utilake.version": "3"
       },
-      "timestamp-ms": 1780236000046
+      "timestamp-ms": 1777557600019
     },
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DEMANDOPERATIONALACTUAL/metadata/snap-1919053827678926952-48-f131c13a-b7d3-81f3-a8a4-024ac9318d8d.avro",
-      "parent-snapshot-id": 3024194000836993604,
-      "schema-id": 2,
-      "sequence-number": 48,
-      "snapshot-id": 1919053827678926952,
-      "summary": {
-        "operation": "append",
-        "utilake.files": "1440",
-        "utilake.from.file": "PUBLIC_ACTUAL_OPERATIONAL_DEMAND_HH_AREA_20260526.zip",
-        "utilake.from.release": "2026-06",
-        "utilake.from.sha256": "e886071a6d7ed70abdd18e0ff47cdf4bea6b2fa6d3b07d94360a7988cb129092",
-        "utilake.from.time": "2026-06-01T00:00:00+10:00",
-        "utilake.kinds": "[\"reports\"]",
-        "utilake.report-subtype": "ACTUAL",
-        "utilake.report-type": "OPERATIONAL_DEMAND",
-        "utilake.rows": "11520",
-        "utilake.to.file": "PUBLIC_ACTUAL_OPERATIONAL_DEMAND_HH_AREA_20260630.zip",
-        "utilake.to.release": "2026-06",
-        "utilake.to.sha256": "aa347061f45600885db78f7f4308af5f2e62a587d6037ba8c2f874ee2323839f",
-        "utilake.to.time": "2026-06-30T23:30:00+10:00",
-        "utilake.total-rows": "502368",
-        "utilake.version": "1"
-      },
-      "timestamp-ms": 1780236000047
-    },
-    {
-      "added-rows": 0,
-      "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DEMANDOPERATIONALACTUAL/metadata/snap-7046542674128928204-49-f131c13a-b7d3-81f3-a8a4-024ac9318d8d.avro",
-      "parent-snapshot-id": 1919053827678926952,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DEMANDOPERATIONALACTUAL/metadata/snap-7046542674128928204-21-f131c13a-b7d3-81f3-a8a4-024ac9318d8d.avro",
+      "parent-snapshot-id": 6842247518540036528,
       "schema-id": 0,
-      "sequence-number": 49,
+      "sequence-number": 21,
       "snapshot-id": 7046542674128928204,
       "summary": {
         "operation": "append",
@@ -1847,22 +845,22 @@
         "utilake.to.release": "2026-06",
         "utilake.to.sha256": "addf9bf454332ddf72493bfeb1409f7a6f039786a9925630603f6506df36246f",
         "utilake.to.time": "2026-07-01T00:00:00+10:00",
-        "utilake.total-rows": "509568",
+        "utilake.total-rows": "299520",
         "utilake.version": "3"
       },
-      "timestamp-ms": 1780236000048
+      "timestamp-ms": 1780236000020
     },
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DEMANDOPERATIONALACTUAL/metadata/snap-2507014967979487622-50-f131c13a-b7d3-81f3-a8a4-024ac9318d8d.avro",
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DEMANDOPERATIONALACTUAL/metadata/snap-2507014967979487622-22-f131c13a-b7d3-81f3-a8a4-024ac9318d8d.avro",
       "parent-snapshot-id": 7046542674128928204,
       "schema-id": 1,
-      "sequence-number": 50,
+      "sequence-number": 22,
       "snapshot-id": 2507014967979487622,
       "summary": {
         "operation": "append",
-        "utilake.files": "30",
+        "utilake.files": "1518",
         "utilake.from.file": "PUBLIC_ACTUAL_OPERATIONAL_DEMAND_DAILY_20260601.zip",
         "utilake.from.release": "2026-06",
         "utilake.from.sha256": "c0b6b4b0ba9b430a2cb505bd7205388a9d8f6de30866bb85bc457150834e393e",
@@ -1870,107 +868,23 @@
         "utilake.kinds": "[\"reports\"]",
         "utilake.report-subtype": "ACTUAL",
         "utilake.report-type": "OPERATIONAL_DEMAND",
-        "utilake.rows": "7200",
-        "utilake.to.file": "PUBLIC_ACTUAL_OPERATIONAL_DEMAND_DAILY_20260601.zip",
-        "utilake.to.release": "2026-06",
-        "utilake.to.sha256": "c0b6b4b0ba9b430a2cb505bd7205388a9d8f6de30866bb85bc457150834e393e",
-        "utilake.to.time": "2026-07-01T04:00:00+10:00",
-        "utilake.total-rows": "516768",
-        "utilake.version": "3"
-      },
-      "timestamp-ms": 1780236000049
-    },
-    {
-      "added-rows": 0,
-      "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DEMANDOPERATIONALACTUAL/metadata/snap-7422863522030726719-51-f131c13a-b7d3-81f3-a8a4-024ac9318d8d.avro",
-      "parent-snapshot-id": 2507014967979487622,
-      "schema-id": 2,
-      "sequence-number": 51,
-      "snapshot-id": 7422863522030726719,
-      "summary": {
-        "operation": "append",
-        "utilake.files": "30",
-        "utilake.from.file": "PUBLIC_ACTUAL_OPERATIONAL_DEMAND_DAILY_AREA_20260601.zip",
-        "utilake.from.release": "2026-06",
-        "utilake.from.sha256": "69399d2918f9c09381d32db156d3a6064a5b150a8837aef9642068783b889a37",
-        "utilake.from.time": "2026-06-01T04:30:00+10:00",
-        "utilake.kinds": "[\"reports\"]",
-        "utilake.report-subtype": "ACTUAL",
-        "utilake.report-type": "OPERATIONAL_DEMAND",
-        "utilake.rows": "11520",
-        "utilake.to.file": "PUBLIC_ACTUAL_OPERATIONAL_DEMAND_DAILY_AREA_20260601.zip",
-        "utilake.to.release": "2026-06",
-        "utilake.to.sha256": "69399d2918f9c09381d32db156d3a6064a5b150a8837aef9642068783b889a37",
-        "utilake.to.time": "2026-07-01T04:00:00+10:00",
-        "utilake.total-rows": "528288",
-        "utilake.version": "1"
-      },
-      "timestamp-ms": 1780236000050
-    },
-    {
-      "added-rows": 0,
-      "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DEMANDOPERATIONALACTUAL/metadata/snap-1053600570944675071-52-f131c13a-b7d3-81f3-a8a4-024ac9318d8d.avro",
-      "parent-snapshot-id": 7422863522030726719,
-      "schema-id": 1,
-      "sequence-number": 52,
-      "snapshot-id": 1053600570944675071,
-      "summary": {
-        "operation": "append",
-        "utilake.files": "1488",
-        "utilake.from.file": "PUBLIC_ACTUAL_OPERATIONAL_DEMAND_HH_20260628.zip",
-        "utilake.from.release": "2026-07",
-        "utilake.from.sha256": "dc23137b2de03e933ca4329753988f61618528414ce9990724c098351f55cc05",
-        "utilake.from.time": "2026-07-01T00:00:00+10:00",
-        "utilake.kinds": "[\"reports\"]",
-        "utilake.report-subtype": "ACTUAL",
-        "utilake.report-type": "OPERATIONAL_DEMAND",
-        "utilake.rows": "7440",
+        "utilake.rows": "14640",
         "utilake.to.file": "PUBLIC_ACTUAL_OPERATIONAL_DEMAND_HH_20260726.zip",
         "utilake.to.release": "2026-07",
         "utilake.to.sha256": "df495278ed8322b94c8ee0c9fd615065b9667149eee1f574df7b4b88646da3d6",
         "utilake.to.time": "2026-07-31T23:30:00+10:00",
-        "utilake.total-rows": "535728",
+        "utilake.total-rows": "314160",
         "utilake.version": "3"
       },
-      "timestamp-ms": 1782828000051
+      "timestamp-ms": 1780236000021
     },
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DEMANDOPERATIONALACTUAL/metadata/snap-7673113947159354518-53-f131c13a-b7d3-81f3-a8a4-024ac9318d8d.avro",
-      "parent-snapshot-id": 1053600570944675071,
-      "schema-id": 2,
-      "sequence-number": 53,
-      "snapshot-id": 7673113947159354518,
-      "summary": {
-        "operation": "append",
-        "utilake.files": "1488",
-        "utilake.from.file": "PUBLIC_ACTUAL_OPERATIONAL_DEMAND_HH_AREA_20260630.zip",
-        "utilake.from.release": "2026-07",
-        "utilake.from.sha256": "aa347061f45600885db78f7f4308af5f2e62a587d6037ba8c2f874ee2323839f",
-        "utilake.from.time": "2026-07-01T00:00:00+10:00",
-        "utilake.kinds": "[\"reports\"]",
-        "utilake.report-subtype": "ACTUAL",
-        "utilake.report-type": "OPERATIONAL_DEMAND",
-        "utilake.rows": "11904",
-        "utilake.to.file": "PUBLIC_ACTUAL_OPERATIONAL_DEMAND_HH_AREA_20260728.zip",
-        "utilake.to.release": "2026-07",
-        "utilake.to.sha256": "f65e4281c7e7b79e3aaed56faaaff426952d316bde4de5c48b85db21f11b826a",
-        "utilake.to.time": "2026-07-31T23:30:00+10:00",
-        "utilake.total-rows": "547632",
-        "utilake.version": "1"
-      },
-      "timestamp-ms": 1782828000052
-    },
-    {
-      "added-rows": 0,
-      "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DEMANDOPERATIONALACTUAL/metadata/snap-4421949376174368085-54-f131c13a-b7d3-81f3-a8a4-024ac9318d8d.avro",
-      "parent-snapshot-id": 7673113947159354518,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DEMANDOPERATIONALACTUAL/metadata/snap-4421949376174368085-23-f131c13a-b7d3-81f3-a8a4-024ac9318d8d.avro",
+      "parent-snapshot-id": 2507014967979487622,
       "schema-id": 0,
-      "sequence-number": 54,
+      "sequence-number": 23,
       "snapshot-id": 4421949376174368085,
       "summary": {
         "operation": "append",
@@ -1987,22 +901,22 @@
         "utilake.to.release": "2026-07",
         "utilake.to.sha256": "a55704aae4a6551cceb52be22ce8c7eaf5e69454109b66fc1e8a0f5ba779fcd9",
         "utilake.to.time": "2026-08-01T00:00:00+10:00",
-        "utilake.total-rows": "555072",
+        "utilake.total-rows": "321600",
         "utilake.version": "3"
       },
-      "timestamp-ms": 1782828000053
+      "timestamp-ms": 1782828000022
     },
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DEMANDOPERATIONALACTUAL/metadata/snap-3221503870325429605-55-f131c13a-b7d3-81f3-a8a4-024ac9318d8d.avro",
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DEMANDOPERATIONALACTUAL/metadata/snap-3221503870325429605-24-f131c13a-b7d3-81f3-a8a4-024ac9318d8d.avro",
       "parent-snapshot-id": 4421949376174368085,
       "schema-id": 1,
-      "sequence-number": 55,
+      "sequence-number": 24,
       "snapshot-id": 3221503870325429605,
       "summary": {
         "operation": "append",
-        "utilake.files": "31",
+        "utilake.files": "1519",
         "utilake.from.file": "PUBLIC_ACTUAL_OPERATIONAL_DEMAND_DAILY_20260701.zip",
         "utilake.from.release": "2026-07",
         "utilake.from.sha256": "e6eeba26d220395ae67c1a502d9884841fa3977a4699b4de11681c056d92cecf",
@@ -2010,107 +924,23 @@
         "utilake.kinds": "[\"reports\"]",
         "utilake.report-subtype": "ACTUAL",
         "utilake.report-type": "OPERATIONAL_DEMAND",
-        "utilake.rows": "7440",
-        "utilake.to.file": "PUBLIC_ACTUAL_OPERATIONAL_DEMAND_DAILY_20260701.zip",
-        "utilake.to.release": "2026-07",
-        "utilake.to.sha256": "e6eeba26d220395ae67c1a502d9884841fa3977a4699b4de11681c056d92cecf",
-        "utilake.to.time": "2026-08-01T04:00:00+10:00",
-        "utilake.total-rows": "562512",
-        "utilake.version": "3"
-      },
-      "timestamp-ms": 1782828000054
-    },
-    {
-      "added-rows": 0,
-      "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DEMANDOPERATIONALACTUAL/metadata/snap-1551484625230050262-56-f131c13a-b7d3-81f3-a8a4-024ac9318d8d.avro",
-      "parent-snapshot-id": 3221503870325429605,
-      "schema-id": 2,
-      "sequence-number": 56,
-      "snapshot-id": 1551484625230050262,
-      "summary": {
-        "operation": "append",
-        "utilake.files": "31",
-        "utilake.from.file": "PUBLIC_ACTUAL_OPERATIONAL_DEMAND_DAILY_AREA_20260701.zip",
-        "utilake.from.release": "2026-07",
-        "utilake.from.sha256": "2ed937fdf73b26a34de424cfd3127f23da3e06664aec34de4e525eae3dc76ec8",
-        "utilake.from.time": "2026-07-01T04:30:00+10:00",
-        "utilake.kinds": "[\"reports\"]",
-        "utilake.report-subtype": "ACTUAL",
-        "utilake.report-type": "OPERATIONAL_DEMAND",
-        "utilake.rows": "11904",
-        "utilake.to.file": "PUBLIC_ACTUAL_OPERATIONAL_DEMAND_DAILY_AREA_20260701.zip",
-        "utilake.to.release": "2026-07",
-        "utilake.to.sha256": "2ed937fdf73b26a34de424cfd3127f23da3e06664aec34de4e525eae3dc76ec8",
-        "utilake.to.time": "2026-08-01T04:00:00+10:00",
-        "utilake.total-rows": "574416",
-        "utilake.version": "1"
-      },
-      "timestamp-ms": 1782828000055
-    },
-    {
-      "added-rows": 0,
-      "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DEMANDOPERATIONALACTUAL/metadata/snap-6969029408492805499-57-f131c13a-b7d3-81f3-a8a4-024ac9318d8d.avro",
-      "parent-snapshot-id": 1551484625230050262,
-      "schema-id": 1,
-      "sequence-number": 57,
-      "snapshot-id": 6969029408492805499,
-      "summary": {
-        "operation": "append",
-        "utilake.files": "1488",
-        "utilake.from.file": "PUBLIC_ACTUAL_OPERATIONAL_DEMAND_HH_20260726.zip",
-        "utilake.from.release": "2026-08",
-        "utilake.from.sha256": "df495278ed8322b94c8ee0c9fd615065b9667149eee1f574df7b4b88646da3d6",
-        "utilake.from.time": "2026-08-01T00:00:00+10:00",
-        "utilake.kinds": "[\"reports\"]",
-        "utilake.report-subtype": "ACTUAL",
-        "utilake.report-type": "OPERATIONAL_DEMAND",
-        "utilake.rows": "7440",
+        "utilake.rows": "14880",
         "utilake.to.file": "PUBLIC_ACTUAL_OPERATIONAL_DEMAND_HH_20260830.zip",
         "utilake.to.release": "2026-08",
         "utilake.to.sha256": "27b8730ffb2a4e2010424f22805ac6eacca4f8801944964d8668ae7c88c06473",
         "utilake.to.time": "2026-08-31T23:30:00+10:00",
-        "utilake.total-rows": "581856",
+        "utilake.total-rows": "336480",
         "utilake.version": "3"
       },
-      "timestamp-ms": 1785506400056
+      "timestamp-ms": 1782828000023
     },
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DEMANDOPERATIONALACTUAL/metadata/snap-7468357951284168393-58-f131c13a-b7d3-81f3-a8a4-024ac9318d8d.avro",
-      "parent-snapshot-id": 6969029408492805499,
-      "schema-id": 2,
-      "sequence-number": 58,
-      "snapshot-id": 7468357951284168393,
-      "summary": {
-        "operation": "append",
-        "utilake.files": "1488",
-        "utilake.from.file": "PUBLIC_ACTUAL_OPERATIONAL_DEMAND_HH_AREA_20260728.zip",
-        "utilake.from.release": "2026-08",
-        "utilake.from.sha256": "f65e4281c7e7b79e3aaed56faaaff426952d316bde4de5c48b85db21f11b826a",
-        "utilake.from.time": "2026-08-01T00:00:00+10:00",
-        "utilake.kinds": "[\"reports\"]",
-        "utilake.report-subtype": "ACTUAL",
-        "utilake.report-type": "OPERATIONAL_DEMAND",
-        "utilake.rows": "11904",
-        "utilake.to.file": "PUBLIC_ACTUAL_OPERATIONAL_DEMAND_HH_AREA_20260825.zip",
-        "utilake.to.release": "2026-08",
-        "utilake.to.sha256": "0a74e9913b2cd73c741e79e1d40456db46946e11442611e970e0fb8f46b6ff58",
-        "utilake.to.time": "2026-08-31T23:30:00+10:00",
-        "utilake.total-rows": "593760",
-        "utilake.version": "1"
-      },
-      "timestamp-ms": 1785506400057
-    },
-    {
-      "added-rows": 0,
-      "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DEMANDOPERATIONALACTUAL/metadata/snap-5191890719775444657-59-f131c13a-b7d3-81f3-a8a4-024ac9318d8d.avro",
-      "parent-snapshot-id": 7468357951284168393,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DEMANDOPERATIONALACTUAL/metadata/snap-5191890719775444657-25-f131c13a-b7d3-81f3-a8a4-024ac9318d8d.avro",
+      "parent-snapshot-id": 3221503870325429605,
       "schema-id": 0,
-      "sequence-number": 59,
+      "sequence-number": 25,
       "snapshot-id": 5191890719775444657,
       "summary": {
         "operation": "append",
@@ -2127,22 +957,22 @@
         "utilake.to.release": "2026-08",
         "utilake.to.sha256": "9d344808c60b790c14a54c7142fb4ec25ee0f23e1ec25b8d5afd536deb1a60f8",
         "utilake.to.time": "2026-09-01T00:00:00+10:00",
-        "utilake.total-rows": "601200",
+        "utilake.total-rows": "343920",
         "utilake.version": "3"
       },
-      "timestamp-ms": 1785506400058
+      "timestamp-ms": 1785506400024
     },
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DEMANDOPERATIONALACTUAL/metadata/snap-4496465071791235181-60-f131c13a-b7d3-81f3-a8a4-024ac9318d8d.avro",
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DEMANDOPERATIONALACTUAL/metadata/snap-4496465071791235181-26-f131c13a-b7d3-81f3-a8a4-024ac9318d8d.avro",
       "parent-snapshot-id": 5191890719775444657,
       "schema-id": 1,
-      "sequence-number": 60,
+      "sequence-number": 26,
       "snapshot-id": 4496465071791235181,
       "summary": {
         "operation": "append",
-        "utilake.files": "31",
+        "utilake.files": "1471",
         "utilake.from.file": "PUBLIC_ACTUAL_OPERATIONAL_DEMAND_DAILY_20260801.zip",
         "utilake.from.release": "2026-08",
         "utilake.from.sha256": "aba7e834ebaa254a29a2695d14cc9b2bb32213221652d21c9895989c153591a0",
@@ -2150,107 +980,23 @@
         "utilake.kinds": "[\"reports\"]",
         "utilake.report-subtype": "ACTUAL",
         "utilake.report-type": "OPERATIONAL_DEMAND",
-        "utilake.rows": "7440",
-        "utilake.to.file": "PUBLIC_ACTUAL_OPERATIONAL_DEMAND_DAILY_20260801.zip",
-        "utilake.to.release": "2026-08",
-        "utilake.to.sha256": "aba7e834ebaa254a29a2695d14cc9b2bb32213221652d21c9895989c153591a0",
-        "utilake.to.time": "2026-09-01T04:00:00+10:00",
-        "utilake.total-rows": "608640",
-        "utilake.version": "3"
-      },
-      "timestamp-ms": 1785506400059
-    },
-    {
-      "added-rows": 0,
-      "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DEMANDOPERATIONALACTUAL/metadata/snap-3801091972159414435-61-f131c13a-b7d3-81f3-a8a4-024ac9318d8d.avro",
-      "parent-snapshot-id": 4496465071791235181,
-      "schema-id": 2,
-      "sequence-number": 61,
-      "snapshot-id": 3801091972159414435,
-      "summary": {
-        "operation": "append",
-        "utilake.files": "31",
-        "utilake.from.file": "PUBLIC_ACTUAL_OPERATIONAL_DEMAND_DAILY_AREA_20260801.zip",
-        "utilake.from.release": "2026-08",
-        "utilake.from.sha256": "e5fc68368356cebc208dae9e43a75430e196a6872ea3a76d606778449c987a58",
-        "utilake.from.time": "2026-08-01T04:30:00+10:00",
-        "utilake.kinds": "[\"reports\"]",
-        "utilake.report-subtype": "ACTUAL",
-        "utilake.report-type": "OPERATIONAL_DEMAND",
-        "utilake.rows": "11904",
-        "utilake.to.file": "PUBLIC_ACTUAL_OPERATIONAL_DEMAND_DAILY_AREA_20260801.zip",
-        "utilake.to.release": "2026-08",
-        "utilake.to.sha256": "e5fc68368356cebc208dae9e43a75430e196a6872ea3a76d606778449c987a58",
-        "utilake.to.time": "2026-09-01T04:00:00+10:00",
-        "utilake.total-rows": "620544",
-        "utilake.version": "1"
-      },
-      "timestamp-ms": 1785506400060
-    },
-    {
-      "added-rows": 0,
-      "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DEMANDOPERATIONALACTUAL/metadata/snap-5936898614029017189-62-f131c13a-b7d3-81f3-a8a4-024ac9318d8d.avro",
-      "parent-snapshot-id": 3801091972159414435,
-      "schema-id": 1,
-      "sequence-number": 62,
-      "snapshot-id": 5936898614029017189,
-      "summary": {
-        "operation": "append",
-        "utilake.files": "1440",
-        "utilake.from.file": "PUBLIC_ACTUAL_OPERATIONAL_DEMAND_HH_20260830.zip",
-        "utilake.from.release": "2026-09",
-        "utilake.from.sha256": "27b8730ffb2a4e2010424f22805ac6eacca4f8801944964d8668ae7c88c06473",
-        "utilake.from.time": "2026-09-01T00:00:00+10:00",
-        "utilake.kinds": "[\"reports\"]",
-        "utilake.report-subtype": "ACTUAL",
-        "utilake.report-type": "OPERATIONAL_DEMAND",
-        "utilake.rows": "7200",
+        "utilake.rows": "14640",
         "utilake.to.file": "PUBLIC_ACTUAL_OPERATIONAL_DEMAND_HH_20260927.zip",
         "utilake.to.release": "2026-09",
         "utilake.to.sha256": "f04ae86daa057a13bfbdf2326acd50f1fbba4f40476b545008ff707cea39b8b7",
         "utilake.to.time": "2026-09-30T23:30:00+10:00",
-        "utilake.total-rows": "627744",
+        "utilake.total-rows": "358560",
         "utilake.version": "3"
       },
-      "timestamp-ms": 1788184800061
+      "timestamp-ms": 1785506400025
     },
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DEMANDOPERATIONALACTUAL/metadata/snap-3124007916542066649-63-f131c13a-b7d3-81f3-a8a4-024ac9318d8d.avro",
-      "parent-snapshot-id": 5936898614029017189,
-      "schema-id": 2,
-      "sequence-number": 63,
-      "snapshot-id": 3124007916542066649,
-      "summary": {
-        "operation": "append",
-        "utilake.files": "1440",
-        "utilake.from.file": "PUBLIC_ACTUAL_OPERATIONAL_DEMAND_HH_AREA_20260901.zip",
-        "utilake.from.release": "2026-09",
-        "utilake.from.sha256": "f4db052f8deb9ed45afaec2742b827029c8ad746b2dab8dd954848a092422184",
-        "utilake.from.time": "2026-09-01T00:00:00+10:00",
-        "utilake.kinds": "[\"reports\"]",
-        "utilake.report-subtype": "ACTUAL",
-        "utilake.report-type": "OPERATIONAL_DEMAND",
-        "utilake.rows": "11520",
-        "utilake.to.file": "PUBLIC_ACTUAL_OPERATIONAL_DEMAND_HH_AREA_20260929.zip",
-        "utilake.to.release": "2026-09",
-        "utilake.to.sha256": "1594897e968d03e489a8cda2d15c3a41b3f009c550c620829efd3da3920800a8",
-        "utilake.to.time": "2026-09-30T23:30:00+10:00",
-        "utilake.total-rows": "639264",
-        "utilake.version": "1"
-      },
-      "timestamp-ms": 1788184800062
-    },
-    {
-      "added-rows": 0,
-      "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DEMANDOPERATIONALACTUAL/metadata/snap-8572135684141097013-64-f131c13a-b7d3-81f3-a8a4-024ac9318d8d.avro",
-      "parent-snapshot-id": 3124007916542066649,
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DEMANDOPERATIONALACTUAL/metadata/snap-8572135684141097013-27-f131c13a-b7d3-81f3-a8a4-024ac9318d8d.avro",
+      "parent-snapshot-id": 4496465071791235181,
       "schema-id": 0,
-      "sequence-number": 64,
+      "sequence-number": 27,
       "snapshot-id": 8572135684141097013,
       "summary": {
         "operation": "append",
@@ -2267,22 +1013,22 @@
         "utilake.to.release": "2026-09",
         "utilake.to.sha256": "c83097df634f84c24f9b063f2fe56d84199e3ab97b0a5662f03126a23a4d5be9",
         "utilake.to.time": "2026-10-01T00:00:00+10:00",
-        "utilake.total-rows": "646464",
+        "utilake.total-rows": "365760",
         "utilake.version": "3"
       },
-      "timestamp-ms": 1788184800063
+      "timestamp-ms": 1788184800026
     },
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DEMANDOPERATIONALACTUAL/metadata/snap-4410921495329411123-65-f131c13a-b7d3-81f3-a8a4-024ac9318d8d.avro",
+      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DEMANDOPERATIONALACTUAL/metadata/snap-4410921495329411123-28-f131c13a-b7d3-81f3-a8a4-024ac9318d8d.avro",
       "parent-snapshot-id": 8572135684141097013,
       "schema-id": 1,
-      "sequence-number": 65,
+      "sequence-number": 28,
       "snapshot-id": 4410921495329411123,
       "summary": {
         "operation": "append",
-        "utilake.files": "30",
+        "utilake.files": "1181",
         "utilake.from.file": "PUBLIC_ACTUAL_OPERATIONAL_DEMAND_DAILY_20260901_20260902044001.zip",
         "utilake.from.release": "2026-09",
         "utilake.from.sha256": "a2b86297b53c5cee8ae752ffa07dbf637629c32efa7d7f4f009dbfa4e3978218",
@@ -2290,155 +1036,15 @@
         "utilake.kinds": "[\"reports\"]",
         "utilake.report-subtype": "ACTUAL",
         "utilake.report-type": "OPERATIONAL_DEMAND",
-        "utilake.rows": "7200",
-        "utilake.to.file": "PUBLIC_ACTUAL_OPERATIONAL_DEMAND_DAILY_20260930_20261001044000.zip",
-        "utilake.to.release": "2026-09",
-        "utilake.to.sha256": "c5e28d5dc4f9bd50d58a85d18653c09b84da880f139e0a1088820aba64606e8e",
-        "utilake.to.time": "2026-10-01T04:00:00+10:00",
-        "utilake.total-rows": "653664",
-        "utilake.version": "3"
-      },
-      "timestamp-ms": 1788184800064
-    },
-    {
-      "added-rows": 0,
-      "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DEMANDOPERATIONALACTUAL/metadata/snap-1346881888066082840-66-f131c13a-b7d3-81f3-a8a4-024ac9318d8d.avro",
-      "parent-snapshot-id": 4410921495329411123,
-      "schema-id": 2,
-      "sequence-number": 66,
-      "snapshot-id": 1346881888066082840,
-      "summary": {
-        "operation": "append",
-        "utilake.files": "30",
-        "utilake.from.file": "PUBLIC_ACTUAL_OPERATIONAL_DEMAND_DAILY_AREA_202609010400_20260902044001.zip",
-        "utilake.from.release": "2026-09",
-        "utilake.from.sha256": "8e9f8a3bf625867ca8d7147db579e36e6b50ccd0f4fdc23875555d05415a820a",
-        "utilake.from.time": "2026-09-01T04:30:00+10:00",
-        "utilake.kinds": "[\"reports\"]",
-        "utilake.report-subtype": "ACTUAL",
-        "utilake.report-type": "OPERATIONAL_DEMAND",
-        "utilake.rows": "11520",
-        "utilake.to.file": "PUBLIC_ACTUAL_OPERATIONAL_DEMAND_DAILY_AREA_202609300400_20261001044000.zip",
-        "utilake.to.release": "2026-09",
-        "utilake.to.sha256": "a5ad445fc054d882b1e4166a54b1af2305f6b3b7e628678c22ae4b99bfa6100c",
-        "utilake.to.time": "2026-10-01T04:00:00+10:00",
-        "utilake.total-rows": "665184",
-        "utilake.version": "1"
-      },
-      "timestamp-ms": 1788184800065
-    },
-    {
-      "added-rows": 0,
-      "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DEMANDOPERATIONALACTUAL/metadata/snap-3014169498734176744-67-f131c13a-b7d3-81f3-a8a4-024ac9318d8d.avro",
-      "parent-snapshot-id": 1346881888066082840,
-      "schema-id": 1,
-      "sequence-number": 67,
-      "snapshot-id": 3014169498734176744,
-      "summary": {
-        "operation": "append",
-        "utilake.files": "23",
-        "utilake.from.file": "PUBLIC_ACTUAL_OPERATIONAL_DEMAND_DAILY_20261001_20261002044000.zip",
-        "utilake.from.release": "2026-10",
-        "utilake.from.sha256": "5d5eb8a057b67f9521ace12e29b5f3db208bce6aeb92e53caf46e4964eea1ccc",
-        "utilake.from.time": "2026-10-01T04:30:00+10:00",
-        "utilake.kinds": "[\"reports\"]",
-        "utilake.report-subtype": "ACTUAL",
-        "utilake.report-type": "OPERATIONAL_DEMAND",
-        "utilake.rows": "5520",
-        "utilake.to.file": "PUBLIC_ACTUAL_OPERATIONAL_DEMAND_DAILY_20261023_20261024044000.zip",
-        "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "efba7618c637bfef014be4769e52eabc0792d655a1e3008e339ef250e2845dd9",
-        "utilake.to.time": "2026-10-24T04:00:00+10:00",
-        "utilake.total-rows": "670704",
-        "utilake.version": "3"
-      },
-      "timestamp-ms": 1790776800066
-    },
-    {
-      "added-rows": 0,
-      "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DEMANDOPERATIONALACTUAL/metadata/snap-2551032921488752579-68-f131c13a-b7d3-81f3-a8a4-024ac9318d8d.avro",
-      "parent-snapshot-id": 3014169498734176744,
-      "schema-id": 2,
-      "sequence-number": 68,
-      "snapshot-id": 2551032921488752579,
-      "summary": {
-        "operation": "append",
-        "utilake.files": "23",
-        "utilake.from.file": "PUBLIC_ACTUAL_OPERATIONAL_DEMAND_DAILY_AREA_202610010400_20261002044000.zip",
-        "utilake.from.release": "2026-10",
-        "utilake.from.sha256": "252c40c5565cc7724ce3b82dc973f6bf54fa28474e8b8c396c9d849930e84515",
-        "utilake.from.time": "2026-10-01T04:30:00+10:00",
-        "utilake.kinds": "[\"reports\"]",
-        "utilake.report-subtype": "ACTUAL",
-        "utilake.report-type": "OPERATIONAL_DEMAND",
-        "utilake.rows": "8832",
-        "utilake.to.file": "PUBLIC_ACTUAL_OPERATIONAL_DEMAND_DAILY_AREA_202610230400_20261024044000.zip",
-        "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "34eb49a431541112a489f01b4feb7f81f066fffab1e7c614e0d1d4709c765673",
-        "utilake.to.time": "2026-10-24T04:00:00+10:00",
-        "utilake.total-rows": "679536",
-        "utilake.version": "1"
-      },
-      "timestamp-ms": 1790776800067
-    },
-    {
-      "added-rows": 0,
-      "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DEMANDOPERATIONALACTUAL/metadata/snap-1057954578753477528-69-f131c13a-b7d3-81f3-a8a4-024ac9318d8d.avro",
-      "parent-snapshot-id": 2551032921488752579,
-      "schema-id": 1,
-      "sequence-number": 69,
-      "snapshot-id": 1057954578753477528,
-      "summary": {
-        "operation": "append",
-        "utilake.files": "1128",
-        "utilake.from.file": "PUBLIC_ACTUAL_OPERATIONAL_DEMAND_HH_20260927.zip",
-        "utilake.from.release": "2026-10",
-        "utilake.from.sha256": "f04ae86daa057a13bfbdf2326acd50f1fbba4f40476b545008ff707cea39b8b7",
-        "utilake.from.time": "2026-10-01T00:00:00+10:00",
-        "utilake.kinds": "[\"reports\"]",
-        "utilake.report-subtype": "ACTUAL",
-        "utilake.report-type": "OPERATIONAL_DEMAND",
-        "utilake.rows": "5640",
+        "utilake.rows": "18360",
         "utilake.to.file": "PUBLIC_ACTUAL_OPERATIONAL_DEMAND_HH_202610241130_20261024113013.zip",
         "utilake.to.release": "2026-10",
         "utilake.to.sha256": "87e1b3ce73ccbbb7d5dc58e34987fcf17f14f530253e8a60324c61aa8587a7fa",
         "utilake.to.time": "2026-10-24T11:30:00+10:00",
-        "utilake.total-rows": "685176",
+        "utilake.total-rows": "384120",
         "utilake.version": "3"
       },
-      "timestamp-ms": 1790776800068
-    },
-    {
-      "added-rows": 0,
-      "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DEMANDOPERATIONALACTUAL/metadata/snap-4563272144595900565-70-f131c13a-b7d3-81f3-a8a4-024ac9318d8d.avro",
-      "parent-snapshot-id": 1057954578753477528,
-      "schema-id": 2,
-      "sequence-number": 70,
-      "snapshot-id": 4563272144595900565,
-      "summary": {
-        "operation": "append",
-        "utilake.files": "1128",
-        "utilake.from.file": "PUBLIC_ACTUAL_OPERATIONAL_DEMAND_HH_AREA_20260929.zip",
-        "utilake.from.release": "2026-10",
-        "utilake.from.sha256": "1594897e968d03e489a8cda2d15c3a41b3f009c550c620829efd3da3920800a8",
-        "utilake.from.time": "2026-10-01T00:00:00+10:00",
-        "utilake.kinds": "[\"reports\"]",
-        "utilake.report-subtype": "ACTUAL",
-        "utilake.report-type": "OPERATIONAL_DEMAND",
-        "utilake.rows": "9024",
-        "utilake.to.file": "PUBLIC_ACTUAL_OPERATIONAL_DEMAND_HH_AREA_202610241130_20261024113013.zip",
-        "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "f85b045fb49be510b8d628faf69ac3c47df7140fa6faa193dee47311e8cddbd4",
-        "utilake.to.time": "2026-10-24T11:30:00+10:00",
-        "utilake.total-rows": "694200",
-        "utilake.version": "1"
-      },
-      "timestamp-ms": 1790776800069
+      "timestamp-ms": 1788184800027
     }
   ],
   "sort-orders": [

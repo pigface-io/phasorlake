@@ -20,7 +20,7 @@
   "properties": {
     "comment": "NETWORK_EQUIPMENTDETAIL Provides details on equipment that may have outages or ratings. A single piece of equipment may have multiple records if its details change.\nA line will typically have at least two valid records at a time, once for each end of the line.",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"SUBSTATIONID\",\"EQUIPMENTTYPE\",\"EQUIPMENTID\",\"VALIDFROM\"]",
     "utilake.load": "append",
     "utilake.model-types": "{\"1\":\"VARCHAR(30)\",\"2\":\"VARCHAR(10)\",\"3\":\"VARCHAR(30)\",\"4\":\"TIMESTAMP(3)\",\"5\":\"TIMESTAMP(3)\",\"6\":\"VARCHAR(20)\",\"7\":\"VARCHAR(100)\",\"8\":\"TIMESTAMP(3)\",\"9\":\"NUMERIC(15,0)\"}",

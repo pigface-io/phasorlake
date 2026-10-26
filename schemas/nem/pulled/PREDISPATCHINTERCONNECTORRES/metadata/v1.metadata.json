@@ -20,7 +20,7 @@
   "properties": {
     "comment": "PREDISPATCHINTERCONNECTORRES records Interconnector flows and losses for the periods calculated in each predispatch run. Only binding and interconnector constraints are reported.\nSome fields are for the Frequency Controlled Ancillary Services export and import limits and extra reporting of the generic constraint setting the energy import and export limits.",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"INTERCONNECTORID\",\"DATETIME\"]",
     "utilake.load": "append",
     "utilake.model-types": "{\"1\":\"VARCHAR(20)\",\"2\":\"NUMERIC(3,0)\",\"3\":\"VARCHAR(10)\",\"4\":\"VARCHAR(20)\",\"5\":\"NUMERIC(2,0)\",\"6\":\"NUMERIC(15,5)\",\"7\":\"NUMERIC(15,5)\",\"8\":\"NUMERIC(15,5)\",\"9\":\"NUMERIC(15,5)\",\"10\":\"NUMERIC(15,5)\",\"11\":\"TIMESTAMP(0)\",\"12\":\"TIMESTAMP(0)\",\"13\":\"NUMERIC(15,5)\",\"14\":\"NUMERIC(15,5)\",\"15\":\"NUMERIC(15,5)\",\"16\":\"VARCHAR(20)\",\"17\":\"VARCHAR(20)\",\"18\":\"NUMERIC(15,5)\",\"19\":\"NUMERIC(15,5)\",\"20\":\"NUMERIC(10,2)\",\"21\":\"NUMERIC(1,0)\",\"22\":\"NUMERIC(10,2)\",\"23\":\"NUMERIC(1,0)\"}",

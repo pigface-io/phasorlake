@@ -20,7 +20,7 @@
   "properties": {
     "comment": "Operating Status of Participant",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"EFFECTIVEDATE\",\"MARKET_ID\",\"PARTICIPANT_ID\",\"VERSION_DATETIME\"]",
     "utilake.load": "snapshot",
     "utilake.market": "gas",

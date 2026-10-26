@@ -20,7 +20,7 @@
   "properties": {
     "comment": "MARKETSUSREGION  is obsolete from 2017 End of Year DM4.27 Release. \nMARKETSUSREGION sets out a regions affected by a market suspension.",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"SUSPENSIONID\",\"REGIONID\"]",
     "utilake.load": "snapshot",
     "utilake.model-types": "{\"1\":\"VARCHAR(10)\",\"2\":\"VARCHAR(10)\",\"3\":\"TIMESTAMP(0)\"}",

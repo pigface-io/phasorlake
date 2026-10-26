@@ -19,7 +19,7 @@
   ],
   "properties": {
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.headers": "{\"1\":\"market_notice_identifier\",\"2\":\"critical_notice_flag\",\"3\":\"market_message\",\"4\":\"notice_start_date\",\"5\":\"notice_end_date\",\"6\":\"url_path\",\"7\":\"report_datetime\"}",
     "utilake.key": "[]",
     "utilake.load": "append",

@@ -20,7 +20,7 @@
   "properties": {
     "comment": "Provides the aggregate of forecast and nominations by location.",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.headers": "{\"1\":\"State\",\"2\":\"FacilityId\",\"3\":\"FacilityName\",\"4\":\"FacilityType\",\"5\":\"ReceiptLocationId\",\"6\":\"ReceiptLocationName\",\"7\":\"DeliveryLocationId\",\"8\":\"DeliveryLocationName\",\"9\":\"Description\",\"10\":\"ForecastMethod\",\"11\":\"Units\",\"12\":\"Nameplate\"}",
     "utilake.key": "[]",
     "utilake.load": "append",

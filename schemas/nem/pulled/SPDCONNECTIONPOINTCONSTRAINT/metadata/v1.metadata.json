@@ -20,7 +20,7 @@
   "properties": {
     "comment": "SPDCONNECTIONPOINTCONSTRAINT sets out details of connections point constraints issued in dispatch, predispatch and STPASA.",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"CONNECTIONPOINTID\",\"EFFECTIVEDATE\",\"VERSIONNO\",\"GENCONID\",\"BIDTYPE\"]",
     "utilake.load": "append",
     "utilake.model-types": "{\"1\":\"VARCHAR(12)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"NUMERIC(3,0)\",\"4\":\"VARCHAR(20)\",\"5\":\"NUMERIC(16,6)\",\"6\":\"TIMESTAMP(0)\",\"7\":\"VARCHAR(12)\"}",

@@ -20,7 +20,7 @@
   "properties": {
     "comment": "CONSTRAINTRELAXATION_OCD contains details of interconnector constraints and unit ancillary service constraints relaxed in the over-constrained dispatch (OCD) re-run for this interval (if there was one).\nNote: INTERVENTION is not included in CONSTRAINTRELAXATION_OCD, since the relaxation of the same constraint is the same amount in both intervened and non-intervened cases.",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"SETTLEMENTDATE\",\"RUNNO\",\"CONSTRAINTID\",\"VERSIONNO\"]",
     "utilake.load": "append",
     "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(3,0)\",\"3\":\"VARCHAR(20)\",\"4\":\"NUMERIC(16,6)\",\"5\":\"TIMESTAMP(0)\",\"6\":\"NUMERIC(3,0)\"}",

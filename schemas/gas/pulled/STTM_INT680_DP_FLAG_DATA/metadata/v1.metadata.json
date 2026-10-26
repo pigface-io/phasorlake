@@ -19,7 +19,7 @@
   ],
   "properties": {
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.headers": "{\"1\":\"hub_identifier\",\"2\":\"hub_name\",\"3\":\"effective_from_date\",\"4\":\"effective_to_date\",\"5\":\"dp_flag\",\"6\":\"report_datetime\"}",
     "utilake.key": "[]",
     "utilake.load": "append",

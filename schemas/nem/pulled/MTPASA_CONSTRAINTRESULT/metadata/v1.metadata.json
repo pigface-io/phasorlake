@@ -20,7 +20,7 @@
   "properties": {
     "comment": "Constraint results for Binding or Violating Constraints",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"RUN_DATETIME\",\"RUN_NO\",\"RUNTYPE\",\"DEMAND_POE_TYPE\",\"DAY\",\"CONSTRAINTID\"]",
     "utilake.load": "append",
     "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(4)\",\"3\":\"VARCHAR(20)\",\"4\":\"VARCHAR(20)\",\"5\":\"TIMESTAMP(0)\",\"6\":\"VARCHAR(20)\",\"7\":\"TIMESTAMP(0)\",\"8\":\"NUMERIC(3,0)\",\"9\":\"NUMERIC(3,0)\",\"10\":\"NUMERIC(8,5)\",\"11\":\"NUMERIC(8,5)\",\"12\":\"NUMERIC(12,2)\",\"13\":\"NUMERIC(12,2)\",\"14\":\"NUMERIC(12,2)\",\"15\":\"TIMESTAMP(0)\"}",

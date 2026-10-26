@@ -20,7 +20,7 @@
   "properties": {
     "comment": "REGIONAPCINTERVALS contains Administered Price profiles (Energy and FCAS) applicable to each interval for a region.",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"REGIONID\",\"EFFECTIVEDATE\",\"VERSIONNO\",\"PERIODID\"]",
     "utilake.load": "snapshot",
     "utilake.model-types": "{\"1\":\"VARCHAR(10)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"NUMERIC(3,0)\",\"4\":\"NUMERIC(3,0)\",\"5\":\"NUMERIC(16,6)\",\"6\":\"TIMESTAMP(0)\",\"7\":\"NUMERIC(3,0)\",\"8\":\"NUMERIC(16,6)\",\"9\":\"NUMERIC(16,6)\"}",

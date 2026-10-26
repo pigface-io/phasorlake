@@ -20,7 +20,7 @@
   "properties": {
     "comment": "Stores the Region-aggregate offered PASA Availability of scheduled generators for each day over the Medium Term PASA period. The data in this table is an aggregate of input data to the MT PASA process it is not part of the MTPASA solution. The aggregate availability does not reflect any energy limitations in the MT PASA offers.",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"PUBLISH_DATETIME\",\"DAY\",\"REGIONID\"]",
     "utilake.load": "append",
     "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"VARCHAR(20)\",\"4\":\"NUMERIC(12,0)\",\"5\":\"TIMESTAMP(0)\",\"6\":\"NUMERIC(12,0)\",\"7\":\"NUMERIC(12,0)\",\"8\":\"NUMERIC(12,2)\",\"9\":\"NUMERIC(12,2)\",\"10\":\"NUMERIC(12,2)\",\"11\":\"NUMERIC(12,2)\",\"12\":\"NUMERIC(12,2)\",\"13\":\"TIMESTAMP(0)\",\"14\":\"NUMERIC(12,2)\",\"15\":\"NUMERIC(12,2)\",\"16\":\"NUMERIC(12,2)\",\"17\":\"NUMERIC(12,2)\",\"18\":\"NUMERIC(12,0)\"}",

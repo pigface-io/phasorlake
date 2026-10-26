@@ -20,7 +20,7 @@
   "properties": {
     "comment": "Pipeline Segments currently registered under Part 24 of the Rules for the capacity trading and day ahead auction.",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"CONNECTION_TYPE\",\"EFFECTIVEDATE\",\"FACILITY_ID\",\"FROM_ID\",\"SEGMENT_ID\",\"TO_ID\",\"VERSION_DATETIME\"]",
     "utilake.load": "snapshot",
     "utilake.market": "gas",

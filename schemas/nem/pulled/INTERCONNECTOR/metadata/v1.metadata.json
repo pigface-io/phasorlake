@@ -20,7 +20,7 @@
   "properties": {
     "comment": "INTERCONNECTOR sets out valid identifiers for each interconnector.",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"INTERCONNECTORID\"]",
     "utilake.load": "snapshot",
     "utilake.model-types": "{\"1\":\"VARCHAR(10)\",\"2\":\"VARCHAR(10)\",\"3\":\"VARCHAR(10)\",\"4\":\"VARCHAR(10)\",\"5\":\"VARCHAR(64)\",\"6\":\"TIMESTAMP(0)\"}",

@@ -20,7 +20,7 @@
   "properties": {
     "comment": "RESIDUE_CON_FUNDS supports the Settlement Residue Auction, by holding the fund details for each contract.",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"CONTRACTID\",\"INTERCONNECTORID\",\"FROMREGIONID\"]",
     "utilake.load": "append",
     "utilake.model-types": "{\"1\":\"VARCHAR(30)\",\"2\":\"VARCHAR(10)\",\"3\":\"VARCHAR(10)\",\"4\":\"NUMERIC(5,0)\",\"5\":\"NUMERIC(5,0)\",\"6\":\"NUMERIC(5,0)\",\"7\":\"NUMERIC(5,0)\",\"8\":\"NUMERIC(9,2)\",\"9\":\"NUMERIC(8,5)\",\"10\":\"NUMERIC(9,2)\",\"11\":\"TIMESTAMP(0)\"}",

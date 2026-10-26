@@ -20,7 +20,7 @@
   "properties": {
     "comment": "Uniquely tracks which Intermittent Generation forecast was used for the DUID in which Dispatch run",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"SETTLEMENTDATE\",\"DUID\"]",
     "utilake.load": "append",
     "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"VARCHAR(20)\",\"3\":\"VARCHAR(20)\",\"4\":\"NUMERIC(10,0)\",\"5\":\"TIMESTAMP(0)\"}",

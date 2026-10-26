@@ -78,8 +78,10 @@ pub enum Origin {
 /// written differently by a newer utilake, so that lakes written by the
 /// older one are known to be behind. 6: a lake file holds a source
 /// file's entries together, each row naming its own. 7: the `_ul_`
-/// columns, with every time a source was stamped with.
-pub const PLAN_FORMAT: u32 = 7;
+/// columns, with every time a source was stamped with. 8: a block goes
+/// to the table its columns choose (an area report to its `*_AREA`
+/// table), and a renamed column is one field under its newest name.
+pub const PLAN_FORMAT: u32 = 8;
 
 /// The identity of a plan: everything that decides what files of its shape
 /// are written as, and nothing else. It is recorded with every Parquet file

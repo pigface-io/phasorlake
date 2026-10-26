@@ -20,7 +20,7 @@
   "properties": {
     "comment": "Summary of Market Suspension timings",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"SUSPENSION_ID\",\"REGIONID\"]",
     "utilake.load": "append",
     "utilake.model-types": "{\"1\":\"VARCHAR(20)\",\"2\":\"VARCHAR(20)\",\"3\":\"TIMESTAMP(0)\",\"4\":\"TIMESTAMP(0)\",\"5\":\"TIMESTAMP(0)\",\"6\":\"TIMESTAMP(0)\"}",

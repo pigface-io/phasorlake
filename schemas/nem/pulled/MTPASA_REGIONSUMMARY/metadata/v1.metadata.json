@@ -20,7 +20,7 @@
   "properties": {
     "comment": "Region Results summary over aggregation periods.",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"RUN_DATETIME\",\"RUN_NO\",\"RUNTYPE\",\"DEMAND_POE_TYPE\",\"AGGREGATION_PERIOD\",\"PERIOD_ENDING\",\"REGIONID\"]",
     "utilake.load": "append",
     "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(4)\",\"3\":\"VARCHAR(20)\",\"4\":\"VARCHAR(20)\",\"5\":\"VARCHAR(20)\",\"6\":\"TIMESTAMP(0)\",\"7\":\"VARCHAR(20)\",\"8\":\"NUMERIC(12,2)\",\"9\":\"NUMERIC(12,2)\",\"10\":\"NUMERIC(12,2)\",\"11\":\"NUMERIC(12,2)\",\"12\":\"NUMERIC(12,2)\",\"13\":\"NUMERIC(12,2)\",\"14\":\"NUMERIC(12,2)\",\"15\":\"NUMERIC(12,2)\",\"16\":\"NUMERIC(12,2)\",\"17\":\"NUMERIC(12,2)\",\"18\":\"NUMERIC(12,2)\",\"19\":\"NUMERIC(12,2)\",\"20\":\"NUMERIC(12,2)\",\"21\":\"NUMERIC(12,2)\",\"22\":\"NUMERIC(12,2)\",\"23\":\"NUMERIC(12,2)\",\"24\":\"NUMERIC(12,2)\",\"25\":\"NUMERIC(12,2)\",\"26\":\"NUMERIC(12,2)\",\"27\":\"NUMERIC(16,6)\",\"28\":\"NUMERIC(16,6)\",\"29\":\"NUMERIC(12,2)\",\"30\":\"TIMESTAMP(0)\"}",

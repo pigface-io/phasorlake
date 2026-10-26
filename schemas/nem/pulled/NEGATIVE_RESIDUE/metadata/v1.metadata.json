@@ -20,7 +20,7 @@
   "properties": {
     "comment": "Shows the inputs provided to the Negative Residue Constraints in the Dispatch horizon",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"SETTLEMENTDATE\",\"NRM_DATETIME\",\"DIRECTIONAL_INTERCONNECTORID\"]",
     "utilake.load": "append",
     "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"VARCHAR(30)\",\"4\":\"NUMERIC(1,0)\",\"5\":\"NUMERIC(15,5)\",\"6\":\"NUMERIC(15,5)\",\"7\":\"NUMERIC(15,5)\",\"8\":\"NUMERIC(15,5)\",\"9\":\"VARCHAR(30)\",\"10\":\"VARCHAR(20)\",\"11\":\"TIMESTAMP(0)\",\"12\":\"TIMESTAMP(0)\",\"13\":\"NUMERIC(2,0)\",\"14\":\"NUMERIC(2,0)\",\"15\":\"NUMERIC(1,0)\",\"17\":\"NUMERIC(1,0)\"}",

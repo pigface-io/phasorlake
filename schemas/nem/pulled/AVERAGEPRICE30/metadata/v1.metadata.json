@@ -20,7 +20,7 @@
   "properties": {
     "comment": "Reflects the 30-minute average price (the pre-5MS trading price).",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"PERIODDATE\",\"REGIONID\"]",
     "utilake.load": "append",
     "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"VARCHAR(10)\",\"3\":\"NUMERIC(3,0)\",\"4\":\"NUMERIC(15,5)\",\"5\":\"VARCHAR(20)\",\"6\":\"TIMESTAMP(0)\"}",

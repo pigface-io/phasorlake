@@ -20,7 +20,7 @@
   "properties": {
     "comment": "Provides details of all facilities",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.headers": "{\"1\":\"FacilityName\",\"2\":\"FacilityShortName\",\"3\":\"FacilityId\",\"4\":\"FacilityType\",\"5\":\"FacilityTypeDescription\",\"6\":\"OperatingState\",\"7\":\"OperatingStateDate\",\"8\":\"OperatorName\",\"9\":\"OperatorId\",\"10\":\"OperatorChangeDate\",\"11\":\"LastUpdated\"}",
     "utilake.key": "[\"FACILITYID\",\"OPERATORID\"]",
     "utilake.load": "snapshot",

@@ -20,7 +20,7 @@
   "properties": {
     "comment": "The FCAS Recovery amount from each NEM Region and the Energy MWh used for the FCAS Recovery calculation from Participants",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"SETTLEMENTDATE\",\"VERSIONNO\",\"BIDTYPE\",\"REGIONID\",\"PERIODID\"]",
     "utilake.load": "append",
     "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(3,0)\",\"3\":\"VARCHAR(10)\",\"4\":\"VARCHAR(10)\",\"5\":\"NUMERIC(3,0)\",\"6\":\"NUMERIC(16,6)\",\"7\":\"NUMERIC(16,6)\",\"8\":\"NUMERIC(18,8)\",\"9\":\"TIMESTAMP(0)\",\"10\":\"NUMERIC(18,8)\",\"11\":\"NUMERIC(18,8)\",\"12\":\"NUMERIC(18,8)\",\"13\":\"NUMERIC(18,8)\",\"14\":\"NUMERIC(18,8)\"}",

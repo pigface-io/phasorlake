@@ -20,7 +20,7 @@
   "properties": {
     "comment": "STATIONOWNERTRK shows the tracking for the associated object STATIONOWNER. Together, STATIONOWNERTRK and STATIONOWNER sets out the owner details of each station.",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"EFFECTIVEDATE\",\"PARTICIPANTID\",\"VERSIONNO\"]",
     "utilake.load": "snapshot",
     "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(3,0)\",\"3\":\"VARCHAR(10)\",\"4\":\"TIMESTAMP(0)\",\"5\":\"VARCHAR(15)\",\"6\":\"TIMESTAMP(0)\"}",

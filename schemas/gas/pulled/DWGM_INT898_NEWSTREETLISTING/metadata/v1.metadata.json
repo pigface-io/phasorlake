@@ -19,7 +19,7 @@
   ],
   "properties": {
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.headers": "{\"1\":\"distributor\",\"2\":\"street_name\",\"3\":\"street_id\",\"4\":\"street_suffix\",\"5\":\"suburb_or_place_or_locality\",\"6\":\"state_or_territory\",\"7\":\"site_address_postcode\",\"8\":\"current_date\"}",
     "utilake.key": "[\"STREET_ID\"]",
     "utilake.load": "snapshot",

@@ -20,7 +20,7 @@
   "properties": {
     "comment": "PDPASA_INTERCONNECTORSOLN shows the results of the capacity evaluation for Interconnectors, including the calculated limits for the interval.",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[]",
     "utilake.load": "append",
     "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"VARCHAR(10)\",\"4\":\"NUMERIC(12,2)\",\"5\":\"NUMERIC(12,2)\",\"6\":\"NUMERIC(12,2)\",\"7\":\"NUMERIC(12,2)\",\"8\":\"NUMERIC(12,2)\",\"9\":\"TIMESTAMP(0)\",\"10\":\"VARCHAR(20)\",\"11\":\"VARCHAR(20)\",\"12\":\"VARCHAR(20)\",\"13\":\"VARCHAR(20)\"}",

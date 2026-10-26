@@ -20,7 +20,7 @@
   "properties": {
     "comment": "The five-minute predispatch (P5Min) is a MMS system providing projected dispatch for 12 Dispatch cycles (one hour). The 5-minute Predispatch cycle runs every 5-minutes to produce a dispatch and pricing schedule to a 5-minute resolution covering the next hour, a total of twelve periods.\nP5MIN_CASESOLUTION shows one record containing results pertaining to the entire solution.",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"RUN_DATETIME\"]",
     "utilake.load": "append",
     "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"VARCHAR(20)\",\"3\":\"NUMERIC(27,10)\",\"4\":\"NUMERIC(1,0)\",\"5\":\"NUMERIC(15,5)\",\"6\":\"NUMERIC(15,5)\",\"7\":\"NUMERIC(15,5)\",\"8\":\"NUMERIC(15,5)\",\"9\":\"NUMERIC(15,5)\",\"10\":\"NUMERIC(15,5)\",\"11\":\"NUMERIC(15,5)\",\"12\":\"NUMERIC(15,5)\",\"13\":\"NUMERIC(15,5)\",\"14\":\"NUMERIC(15,5)\",\"15\":\"NUMERIC(15,5)\",\"16\":\"NUMERIC(15,5)\",\"17\":\"NUMERIC(15,5)\",\"18\":\"TIMESTAMP(0)\",\"19\":\"NUMERIC(2,0)\"}",

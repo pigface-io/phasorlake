@@ -20,7 +20,7 @@
   "properties": {
     "comment": "Constraint Summary results over aggregation periods",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"RUN_DATETIME\",\"RUN_NO\",\"RUNTYPE\",\"DEMAND_POE_TYPE\",\"DAY\",\"CONSTRAINTID\",\"AGGREGATION_PERIOD\"]",
     "utilake.load": "append",
     "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(4)\",\"3\":\"VARCHAR(20)\",\"4\":\"VARCHAR(20)\",\"5\":\"TIMESTAMP(0)\",\"6\":\"VARCHAR(20)\",\"7\":\"VARCHAR(20)\",\"8\":\"TIMESTAMP(0)\",\"9\":\"NUMERIC(3,0)\",\"10\":\"NUMERIC(12,2)\",\"11\":\"TIMESTAMP(0)\"}",

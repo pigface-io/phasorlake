@@ -20,7 +20,7 @@
   "properties": {
     "comment": "Provide details of the gate station capacity on a particular day.",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.headers": "{\"1\":\"ConnectionPointId\",\"2\":\"ConnectionPointName\",\"3\":\"EffectiveDate\",\"4\":\"CapacityQuantity\",\"5\":\"Description\",\"6\":\"FacilityName\",\"7\":\"FacilityId\",\"8\":\"FacilityType\",\"9\":\"OperatorId\",\"10\":\"OperatorName\",\"11\":\"OwnerId\",\"12\":\"OwnerName\",\"13\":\"LastUpdated\"}",
     "utilake.key": "[]",
     "utilake.load": "append",

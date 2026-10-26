@@ -19,7 +19,7 @@
   ],
   "properties": {
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.headers": "{\"1\":\"transmission_id\",\"2\":\"gas_date\",\"3\":\"schedule_interval\",\"4\":\"cumulative_price\",\"5\":\"cpt_exceeded_flag\",\"6\":\"schedule_type_id\",\"7\":\"transmission_doc_id\",\"8\":\"approval_datetime\",\"9\":\"current_date\"}",
     "utilake.key": "[]",
     "utilake.load": "append",

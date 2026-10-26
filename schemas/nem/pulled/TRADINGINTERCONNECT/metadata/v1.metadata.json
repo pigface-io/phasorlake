@@ -20,7 +20,7 @@
   "properties": {
     "comment": "TRADINGINTERCONNECT shows the Interconnector flows for the 5 minutes Trading Interval.\nPrior to 5 Minute Settlements, this was the average of the six 5 minute dispatch intervals within the 30 minute period.",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"SETTLEMENTDATE\",\"RUNNO\",\"INTERCONNECTORID\",\"PERIODID\"]",
     "utilake.load": "append",
     "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(3,0)\",\"3\":\"VARCHAR(10)\",\"4\":\"NUMERIC(3,0)\",\"5\":\"NUMERIC(15,5)\",\"6\":\"NUMERIC(15,5)\",\"7\":\"NUMERIC(15,5)\",\"8\":\"TIMESTAMP(0)\"}",

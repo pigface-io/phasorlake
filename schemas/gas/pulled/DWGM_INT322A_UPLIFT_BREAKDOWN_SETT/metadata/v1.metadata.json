@@ -19,7 +19,7 @@
   ],
   "properties": {
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.headers": "{\"1\":\"statement_version_id\",\"2\":\"gas_date\",\"3\":\"sched_no\",\"4\":\"total_uplift_amt\",\"5\":\"tuq_qty\",\"6\":\"dts_uplift_amt\",\"7\":\"final_qds_gj\",\"8\":\"event_cap_rate\",\"9\":\"event_liability_amt\",\"10\":\"event_liability_qty\",\"11\":\"annual_cap_limit\",\"12\":\"annual_liability_amt\",\"13\":\"annual_liability_qty\",\"14\":\"net_dts_uplift_amt\",\"15\":\"modified_surprise_uplift_amt\",\"16\":\"modified_surprise_uplift_qty\",\"17\":\"common_uplift_amt\",\"18\":\"common_uplift_qty\",\"19\":\"current_date\"}",
     "utilake.key": "[]",
     "utilake.load": "append",

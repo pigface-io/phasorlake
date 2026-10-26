@@ -20,7 +20,7 @@
   "properties": {
     "comment": "Park Services currently registered under Part 24 of the Rules",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"EFFECTIVEDATE\",\"FACILITY_ID\",\"PARK_PRODUCT_NAME\",\"VERSION_DATETIME\"]",
     "utilake.load": "snapshot",
     "utilake.market": "gas",

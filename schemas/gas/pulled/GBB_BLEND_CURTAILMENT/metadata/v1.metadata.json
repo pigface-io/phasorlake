@@ -20,7 +20,7 @@
   "properties": {
     "comment": "A table with details of gas blend and gas blend curtailment information",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.headers": "{\"1\":\"Year\",\"2\":\"Month\",\"3\":\"State\",\"4\":\"FacilityId\",\"5\":\"FacilityName\",\"6\":\"FacilityType\",\"7\":\"ConnectionPointId\",\"8\":\"ConnectionPointName\",\"9\":\"FlowDirection\",\"10\":\"LocationName\",\"11\":\"LocationId\",\"12\":\"GasType\",\"13\":\"GasBlendCurtailEvent\",\"14\":\"GasBlendCurtailQty\",\"15\":\"GasBlendLimit\",\"16\":\"GasBlendHigh\",\"17\":\"MaxGasDate\",\"18\":\"GasBlendLow\",\"19\":\"MinGasDate\",\"20\":\"GasBlendAvg\",\"21\":\"LastUpdated\"}",
     "utilake.key": "[]",
     "utilake.load": "append",

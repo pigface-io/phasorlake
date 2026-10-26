@@ -19,7 +19,7 @@
   ],
   "properties": {
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.headers": "{\"1\":\"effective_from_date\",\"2\":\"effective_to_date\",\"3\":\"parameter_code\",\"4\":\"parameter_description\",\"5\":\"parameter_value\",\"6\":\"last_update_datetime\",\"7\":\"report_datetime\"}",
     "utilake.key": "[]",
     "utilake.load": "append",

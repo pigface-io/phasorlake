@@ -20,7 +20,7 @@
   "properties": {
     "comment": "NETWORK_STATICRATING lists the static rating values that will apply for a Rating Application ID.\nThis data does not provide information for when the rating actually applies in the NEM. This is dependent on the Rating Application definition.\nFor information on the Rating Applications please refer to the information published on the AEMO website under the topic \"Transmission Equipment Ratings\". The Rating Applications are referred to as Alternate Value Application Ratings.\nRatings that normally use dynamic values will also have static rating values defined. These are used as a fallback if the dynamic rating fails.",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"SUBSTATIONID\",\"EQUIPMENTTYPE\",\"EQUIPMENTID\",\"RATINGLEVEL\",\"APPLICATIONID\",\"VALIDFROM\"]",
     "utilake.load": "append",
     "utilake.model-types": "{\"1\":\"VARCHAR(30)\",\"2\":\"VARCHAR(10)\",\"3\":\"VARCHAR(30)\",\"4\":\"VARCHAR(10)\",\"5\":\"VARCHAR(20)\",\"6\":\"TIMESTAMP(0)\",\"7\":\"TIMESTAMP(0)\",\"8\":\"NUMERIC(16,6)\",\"9\":\"TIMESTAMP(0)\"}",

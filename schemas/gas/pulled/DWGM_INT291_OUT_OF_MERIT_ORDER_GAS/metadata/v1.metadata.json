@@ -19,7 +19,7 @@
   ],
   "properties": {
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.headers": "{\"1\":\"gas_date\",\"2\":\"statement_version_id\",\"3\":\"ancillary_amt_gst_ex\",\"4\":\"scheduled_out_of_merit_gj\",\"5\":\"current_date\"}",
     "utilake.key": "[]",
     "utilake.load": "append",

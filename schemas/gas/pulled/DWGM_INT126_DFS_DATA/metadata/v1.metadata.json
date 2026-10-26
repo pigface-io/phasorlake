@@ -19,7 +19,7 @@
   ],
   "properties": {
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.headers": "{\"1\":\"dfs_version\",\"2\":\"gas_date\",\"3\":\"last_update_datetime\",\"4\":\"previous_day_min\",\"5\":\"max\",\"6\":\"overnight_min\",\"7\":\"average_wind_speed\",\"8\":\"sunshine\",\"9\":\"effective_temperature\",\"10\":\"dfs_edd\",\"11\":\"total_demand_forecast\",\"12\":\"current_date\"}",
     "utilake.key": "[]",
     "utilake.load": "append",

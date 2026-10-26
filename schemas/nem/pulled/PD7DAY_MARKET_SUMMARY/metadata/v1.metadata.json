@@ -20,7 +20,7 @@
   "properties": {
     "comment": "PD7DAY market summary showing calculated gas fuel forecasts",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[]",
     "utilake.load": "append",
     "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"NUMERIC(15,5)\"}",

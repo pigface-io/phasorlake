@@ -19,7 +19,7 @@
   ],
   "properties": {
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.headers": "{\"1\":\"gas_date\",\"2\":\"transmission_document_id\",\"3\":\"pipeline_id\",\"4\":\"pipeline_point_id\",\"5\":\"pipeline_point_name\",\"6\":\"participant_logical_meter\",\"7\":\"offer_type\",\"8\":\"participant_id\",\"9\":\"market_participant\",\"10\":\"daily_qty\",\"11\":\"hour_1\",\"12\":\"hour_2\",\"13\":\"hour_3\",\"14\":\"hour_4\",\"15\":\"hour_5\",\"16\":\"hour_6\",\"17\":\"hour_7\",\"18\":\"hour_8\",\"19\":\"hour_9\",\"20\":\"hour_10\",\"21\":\"hour_11\",\"22\":\"hour_12\",\"23\":\"hour_13\",\"24\":\"hour_14\",\"25\":\"hour_15\",\"26\":\"hour_16\",\"27\":\"hour_17\",\"28\":\"hour_18\",\"29\":\"hour_19\",\"30\":\"hour_20\",\"31\":\"hour_21\",\"32\":\"hour_22\",\"33\":\"hour_23\",\"34\":\"hour_24\",\"35\":\"comment\",\"36\":\"current_date\"}",
     "utilake.key": "[]",
     "utilake.load": "append",

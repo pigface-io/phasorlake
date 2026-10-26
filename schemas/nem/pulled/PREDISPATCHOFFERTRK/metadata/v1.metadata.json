@@ -20,7 +20,7 @@
   "properties": {
     "comment": "PREDISPATCHOFFERTRK is for the ancillary service bid tracking of predispatch processing. PREDISPATCHOFFERTRK identifies which bids from BIDDAYOFFER and BIDOFFERPERIOD were applied for a given unit and ancillary service for each predispatch run.",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"PREDISPATCHSEQNO\",\"DUID\",\"BIDTYPE\",\"PERIODID\"]",
     "utilake.load": "append",
     "utilake.model-types": "{\"1\":\"VARCHAR(20)\",\"2\":\"VARCHAR(10)\",\"3\":\"VARCHAR(20)\",\"4\":\"VARCHAR(20)\",\"5\":\"TIMESTAMP(0)\",\"6\":\"TIMESTAMP(3)\",\"7\":\"TIMESTAMP(0)\",\"8\":\"TIMESTAMP(0)\"}",

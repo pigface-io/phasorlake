@@ -20,7 +20,7 @@
   "properties": {
     "comment": "MARKETNOTICETYPE sets out the different types of market notices (e.g. market systems).",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"TYPEID\"]",
     "utilake.load": "snapshot",
     "utilake.model-types": "{\"1\":\"VARCHAR(25)\",\"2\":\"VARCHAR(64)\",\"3\":\"VARCHAR(10)\",\"4\":\"TIMESTAMP(0)\"}",

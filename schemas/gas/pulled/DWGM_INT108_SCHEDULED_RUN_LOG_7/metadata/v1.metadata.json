@@ -19,7 +19,7 @@
   ],
   "properties": {
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.headers": "{\"1\":\"transmission_id\",\"2\":\"transmission_document_id\",\"3\":\"transmission_group_id\",\"4\":\"gas_start_datetime\",\"5\":\"bid_cutoff_datetime\",\"6\":\"schedule_type_id\",\"7\":\"creation_datetime\",\"8\":\"forecast_demand_version\",\"9\":\"dfs_interface_audit_id\",\"10\":\"last_os_for_gas_day_tdoc_id\",\"11\":\"os_prior_gas_day_tdoc_id\",\"12\":\"approval_datetime\",\"13\":\"demand_type_id\",\"14\":\"objective_function_value\",\"15\":\"current_date\"}",
     "utilake.key": "[]",
     "utilake.load": "append",

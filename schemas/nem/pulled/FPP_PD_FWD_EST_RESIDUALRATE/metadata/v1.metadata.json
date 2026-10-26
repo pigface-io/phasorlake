@@ -20,7 +20,7 @@
   "properties": {
     "comment": "This report delivers the forward estimated residual cost rate based on PREDISPATCH runs. These high-level estimates (i.e. assuming that all is unused FCAS) will be provided for each constraint for each 30 minute pre- dispatch interval.",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[]",
     "utilake.load": "append",
     "utilake.model-types": "{\"1\":\"VARCHAR(20)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"NUMERIC(5)\",\"4\":\"TIMESTAMP(0)\",\"5\":\"VARCHAR(20)\",\"6\":\"NUMERIC(5)\",\"7\":\"VARCHAR(10)\",\"8\":\"VARCHAR(200)\",\"9\":\"NUMERIC(18,8)\",\"10\":\"TIMESTAMP(0)\"}",

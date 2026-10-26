@@ -20,7 +20,7 @@
   "properties": {
     "comment": "DISPATCHABLEUNIT sets out the unit name and type of each dispatchable unit in the market.",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"DUID\"]",
     "utilake.load": "snapshot",
     "utilake.model-types": "{\"1\":\"VARCHAR(10)\",\"2\":\"VARCHAR(20)\",\"3\":\"VARCHAR(20)\",\"4\":\"TIMESTAMP(0)\"}",

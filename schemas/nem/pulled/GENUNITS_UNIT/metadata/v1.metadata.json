@@ -20,7 +20,7 @@
   "properties": {
     "comment": "Physical units within a Gen Unit Set",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"GENSETID\",\"EFFECTIVEDATE\",\"VERSIONNO\",\"UNIT_GROUPING_LABEL\"]",
     "utilake.load": "append",
     "utilake.model-types": "{\"1\":\"VARCHAR(20)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"NUMERIC(6,0)\",\"4\":\"VARCHAR(20)\",\"5\":\"NUMERIC(10,0)\",\"6\":\"NUMERIC(8,3)\",\"7\":\"NUMERIC(8,3)\",\"8\":\"NUMERIC(1,0)\",\"9\":\"TIMESTAMP(0)\",\"10\":\"NUMERIC(8,3)\",\"11\":\"NUMERIC(15,5)\",\"12\":\"NUMERIC(8,3)\",\"13\":\"NUMERIC(8,3)\"}",

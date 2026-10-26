@@ -19,7 +19,7 @@
   ],
   "properties": {
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.headers": "{\"1\":\"node_id\",\"2\":\"node_name\",\"3\":\"measurement_datetime\",\"4\":\"current_hour\",\"5\":\"hour_01_ago\",\"6\":\"hour_02_ago\",\"7\":\"hour_03_ago\",\"8\":\"hour_04_ago\",\"9\":\"hour_05_ago\",\"10\":\"hour_06_ago\",\"11\":\"hour_07_ago\",\"12\":\"hour_08_ago\",\"13\":\"hour_09_ago\",\"14\":\"hour_10_ago\",\"15\":\"hour_11_ago\",\"16\":\"hour_12_ago\",\"17\":\"hour_13_ago\",\"18\":\"hour_14_ago\",\"19\":\"hour_15_ago\",\"20\":\"hour_16_ago\",\"21\":\"hour_17_ago\",\"22\":\"hour_18_ago\",\"23\":\"hour_19_ago\",\"24\":\"hour_20_ago\",\"25\":\"hour_21_ago\",\"26\":\"hour_22_ago\",\"27\":\"hour_23_ago\",\"28\":\"hour_24_ago\",\"29\":\"current_date\"}",
     "utilake.key": "[]",
     "utilake.load": "append",

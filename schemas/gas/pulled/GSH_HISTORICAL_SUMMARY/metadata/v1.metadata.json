@@ -20,7 +20,7 @@
   "properties": {
     "comment": "The report provides a summary of all trades delivered in the current gas day and the last thirty gas days per product location. It provides information on the volume weighted average price, and the total traded quantities.",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"GAS_DATE\",\"PRODUCT_LOCATION\"]",
     "utilake.load": "append",
     "utilake.market": "gas",

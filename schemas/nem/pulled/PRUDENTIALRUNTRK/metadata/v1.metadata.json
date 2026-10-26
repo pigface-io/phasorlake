@@ -20,7 +20,7 @@
   "properties": {
     "comment": "Records the prudential run accepted by Settlements staff for each prudential date",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"PRUDENTIAL_DATE\",\"RUNNO\"]",
     "utilake.load": "append",
     "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(3)\",\"3\":\"VARCHAR(15)\",\"4\":\"TIMESTAMP(0)\",\"5\":\"TIMESTAMP(0)\"}",

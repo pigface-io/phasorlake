@@ -19,7 +19,7 @@
   ],
   "properties": {
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.headers": "{\"1\":\"linepack_zone_id\",\"2\":\"linepack_zone_name\",\"3\":\"last_mod_date\",\"4\":\"current_date\"}",
     "utilake.key": "[\"LINEPACK_ZONE_ID\"]",
     "utilake.load": "snapshot",

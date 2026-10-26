@@ -19,7 +19,7 @@
   ],
   "properties": {
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.headers": "{\"1\":\"gas_date\",\"2\":\"schedule_interval\",\"3\":\"transmission_id\",\"4\":\"mirn\",\"5\":\"tie_breaking_event\",\"6\":\"cc_bids\",\"7\":\"non_cc_bids\",\"8\":\"part_cc_bids\",\"9\":\"gas_not_scheduled\",\"10\":\"current_date\"}",
     "utilake.key": "[]",
     "utilake.load": "append",

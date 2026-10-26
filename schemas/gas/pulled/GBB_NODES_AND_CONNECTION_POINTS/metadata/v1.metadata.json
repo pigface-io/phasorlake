@@ -20,7 +20,7 @@
   "properties": {
     "comment": "A container for up to four connections",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.headers": "{\"1\":\"FacilityName\",\"2\":\"FacilityId\",\"3\":\"FacilityType\",\"4\":\"ConnectionPointId\",\"5\":\"ConnectionPointName\",\"6\":\"FlowDirection\",\"7\":\"Exempt\",\"8\":\"ExemptionDescription\",\"9\":\"NodeId\",\"10\":\"StateId\",\"11\":\"StateName\",\"12\":\"LocationName\",\"13\":\"LocationId\",\"14\":\"LastUpdated\",\"15\":\"OperatingState\",\"16\":\"EffectiveDate\"}",
     "utilake.key": "[\"FACILITYID\",\"CONNECTIONPOINTID\",\"NODEID\",\"STATEID\",\"LOCATIONID\"]",
     "utilake.load": "snapshot",

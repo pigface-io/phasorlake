@@ -19,7 +19,7 @@
   ],
   "properties": {
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.headers": "{\"1\":\"auction_id\",\"2\":\"zone_id\",\"3\":\"zone_name\",\"4\":\"zone_type\",\"5\":\"capacity_period\",\"6\":\"auction_date\",\"7\":\"available_capacity_gj\",\"8\":\"current_date\"}",
     "utilake.key": "[]",
     "utilake.load": "append",

@@ -19,7 +19,7 @@
   ],
   "properties": {
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.headers": "{\"1\":\"network_name\",\"2\":\"gas_day\",\"3\":\"heating_value\",\"4\":\"current_date\"}",
     "utilake.key": "[]",
     "utilake.load": "append",

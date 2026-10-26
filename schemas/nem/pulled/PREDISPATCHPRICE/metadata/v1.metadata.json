@@ -20,7 +20,7 @@
   "properties": {
     "comment": "PREDISPATCHPRICE records predispatch prices for each region by period for each predispatch run, including fields to handle the Ancillary Services functionality.",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"REGIONID\",\"DATETIME\"]",
     "utilake.load": "append",
     "utilake.model-types": "{\"1\":\"VARCHAR(20)\",\"2\":\"NUMERIC(3,0)\",\"3\":\"VARCHAR(10)\",\"4\":\"VARCHAR(20)\",\"5\":\"NUMERIC(2,0)\",\"6\":\"NUMERIC(15,5)\",\"7\":\"NUMERIC(15,5)\",\"8\":\"NUMERIC(15,5)\",\"9\":\"NUMERIC(15,5)\",\"10\":\"NUMERIC(15,5)\",\"11\":\"NUMERIC(15,5)\",\"12\":\"NUMERIC(15,5)\",\"13\":\"NUMERIC(15,5)\",\"14\":\"NUMERIC(15,5)\",\"15\":\"NUMERIC(15,5)\",\"16\":\"NUMERIC(15,5)\",\"17\":\"NUMERIC(15,5)\",\"18\":\"NUMERIC(15,5)\",\"19\":\"NUMERIC(15,5)\",\"20\":\"NUMERIC(15,5)\",\"21\":\"NUMERIC(15,5)\",\"22\":\"NUMERIC(15,5)\",\"23\":\"NUMERIC(15,5)\",\"24\":\"TIMESTAMP(0)\",\"25\":\"TIMESTAMP(0)\",\"26\":\"NUMERIC(15,5)\",\"27\":\"NUMERIC(15,5)\",\"28\":\"NUMERIC(15,5)\",\"29\":\"NUMERIC(15,5)\",\"30\":\"NUMERIC(15,5)\",\"31\":\"NUMERIC(15,5)\",\"32\":\"NUMERIC(15,5)\",\"33\":\"NUMERIC(15,5)\",\"34\":\"NUMERIC(15,5)\",\"36\":\"NUMERIC(15,5)\"}",

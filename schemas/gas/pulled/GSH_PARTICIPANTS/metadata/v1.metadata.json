@@ -20,7 +20,7 @@
   "properties": {
     "comment": "The report contains the registration details of all participants currently registered in the GSH market.",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"MARKET_ID\",\"PARTICIPANT_ID\"]",
     "utilake.load": "snapshot",
     "utilake.market": "gas",

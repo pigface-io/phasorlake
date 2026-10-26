@@ -19,7 +19,7 @@
   ],
   "properties": {
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.headers": "{\"1\":\"auction_id\",\"2\":\"auction_date\",\"3\":\"bid_id\",\"4\":\"zone_id\",\"5\":\"zone_name\",\"6\":\"start_period\",\"7\":\"end_period\",\"8\":\"step\",\"9\":\"bid_price\",\"10\":\"bid_quantity_gj\",\"11\":\"current_date\"}",
     "utilake.key": "[]",
     "utilake.load": "append",

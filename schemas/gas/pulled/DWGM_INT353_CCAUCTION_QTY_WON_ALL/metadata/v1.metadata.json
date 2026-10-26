@@ -19,7 +19,7 @@
   ],
   "properties": {
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.headers": "{\"1\":\"auction_id\",\"2\":\"auction_date\",\"3\":\"zone_id\",\"4\":\"zone_name\",\"5\":\"zone_type\",\"6\":\"start_date\",\"7\":\"end_date\",\"8\":\"cc_period\",\"9\":\"clearing_price\",\"10\":\"quantities_won_gj\",\"11\":\"unallocated_qty\",\"12\":\"current_date\"}",
     "utilake.key": "[]",
     "utilake.load": "append",

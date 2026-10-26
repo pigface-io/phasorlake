@@ -19,7 +19,7 @@
   ],
   "properties": {
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.headers": "{\"1\":\"gas_date\",\"2\":\"hub_identifier\",\"3\":\"hub_name\",\"4\":\"positive_deviation_price\",\"5\":\"negative_deviation_price\",\"6\":\"ex_ante_market_price\",\"7\":\"ex_post_imbalance_price\",\"8\":\"low_contingency_gas_price\",\"9\":\"high_contingency_gas_price\",\"10\":\"mos_increase_cost\",\"11\":\"mos_decrease_cost\",\"12\":\"last_update_datetime\",\"13\":\"report_datetime\"}",
     "utilake.key": "[]",
     "utilake.load": "append",

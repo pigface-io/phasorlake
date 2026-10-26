@@ -20,7 +20,7 @@
   "properties": {
     "comment": "STATION sets out valid station identifiers.",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"STATIONID\"]",
     "utilake.load": "snapshot",
     "utilake.model-types": "{\"1\":\"VARCHAR(10)\",\"2\":\"VARCHAR(80)\",\"3\":\"VARCHAR(80)\",\"4\":\"VARCHAR(80)\",\"5\":\"VARCHAR(80)\",\"6\":\"VARCHAR(80)\",\"7\":\"VARCHAR(40)\",\"8\":\"VARCHAR(10)\",\"9\":\"VARCHAR(10)\",\"10\":\"TIMESTAMP(0)\",\"11\":\"VARCHAR(10)\"}",

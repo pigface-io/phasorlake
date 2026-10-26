@@ -20,7 +20,7 @@
   "properties": {
     "comment": "The report lists the following items for each facility and service type:initial cleared quantity as determined by the Auction Solver;where there has been a curtailment of the initial cleared quantity, the revised auction quantity which must be the aggregate minimum quantity made available to auction participants on the gas day; final aggregated scheduled nominations.",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"AUCTION_DATE\",\"FACILITY_ID\",\"GAS_DATE\",\"SERVICE_TYPE\"]",
     "utilake.load": "append",
     "utilake.market": "gas",

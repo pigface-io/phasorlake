@@ -20,7 +20,7 @@
   "properties": {
     "comment": "BIDDUIDDETAILS and the associated tracking object BIDDUIDDETAILSTRK define the registration data for each ancillary service a dispatchable unit is registered to provide. The registration data is required to validate a dispatchable unit bid submitted for that ancillary service.",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"DUID\",\"EFFECTIVEDATE\",\"VERSIONNO\",\"BIDTYPE\"]",
     "utilake.load": "snapshot",
     "utilake.model-types": "{\"1\":\"VARCHAR(10)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"NUMERIC(3,0)\",\"4\":\"VARCHAR(10)\",\"5\":\"NUMERIC(22,0)\",\"6\":\"NUMERIC(22,0)\",\"7\":\"NUMERIC(22,0)\",\"8\":\"NUMERIC(3,0)\",\"9\":\"NUMERIC(3,0)\",\"10\":\"TIMESTAMP(0)\"}",

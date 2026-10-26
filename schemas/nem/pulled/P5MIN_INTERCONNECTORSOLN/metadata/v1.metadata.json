@@ -20,7 +20,7 @@
   "properties": {
     "comment": "The five-minute predispatch (P5Min) is a MMS system providing projected dispatch for 12 Dispatch cycles (one hour). The 5-minute Predispatch cycle runs every 5-minutes to produce a dispatch and pricing schedule to a 5-minute resolution covering the next hour, a total of twelve periods.\nP5MIN_INTERCONNECTORSOLN sets out the results of the capacity evaluation for Interconnectors, including the calculated limits for the interval.",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"RUN_DATETIME\",\"INTERCONNECTORID\",\"INTERVAL_DATETIME\"]",
     "utilake.load": "append",
     "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"VARCHAR(10)\",\"3\":\"TIMESTAMP(0)\",\"4\":\"NUMERIC(15,5)\",\"5\":\"NUMERIC(15,5)\",\"6\":\"NUMERIC(15,5)\",\"7\":\"NUMERIC(15,5)\",\"8\":\"NUMERIC(15,5)\",\"9\":\"NUMERIC(1,0)\",\"10\":\"NUMERIC(15,5)\",\"11\":\"NUMERIC(15,5)\",\"12\":\"NUMERIC(15,5)\",\"13\":\"VARCHAR(20)\",\"14\":\"VARCHAR(20)\",\"15\":\"NUMERIC(15,5)\",\"16\":\"NUMERIC(15,5)\",\"17\":\"TIMESTAMP(0)\",\"18\":\"NUMERIC(2,0)\",\"19\":\"NUMERIC(10,2)\",\"20\":\"NUMERIC(1,0)\",\"21\":\"NUMERIC(10,2)\",\"22\":\"NUMERIC(1,0)\"}",

@@ -19,7 +19,7 @@
   ],
   "properties": {
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.headers": "{\"1\":\"last_update_datetime\",\"2\":\"postcode\",\"3\":\"tuos_zone\",\"4\":\"tuos_zone_desc\",\"5\":\"current_date\"}",
     "utilake.key": "[]",
     "utilake.load": "append",

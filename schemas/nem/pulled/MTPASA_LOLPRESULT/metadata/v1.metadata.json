@@ -20,7 +20,7 @@
   "properties": {
     "comment": "Results for Loss of Load Probability (LOLP) run per day",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"RUN_DATETIME\",\"RUN_NO\",\"RUNTYPE\",\"DAY\",\"REGIONID\"]",
     "utilake.load": "append",
     "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(4)\",\"3\":\"VARCHAR(20)\",\"4\":\"TIMESTAMP(0)\",\"5\":\"VARCHAR(20)\",\"6\":\"NUMERIC(3,0)\",\"7\":\"NUMERIC(12,2)\",\"8\":\"NUMERIC(12,2)\",\"9\":\"NUMERIC(12,2)\",\"10\":\"NUMERIC(8,5)\",\"11\":\"VARCHAR(20)\",\"12\":\"TIMESTAMP(0)\"}",

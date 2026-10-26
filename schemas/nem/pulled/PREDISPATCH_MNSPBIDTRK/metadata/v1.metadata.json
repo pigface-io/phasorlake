@@ -20,7 +20,7 @@
   "properties": {
     "comment": "PREDISPATCH_MNSPBIDTRK shows the MNSP bid tracking, including the bid version used in each predispatch run for each MNSP Interconnector Link. PREDISPATCH_MNSPBIDTRK shows the audit trail of the bid used for each predispatch run.",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"PREDISPATCHSEQNO\",\"LINKID\",\"PERIODID\"]",
     "utilake.load": "append",
     "utilake.model-types": "{\"1\":\"VARCHAR(20)\",\"2\":\"VARCHAR(10)\",\"3\":\"VARCHAR(20)\",\"4\":\"VARCHAR(10)\",\"5\":\"TIMESTAMP(0)\",\"6\":\"TIMESTAMP(3)\",\"7\":\"NUMERIC(3,0)\",\"8\":\"TIMESTAMP(0)\",\"9\":\"TIMESTAMP(0)\"}",

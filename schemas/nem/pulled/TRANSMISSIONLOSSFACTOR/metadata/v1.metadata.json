@@ -20,7 +20,7 @@
   "properties": {
     "comment": "TRANSMISSIONLOSSFACTOR shows the Transmission Loss factors applied at each connection point.",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"EFFECTIVEDATE\",\"VERSIONNO\",\"CONNECTIONPOINTID\"]",
     "utilake.load": "append",
     "utilake.model-types": "{\"1\":\"NUMERIC(15,5)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"NUMERIC(22,0)\",\"4\":\"VARCHAR(10)\",\"5\":\"VARCHAR(10)\",\"6\":\"TIMESTAMP(0)\",\"7\":\"NUMERIC(18,8)\"}",

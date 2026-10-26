@@ -19,7 +19,7 @@
   ],
   "properties": {
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.headers": "{\"1\":\"gas_date\",\"2\":\"node_id\",\"3\":\"node_name\",\"4\":\"current_system_capacity\",\"5\":\"current_lateral_capacity\",\"6\":\"max_system_capacity\",\"7\":\"min_system_capacity\",\"8\":\"max_lateral_capacity\",\"9\":\"min_lateral_capacity\",\"10\":\"current_date\"}",
     "utilake.key": "[]",
     "utilake.load": "append",

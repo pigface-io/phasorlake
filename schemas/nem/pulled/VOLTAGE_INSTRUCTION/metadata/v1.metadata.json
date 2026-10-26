@@ -20,7 +20,7 @@
   "properties": {
     "comment": "Child record for Voltage Instructions (MVAr Dispatch)",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"RUN_DATETIME\",\"EMS_ID\",\"VERSION_DATETIME\"]",
     "utilake.load": "append",
     "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"VARCHAR(60)\",\"3\":\"VARCHAR(20)\",\"4\":\"VARCHAR(60)\",\"5\":\"VARCHAR(60)\",\"6\":\"VARCHAR(20)\",\"7\":\"VARCHAR(20)\",\"8\":\"NUMERIC(20,5)\",\"9\":\"NUMERIC(1,0)\",\"10\":\"VARCHAR(400)\",\"11\":\"TIMESTAMP(0)\",\"12\":\"NUMERIC(4,0)\",\"13\":\"VARCHAR(60)\"}",

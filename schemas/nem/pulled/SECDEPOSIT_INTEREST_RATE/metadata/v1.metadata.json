@@ -20,7 +20,7 @@
   "properties": {
     "comment": "The security deposit interest rate on a daily basis. This is the public table published when the business enter and authorise a new daily interest rate",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"INTEREST_ACCT_ID\",\"EFFECTIVEDATE\",\"VERSION_DATETIME\"]",
     "utilake.load": "append",
     "utilake.model-types": "{\"1\":\"VARCHAR(20)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"TIMESTAMP(0)\",\"4\":\"NUMERIC(18,8)\"}",

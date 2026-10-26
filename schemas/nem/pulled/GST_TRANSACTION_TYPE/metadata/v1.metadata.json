@@ -20,7 +20,7 @@
   "properties": {
     "comment": "GST_TRANSACTION_TYPE shows a static list of transaction types supported by the MMS.",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"TRANSACTION_TYPE\"]",
     "utilake.load": "snapshot",
     "utilake.model-types": "{\"1\":\"VARCHAR(30)\",\"2\":\"VARCHAR(100)\",\"3\":\"VARCHAR(10)\",\"4\":\"VARCHAR(15)\",\"5\":\"TIMESTAMP(0)\"}",

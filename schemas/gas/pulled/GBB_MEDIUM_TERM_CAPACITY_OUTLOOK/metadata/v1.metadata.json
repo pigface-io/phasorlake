@@ -20,7 +20,7 @@
   "properties": {
     "comment": "Provide the details of activities that may affect the daily capacity of the facility over the next 12 months.",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.headers": "{\"1\":\"FacilityName\",\"2\":\"FacilityId\",\"3\":\"FromGasDate\",\"4\":\"ToGasDate\",\"5\":\"CapacityType\",\"6\":\"FlowDirection\",\"7\":\"ReceiptLocationName\",\"8\":\"ReceiptLocation\",\"9\":\"DeliveryLocationName\",\"10\":\"DeliveryLocation\",\"11\":\"CapacityDescription\",\"12\":\"OutlookQuantity\",\"13\":\"Description\",\"14\":\"LastUpdated\"}",
     "utilake.key": "[]",
     "utilake.load": "append",

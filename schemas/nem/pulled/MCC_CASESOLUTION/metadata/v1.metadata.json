@@ -20,7 +20,7 @@
   "properties": {
     "comment": "Top level table for each MCC dispatch rerun process. Note there will be one record for each dispatch interval",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"RUN_DATETIME\"]",
     "utilake.load": "append",
     "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\"}",

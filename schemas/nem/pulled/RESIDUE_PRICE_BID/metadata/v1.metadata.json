@@ -20,7 +20,7 @@
   "properties": {
     "comment": "RESIDUE_PRICE_BID supports the Settlement Residue Auction, holding the unit and bid price details for each participant.",
     "utilake.declared": "false",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.model-types": "{\"1\":\"VARCHAR(30)\",\"5\":\"NUMERIC(17,5)\",\"7\":\"VARCHAR(30)\"}",
     "utilake.table": "RESIDUE_PRICE_BID"
   },

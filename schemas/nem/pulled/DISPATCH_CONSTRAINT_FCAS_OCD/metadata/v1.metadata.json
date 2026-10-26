@@ -20,7 +20,7 @@
   "properties": {
     "comment": "FCAS constraint solution from OCD re-run.",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"SETTLEMENTDATE\",\"RUNNO\",\"INTERVENTION\",\"CONSTRAINTID\",\"VERSIONNO\"]",
     "utilake.load": "append",
     "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(3)\",\"3\":\"NUMERIC(2)\",\"4\":\"VARCHAR(20)\",\"5\":\"NUMERIC(3)\",\"6\":\"TIMESTAMP(0)\",\"7\":\"NUMERIC(15,5)\",\"8\":\"NUMERIC(15,5)\",\"9\":\"NUMERIC(15,5)\"}",

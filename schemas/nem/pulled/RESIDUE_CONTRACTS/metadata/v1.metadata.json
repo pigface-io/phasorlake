@@ -20,7 +20,7 @@
   "properties": {
     "comment": "RESIDUE_CONTRACTS supports the Settlement Residue Auction, by holding the contract details for each period for which a residue contract will be offered.",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"CONTRACTYEAR\",\"QUARTER\",\"TRANCHE\"]",
     "utilake.load": "append",
     "utilake.model-types": "{\"1\":\"NUMERIC(4,0)\",\"2\":\"NUMERIC(1,0)\",\"3\":\"NUMERIC(2,0)\",\"4\":\"VARCHAR(30)\",\"5\":\"TIMESTAMP(0)\",\"6\":\"TIMESTAMP(0)\",\"7\":\"TIMESTAMP(0)\",\"8\":\"TIMESTAMP(0)\",\"9\":\"VARCHAR(20)\",\"10\":\"TIMESTAMP(0)\",\"11\":\"VARCHAR(15)\",\"12\":\"TIMESTAMP(0)\",\"13\":\"VARCHAR(15)\",\"14\":\"TIMESTAMP(0)\",\"15\":\"VARCHAR(15)\",\"16\":\"TIMESTAMP(0)\",\"17\":\"VARCHAR(80)\",\"18\":\"VARCHAR(30)\"}",

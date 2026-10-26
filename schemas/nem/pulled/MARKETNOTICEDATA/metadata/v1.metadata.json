@@ -20,7 +20,7 @@
   "properties": {
     "comment": "MARKETNOTICEDATA shows market notices data provided to all participants (market) and specific participants (participant).",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"NOTICEID\"]",
     "utilake.load": "append",
     "utilake.model-types": "{\"1\":\"NUMERIC(10,0)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"VARCHAR(25)\",\"4\":\"VARCHAR(25)\",\"5\":\"TIMESTAMP(0)\",\"6\":\"VARCHAR(2000)\",\"7\":\"VARCHAR(255)\"}",

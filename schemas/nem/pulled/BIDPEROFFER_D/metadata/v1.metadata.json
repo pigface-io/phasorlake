@@ -20,7 +20,7 @@
   "properties": {
     "comment": "BIDPEROFFER_D shows the public summary of the energy and FCAS offers applicable in the Dispatch for the\nintervals identified. BIDPEROFFER_D is the child to BIDDAYOFFER_D.",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"SETTLEMENTDATE\",\"DUID\",\"BIDTYPE\",\"INTERVAL_DATETIME\"]",
     "utilake.load": "append",
     "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"VARCHAR(10)\",\"3\":\"VARCHAR(10)\",\"4\":\"TIMESTAMP(0)\",\"5\":\"TIMESTAMP(0)\",\"6\":\"NUMERIC(22,0)\",\"7\":\"NUMERIC(22,0)\",\"8\":\"NUMERIC(12,6)\",\"9\":\"NUMERIC(12,6)\",\"10\":\"NUMERIC(6,0)\",\"11\":\"NUMERIC(6,0)\",\"12\":\"NUMERIC(6,0)\",\"13\":\"NUMERIC(6,0)\",\"14\":\"NUMERIC(6,0)\",\"15\":\"NUMERIC(6,0)\",\"16\":\"NUMERIC(22,0)\",\"17\":\"NUMERIC(22,0)\",\"18\":\"NUMERIC(22,0)\",\"19\":\"NUMERIC(22,0)\",\"20\":\"NUMERIC(22,0)\",\"21\":\"NUMERIC(22,0)\",\"22\":\"NUMERIC(22,0)\",\"23\":\"NUMERIC(22,0)\",\"24\":\"NUMERIC(22,0)\",\"25\":\"NUMERIC(22,0)\",\"26\":\"TIMESTAMP(0)\",\"27\":\"NUMERIC(12,0)\",\"28\":\"TIMESTAMP(0)\",\"29\":\"NUMERIC(6,0)\",\"30\":\"VARCHAR(20)\",\"31\":\"NUMERIC(15,5)\",\"32\":\"NUMERIC(8,3)\"}",

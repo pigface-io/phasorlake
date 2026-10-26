@@ -19,7 +19,7 @@
   ],
   "properties": {
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.headers": "{\"1\":\"network_name\",\"2\":\"version_id\",\"3\":\"extract_type\",\"4\":\"version_from_date\",\"5\":\"version_to_date\",\"6\":\"issued_date\",\"7\":\"current_date\"}",
     "utilake.key": "[]",
     "utilake.load": "append",

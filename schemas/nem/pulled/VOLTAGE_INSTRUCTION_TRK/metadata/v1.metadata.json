@@ -20,7 +20,7 @@
   "properties": {
     "comment": "Parent record for Voltage Instructions (MVAr Dispatch). 'SIGNAL' records will have no children; 'INSTRUCTION' records will have children",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"RUN_DATETIME\",\"VERSION_DATETIME\"]",
     "utilake.load": "append",
     "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"VARCHAR(20)\",\"3\":\"TIMESTAMP(0)\",\"4\":\"TIMESTAMP(0)\",\"5\":\"VARCHAR(60)\",\"6\":\"VARCHAR(60)\",\"7\":\"VARCHAR(60)\",\"8\":\"VARCHAR(100)\",\"9\":\"TIMESTAMP(0)\",\"10\":\"TIMESTAMP(0)\"}",

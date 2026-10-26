@@ -19,7 +19,7 @@
   ],
   "properties": {
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.headers": "{\"1\":\"gas_date\",\"2\":\"schedule_interval\",\"3\":\"transmission_id\",\"4\":\"sched_inj_gj\",\"5\":\"sched_wdl_gj\",\"6\":\"price_value\",\"7\":\"administered_price\",\"8\":\"actual_wdl_gj\",\"9\":\"actual_inj_gj\"}",
     "utilake.key": "[]",
     "utilake.load": "append",

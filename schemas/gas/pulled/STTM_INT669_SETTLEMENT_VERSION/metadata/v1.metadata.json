@@ -19,7 +19,7 @@
   ],
   "properties": {
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.headers": "{\"1\":\"settlement_run_identifier\",\"2\":\"settlement_cat_type\",\"3\":\"version_from_date\",\"4\":\"version_to_date\",\"5\":\"interest_rate\",\"6\":\"issued_datetime\",\"7\":\"settlement_run_desc\",\"8\":\"report_datetime\"}",
     "utilake.key": "[]",
     "utilake.load": "append",

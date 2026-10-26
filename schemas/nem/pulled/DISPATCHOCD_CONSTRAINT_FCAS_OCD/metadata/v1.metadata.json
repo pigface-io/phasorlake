@@ -19,7 +19,7 @@
   ],
   "properties": {
     "utilake.declared": "false",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.table": "DISPATCHOCD_CONSTRAINT_FCAS_OCD"
   },
   "refs": {

@@ -19,7 +19,7 @@
   ],
   "properties": {
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.headers": "{\"1\":\"gas_date\",\"2\":\"withdrawal_zone_name\",\"3\":\"scheduled_qty\",\"4\":\"transmission_id\",\"5\":\"current_date\"}",
     "utilake.key": "[]",
     "utilake.load": "append",

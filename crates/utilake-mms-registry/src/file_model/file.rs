@@ -53,6 +53,8 @@ struct TableFile {
     description: Option<String>,
     #[serde(default)]
     report_pairs: Vec<(String, String)>,
+    #[serde(default)]
+    with_columns: Vec<String>,
     load_mode: LoadMode,
     #[serde(default)]
     primary_key: Vec<String>,
@@ -327,6 +329,8 @@ pub fn parse_table(path: &Path, text: &str, market: Market) -> Result<Table, Sch
         name,
         description: f.description,
         report_pairs,
+        with_columns: f.with_columns,
+        older_names: Vec::new(),
         load_mode: f.load_mode,
         temporal,
         primary_key,
@@ -376,6 +380,9 @@ pub fn write_table(t: &Table) -> String {
         .map(|(a, b)| format!("[{}, {}]", q(a), q(b)))
         .collect();
     let _ = writeln!(out, "report_pairs = [{}]", pairs.join(", "));
+    if !t.with_columns.is_empty() {
+        let _ = writeln!(out, "with_columns = {}", inline(&t.with_columns));
+    }
     let mode = match t.load_mode {
         LoadMode::Append => "append",
         LoadMode::Snapshot => "snapshot",
@@ -521,6 +528,18 @@ mod tests {
             "{text}"
         );
         assert!(text.contains("report_pairs = [[\"DISPATCH\", \"UNIT_SCADA\"]]"));
+        assert!(!text.contains("with_columns"), "absent for every block");
+        // A table of one kind of a pair's rows says which, and reads back.
+        let mut area = as_written();
+        area.with_columns = vec!["AREAID".into()];
+        let written = write_table(&area);
+        assert!(
+            written.contains("with_columns = [\"AREAID\"]\n"),
+            "{written}"
+        );
+        let dir = tempfile::tempdir().unwrap();
+        std::fs::write(dir.path().join(TABLE_FILE), &written).unwrap();
+        assert_eq!(read_table(dir.path(), Market::Nem).unwrap(), area);
         assert!(
             text.contains("\n[[schema]]\nid = 1\nfrom = \"2026-08\"\nversions = [1]\n"),
             "{text}"

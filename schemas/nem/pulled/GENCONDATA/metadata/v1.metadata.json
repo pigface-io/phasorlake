@@ -20,7 +20,7 @@
   "properties": {
     "comment": "GENCONDATA sets out the generic constraints contained within a generic constraint set invoked in PASA, predispatch and dispatch.\nFields enable selective application of invoked constraints in the Dispatch, Predispatch, ST PASA or MT PASA processes.",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"EFFECTIVEDATE\",\"VERSIONNO\",\"GENCONID\"]",
     "utilake.load": "append",
     "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(3,0)\",\"3\":\"VARCHAR(20)\",\"4\":\"VARCHAR(2)\",\"5\":\"NUMERIC(16,6)\",\"6\":\"VARCHAR(256)\",\"7\":\"VARCHAR(8)\",\"8\":\"NUMERIC(16,6)\",\"9\":\"TIMESTAMP(0)\",\"10\":\"VARCHAR(15)\",\"11\":\"NUMERIC(15,5)\",\"12\":\"TIMESTAMP(0)\",\"13\":\"VARCHAR(1)\",\"14\":\"VARCHAR(1)\",\"15\":\"VARCHAR(1)\",\"16\":\"VARCHAR(1)\",\"17\":\"VARCHAR(64)\",\"18\":\"VARCHAR(128)\",\"19\":\"VARCHAR(64)\",\"20\":\"VARCHAR(256)\",\"21\":\"VARCHAR(256)\",\"22\":\"VARCHAR(256)\",\"23\":\"VARCHAR(2)\",\"24\":\"VARCHAR(1)\",\"25\":\"VARCHAR(1)\",\"26\":\"NUMERIC(1,0)\",\"27\":\"VARCHAR(1)\",\"28\":\"VARCHAR(20)\",\"29\":\"VARCHAR(40)\"}",

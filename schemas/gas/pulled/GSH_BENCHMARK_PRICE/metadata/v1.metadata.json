@@ -20,7 +20,7 @@
   "properties": {
     "comment": "The report contains the benchmark prices for the day ahead (non-firm price) PLUS the last two years of daily benchmark prices (firm price)",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"GAS_DATE\",\"PRODUCT_LOCATION\",\"PRODUCT_TYPE\"]",
     "utilake.load": "append",
     "utilake.market": "gas",

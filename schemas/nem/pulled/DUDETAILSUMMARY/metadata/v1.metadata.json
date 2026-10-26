@@ -20,7 +20,7 @@
   "properties": {
     "comment": "DUDETAILSUMMARY sets out a single summary unit table so reducing the need for participants to use the various dispatchable unit detail and owner tables to establish generating unit specific details.",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"DUID\",\"START_DATE\"]",
     "utilake.load": "snapshot",
     "utilake.model-types": "{\"1\":\"VARCHAR(10)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"TIMESTAMP(0)\",\"4\":\"VARCHAR(20)\",\"5\":\"VARCHAR(10)\",\"6\":\"VARCHAR(10)\",\"7\":\"VARCHAR(10)\",\"8\":\"VARCHAR(10)\",\"9\":\"TIMESTAMP(0)\",\"10\":\"NUMERIC(15,5)\",\"11\":\"VARCHAR(20)\",\"12\":\"NUMERIC(15,5)\",\"13\":\"NUMERIC(9,2)\",\"14\":\"NUMERIC(9,2)\",\"15\":\"VARCHAR(20)\",\"16\":\"NUMERIC(6,0)\",\"17\":\"NUMERIC(6,0)\",\"18\":\"NUMERIC(6,0)\",\"19\":\"NUMERIC(6,0)\",\"20\":\"NUMERIC(1,0)\",\"21\":\"VARCHAR(20)\",\"22\":\"VARCHAR(20)\",\"23\":\"NUMERIC(9,2)\",\"24\":\"NUMERIC(9,2)\",\"25\":\"NUMERIC(6,0)\",\"26\":\"NUMERIC(6,0)\",\"27\":\"NUMERIC(6,0)\",\"28\":\"NUMERIC(6,0)\",\"29\":\"NUMERIC(18,8)\"}",

@@ -19,7 +19,7 @@
   ],
   "properties": {
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.headers": "{\"1\":\"period_start_date\",\"2\":\"period_end_date\",\"3\":\"hub_identifier\",\"4\":\"hub_name\",\"5\":\"net_market_balance\",\"6\":\"total_deviation_qty\",\"7\":\"total_withdrawals\",\"8\":\"total_variation_charges\",\"9\":\"report_datetime\"}",
     "utilake.key": "[]",
     "utilake.load": "append",

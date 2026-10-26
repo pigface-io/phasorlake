@@ -20,7 +20,7 @@
   "properties": {
     "comment": "RESIDUE_TRK supports the Settlement Residue Auction, by showing the tracking records for different residue auction runs. RESIDUE_TRK joins to RESIDUE_PUBLIC_DATA and RESIDUE_CON_DATA.",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"VERSIONNO\",\"AUCTIONID\"]",
     "utilake.load": "append",
     "utilake.model-types": "{\"1\":\"VARCHAR(30)\",\"2\":\"NUMERIC(3,0)\",\"3\":\"TIMESTAMP(0)\",\"4\":\"TIMESTAMP(0)\",\"5\":\"VARCHAR(15)\",\"6\":\"TIMESTAMP(0)\",\"7\":\"VARCHAR(15)\",\"8\":\"TIMESTAMP(0)\",\"9\":\"VARCHAR(15)\",\"10\":\"VARCHAR(30)\"}",

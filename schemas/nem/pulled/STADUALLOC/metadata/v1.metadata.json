@@ -20,7 +20,7 @@
   "properties": {
     "comment": "STADUALLOC sets out details on the allocation of dispatchable units to particular sites or stations.",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"DUID\",\"EFFECTIVEDATE\",\"STATIONID\",\"VERSIONNO\"]",
     "utilake.load": "snapshot",
     "utilake.model-types": "{\"1\":\"VARCHAR(10)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"VARCHAR(10)\",\"4\":\"NUMERIC(3,0)\",\"5\":\"TIMESTAMP(0)\"}",

@@ -19,7 +19,7 @@
   ],
   "properties": {
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.headers": "{\"1\":\"zone_id\",\"2\":\"zone_name\",\"3\":\"zone_type\",\"4\":\"from_date\",\"5\":\"to_date\",\"6\":\"current_date\"}",
     "utilake.key": "[]",
     "utilake.load": "append",

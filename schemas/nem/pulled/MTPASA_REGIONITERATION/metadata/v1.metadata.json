@@ -20,7 +20,7 @@
   "properties": {
     "comment": "Region results for Unserved Energy (USE)",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"RUN_DATETIME\",\"RUN_NO\",\"RUNTYPE\",\"DEMAND_POE_TYPE\",\"AGGREGATION_PERIOD\",\"PERIOD_ENDING\",\"REGIONID\",\"USE_ITERATION_ID\"]",
     "utilake.load": "append",
     "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(4)\",\"3\":\"VARCHAR(20)\",\"4\":\"VARCHAR(20)\",\"5\":\"VARCHAR(20)\",\"6\":\"TIMESTAMP(0)\",\"7\":\"VARCHAR(20)\",\"8\":\"NUMERIC(5)\",\"9\":\"NUMERIC(12,2)\",\"10\":\"NUMERIC(12,2)\",\"11\":\"TIMESTAMP(0)\"}",

@@ -20,7 +20,7 @@
   "properties": {
     "comment": "SET_NMAS_RECOVERY_RBF publishes the RBF for NSCAS non testing payments on a half hourly basis. This Table may also be used for NSCAS and Type 1 transitional services procured by AEMO under the ISF framework during 2025 and prior to the implementation of all system changes. During this time descriptions in these tables may not be correct.",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"SETTLEMENTDATE\",\"VERSIONNO\",\"PERIODID\",\"SERVICE\",\"CONTRACTID\",\"PAYMENTTYPE\",\"REGIONID\"]",
     "utilake.load": "append",
     "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(3,0)\",\"3\":\"NUMERIC(3,0)\",\"4\":\"VARCHAR(20)\",\"5\":\"VARCHAR(20)\",\"6\":\"VARCHAR(20)\",\"7\":\"VARCHAR(10)\",\"8\":\"NUMERIC(18,8)\",\"9\":\"NUMERIC(18,8)\",\"10\":\"NUMERIC(18,8)\",\"11\":\"TIMESTAMP(0)\"}",

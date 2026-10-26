@@ -19,7 +19,7 @@
   ],
   "properties": {
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.headers": "{\"1\":\"hub_identifier\",\"2\":\"hub_name\",\"3\":\"facility_identifier\",\"4\":\"facility_name\",\"5\":\"facility_type\",\"6\":\"last_update_datetime\",\"7\":\"report_datetime\"}",
     "utilake.key": "[\"HUB_IDENTIFIER\",\"FACILITY_IDENTIFIER\"]",
     "utilake.load": "snapshot",

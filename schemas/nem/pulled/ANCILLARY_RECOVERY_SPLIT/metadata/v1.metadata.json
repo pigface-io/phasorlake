@@ -20,7 +20,7 @@
   "properties": {
     "comment": "ANCILLARY_RECOVERY_SPLIT holds the actual customer portion for each service and payment type. A single EFFECTIVEDATE/VERSIONNO combination applies to all services (i.e. the latest EFFECTIVEDATE/VERSIONNO is not retrieved for a single service, but applies to a data set).",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"EFFECTIVEDATE\",\"VERSIONNO\",\"SERVICE\",\"PAYMENTTYPE\"]",
     "utilake.load": "snapshot",
     "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(3,0)\",\"3\":\"VARCHAR(10)\",\"4\":\"VARCHAR(20)\",\"5\":\"NUMERIC(8,5)\",\"6\":\"TIMESTAMP(0)\",\"7\":\"NUMERIC(18,8)\"}",

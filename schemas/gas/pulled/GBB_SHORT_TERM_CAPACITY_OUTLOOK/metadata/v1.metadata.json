@@ -20,7 +20,7 @@
   "properties": {
     "comment": "Provides on each gas day D, the BB facility operator’s good faith estimate of the daily capacity of the BB Facility for gas days D+1 to D+7.",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.headers": "{\"1\":\"FacilityId\",\"2\":\"FacilityName\",\"3\":\"CapacityType\",\"4\":\"CapacityTypeDescription\",\"5\":\"FlowDirection\",\"6\":\"GasDate\",\"7\":\"OutlookQuantity\",\"8\":\"Description\",\"9\":\"CapacityDescription\",\"10\":\"ReceiptLocation\",\"11\":\"ReceiptLocationName\",\"12\":\"DeliveryLocation\",\"13\":\"DeliveryLocationName\",\"14\":\"LastUpdated\"}",
     "utilake.key": "[]",
     "utilake.load": "append",

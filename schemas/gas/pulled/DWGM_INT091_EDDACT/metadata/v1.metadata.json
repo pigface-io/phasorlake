@@ -19,7 +19,7 @@
   ],
   "properties": {
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.headers": "{\"1\":\"edd_update\",\"2\":\"edd_date\",\"3\":\"edd_value\",\"4\":\"edd_type\",\"5\":\"current_date\"}",
     "utilake.key": "[]",
     "utilake.load": "append",

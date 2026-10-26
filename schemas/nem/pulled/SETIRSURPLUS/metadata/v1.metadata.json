@@ -20,7 +20,7 @@
   "properties": {
     "comment": "SETIRSURPLUS records the interregional residue calculation for each interconnector and each side of the interconnector.",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"SETTLEMENTDATE\",\"SETTLEMENTRUNNO\",\"PERIODID\",\"INTERCONNECTORID\",\"REGIONID\"]",
     "utilake.load": "append",
     "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(3,0)\",\"3\":\"NUMERIC(3,0)\",\"4\":\"VARCHAR(10)\",\"5\":\"VARCHAR(10)\",\"6\":\"NUMERIC(15,6)\",\"7\":\"NUMERIC(15,5)\",\"8\":\"NUMERIC(15,5)\",\"9\":\"TIMESTAMP(0)\",\"10\":\"NUMERIC(18,8)\",\"11\":\"NUMERIC(18,8)\"}",

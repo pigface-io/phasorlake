@@ -19,7 +19,7 @@
   ],
   "properties": {
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.headers": "{\"1\":\"gas_date\",\"2\":\"market_code\",\"3\":\"transfers_lodged\",\"4\":\"transfers_completed\",\"5\":\"transfers_cancelled\",\"6\":\"int_transfers_lodged\",\"7\":\"int_transfers_completed\",\"8\":\"int_transfers_cancelled\",\"9\":\"greenfields_received\"}",
     "utilake.key": "[]",
     "utilake.load": "append",

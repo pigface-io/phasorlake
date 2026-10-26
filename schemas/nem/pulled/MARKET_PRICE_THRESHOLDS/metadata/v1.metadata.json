@@ -20,7 +20,7 @@
   "properties": {
     "comment": "MARKET_PRICE_THRESHOLDS sets out the market cap , floor and administered price thresholds applying to the electricity market",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"EFFECTIVEDATE\",\"VERSIONNO\"]",
     "utilake.load": "snapshot",
     "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(4,0)\",\"3\":\"NUMERIC(15,5)\",\"4\":\"NUMERIC(15,5)\",\"5\":\"NUMERIC(15,5)\",\"6\":\"TIMESTAMP(0)\",\"7\":\"VARCHAR(15)\",\"8\":\"TIMESTAMP(0)\"}",

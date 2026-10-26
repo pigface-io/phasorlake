@@ -19,7 +19,7 @@
   ],
   "properties": {
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.headers": "{\"1\":\"gas_date\",\"2\":\"hub_identifier\",\"3\":\"hub_name\",\"4\":\"schedule_identifier\",\"5\":\"facility_identifier\",\"6\":\"facility_name\",\"7\":\"provisional_capacity_qty\",\"8\":\"prov_cap_qty_quality_type\",\"9\":\"provisional_capacity_price\",\"10\":\"provisional_flow_constraint_price\",\"11\":\"provisional_schedule_type\",\"12\":\"report_datetime\"}",
     "utilake.key": "[]",
     "utilake.load": "append",

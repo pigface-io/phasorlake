@@ -20,7 +20,7 @@
   "properties": {
     "comment": "Sets out local pricing offsets associated with each DUID connection point for each dispatch period",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"RUN_DATETIME\",\"INTERVAL_DATETIME\",\"DUID\"]",
     "utilake.load": "append",
     "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"VARCHAR(20)\",\"4\":\"NUMERIC(10,2)\",\"5\":\"NUMERIC(1,0)\"}",

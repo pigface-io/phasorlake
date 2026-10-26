@@ -20,7 +20,7 @@
   "properties": {
     "comment": "Zones currently registered under Part 24 of the Rules for the capacity trading and day ahead auction.",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"EFFECTIVEDATE\",\"VERSION_DATETIME\",\"ZONE_ID\"]",
     "utilake.load": "snapshot",
     "utilake.market": "gas",

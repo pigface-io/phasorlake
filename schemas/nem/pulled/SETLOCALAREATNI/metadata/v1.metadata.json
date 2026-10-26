@@ -20,7 +20,7 @@
   "properties": {
     "comment": "SETLOCALAREATNI shows the list of TNIs constituent to a local area in a settlement run.",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"SETTLEMENTDATE\",\"SETTLEMENTRUNNO\",\"LOCALAREAID\",\"TNI\"]",
     "utilake.load": "append",
     "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(3,0)\",\"3\":\"VARCHAR(30)\",\"4\":\"VARCHAR(30)\",\"5\":\"TIMESTAMP(0)\"}",

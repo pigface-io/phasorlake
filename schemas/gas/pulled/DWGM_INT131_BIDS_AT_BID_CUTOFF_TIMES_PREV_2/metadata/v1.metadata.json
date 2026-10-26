@@ -19,7 +19,7 @@
   ],
   "properties": {
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.headers": "{\"1\":\"gas_date\",\"2\":\"type_1\",\"3\":\"type_2\",\"4\":\"participant_id\",\"5\":\"participant_name\",\"6\":\"code\",\"7\":\"name\",\"8\":\"offer_type\",\"9\":\"step1\",\"10\":\"step2\",\"11\":\"step3\",\"12\":\"step4\",\"13\":\"step5\",\"14\":\"step6\",\"15\":\"step7\",\"16\":\"step8\",\"17\":\"step9\",\"18\":\"step10\",\"19\":\"min_daily_qty\",\"20\":\"bid_id\",\"21\":\"bid_cutoff_time\",\"22\":\"schedule_type\",\"23\":\"schedule_time\",\"24\":\"current_date\"}",
     "utilake.key": "[]",
     "utilake.load": "append",

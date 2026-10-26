@@ -19,7 +19,7 @@
   ],
   "properties": {
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.headers": "{\"1\":\"settlement_run_identifier\",\"2\":\"period_start_date\",\"3\":\"period_end_date\",\"4\":\"hub_identifier\",\"5\":\"hub_name\",\"6\":\"net_market_balance\",\"7\":\"total_deviation_qty\",\"8\":\"total_withdrawals\",\"9\":\"total_variation_charges\",\"10\":\"report_datetime\"}",
     "utilake.key": "[]",
     "utilake.load": "append",

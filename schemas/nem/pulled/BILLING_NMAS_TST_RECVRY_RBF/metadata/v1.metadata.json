@@ -20,7 +20,7 @@
   "properties": {
     "comment": "BILLING_NMAS_TEST_RECVRY_RBF sets out the NSCAS/SRAS Testing Payment recovery data for the posted billing week.",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"CONTRACTYEAR\",\"WEEKNO\",\"BILLRUNNO\",\"SERVICE\",\"CONTRACTID\",\"REGIONID\"]",
     "utilake.load": "append",
     "utilake.model-types": "{\"1\":\"NUMERIC(4,0)\",\"2\":\"NUMERIC(3,0)\",\"3\":\"NUMERIC(3,0)\",\"4\":\"VARCHAR(10)\",\"5\":\"VARCHAR(10)\",\"6\":\"VARCHAR(10)\",\"7\":\"NUMERIC(18,8)\",\"8\":\"NUMERIC(18,8)\",\"9\":\"NUMERIC(18,8)\",\"10\":\"TIMESTAMP(0)\"}",

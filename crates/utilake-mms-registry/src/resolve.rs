@@ -158,7 +158,12 @@ impl Registry {
         let fp = irow.fingerprint();
         // The hot path: a column list one schema of the history has, of a
         // version the history has, is read with that schema.
-        if let Some((id, k)) = self.pair(opts.market, irow.report_type, irow.report_subtype) {
+        if let Some((id, k)) = self.pair(
+            opts.market,
+            irow.report_type,
+            irow.report_subtype,
+            Some(irow.columns),
+        ) {
             let shapes = self.shapes(id.0 as usize);
             if let Some(&schema) = shapes.exact.get(&(k, fp))
                 && shapes.versions.contains(&(k, irow.version))
@@ -175,7 +180,12 @@ impl Registry {
                 });
             }
         }
-        let id = match self.table_by_pair(opts.market, irow.report_type, irow.report_subtype) {
+        let id = match self.table_for_block(
+            opts.market,
+            irow.report_type,
+            irow.report_subtype,
+            Some(irow.columns),
+        ) {
             Some(id) => id,
             None if opts.mode == Mode::Strict => return Err(unknown()),
             // No table claims the pair. The rows are not skipped: the file's

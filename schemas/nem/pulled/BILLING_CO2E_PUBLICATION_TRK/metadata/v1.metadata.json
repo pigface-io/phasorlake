@@ -20,7 +20,7 @@
   "properties": {
     "comment": "Carbon Dioxide Intensity Index publication tracking table",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"CONTRACTYEAR\",\"WEEKNO\"]",
     "utilake.load": "append",
     "utilake.model-types": "{\"1\":\"NUMERIC(4)\",\"2\":\"NUMERIC(3)\",\"3\":\"NUMERIC(3)\",\"4\":\"TIMESTAMP(0)\"}",

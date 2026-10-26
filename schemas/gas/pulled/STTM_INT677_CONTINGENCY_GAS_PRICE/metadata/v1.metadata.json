@@ -19,7 +19,7 @@
   ],
   "properties": {
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.headers": "{\"1\":\"gas_date\",\"2\":\"hub_identifier\",\"3\":\"hub_name\",\"4\":\"contingency_gas_called_identifier\",\"5\":\"high_contingency_gas_price\",\"6\":\"low_contingency_gas_price\",\"7\":\"schedule_high_contingency_gas_price\",\"8\":\"schedule_low_contingency_gas_price\",\"9\":\"approval_datetime\",\"10\":\"report_datetime\"}",
     "utilake.key": "[]",
     "utilake.load": "append",

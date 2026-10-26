@@ -20,7 +20,7 @@
   "properties": {
     "comment": "Records the prudential run details for each prudential date",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"PRUDENTIAL_DATE\",\"PRUDENTIAL_RUNNO\"]",
     "utilake.load": "append",
     "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(8)\"}",

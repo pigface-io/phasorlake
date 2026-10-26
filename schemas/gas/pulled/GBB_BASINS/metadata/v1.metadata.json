@@ -20,7 +20,7 @@
   "properties": {
     "comment": "This report displays a list of all basins",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.headers": "{\"1\":\"BasinId\",\"2\":\"BasinName\"}",
     "utilake.key": "[\"BASINID\"]",
     "utilake.load": "snapshot",

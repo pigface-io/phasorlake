@@ -20,7 +20,7 @@
   "properties": {
     "comment": "Notifies participants when the market delay or cancellation process is triggered",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"NOTICE_ID\"]",
     "utilake.load": "append",
     "utilake.market": "gas",

@@ -19,7 +19,7 @@
   ],
   "properties": {
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.headers": "{\"1\":\"bid_id\",\"2\":\"gas_date\",\"3\":\"market_participant_id\",\"4\":\"company_name\",\"5\":\"mirn\",\"6\":\"bid_step\",\"7\":\"bid_price\",\"8\":\"bid_qty_gj\",\"9\":\"step_qty_gj\",\"10\":\"inject_withdraw\",\"11\":\"current_date\"}",
     "utilake.key": "[]",
     "utilake.load": "append",

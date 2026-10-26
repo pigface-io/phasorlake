@@ -20,7 +20,7 @@
   "properties": {
     "comment": "PARTICIPANTCLASS sets out valid participant classifications.",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"PARTICIPANTCLASSID\"]",
     "utilake.load": "snapshot",
     "utilake.model-types": "{\"1\":\"VARCHAR(20)\",\"2\":\"VARCHAR(64)\",\"3\":\"TIMESTAMP(0)\"}",

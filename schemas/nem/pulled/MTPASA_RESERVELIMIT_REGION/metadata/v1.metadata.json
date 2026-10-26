@@ -20,7 +20,7 @@
   "properties": {
     "comment": "MT PASA input table to define the regions that are part of a single MT PASA Reserve Requirement",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"EFFECTIVEDATE\",\"VERSION_DATETIME\",\"RESERVELIMITID\",\"REGIONID\"]",
     "utilake.load": "append",
     "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"VARCHAR(20)\",\"4\":\"VARCHAR(20)\",\"5\":\"NUMERIC(16,6)\",\"6\":\"TIMESTAMP(0)\"}",

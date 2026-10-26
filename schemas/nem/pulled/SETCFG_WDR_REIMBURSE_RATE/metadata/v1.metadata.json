@@ -20,7 +20,7 @@
   "properties": {
     "comment": "Settlements WDR transactions",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[]",
     "utilake.load": "append",
     "utilake.model-types": "{\"1\":\"VARCHAR(20)\",\"2\":\"VARCHAR(20)\",\"3\":\"TIMESTAMP(3)\",\"4\":\"NUMERIC(18,8)\",\"5\":\"NUMERIC(3,0)\",\"6\":\"TIMESTAMP(3)\"}",

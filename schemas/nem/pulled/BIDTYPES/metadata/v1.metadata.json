@@ -20,7 +20,7 @@
   "properties": {
     "comment": "BIDTYPES, together with the associated tracking data in BIDTYPESTRK, define a set of ancillary services with bidding parameters from a given date.\nBIDTYPES is static data describing each type of bid quantity, the number of applicable bands, how many days ahead a price lock down becomes effective and the validation rule that applies.",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"BIDTYPE\",\"EFFECTIVEDATE\",\"VERSIONNO\"]",
     "utilake.load": "snapshot",
     "utilake.model-types": "{\"1\":\"VARCHAR(10)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"NUMERIC(3,0)\",\"4\":\"VARCHAR(64)\",\"5\":\"NUMERIC(3,0)\",\"6\":\"NUMERIC(2,0)\",\"7\":\"VARCHAR(10)\",\"8\":\"TIMESTAMP(0)\",\"9\":\"VARCHAR(10)\"}",

@@ -20,7 +20,7 @@
   "properties": {
     "comment": "GENERICCONSTRAINTRHS sets out details of generic constraint Right Hand Side (RHS) formulations for dispatch (DS), predispatch (PD) and Short Term PASA (ST). GENERICCONSTRAINTRHS also includes general expressions (EQ) used in the dispatch, predispatch and PASA time frames.\nGENERICCONSTRAINTRHS replaces data previously available via the \"Constraint Library” Excel spreadsheet.",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"GENCONID\",\"EFFECTIVEDATE\",\"VERSIONNO\",\"SCOPE\",\"TERMID\"]",
     "utilake.load": "append",
     "utilake.model-types": "{\"1\":\"VARCHAR(20)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"NUMERIC(22,0)\",\"4\":\"VARCHAR(2)\",\"5\":\"NUMERIC(4,0)\",\"6\":\"NUMERIC(3,0)\",\"7\":\"VARCHAR(21)\",\"8\":\"VARCHAR(1)\",\"9\":\"NUMERIC(16,6)\",\"10\":\"VARCHAR(10)\",\"11\":\"NUMERIC(16,6)\",\"12\":\"VARCHAR(12)\",\"13\":\"VARCHAR(12)\",\"14\":\"VARCHAR(12)\",\"15\":\"TIMESTAMP(0)\"}",

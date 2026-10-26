@@ -20,7 +20,7 @@
   "properties": {
     "comment": "GST_BAS_CLASS contains a static list of BAS (Business Activity Statement) classifications supported by the MMS.",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"BAS_CLASS\"]",
     "utilake.load": "snapshot",
     "utilake.model-types": "{\"1\":\"VARCHAR(30)\",\"2\":\"VARCHAR(100)\",\"3\":\"TIMESTAMP(0)\"}",

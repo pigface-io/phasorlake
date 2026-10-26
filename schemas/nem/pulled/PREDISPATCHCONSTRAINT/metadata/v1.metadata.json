@@ -20,7 +20,7 @@
   "properties": {
     "comment": "PREDISPATCHCONSTRAINT sets out constraints that are binding in each predispatch run and interconnector constraints (whether binding or not). Only binding and interconnector constraints are reported. Binding contracts have marginal value greater than $0. Interconnector constraints are listed so RHS values can be reported for ST PASA.\nConstraint solutions only report fixed loading /MR constraints on the next day.",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"CONSTRAINTID\",\"DATETIME\"]",
     "utilake.load": "append",
     "utilake.model-types": "{\"1\":\"VARCHAR(20)\",\"2\":\"NUMERIC(3,0)\",\"3\":\"VARCHAR(20)\",\"4\":\"VARCHAR(20)\",\"5\":\"NUMERIC(2,0)\",\"6\":\"NUMERIC(15,5)\",\"7\":\"NUMERIC(15,5)\",\"8\":\"NUMERIC(15,5)\",\"9\":\"TIMESTAMP(0)\",\"10\":\"TIMESTAMP(0)\",\"12\":\"TIMESTAMP(0)\",\"13\":\"NUMERIC(22,0)\",\"14\":\"NUMERIC(15,5)\",\"15\":\"VARCHAR(20)\"}",

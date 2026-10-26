@@ -19,7 +19,7 @@
   ],
   "properties": {
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.headers": "{\"1\":\"dfpc_id\",\"2\":\"injection_mirn\",\"3\":\"withdrawal_mirn\",\"4\":\"commencement_date\",\"5\":\"termination_date\",\"6\":\"daily_max_net_inj_qty_gj\",\"7\":\"daily_max_net_wdl_qty_gj\",\"8\":\"ti\",\"9\":\"hourly_max_net_inj_qty_gj\",\"10\":\"hourly_max_net_wdl_qty_gj\",\"11\":\"mod_datetime\",\"12\":\"current_date\"}",
     "utilake.key": "[]",
     "utilake.load": "append",

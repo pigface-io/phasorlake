@@ -20,7 +20,7 @@
   "properties": {
     "comment": "MNSP_BIDOFFERPERIOD shows availability for 5-minute periods for a specific Bid and LinkID for the given Trading Date and period. MNSP_BIDOFFERPERIOD is a child to MNSP_DAYOFFER and links to BIDOFFERFILETRK for 5MS Bids.",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"TRADINGDATE\",\"OFFERDATETIME\",\"LINKID\",\"PERIODID\"]",
     "utilake.load": "append",
     "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"TIMESTAMP(3)\",\"3\":\"VARCHAR(20)\",\"4\":\"NUMERIC(3,0)\",\"5\":\"NUMERIC(8,3)\",\"6\":\"NUMERIC(8,3)\",\"7\":\"NUMERIC(8,3)\",\"8\":\"NUMERIC(8,3)\",\"9\":\"NUMERIC(8,3)\",\"10\":\"NUMERIC(8,3)\",\"11\":\"NUMERIC(8,3)\",\"12\":\"NUMERIC(8,3)\",\"13\":\"NUMERIC(8,3)\",\"14\":\"NUMERIC(8,3)\",\"15\":\"NUMERIC(8,3)\",\"16\":\"NUMERIC(8,3)\",\"17\":\"NUMERIC(6)\",\"18\":\"NUMERIC(8,3)\",\"19\":\"NUMERIC(8,3)\"}",

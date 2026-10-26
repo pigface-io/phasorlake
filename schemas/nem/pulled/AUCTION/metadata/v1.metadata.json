@@ -20,7 +20,7 @@
   "properties": {
     "comment": "AUCTION holds auction details. AUCTION is new in March 2003 to support SRA Inter-Temporal Linking.",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"AUCTIONID\"]",
     "utilake.load": "append",
     "utilake.model-types": "{\"1\":\"VARCHAR(30)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"TIMESTAMP(0)\",\"4\":\"TIMESTAMP(0)\",\"5\":\"TIMESTAMP(0)\",\"6\":\"VARCHAR(100)\",\"7\":\"TIMESTAMP(0)\",\"8\":\"VARCHAR(30)\",\"9\":\"TIMESTAMP(0)\"}",

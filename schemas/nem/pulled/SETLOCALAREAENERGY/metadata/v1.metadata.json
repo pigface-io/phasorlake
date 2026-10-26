@@ -20,7 +20,7 @@
   "properties": {
     "comment": "SETLOCALAREAENERGY shows the UFE, AGE and associated values for each local area and trading interval in a settlement run.",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"SETTLEMENTDATE\",\"SETTLEMENTRUNNO\",\"LOCALAREAID\",\"PERIODID\"]",
     "utilake.load": "append",
     "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(3,0)\",\"3\":\"NUMERIC(3,0)\",\"4\":\"VARCHAR(30)\",\"5\":\"NUMERIC(18,8)\",\"6\":\"NUMERIC(18,8)\",\"7\":\"NUMERIC(18,8)\",\"8\":\"NUMERIC(18,8)\",\"9\":\"NUMERIC(18,8)\",\"10\":\"TIMESTAMP(0)\"}",

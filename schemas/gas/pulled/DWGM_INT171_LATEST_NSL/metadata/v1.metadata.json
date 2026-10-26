@@ -19,7 +19,7 @@
   ],
   "properties": {
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.headers": "{\"1\":\"nsl_update\",\"2\":\"gas_date\",\"3\":\"distributor_name\",\"4\":\"nsl_gj\",\"5\":\"current_date\"}",
     "utilake.key": "[]",
     "utilake.load": "append",

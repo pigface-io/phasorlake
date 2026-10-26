@@ -20,7 +20,7 @@
   "properties": {
     "comment": "DISPATCHINTERCONNECTORRES sets out MW flow and losses on each interconnector for each dispatch period, including fields for the Frequency Controlled Ancillary Services export and import limits and extra reporting of the generic constraints set the energy import and export limits.",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"SETTLEMENTDATE\",\"RUNNO\",\"INTERCONNECTORID\",\"DISPATCHINTERVAL\",\"INTERVENTION\"]",
     "utilake.load": "append",
     "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(3,0)\",\"3\":\"VARCHAR(10)\",\"4\":\"NUMERIC(22,0)\",\"5\":\"NUMERIC(2,0)\",\"6\":\"NUMERIC(15,5)\",\"7\":\"NUMERIC(15,5)\",\"8\":\"NUMERIC(15,5)\",\"9\":\"NUMERIC(15,5)\",\"10\":\"NUMERIC(15,5)\",\"11\":\"TIMESTAMP(0)\",\"12\":\"NUMERIC(15,5)\",\"13\":\"NUMERIC(15,5)\",\"14\":\"NUMERIC(15,5)\",\"15\":\"VARCHAR(20)\",\"16\":\"VARCHAR(20)\",\"17\":\"NUMERIC(15,5)\",\"18\":\"NUMERIC(15,5)\",\"19\":\"NUMERIC(10,2)\",\"20\":\"NUMERIC(1,0)\",\"21\":\"NUMERIC(10,2)\",\"22\":\"NUMERIC(1,0)\"}",

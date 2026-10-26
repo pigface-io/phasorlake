@@ -20,7 +20,7 @@
   "properties": {
     "comment": "PREDISPATCHSCENARIODEMAND defines the demand offsets that are applied for each of the predispatch sensitivity scenarios.",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"EFFECTIVEDATE\",\"VERSIONNO\",\"SCENARIO\",\"REGIONID\"]",
     "utilake.load": "snapshot",
     "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(3)\",\"3\":\"NUMERIC(2)\",\"4\":\"VARCHAR(20)\",\"5\":\"NUMERIC(4)\"}",

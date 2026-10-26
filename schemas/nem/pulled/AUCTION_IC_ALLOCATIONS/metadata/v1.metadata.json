@@ -20,7 +20,7 @@
   "properties": {
     "comment": "AUCTION_IC_ALLOCATIONS supports the Settlement Residue Auction by providing the basis for setting up contracts for individual tranches. AUCTION_IC_ALLOCATIONS shows the default definitions for the total number of units and proportion applicable to each directional interconnector for a specified auction quarter.",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"CONTRACTYEAR\",\"QUARTER\",\"VERSIONNO\",\"INTERCONNECTORID\",\"FROMREGIONID\"]",
     "utilake.load": "append",
     "utilake.model-types": "{\"1\":\"NUMERIC(4,0)\",\"2\":\"NUMERIC(1,0)\",\"3\":\"NUMERIC(3,0)\",\"4\":\"VARCHAR(10)\",\"5\":\"VARCHAR(10)\",\"6\":\"NUMERIC(5,0)\",\"7\":\"NUMERIC(8,5)\",\"8\":\"NUMERIC(17,5)\",\"9\":\"TIMESTAMP(0)\",\"10\":\"VARCHAR(15)\",\"11\":\"TIMESTAMP(0)\",\"12\":\"NUMERIC(18,8)\"}",

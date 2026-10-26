@@ -20,7 +20,7 @@
   "properties": {
     "comment": "Provide the uncontracted capacity of the facility over the next 12 months.",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.headers": "{\"1\":\"FacilityId\",\"2\":\"FacilityName\",\"3\":\"FacilityType\",\"4\":\"OutlookYear\",\"5\":\"OutlookMonth\",\"6\":\"CapacityType\",\"7\":\"FlowDirection\",\"8\":\"OutlookQuantity\",\"9\":\"CapacityDescription\",\"10\":\"ReceiptLocation\",\"11\":\"ReceiptLocationName\",\"12\":\"DeliveryLocation\",\"13\":\"DeliveryLocationName\",\"14\":\"Description\",\"15\":\"LastUpdated\"}",
     "utilake.key": "[]",
     "utilake.load": "append",

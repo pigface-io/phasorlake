@@ -19,7 +19,7 @@
   ],
   "properties": {
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.headers": "{\"1\":\"pipeline_id\",\"2\":\"point_group_identifier_id\",\"3\":\"point_group_identifier_name\",\"4\":\"nodal_altitude\",\"5\":\"last_mod_date\",\"6\":\"current_date\"}",
     "utilake.key": "[\"PIPELINE_ID\",\"POINT_GROUP_IDENTIFIER_ID\"]",
     "utilake.load": "snapshot",

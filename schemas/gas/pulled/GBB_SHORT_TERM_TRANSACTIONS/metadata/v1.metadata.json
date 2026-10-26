@@ -20,7 +20,7 @@
   "properties": {
     "comment": "These reports display information regarding short-term gas transactions",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.headers": "{\"1\":\"PeriodID\",\"2\":\"State\",\"3\":\"Quantity (TJ)\",\"4\":\"VolumeWeightedPrice ($)\",\"5\":\"TransactionType\",\"6\":\"SupplyPeriodStart\",\"7\":\"SupplyPeriodEnd\"}",
     "utilake.key": "[]",
     "utilake.load": "append",

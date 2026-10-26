@@ -4,7 +4,7 @@
   "default-sort-order-id": 0,
   "default-spec-id": 0,
   "format-version": 3,
-  "last-column-id": 39,
+  "last-column-id": 36,
   "last-partition-id": 999,
   "last-sequence-number": 3,
   "last-updated-ms": 1722434400002,
@@ -20,10 +20,10 @@
   "properties": {
     "comment": "Region results for interval of max demand per day.",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"RUN_DATETIME\",\"RUN_NO\",\"RUNTYPE\",\"DEMAND_POE_TYPE\",\"DAY\",\"REGIONID\"]",
     "utilake.load": "append",
-    "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(4)\",\"3\":\"VARCHAR(20)\",\"4\":\"VARCHAR(20)\",\"5\":\"TIMESTAMP(0)\",\"6\":\"VARCHAR(20)\",\"7\":\"NUMERIC(3,0)\",\"8\":\"NUMERIC(12,2)\",\"9\":\"NUMERIC(12,2)\",\"10\":\"NUMERIC(12,2)\",\"11\":\"NUMERIC(12,2)\",\"12\":\"NUMERIC(12,2)\",\"13\":\"NUMERIC(12,2)\",\"14\":\"NUMERIC(12,2)\",\"15\":\"NUMERIC(12,2)\",\"16\":\"NUMERIC(12,2)\",\"17\":\"NUMERIC(12,2)\",\"18\":\"NUMERIC(12,2)\",\"19\":\"NUMERIC(12,2)\",\"20\":\"NUMERIC(12,2)\",\"21\":\"NUMERIC(12,2)\",\"22\":\"NUMERIC(12,2)\",\"23\":\"NUMERIC(12,2)\",\"24\":\"NUMERIC(12,2)\",\"25\":\"NUMERIC(12,2)\",\"26\":\"NUMERIC(12,2)\",\"27\":\"NUMERIC(12,2)\",\"28\":\"TIMESTAMP(0)\",\"32\":\"NUMERIC(12,2)\",\"33\":\"NUMERIC(12,2)\",\"34\":\"NUMERIC(12,2)\",\"35\":\"NUMERIC(12,2)\",\"36\":\"NUMERIC(12,2)\",\"37\":\"NUMERIC(12,2)\",\"38\":\"NUMERIC(12,2)\",\"39\":\"NUMERIC(12,2)\"}",
+    "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(4)\",\"3\":\"VARCHAR(20)\",\"4\":\"VARCHAR(20)\",\"5\":\"TIMESTAMP(0)\",\"6\":\"VARCHAR(20)\",\"7\":\"NUMERIC(3,0)\",\"8\":\"NUMERIC(12,2)\",\"9\":\"NUMERIC(12,2)\",\"10\":\"NUMERIC(12,2)\",\"11\":\"NUMERIC(12,2)\",\"12\":\"NUMERIC(12,2)\",\"13\":\"NUMERIC(12,2)\",\"14\":\"NUMERIC(12,2)\",\"15\":\"NUMERIC(12,2)\",\"16\":\"NUMERIC(12,2)\",\"17\":\"NUMERIC(12,2)\",\"18\":\"NUMERIC(12,2)\",\"19\":\"NUMERIC(12,2)\",\"20\":\"NUMERIC(12,2)\",\"21\":\"NUMERIC(12,2)\",\"22\":\"NUMERIC(12,2)\",\"23\":\"NUMERIC(12,2)\",\"24\":\"NUMERIC(12,2)\",\"25\":\"NUMERIC(12,2)\",\"26\":\"NUMERIC(12,2)\",\"27\":\"NUMERIC(12,2)\",\"28\":\"TIMESTAMP(0)\",\"29\":\"NUMERIC(12,2)\",\"30\":\"NUMERIC(12,2)\",\"31\":\"NUMERIC(12,2)\",\"32\":\"NUMERIC(12,2)\",\"33\":\"NUMERIC(12,2)\",\"34\":\"NUMERIC(12,2)\",\"35\":\"NUMERIC(12,2)\",\"36\":\"NUMERIC(12,2)\"}",
     "utilake.package": "MTPASA",
     "utilake.reports": "[[\"MTPASA\",\"REGIONRESULT\"]]",
     "utilake.table": "MTPASA_REGIONRESULT",
@@ -242,22 +242,25 @@
           "type": "timestamptz"
         },
         {
+          "doc": "The 90% percentile for semi-scheduled generation across iterations and reference years (MW)",
           "id": 29,
           "name": "TOTALSEMISCHEDULEDGEN90",
           "required": false,
-          "type": "decimal(6, 2)"
+          "type": "decimal(12, 2)"
         },
         {
+          "doc": "The 50% percentile for semi-scheduled generation across iterations and reference years (MW)",
           "id": 30,
           "name": "TOTALSEMISCHEDULEDGEN50",
           "required": false,
-          "type": "decimal(6, 2)"
+          "type": "decimal(12, 2)"
         },
         {
+          "doc": "The 10% percentile for semi-scheduled generation across iterations and reference years (MW)",
           "id": 31,
           "name": "TOTALSEMISCHEDULEDGEN10",
           "required": false,
-          "type": "decimal(6, 2)"
+          "type": "decimal(12, 2)"
         }
       ],
       "identifier-field-ids": [
@@ -471,56 +474,56 @@
         },
         {
           "doc": "The 90% percentile for semi-scheduled generation across iterations and reference years (MW)",
-          "id": 32,
+          "id": 29,
           "name": "TOTALSEMISCHEDULEGEN90",
           "required": false,
           "type": "decimal(12, 2)"
         },
         {
           "doc": "The 50% percentile for semi-scheduled generation across iterations and reference years (MW)",
-          "id": 33,
+          "id": 30,
           "name": "TOTALSEMISCHEDULEGEN50",
           "required": false,
           "type": "decimal(12, 2)"
         },
         {
           "doc": "The 10% percentile for semi-scheduled generation across iterations and reference years (MW)",
-          "id": 34,
+          "id": 31,
           "name": "TOTALSEMISCHEDULEGEN10",
           "required": false,
           "type": "decimal(12, 2)"
         },
         {
           "doc": "Minimum available capacity, across iterations and reference years (MW).",
-          "id": 35,
+          "id": 32,
           "name": "TOTALAVAILABLEGENMIN",
           "required": false,
           "type": "decimal(12, 2)"
         },
         {
           "doc": "The 10% percentile for available capacity, across iterations and reference years (MW).",
-          "id": 36,
+          "id": 33,
           "name": "TOTALAVAILABLEGEN10",
           "required": false,
           "type": "decimal(12, 2)"
         },
         {
           "doc": "The 50% percentile for available capacity, across iterations and reference years (MW).",
-          "id": 37,
+          "id": 34,
           "name": "TOTALAVAILABLEGEN50",
           "required": false,
           "type": "decimal(12, 2)"
         },
         {
           "doc": "The 90% percentile for available capacity, across iterations and reference years (MW).",
-          "id": 38,
+          "id": 35,
           "name": "TOTALAVAILABLEGEN90",
           "required": false,
           "type": "decimal(12, 2)"
         },
         {
           "doc": "Maximum available capacity, across iterations and reference years (MW).",
-          "id": 39,
+          "id": 36,
           "name": "TOTALAVAILABLEGENMAX",
           "required": false,
           "type": "decimal(12, 2)"

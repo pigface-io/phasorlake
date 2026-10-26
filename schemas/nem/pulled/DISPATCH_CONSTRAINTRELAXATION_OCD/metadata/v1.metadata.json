@@ -19,7 +19,7 @@
   ],
   "properties": {
     "utilake.declared": "false",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.table": "DISPATCH_CONSTRAINTRELAXATION_OCD"
   },
   "refs": {

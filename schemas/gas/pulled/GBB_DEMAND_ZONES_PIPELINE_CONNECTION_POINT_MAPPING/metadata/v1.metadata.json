@@ -20,7 +20,7 @@
   "properties": {
     "comment": "Provides a list of nodes within a location.",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.headers": "{\"1\":\"FacilityName\",\"2\":\"FacilityType\",\"3\":\"FacilityId\",\"4\":\"NodeId\",\"5\":\"ConnectionPointId\",\"6\":\"FlowDirection\",\"7\":\"ConnectionPointName\",\"8\":\"State\",\"9\":\"DemandZone\"}",
     "utilake.key": "[\"FACILITYID\",\"NODEID\",\"CONNECTIONPOINTID\"]",
     "utilake.load": "snapshot",

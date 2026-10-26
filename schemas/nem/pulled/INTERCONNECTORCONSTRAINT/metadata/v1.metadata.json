@@ -20,7 +20,7 @@
   "properties": {
     "comment": "INTERCONNECTORCONSTRAINT sets out Interconnector limit data used as defaults in dispatch, predispatch and STPASA and used by SPD in calculating flows. INTERCONNECTORCONSTRAINT includes an additional field to restrict an interconnector from support transfer of FCAS.",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"EFFECTIVEDATE\",\"VERSIONNO\",\"INTERCONNECTORID\"]",
     "utilake.load": "snapshot",
     "utilake.model-types": "{\"1\":\"NUMERIC(5,2)\",\"2\":\"NUMERIC(5,2)\",\"3\":\"TIMESTAMP(0)\",\"4\":\"NUMERIC(3,0)\",\"5\":\"VARCHAR(10)\",\"6\":\"NUMERIC(15,5)\",\"7\":\"NUMERIC(15,5)\",\"8\":\"NUMERIC(15,6)\",\"9\":\"NUMERIC(27,17)\",\"10\":\"VARCHAR(40)\",\"11\":\"VARCHAR(15)\",\"12\":\"TIMESTAMP(0)\",\"13\":\"VARCHAR(1)\",\"14\":\"NUMERIC(6,0)\",\"15\":\"NUMERIC(6,0)\",\"16\":\"NUMERIC(15,5)\",\"17\":\"NUMERIC(15,5)\",\"18\":\"NUMERIC(15,5)\",\"19\":\"NUMERIC(15,5)\",\"20\":\"TIMESTAMP(0)\",\"21\":\"NUMERIC(1,0)\",\"22\":\"VARCHAR(10)\"}",

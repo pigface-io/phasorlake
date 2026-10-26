@@ -20,7 +20,7 @@
   "properties": {
     "comment": "Inter-regional flow information common to or aggregated for regulated (i.e. not MNSP) Interconnectors spanning the From-Region and To-Region - NB only the physical run is calculated'",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"SETTLEMENTDATE\",\"RUNNO\",\"INTERVENTION\",\"FROM_REGIONID\",\"TO_REGIONID\"]",
     "utilake.load": "append",
     "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(3,0)\",\"3\":\"NUMERIC(2,0)\",\"4\":\"VARCHAR(20)\",\"5\":\"VARCHAR(20)\",\"6\":\"NUMERIC(22,0)\",\"7\":\"NUMERIC(15,5)\",\"8\":\"NUMERIC(16,6)\",\"9\":\"NUMERIC(16,6)\",\"10\":\"NUMERIC(16,6)\",\"11\":\"NUMERIC(16,6)\",\"12\":\"TIMESTAMP(0)\"}",

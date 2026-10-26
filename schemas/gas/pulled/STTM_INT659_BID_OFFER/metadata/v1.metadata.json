@@ -19,7 +19,7 @@
   ],
   "properties": {
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.headers": "{\"1\":\"gas_date\",\"2\":\"company_identifier\",\"3\":\"company_name\",\"4\":\"hub_identifier\",\"5\":\"hub_name\",\"6\":\"schedule_identifier\",\"7\":\"facility_identifier\",\"8\":\"facility_name\",\"9\":\"bid_offer_identifier\",\"10\":\"bid_offer_step_number\",\"11\":\"step_price\",\"12\":\"step_capped_cumulative_qty\",\"13\":\"bid_offer_type\",\"14\":\"report_datetime\"}",
     "utilake.key": "[]",
     "utilake.load": "append",

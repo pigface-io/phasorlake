@@ -20,7 +20,7 @@
   "properties": {
     "comment": "Service Points currently registered under Part 24 of the Rules for the capacity trading and day ahead auction.",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"AUCTION_PRODUCT_TYPE\",\"EFFECTIVEDATE\",\"FACILITY_ID\",\"SERVICE_POINT_ID\",\"SERVICE_POINT_TYPE\",\"VERSION_DATETIME\"]",
     "utilake.load": "snapshot",
     "utilake.market": "gas",

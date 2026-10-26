@@ -20,7 +20,7 @@
   "properties": {
     "comment": "MARKETFEE sets out fee type and period for each market fee.",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"MARKETFEEID\"]",
     "utilake.load": "snapshot",
     "utilake.model-types": "{\"1\":\"VARCHAR(10)\",\"2\":\"VARCHAR(20)\",\"3\":\"VARCHAR(12)\",\"4\":\"VARCHAR(64)\",\"5\":\"TIMESTAMP(0)\",\"6\":\"VARCHAR(15)\",\"7\":\"VARCHAR(10)\",\"8\":\"VARCHAR(40)\",\"9\":\"VARCHAR(20)\",\"10\":\"VARCHAR(20)\"}",

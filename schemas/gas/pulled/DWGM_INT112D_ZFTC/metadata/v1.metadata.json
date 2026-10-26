@@ -19,7 +19,7 @@
   ],
   "properties": {
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.headers": "{\"1\":\"zftc_name\",\"2\":\"commencement_date\",\"3\":\"termination_date\",\"4\":\"daily_max_net_inj_qty_gj\",\"5\":\"daily_max_net_wdl_qty_gj\",\"6\":\"ti\",\"7\":\"hourly_max_net_inj_qty_gj\",\"8\":\"hourly_max_net_wdl_qty_gj\",\"9\":\"mod_datetime\",\"10\":\"current_date\"}",
     "utilake.key": "[]",
     "utilake.load": "append",

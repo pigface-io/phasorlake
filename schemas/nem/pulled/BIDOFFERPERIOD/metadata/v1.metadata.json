@@ -20,7 +20,7 @@
   "properties": {
     "comment": "BIDOFFERPERIOD shows 5-minute period-based Energy and Ancillary Service bid data.BIDOFFERPERIOD is a child table of BIDDAYOFFER",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"DUID\",\"BIDTYPE\",\"TRADINGDATE\",\"OFFERDATETIME\",\"PERIODID\"]",
     "utilake.load": "append",
     "utilake.model-types": "{\"1\":\"VARCHAR(20)\",\"2\":\"VARCHAR(10)\",\"3\":\"TIMESTAMP(0)\",\"4\":\"TIMESTAMP(3)\",\"5\":\"NUMERIC(3,0)\",\"6\":\"NUMERIC(8,3)\",\"7\":\"NUMERIC(8,3)\",\"8\":\"NUMERIC(6)\",\"9\":\"NUMERIC(6)\",\"10\":\"NUMERIC(8,3)\",\"11\":\"NUMERIC(8,3)\",\"12\":\"NUMERIC(8,3)\",\"13\":\"NUMERIC(8,3)\",\"14\":\"NUMERIC(8,3)\",\"15\":\"NUMERIC(8,3)\",\"16\":\"NUMERIC(8,3)\",\"17\":\"NUMERIC(8,3)\",\"18\":\"NUMERIC(8,3)\",\"19\":\"NUMERIC(8,3)\",\"20\":\"NUMERIC(8,3)\",\"21\":\"NUMERIC(8,3)\",\"22\":\"NUMERIC(8,3)\",\"23\":\"NUMERIC(8,3)\",\"24\":\"NUMERIC(8,3)\",\"25\":\"VARCHAR(20)\",\"26\":\"NUMERIC(15,5)\",\"27\":\"NUMERIC(3,0)\",\"28\":\"NUMERIC(8,3)\"}",

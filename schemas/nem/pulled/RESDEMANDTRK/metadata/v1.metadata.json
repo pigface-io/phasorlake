@@ -20,7 +20,7 @@
   "properties": {
     "comment": "RESDEMANDTRK defines the existence and versioning information of a forecast for a specific region and trading date.\nRESDEMANDTRK and PERDEMAND have a parent/child relationship, and are for defined forecast regional demands since market start. RESDEMANDTRK defines the existence and versioning information of a forecast for a specific region and trading date. PERDEMAND defines the numerical forecast values for each trading interval of a the trading day for that region. A complete trading day forecast for one region consists of one RESDEMANDTRK record and 48 PERDEMAND records.",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"EFFECTIVEDATE\",\"REGIONID\",\"OFFERDATE\",\"VERSIONNO\"]",
     "utilake.load": "append",
     "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"VARCHAR(10)\",\"3\":\"TIMESTAMP(0)\",\"4\":\"NUMERIC(3,0)\",\"5\":\"VARCHAR(40)\",\"6\":\"TIMESTAMP(0)\",\"7\":\"VARCHAR(10)\",\"8\":\"TIMESTAMP(0)\"}",

@@ -204,7 +204,8 @@ impl From<LakeType> for String {
 }
 
 /// One lake column, ever: one field of the table's history, so its id is
-/// never reused and a renamed column is a new column.
+/// never reused. A column AEMO renamed is still one column, under its
+/// newest name ([`Table::older_names`] keeps the others).
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Column {
     /// Stable id; the Iceberg and Parquet field id.
@@ -266,6 +267,19 @@ pub struct Table {
     pub description: Option<String>,
     /// `(report_type, report_subtype)` pairs whose I rows feed this table.
     pub report_pairs: Vec<(String, String)>,
+    /// The columns an I row of those pairs must hold to feed this table;
+    /// empty for every I row of them. Where a pair carries two kinds of
+    /// row (a region's, an area's), the narrower kind's table names the
+    /// column that marks it, and a block goes to the most specific table
+    /// whose columns it holds.
+    #[serde(default)]
+    pub with_columns: Vec<String>,
+    /// The names a column had in a schema before AEMO renamed it: (schema,
+    /// column, name there). A renamed column is one field, named in
+    /// [`Table::columns`] by its newest name; a block of an older schema
+    /// still writes the older one.
+    #[serde(default)]
+    pub older_names: Vec<(u16, ColumnId, String)>,
     /// Append or snapshot.
     pub load_mode: LoadMode,
     /// What a fact is about, when it applies, and which revision is newest.
@@ -298,7 +312,13 @@ impl Table {
 
     /// Index into `columns` of this name.
     pub fn column_index(&self, name: &str) -> Option<usize> {
-        self.columns.iter().position(|c| c.name == name)
+        self.columns
+            .iter()
+            .position(|c| c.name == name)
+            .or_else(|| {
+                let (_, id, _) = self.older_names.iter().find(|(_, _, n)| n == name)?;
+                self.columns.iter().position(|c| c.id == *id)
+            })
     }
 
     /// The schema with this id.
@@ -310,8 +330,16 @@ impl Table {
     pub fn schema_columns(&self, s: &TableSchema) -> Vec<&str> {
         s.fields
             .iter()
-            .filter_map(|(id, _)| self.column_by_id(*id))
-            .map(|c| c.name.as_str())
+            .filter_map(|(id, _)| {
+                let older = self
+                    .older_names
+                    .iter()
+                    .find(|(schema, c, _)| *schema == s.id && c == id);
+                match older {
+                    Some((_, _, n)) => Some(n.as_str()),
+                    None => self.column_by_id(*id).map(|c| c.name.as_str()),
+                }
+            })
             .collect()
     }
 
@@ -371,9 +399,15 @@ impl Table {
                         .iter()
                         .filter_map(|(id, required)| {
                             let c = self.column_by_id(*id)?;
+                            // A renamed column under the name this schema had.
+                            let name = self
+                                .older_names
+                                .iter()
+                                .find(|(schema, k, _)| *schema == s.id && k == id)
+                                .map_or(&c.name, |(_, _, n)| n);
                             Some(utilake_iceberg::Field {
                                 id: c.id.0,
-                                name: c.name.clone(),
+                                name: name.clone(),
                                 ty: c.ty.iceberg(),
                                 required: *required,
                                 doc: None,
@@ -454,6 +488,8 @@ pub(crate) mod tests {
             name: "DISPATCH_UNIT_SCADA".into(),
             description: Some("SCADA MW per unit.".into()),
             report_pairs: vec![("DISPATCH".into(), "UNIT_SCADA".into())],
+            with_columns: Vec::new(),
+            older_names: Vec::new(),
             load_mode: LoadMode::Append,
             temporal: Temporal {
                 origin: crate::file_model::temporal::RoleOrigin::Derived,

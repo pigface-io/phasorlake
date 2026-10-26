@@ -20,7 +20,7 @@
   "properties": {
     "comment": "MARKETFEETRK sets out versions of each market fee used and its effective date.",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"MARKETFEEVERSIONNO\",\"EFFECTIVEDATE\"]",
     "utilake.load": "snapshot",
     "utilake.model-types": "{\"1\":\"NUMERIC(3,0)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"VARCHAR(15)\",\"4\":\"TIMESTAMP(0)\",\"5\":\"TIMESTAMP(0)\"}",

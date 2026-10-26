@@ -20,7 +20,7 @@
   "properties": {
     "comment": "Publishes metering data associated with wholesale interconnectors for a given CASE_ID",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"CASE_ID\",\"SETTLEMENTDATE\",\"INTERCONNECTORID\",\"PERIODID\"]",
     "utilake.load": "append",
     "utilake.model-types": "{\"1\":\"NUMERIC(15,0)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"VARCHAR(20)\",\"4\":\"NUMERIC(3,0)\",\"5\":\"NUMERIC(18,8)\",\"6\":\"NUMERIC(18,8)\",\"7\":\"TIMESTAMP(0)\"}",

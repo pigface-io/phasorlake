@@ -19,7 +19,7 @@
   ],
   "properties": {
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.headers": "{\"1\":\"nftc_name\",\"2\":\"commencement_date\",\"3\":\"termination_date\",\"4\":\"daily_max_net_inj_qty_gj\",\"5\":\"daily_min_net_inj_qty_gj\",\"6\":\"daily_max_net_wdl_qty_gj\",\"7\":\"daily_min_net_wdl_qty_gj\",\"8\":\"ti\",\"9\":\"hourly_max_net_inj_qty_gj\",\"10\":\"hourly_min_net_inj_qty_gj\",\"11\":\"hourly_max_net_wdl_qty_gj\",\"12\":\"hourly_min_net_wdl_qty_gj\",\"13\":\"mod_datetime\",\"14\":\"current_date\"}",
     "utilake.key": "[]",
     "utilake.load": "append",

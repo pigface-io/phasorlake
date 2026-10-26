@@ -20,7 +20,7 @@
   "properties": {
     "comment": "PERDEMAND sets out the regional demands and MR schedule data for each half-hour period. PERDEMAND is a child table to RESDEMANDTRK.",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"SETTLEMENTDATE\",\"REGIONID\",\"OFFERDATE\",\"PERIODID\",\"VERSIONNO\"]",
     "utilake.load": "append",
     "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"VARCHAR(10)\",\"4\":\"TIMESTAMP(0)\",\"5\":\"NUMERIC(3,0)\",\"6\":\"NUMERIC(3,0)\",\"7\":\"NUMERIC(10,0)\",\"8\":\"NUMERIC(10,0)\",\"9\":\"NUMERIC(10,0)\",\"10\":\"TIMESTAMP(0)\",\"11\":\"NUMERIC(6,0)\"}",

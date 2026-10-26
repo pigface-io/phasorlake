@@ -19,7 +19,7 @@
   ],
   "properties": {
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.headers": "{\"1\":\"gas_date\",\"2\":\"unit_id\",\"3\":\"qty\",\"4\":\"qty_reinj\",\"5\":\"current_date\"}",
     "utilake.key": "[]",
     "utilake.load": "append",

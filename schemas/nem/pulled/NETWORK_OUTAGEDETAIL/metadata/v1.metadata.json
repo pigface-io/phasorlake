@@ -20,7 +20,7 @@
   "properties": {
     "comment": "Lists asset owners planned outages for transmission equipment. This also includes details for transmission equipment that will not have an outage, but associated secondary equipment has an outage and a related constraint set may be invoked. This scenario is indicated by the ISSECONDARY field in the table",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"OUTAGEID\",\"SUBSTATIONID\",\"EQUIPMENTTYPE\",\"EQUIPMENTID\",\"STARTTIME\"]",
     "utilake.load": "append",
     "utilake.model-types": "{\"1\":\"NUMERIC(15,0)\",\"2\":\"VARCHAR(30)\",\"3\":\"VARCHAR(10)\",\"4\":\"VARCHAR(30)\",\"5\":\"TIMESTAMP(0)\",\"6\":\"TIMESTAMP(0)\",\"7\":\"TIMESTAMP(0)\",\"8\":\"VARCHAR(10)\",\"9\":\"VARCHAR(50)\",\"10\":\"NUMERIC(15,0)\",\"11\":\"NUMERIC(10,0)\",\"12\":\"NUMERIC(10,0)\",\"13\":\"TIMESTAMP(3)\",\"14\":\"VARCHAR(100)\",\"15\":\"NUMERIC(1,0)\",\"16\":\"TIMESTAMP(0)\",\"17\":\"TIMESTAMP(0)\",\"18\":\"VARCHAR(20)\",\"19\":\"NUMERIC(15,0)\"}",

@@ -20,7 +20,7 @@
   "properties": {
     "comment": "GST_RATE maintains the GST rates on a BAS (Business Activity Statement) class basis.",
     "utilake.declared": "true",
-    "utilake.format": "3",
+    "utilake.format": "4",
     "utilake.key": "[\"EFFECTIVEDATE\",\"VERSIONNO\",\"BAS_CLASS\"]",
     "utilake.load": "snapshot",
     "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(3,0)\",\"3\":\"VARCHAR(30)\",\"4\":\"NUMERIC(8,5)\",\"5\":\"TIMESTAMP(0)\"}",

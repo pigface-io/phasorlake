@@ -100,6 +100,15 @@ pub fn parse_doc(
         u16::try_from(id)
             .map_err(|_| invalid(format!("schema id {id} is beyond what utilake numbers")))
     };
+    // A field under another name in a schema than its newest: a rename.
+    let mut older_names = Vec::new();
+    for s in &h.schemas {
+        for f in &s.fields {
+            if columns.iter().any(|c| c.id.0 == f.id && c.name != f.name) {
+                older_names.push((schema_id(s.schema_id)?, ColumnId(f.id), f.name.clone()));
+            }
+        }
+    }
     let mut schemas = Vec::with_capacity(h.schemas.len());
     for s in &h.schemas {
         schemas.push(TableSchema {
@@ -160,6 +169,8 @@ pub fn parse_doc(
         name: h.table.clone(),
         description: p.description.clone(),
         report_pairs,
+        with_columns: decl.with_columns.clone(),
+        older_names,
         load_mode,
         temporal,
         primary_key: decl.primary_key.clone(),
@@ -205,6 +216,7 @@ pub(crate) mod tests {
                     .iter()
                     .map(|(a, b)| [a.clone(), b.clone()])
                     .collect(),
+                with_columns: t.with_columns.clone(),
                 primary_key: t.primary_key.clone(),
                 time_column: t.time_column.clone(),
                 load_mode: "append".into(),
