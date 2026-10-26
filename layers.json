@@ -1,0 +1,113 @@
+{
+  "utilake-acquire": [
+    "utilake-core",
+    "utilake-plain-decode",
+    "utilake-provenance",
+    "utilake-zip"
+  ],
+  "utilake-bench": [
+    "utilake-acquire",
+    "utilake-core",
+    "utilake-kit",
+    "utilake-mms-conform",
+    "utilake-mms-decode",
+    "utilake-mms-registry",
+    "utilake-nem",
+    "utilake-pipeline",
+    "utilake-writer",
+    "utilake-zip"
+  ],
+  "utilake-cli": [
+    "utilake-acquire",
+    "utilake-core",
+    "utilake-gas",
+    "utilake-iceberg",
+    "utilake-kit",
+    "utilake-mms-conform",
+    "utilake-mms-decode",
+    "utilake-mms-registry",
+    "utilake-nem",
+    "utilake-pipeline",
+    "utilake-wem",
+    "utilake-writer"
+  ],
+  "utilake-core": [
+    "utilake-mms-decode",
+    "utilake-provenance",
+    "utilake-zip"
+  ],
+  "utilake-gas": [
+    "utilake-acquire",
+    "utilake-core",
+    "utilake-kit",
+    "utilake-mms-conform",
+    "utilake-mms-registry",
+    "utilake-plain-decode"
+  ],
+  "utilake-iceberg-store": [
+    "utilake-core",
+    "utilake-iceberg"
+  ],
+  "utilake-kit": [
+    "utilake-acquire",
+    "utilake-core",
+    "utilake-plain-decode",
+    "utilake-zip"
+  ],
+  "utilake-mdff": [],
+  "utilake-mirror": [
+    "utilake-plain-decode",
+    "utilake-provenance",
+    "utilake-zip"
+  ],
+  "utilake-mms-conform": [
+    "utilake-core",
+    "utilake-kit",
+    "utilake-mms-decode",
+    "utilake-mms-registry",
+    "utilake-plain-decode"
+  ],
+  "utilake-mms-registry": [
+    "utilake-core",
+    "utilake-iceberg",
+    "utilake-mms-decode",
+    "utilake-plain-decode",
+    "utilake-provenance"
+  ],
+  "utilake-nem": [
+    "utilake-acquire",
+    "utilake-core",
+    "utilake-kit",
+    "utilake-mms-conform",
+    "utilake-mms-decode",
+    "utilake-mms-registry"
+  ],
+  "utilake-pipeline": [
+    "utilake-acquire",
+    "utilake-core",
+    "utilake-kit",
+    "utilake-provenance",
+    "utilake-writer"
+  ],
+  "utilake-wem": [
+    "utilake-acquire",
+    "utilake-core",
+    "utilake-kit",
+    "utilake-mms-conform",
+    "utilake-mms-registry",
+    "utilake-plain-decode"
+  ],
+  "utilake-writer": [
+    "utilake-core",
+    "utilake-iceberg",
+    "utilake-iceberg-store",
+    "utilake-kit"
+  ],
+  "xtask": [
+    "utilake-core",
+    "utilake-gates",
+    "utilake-iceberg",
+    "utilake-mms-decode",
+    "utilake-mms-registry"
+  ]
+}

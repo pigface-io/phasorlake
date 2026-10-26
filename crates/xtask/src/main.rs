@@ -4,6 +4,7 @@
 
 mod bench;
 mod errors_doc;
+mod layers;
 mod llm_check;
 mod schemas;
 
@@ -54,6 +55,9 @@ enum Cmd {
     /// Fail unless each schemas/{market}/pulled/ is its manifest's, of the commit
     /// Cargo.lock takes utilake-iceberg from.
     SchemasCheck,
+    /// Fail on a dependency between the workspace's crates that layers.json
+    /// does not declare, or one it declares that is gone.
+    Layers,
     /// Check llm/index.md: size, and every path and recipe it names exists.
     LlmCheck,
     /// Regenerate or check docs/errors.md from the diagnostic codes in the source.
@@ -75,6 +79,7 @@ fn main() -> ExitCode {
         Cmd::Ratchet { base } => ratchet::run(&repo_root(), &base),
         Cmd::SchemasPull { rev, from } => schemas::pull(&rev, &from),
         Cmd::SchemasCheck => schemas::check(),
+        Cmd::Layers => layers::run(&repo_root()),
         Cmd::LlmCheck => llm_check::run(),
         Cmd::ErrorsDoc { write, check } => errors_doc::run(write, check),
     };

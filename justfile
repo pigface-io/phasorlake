@@ -122,6 +122,10 @@ schemas-check:
 
 # ── repository hygiene ───────────────────────────────────────────────────────
 
+# every dependency between the workspace's crates is one layers.json declares
+layers:
+    cargo run -q -p xtask -- layers
+
 # llm/index.md is loaded into every agent session through CLAUDE.md: it stays
 # small, and every path and recipe it names must exist.
 llm-check:

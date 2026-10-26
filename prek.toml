@@ -74,6 +74,14 @@ entry = "just schemas-check"
 files = '^(schemas/[a-z]+/pulled/|Cargo\.lock$)'
 pass_filenames = false
 
+[[repos.hooks]]
+id = "layers"
+name = "lint: crate dependencies are the ones layers.json declares"
+language = "system"
+entry = "just layers"
+files = '^(crates/.*/Cargo\.toml|Cargo\.(toml|lock)|layers\.json)$'
+pass_filenames = false
+
 # On every commit, not only when the index changes: a file renamed anywhere
 # can break a pointer in it.
 [[repos.hooks]]
