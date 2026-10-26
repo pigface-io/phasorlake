@@ -68,6 +68,18 @@ fn within(name: &ReportName, instants: Option<(i64, i64)>) -> bool {
     }
 }
 
+/// The day whose intervals a file stamped as `name` carries. A day's
+/// intervals end from just after its midnight to the next midnight, so a
+/// file stamped at 00:00 carries the day before's last interval: AEMO's
+/// daily zip of a day holds its files from 00:05 to the next day's 00:00.
+fn day_of(name: &ReportName) -> CivilDay {
+    if name.time == Some((0, 0, 0)) {
+        CivilDay::from_days(name.day.days_since_epoch() - 1)
+    } else {
+        name.day
+    }
+}
+
 /// Parses a report file's name: `PUBLIC_{REPORT}_{YYYYMMDD}.zip`,
 /// `PUBLIC_{REPORT}_{YYYYMMDDHHMM}_{id}.zip` or with seconds, `.zip` or
 /// `.CSV`, taken from the end of a path or a `!`-joined entry path.
@@ -225,8 +237,9 @@ impl ReportFolders {
                 };
                 let archived_day =
                     side.label.eq_ignore_ascii_case("ARCHIVE") && name.time.is_none();
-                if !days.contains(&name.day)
-                    || (!archived_day && covered.contains(&name.day))
+                let day = day_of(&name);
+                if !days.contains(&day)
+                    || (!archived_day && covered.contains(&day))
                     || !within(&name, query.instants)
                 {
                     continue;
@@ -243,7 +256,7 @@ impl ReportFolders {
                     url: file_url,
                     source: REPORTS_SOURCE_ID,
                     table: None,
-                    period: Some(Period::Day(name.day)),
+                    period: Some(Period::Day(day_of(&name))),
                     size: e.size,
                     modified: e.modified.map(|m| m.text().to_owned()),
                     modified_at: e.modified.and_then(|m| m.stamp()),
@@ -324,7 +337,7 @@ impl Source for ReportFolders {
                 .iter()
                 .flat_map(|d| utilake_acquire::archive::entries_under(archive, Some(d)))
                 .filter_map(|a| Some((parse_report_name(a.provenance.url())?, a)))
-                .filter(|(name, _)| days.contains(&name.day) && within(name, query.instants))
+                .filter(|(name, _)| days.contains(&day_of(name)) && within(name, query.instants))
                 .collect();
             let whole_days: Vec<CivilDay> = held
                 .iter()
@@ -335,7 +348,7 @@ impl Source for ReportFolders {
                 .collect();
             for (name, a) in held {
                 {
-                    if name.time.is_some() && whole_days.contains(&name.day) {
+                    if name.time.is_some() && whole_days.contains(&day_of(&name)) {
                         continue;
                     }
                     let p = &a.provenance;
@@ -346,7 +359,7 @@ impl Source for ReportFolders {
                         url,
                         source: REPORTS_SOURCE_ID,
                         table: None,
-                        period: Some(Period::Day(name.day)),
+                        period: Some(Period::Day(day_of(&name))),
                         size: Some(p.content.size),
                         modified: None,
                         modified_at: p.listed(p.url()).and_then(|l| l.at),
@@ -368,7 +381,7 @@ impl Source for ReportFolders {
             url: url.clone(),
             source: REPORTS_SOURCE_ID,
             table: None,
-            period: Some(Period::Day(name.day)),
+            period: Some(Period::Day(day_of(&name))),
             size: None,
             modified: None,
             modified_at: None,
@@ -403,7 +416,7 @@ impl Source for ReportFolders {
                             url,
                             source: REPORTS_SOURCE_ID,
                             table: None,
-                            period: Some(Period::Day(name.day)),
+                            period: Some(Period::Day(day_of(&name))),
                             size: Some(e.size),
                             modified: remote.modified.clone(),
                             modified_at: remote.modified_at,
@@ -447,6 +460,10 @@ mod tests {
         assert_eq!(five.micros() - daily.micros(), 5 * 60 * 1_000_000);
         // Midnight in +10:00.
         assert_eq!(daily.micros(), day("2026-10-19").start_micros(36_000));
+        // A file stamped at midnight carries the day before's last interval.
+        let midnight = parse_report_name("PUBLIC_DISPATCHSCADA_202610200000_1.zip").unwrap();
+        assert_eq!(day_of(&midnight), day("2026-10-19"));
+        assert_eq!(day_of(&daily), day("2026-10-19"));
         let words = parse_report_name("PUBLIC_NEXT_DAY_DISPATCH_20261019.zip").unwrap();
         assert_eq!(words.report, "NEXT_DAY_DISPATCH");
         let secs = parse_report_name("PUBLIC_P5MIN_20261019000512_0000000543611267.CSV").unwrap();
@@ -563,8 +580,10 @@ mod tests {
                 "/Reports/CURRENT/Dispatch_SCADA/",
                 &[
                     "PUBLIC_DISPATCHSCADA_202610182355_0000000543600001.zip",
+                    "PUBLIC_DISPATCHSCADA_202610190000_0000000543611000.zip",
                     "PUBLIC_DISPATCHSCADA_202610190005_0000000543611267.zip",
                     "PUBLIC_DISPATCHSCADA_202610190010_0000000543611895.zip",
+                    "PUBLIC_DISPATCHSCADA_202610200000_0000000543699999.zip",
                     "PUBLIC_DISPATCHSCADA_202610200005_0000000543700000.zip",
                 ],
             )),
@@ -580,8 +599,11 @@ mod tests {
                 "PUBLIC_DISPATCHSCADA_20261018.zip",
                 "PUBLIC_DISPATCHSCADA_202610190005_0000000543611267.zip",
                 "PUBLIC_DISPATCHSCADA_202610190010_0000000543611895.zip",
+                "PUBLIC_DISPATCHSCADA_202610200000_0000000543699999.zip",
             ],
-            "the 18th from ARCHIVE, the 19th from CURRENT, nothing of other days"
+            "the 18th from ARCHIVE (its zip holds the 19th's midnight file too), the \
+             19th from CURRENT with the file at the 20th's midnight, which carries the \
+             19th's last interval; nothing else"
         );
         assert_eq!(files[0].period, Some(Period::Day(day("2026-10-18"))));
         assert_eq!(files[0].source, REPORTS_SOURCE_ID);
