@@ -331,13 +331,14 @@ impl Source for FeedFolders {
 
     /// A zip under a feed's folders holds a day's many reports: read by its
     /// directory when the query names tables.
-    fn wants_ranged(&self, remote: &RemoteFile) -> bool {
-        remote
-            .url
-            .path()
-            .rsplit('.')
-            .next()
-            .is_some_and(|ext| ext.eq_ignore_ascii_case("zip"))
+    fn wants_ranged(&self, remote: &RemoteFile, query: &Query) -> bool {
+        !query.tables.is_empty()
+            && remote
+                .url
+                .path()
+                .rsplit('.')
+                .next()
+                .is_some_and(|ext| ext.eq_ignore_ascii_case("zip"))
     }
 
     /// The entries whose blocks belong to the tables asked for; the whole
@@ -791,8 +792,14 @@ mod tests {
         assert!(claimed("https://h/Reports/CURRENT/GBB/x.csv").is_none());
         assert!(claimed("https://h/Reports/CURRENT/STTM/MOS Estimates/x.csv").is_none());
         let zip = claimed("https://h/Reports/CURRENT/STTM/Day01.zip").unwrap();
-        assert!(s.wants_ranged(&zip));
-        assert!(!s.wants_ranged(&r));
+        let named = query(
+            &["STTM_INT651_EX_ANTE_MARKET_PRICE"],
+            TimeRange::months(r.period.unwrap().month(), r.period.unwrap().month()),
+        );
+        assert!(s.wants_ranged(&zip, &named));
+        assert!(!s.wants_ranged(&r, &named));
+        // No table named: the whole zip, its directory unread.
+        assert!(!s.wants_ranged(&zip, &query(&[], named.range)));
         let entry = |name: &str, size: u64| Entry {
             name: name.to_owned(),
             size,

@@ -224,11 +224,13 @@ pub trait Source: Send + Sync {
         true
     }
 
-    /// Whether `remote` is a zip that may hold more than a query needs (a
+    /// Whether `remote` is a zip that may hold more than `query` needs (a
     /// whole-month archive, a day's zip of five-minute files), so its
     /// directory is worth reading by ranged requests before it is fetched.
-    fn wants_ranged(&self, remote: &RemoteFile) -> bool {
-        let _ = remote;
+    /// A query that needs all of it says no: the zip comes whole, with no
+    /// requests spent on its directory.
+    fn wants_ranged(&self, remote: &RemoteFile, query: &Query) -> bool {
+        let _ = (remote, query);
         false
     }
 
@@ -299,7 +301,7 @@ mod tests {
             modified: None,
             modified_at: None,
         };
-        assert!(!Bare.wants_ranged(&r));
+        assert!(!Bare.wants_ranged(&r, &q));
         assert_eq!(Bare.granularity(), Granularity::Month);
         assert_eq!(Bare.pick(&r, &[], &q), Picks::Whole);
         let p = Pick {

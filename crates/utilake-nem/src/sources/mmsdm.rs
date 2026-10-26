@@ -470,8 +470,9 @@ impl Source for MmsdmArchive {
 
     /// A whole-month zip (July 2009 to December 2014) holds every table's
     /// zip: read by its directory when tables are named.
-    fn wants_ranged(&self, remote: &RemoteFile) -> bool {
-        remote.table.is_none()
+    fn wants_ranged(&self, remote: &RemoteFile, query: &Query) -> bool {
+        !query.tables.is_empty()
+            && remote.table.is_none()
             && remote
                 .url
                 .path_segments()
@@ -1301,13 +1302,22 @@ mod tests {
             modified: Some("m".into()),
             modified_at: None,
         };
-        assert!(a.wants_ranged(&whole));
+        let ym = YearMonth::new(2014, 1).unwrap();
+        let q = |tables: &[&str]| Query {
+            tables: tables.iter().map(|t| (*t).to_owned()).collect(),
+            exclude: Vec::new(),
+            range: TimeRange::months(ym, ym),
+            instants: None,
+        };
+        assert!(a.wants_ranged(&whole, &q(&["REGION"])));
+        // Every table: the whole zip, its directory unread.
+        assert!(!a.wants_ranged(&whole, &q(&[])));
         let per_table = RemoteFile {
             url: Url::parse("https://h/x/DATA/PUBLIC_DVD_REGION_201401010000.zip").unwrap(),
             table: Some("REGION".into()),
             ..whole.clone()
         };
-        assert!(!a.wants_ranged(&per_table));
+        assert!(!a.wants_ranged(&per_table, &q(&["REGION"])));
         let entry = |name: &str| Entry {
             name: name.into(),
             size: 10,

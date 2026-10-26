@@ -218,7 +218,7 @@ pub async fn run(
             .map(|remote| Listed {
                 kit: kit_of(&deps.kits, source.id()).map_or("none", |k| k.id),
                 picks: source
-                    .wants_ranged(&remote)
+                    .wants_ranged(&remote, query)
                     .then(|| (source.clone(), query.clone())),
                 remote,
                 path: None,

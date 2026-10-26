@@ -31,6 +31,8 @@ const AEST: i32 = 36_000;
 /// stamp may lie and still carry the interval's last rows (a file stamped
 /// at `T` holds the interval ending at `T`).
 const INTERVAL_MICROS: i64 = 5 * 60 * 1_000_000;
+/// A day, in microseconds.
+const DAY_MICROS: i64 = 86_400 * 1_000_000;
 
 /// What a report file's name says.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -66,6 +68,15 @@ fn within(name: &ReportName, instants: Option<(i64, i64)>) -> bool {
         }
         _ => true,
     }
+}
+
+/// Whether `instants` take every file of the daily zip `day`: those
+/// stamped from its 00:05 to the next day's 00:00, as [`within`] keeps them.
+fn whole_day(day: &ReportName, instants: Option<(i64, i64)>) -> bool {
+    instants.is_none_or(|(from, to)| {
+        let start = day.micros();
+        from <= start + INTERVAL_MICROS && to + INTERVAL_MICROS >= start + DAY_MICROS
+    })
 }
 
 /// The day whose intervals a file stamped as `name` carries. A day's
@@ -390,9 +401,10 @@ impl Source for ReportFolders {
 
     /// A day's zip of `ARCHIVE` holds the day's every file: read by its
     /// directory when the request wants less than the day.
-    fn wants_ranged(&self, remote: &RemoteFile) -> bool {
+    fn wants_ranged(&self, remote: &RemoteFile, query: &Query) -> bool {
         report_side(&remote.url) == Some("ARCHIVE")
-            && parse_report_name(remote.url.path()).is_some_and(|n| n.time.is_none())
+            && parse_report_name(remote.url.path())
+                .is_some_and(|n| n.time.is_none() && !whole_day(&n, query.instants))
     }
 
     /// The entries stamped within the request's instants, plus the first
@@ -655,9 +667,30 @@ mod tests {
             names.is_empty(),
             "nothing stamped 00:15 to 00:25: {names:?}"
         );
-        // Only the daily zip wants reading by its directory.
-        assert!(src.wants_ranged(&files[0]));
-        assert!(!src.wants_ranged(&files[1]));
+        // Only the daily zip wants reading by its directory, and only
+        // for less than its whole day: a day's zip comes whole for the day.
+        assert!(src.wants_ranged(&files[0], &fine));
+        assert!(!src.wants_ranged(&files[1], &fine));
+        let day18 = parse_report_name("PUBLIC_DISPATCHSCADA_20261018.zip")
+            .unwrap()
+            .micros();
+        let instants = |from: i64, to: i64| {
+            query(
+                &["DISPATCH_UNIT_SCADA"],
+                "2026-10-18",
+                "2026-10-18",
+                Some((from, to)),
+            )
+        };
+        let whole = 86_400 * 1_000_000;
+        assert!(!src.wants_ranged(&files[0], &instants(day18, day18 + whole)));
+        assert!(!src.wants_ranged(&files[0], &instants(day18 - five, day18 + whole + five)));
+        assert!(!src.wants_ranged(
+            &files[0],
+            &query(&["DISPATCH_UNIT_SCADA"], "2026-10-18", "2026-10-18", None)
+        ));
+        assert!(src.wants_ranged(&files[0], &instants(day18 + 2 * five, day18 + whole)));
+        assert!(src.wants_ranged(&files[0], &instants(day18, day18 + whole - 2 * five)));
         // Known by their path alone.
         let d = src.describe(&files[1].url).unwrap();
         assert_eq!(d.period, files[1].period);

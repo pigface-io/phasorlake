@@ -2007,7 +2007,7 @@ impl Source for RangedMonth {
             modified_at: None,
         }])
     }
-    fn wants_ranged(&self, _remote: &RemoteFile) -> bool {
+    fn wants_ranged(&self, _remote: &RemoteFile, _query: &Query) -> bool {
         true
     }
     fn pick(
@@ -2265,7 +2265,7 @@ impl Source for Monthly {
         }
         Ok(out)
     }
-    fn wants_ranged(&self, remote: &RemoteFile) -> bool {
+    fn wants_ranged(&self, remote: &RemoteFile, _query: &Query) -> bool {
         self.whole_zip.as_ref() == Some(&remote.url)
     }
     fn pick(
