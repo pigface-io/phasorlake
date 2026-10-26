@@ -25,7 +25,6 @@ utilake-gas.workspace = true
 utilake-kit.workspace = true
 utilake-zip.workspace = true
 utilake-registry.workspace = true
-utilake-mms-decode.workspace = true
 utilake-mms-conform.workspace = true
 utilake-acquire.workspace = true
 utilake-writer.workspace = true

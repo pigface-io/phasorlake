@@ -183,19 +183,11 @@ fn plan(
     columns: &[String],
     month: Option<utilake_core::YearMonth>,
 ) -> Result<i32> {
-    let norm = |s: &str| utilake_core::normalize_name(s, &mut String::new()).map(str::to_owned);
-    let (Some(rt), Some(st)) = (norm(report_type), norm(report_subtype)) else {
+    let Some(resolved) = r.resolve_names(report_type, report_subtype, version, columns, month)
+    else {
         anyhow::bail!("A report type and subtype are names: not empty, no control characters.")
     };
-    let names: Vec<String> = columns.iter().filter_map(|c| norm(c)).collect();
-    let cols: Vec<&str> = names.iter().map(String::as_str).collect();
-    let irow = utilake_mms_decode::IRow {
-        report_type: &rt,
-        report_subtype: &st,
-        version,
-        columns: &cols,
-    };
-    match r.resolve_in(&irow, utilake_registry::ResolveOptions::default(), month) {
+    match resolved {
         Ok(res) => {
             render::json_line(&serde_json::json!({
                 "resolution": res.label(),

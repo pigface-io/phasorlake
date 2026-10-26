@@ -3,84 +3,36 @@
 use std::path::Path;
 
 use anyhow::Result;
-use utilake_mms_conform::MmsDiagnose;
-use utilake_mms_conform::inspect::{BlockSummary, InspectSink};
-use utilake_mms_decode::scan::{ScanOptions, scan};
+use utilake_mms_conform::inspect::{self, BlockSummary, InspectError};
 use utilake_pipeline::archive_diagnostic;
-use utilake_registry::{Mode, ResolveOptions};
-use utilake_zip::walk_csv_entries;
 
 use crate::context::Context;
 use crate::render;
 
-/// Every block of every CSV in `path` (a CSV, or a zip walked through
-/// nested zips), each with the entry it came from, resolved strictly so a
-/// status other than `conforms` names what the registry lacks. Entries that
-/// are not CSVs are reported on stderr.
+/// Every block of every CSV in `path`, each with the entry it came from;
+/// what could not be read is reported on stderr.
 fn scan_blocks(ctx: &Context, path: &Path) -> Result<Vec<(String, BlockSummary)>> {
-    let opts = ResolveOptions {
-        mode: Mode::Strict,
-        ..Default::default()
-    };
-    let mut blocks: Vec<(String, BlockSummary)> = Vec::new();
-    let mut handle = |entry: &str, reader: &mut dyn std::io::Read| -> Result<()> {
-        let mut sink = InspectSink::new(&ctx.registry, opts);
-        let stats = scan(
-            reader,
-            &mut sink,
-            &ScanOptions {
-                max_bad_rows: u64::MAX,
-                ..Default::default()
-            },
-        )
-        .map_err(|e| anyhow::anyhow!("{}", e.diagnostic().render()))?;
-        blocks.extend(sink.blocks.into_iter().map(|b| (entry.to_owned(), b)));
-        if stats.footer_mismatch() {
-            eprintln!(
-                "warning: {entry}: footer says {} lines but {} were read",
-                stats.footer_declared.unwrap_or(0),
-                stats.lines
-            );
-        }
-        Ok(())
-    };
-    if path
-        .extension()
-        .is_some_and(|e| e.eq_ignore_ascii_case("csv"))
-    {
-        let mut f = std::fs::File::open(path)?;
-        handle(
-            &path
-                .file_name()
-                .map(|n| n.to_string_lossy().into_owned())
-                .unwrap_or_default(),
-            &mut f,
-        )?;
-    } else {
-        let tmp = ctx.home.tmp();
-        let mut skipped = Vec::new();
-        let walked = walk_csv_entries(path, &tmp, &mut |e| handle(&e.name, e.reader), &mut |o| {
-            skipped.push(o.name);
-        })
-        .map_err(|e| match e {
-            utilake_zip::WalkError::Archive(a) => {
-                anyhow::anyhow!("{}", archive_diagnostic(&a).render())
-            }
-            utilake_zip::WalkError::Callback(c) => c,
-        })?;
-        for a in &walked.failed {
-            eprintln!("{}", archive_diagnostic(a).render());
-        }
-        if !skipped.is_empty() && !ctx.json {
-            eprintln!(
-                "skipped {} non-CSV entr{}: {}",
-                skipped.len(),
-                if skipped.len() == 1 { "y" } else { "ies" },
-                skipped.join(", ")
-            );
-        }
+    let found = inspect::file(&ctx.registry, path, &ctx.home.tmp()).map_err(|e| match e {
+        InspectError::Open(e) => anyhow::Error::from(e),
+        InspectError::Scan(d) => anyhow::anyhow!("{}", d.render()),
+        InspectError::Archive(a) => anyhow::anyhow!("{}", archive_diagnostic(&a).render()),
+    })?;
+    for (entry, declared, read) in &found.footers {
+        eprintln!("warning: {entry}: footer says {declared} lines but {read} were read");
     }
-    Ok(blocks)
+    for a in &found.failed {
+        eprintln!("{}", archive_diagnostic(a).render());
+    }
+    let skipped = &found.skipped;
+    if !skipped.is_empty() && !ctx.json {
+        eprintln!(
+            "skipped {} non-CSV entr{}: {}",
+            skipped.len(),
+            if skipped.len() == 1 { "y" } else { "ies" },
+            skipped.join(", ")
+        );
+    }
+    Ok(found.blocks)
 }
 
 /// `utilake inspect <file>`

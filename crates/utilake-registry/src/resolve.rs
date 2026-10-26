@@ -137,6 +137,32 @@ impl Registry {
         self.resolve_in(irow, opts, None)
     }
 
+    /// Resolves a block given by name, as a person types it: its report
+    /// type, subtype and version, and its columns, each normalised as the
+    /// decoder normalises a header's names; a column that is no name is
+    /// left out. `None` when the type or subtype is no name (empty, or with
+    /// control characters).
+    pub fn resolve_names(
+        &self,
+        report_type: &str,
+        report_subtype: &str,
+        version: u16,
+        columns: &[String],
+        period: Option<YearMonth>,
+    ) -> Option<Result<Resolved, ResolveError>> {
+        let norm = |s: &str| utilake_core::normalize_name(s, &mut String::new()).map(str::to_owned);
+        let (rt, st) = (norm(report_type)?, norm(report_subtype)?);
+        let names: Vec<String> = columns.iter().filter_map(|c| norm(c)).collect();
+        let cols: Vec<&str> = names.iter().map(String::as_str).collect();
+        let irow = IRow {
+            report_type: &rt,
+            report_subtype: &st,
+            version,
+            columns: &cols,
+        };
+        Some(self.resolve_in(&irow, ResolveOptions::default(), period))
+    }
+
     /// Resolves an I row of a source released in month `period`.
     pub fn resolve_in(
         &self,

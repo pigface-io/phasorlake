@@ -1,9 +1,14 @@
 //! Summarising a file without building batches: what `utilake inspect` shows.
 
-use utilake_core::Fingerprint;
+use std::path::Path;
 
+use utilake_core::{Diagnostic, Fingerprint};
 use utilake_mms_decode::IRow;
-use utilake_registry::{Registry, ResolveOptions};
+use utilake_mms_decode::scan::{ScanOptions, scan};
+use utilake_registry::{Mode, Registry, ResolveOptions};
+use utilake_zip::{ArchiveError, WalkError, walk_csv_entries};
+
+use crate::error::MmsDiagnose;
 
 use crate::error::{RowError, RowFailure, SinkError, ValueError};
 use utilake_mms_decode::fields::Row;
@@ -31,6 +36,88 @@ pub struct BlockSummary {
     /// The table that claims the report pair, whether or not this shape
     /// of it resolved; `None` when no table does.
     pub table: Option<String>,
+}
+
+/// What a file holds, block by block, and what of it could not be read.
+#[derive(Debug, Default)]
+pub struct Inspection {
+    /// Every block of every CSV, in order, with the entry it came from.
+    pub blocks: Vec<(String, BlockSummary)>,
+    /// The entries whose footer disagrees with the lines read: the entry,
+    /// the lines the footer declares, the lines read.
+    pub footers: Vec<(String, u64, u64)>,
+    /// The entries of a zip that are not CSVs.
+    pub skipped: Vec<String>,
+    /// The entries of a zip that could not be read.
+    pub failed: Vec<ArchiveError>,
+}
+
+/// Why a file could not be inspected at all.
+#[derive(Debug)]
+pub enum InspectError {
+    /// The file could not be opened.
+    Open(std::io::Error),
+    /// A CSV's rows could not be scanned.
+    Scan(Box<Diagnostic>),
+    /// The zip could not be walked.
+    Archive(ArchiveError),
+}
+
+/// Every block of every CSV in `path` (a CSV, or a zip walked through
+/// nested zips, spooled under `tmp`), each resolved strictly against
+/// `registry`, so a status other than `conforms` names what the registry
+/// lacks.
+pub fn file(registry: &Registry, path: &Path, tmp: &Path) -> Result<Inspection, InspectError> {
+    let opts = ResolveOptions {
+        mode: Mode::Strict,
+        ..Default::default()
+    };
+    let mut out = Inspection::default();
+    let mut handle = |entry: &str, reader: &mut dyn std::io::Read| -> Result<(), InspectError> {
+        let mut sink = InspectSink::new(registry, opts);
+        let stats = scan(
+            reader,
+            &mut sink,
+            &ScanOptions {
+                max_bad_rows: u64::MAX,
+                ..Default::default()
+            },
+        )
+        .map_err(|e| InspectError::Scan(Box::new(e.diagnostic())))?;
+        out.blocks
+            .extend(sink.blocks.into_iter().map(|b| (entry.to_owned(), b)));
+        if stats.footer_mismatch() {
+            out.footers.push((
+                entry.to_owned(),
+                stats.footer_declared.unwrap_or(0),
+                stats.lines,
+            ));
+        }
+        Ok(())
+    };
+    if path
+        .extension()
+        .is_some_and(|e| e.eq_ignore_ascii_case("csv"))
+    {
+        let mut f = std::fs::File::open(path).map_err(InspectError::Open)?;
+        let name = path
+            .file_name()
+            .map(|n| n.to_string_lossy().into_owned())
+            .unwrap_or_default();
+        handle(&name, &mut f)?;
+        return Ok(out);
+    }
+    let mut skipped = Vec::new();
+    let walked = walk_csv_entries(path, tmp, &mut |e| handle(&e.name, e.reader), &mut |o| {
+        skipped.push(o.name);
+    })
+    .map_err(|e| match e {
+        WalkError::Archive(a) => InspectError::Archive(a),
+        WalkError::Callback(c) => c,
+    })?;
+    out.skipped = skipped;
+    out.failed = walked.failed;
+    Ok(out)
 }
 
 /// Collects block summaries.
