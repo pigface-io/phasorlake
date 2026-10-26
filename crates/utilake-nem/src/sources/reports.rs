@@ -53,6 +53,21 @@ impl ReportName {
     }
 }
 
+/// Whether a file or entry stamped as `name` serves a request for
+/// `instants`: one stamped within them, or the first at or just after
+/// their end, which carries the last interval. A daily zip, whose name has
+/// no time, serves any request for its day; its entries are picked from
+/// its directory.
+fn within(name: &ReportName, instants: Option<(i64, i64)>) -> bool {
+    match (name.time, instants) {
+        (Some(_), Some((from, to))) => {
+            let at = name.micros();
+            at >= from && at <= to + INTERVAL_MICROS
+        }
+        _ => true,
+    }
+}
+
 /// Parses a report file's name: `PUBLIC_{REPORT}_{YYYYMMDD}.zip`,
 /// `PUBLIC_{REPORT}_{YYYYMMDDHHMM}_{id}.zip` or with seconds, `.zip` or
 /// `.CSV`, taken from the end of a path or a `!`-joined entry path.
@@ -210,7 +225,10 @@ impl ReportFolders {
                 };
                 let archived_day =
                     side.label.eq_ignore_ascii_case("ARCHIVE") && name.time.is_none();
-                if !days.contains(&name.day) || (!archived_day && covered.contains(&name.day)) {
+                if !days.contains(&name.day)
+                    || (!archived_day && covered.contains(&name.day))
+                    || !within(&name, query.instants)
+                {
                     continue;
                 }
                 if archived_day {
@@ -306,7 +324,7 @@ impl Source for ReportFolders {
                 .iter()
                 .flat_map(|d| utilake_acquire::archive::entries_under(archive, Some(d)))
                 .filter_map(|a| Some((parse_report_name(a.provenance.url())?, a)))
-                .filter(|(name, _)| days.contains(&name.day))
+                .filter(|(name, _)| days.contains(&name.day) && within(name, query.instants))
                 .collect();
             let whole_days: Vec<CivilDay> = held
                 .iter()
@@ -377,8 +395,7 @@ impl Source for ReportFolders {
             .filter(|(_, e)| !e.is_dir())
             .filter_map(|(index, e)| {
                 let name = parse_report_name(&e.name)?;
-                let at = name.micros();
-                (at >= from && at <= to + INTERVAL_MICROS).then(|| {
+                within(&name, Some((from, to))).then(|| {
                     let url = Url::parse(&format!("{}!{}", remote.url, e.name)).ok()?;
                     Some(Pick {
                         index,
@@ -572,6 +589,50 @@ mod tests {
         assert_eq!(files[0].size, Some(1_194_837));
         assert!(files[0].modified_at.is_some());
         assert_eq!(t.request_count(), 2);
+        // Finer than a day: CURRENT's files stamped within the instants
+        // (and the one just after, for the last interval), not the day's
+        // every file. 00:00 to 00:05 on the 19th: the files at 00:05 and
+        // 00:10; the 18th's daily zip still serves, read by its directory.
+        let start = day("2026-10-19").start_micros(36_000);
+        let five = 5 * 60 * 1_000_000;
+        let fine = query(
+            &["DISPATCH_UNIT_SCADA"],
+            "2026-10-18",
+            "2026-10-19",
+            Some((start, start + five)),
+        );
+        let names: Vec<String> = src
+            .list(&fine, &f)
+            .await
+            .unwrap()
+            .iter()
+            .map(Named::remote_name)
+            .collect();
+        assert_eq!(
+            names,
+            [
+                "PUBLIC_DISPATCHSCADA_20261018.zip",
+                "PUBLIC_DISPATCHSCADA_202610190005_0000000543611267.zip",
+                "PUBLIC_DISPATCHSCADA_202610190010_0000000543611895.zip",
+            ]
+        );
+        let late = query(
+            &["DISPATCH_UNIT_SCADA"],
+            "2026-10-19",
+            "2026-10-19",
+            Some((start + 3 * five, start + 4 * five)),
+        );
+        let names: Vec<String> = src
+            .list(&late, &f)
+            .await
+            .unwrap()
+            .iter()
+            .map(Named::remote_name)
+            .collect();
+        assert!(
+            names.is_empty(),
+            "nothing stamped 00:15 to 00:25: {names:?}"
+        );
         // Only the daily zip wants reading by its directory.
         assert!(src.wants_ranged(&files[0]));
         assert!(!src.wants_ranged(&files[1]));
@@ -593,7 +654,11 @@ mod tests {
         // A table whose folder the server no longer lists: nothing, no error.
         let q2 = query(&["TRADINGPRICE"], "2026-10-18", "2026-10-18", None);
         assert!(src.list(&q2, &f).await.unwrap().is_empty());
-        assert_eq!(t.request_count(), 3);
+        assert_eq!(
+            t.request_count(),
+            7,
+            "two listings for each of the three queries above, one for this"
+        );
         // No table, an unknown table, a table of the monthly archive only,
         // and an excluded one.
         let e = src
@@ -796,6 +861,25 @@ mod tests {
         );
         assert!(got.iter().all(|l| l.cached && l.size == 3));
         assert_eq!(got[0].remote.period, Some(Period::Day(day("2026-10-19"))));
+        // Finer than a day: only the files stamped within the instants.
+        let got = src
+            .archived(
+                &archive,
+                &query(
+                    &["DISPATCH_UNIT_SCADA"],
+                    "2026-10-19",
+                    "2026-10-20",
+                    Some((start, start + five)),
+                ),
+            )
+            .unwrap();
+        let names: Vec<String> = got.iter().map(|l| l.remote.file_name()).collect();
+        assert_eq!(
+            names,
+            [
+                "PUBLIC_DISPATCHSCADA_20261019.zip!PUBLIC_DISPATCHSCADA_202610190005_0000000543611267.zip"
+            ]
+        );
         let _ = YearMonth::new(2026, 10);
     }
 }
