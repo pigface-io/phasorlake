@@ -37,7 +37,7 @@ fn each_kind_of_read_renders() {
     let s = render_duck(&bind(q, &lake).unwrap(), &lake);
     assert!(s.contains("read_parquet(['"), "{s}");
     assert!(
-        !s.contains("filename"),
+        !s.contains("filename = true"),
         "every row carries its own source: {s}"
     );
     assert!(
@@ -45,17 +45,17 @@ fn each_kind_of_read_renders() {
         "the schema-0 file: {s}"
     );
     assert!(
-        s.contains("greatest(\"LASTCHANGED\", \"_nl_published\") AS _nl_known"),
+        s.contains("greatest(\"LASTCHANGED\", \"_ul_server_last_modified\") AS _ul_known_from"),
         "{s}"
     );
     assert!(
         s.contains(
-            "WHERE _nl_known <= TIMESTAMP WITH TIME ZONE '2023-12-31 14:11:00.000000+00:00'"
+            "WHERE _ul_known_from <= TIMESTAMP WITH TIME ZONE '2023-12-31 14:11:00.000000+00:00'"
         ),
         "{s}"
     );
     assert!(
-        s.contains("row_number() OVER (PARTITION BY \"REGIONID\", \"DISPATCHINTERVAL\", \"INTERVENTION\", \"SETTLEMENTDATE\" ORDER BY \"RUNNO\" DESC NULLS LAST, \"LASTCHANGED\" DESC NULLS LAST, \"_nl_published\" DESC NULLS LAST, \"_nl_source\" DESC) AS _nl_rank FROM known) ranked WHERE _nl_rank = 1"),
+        s.contains("row_number() OVER (PARTITION BY \"REGIONID\", \"DISPATCHINTERVAL\", \"INTERVENTION\", \"SETTLEMENTDATE\" ORDER BY \"RUNNO\" DESC NULLS LAST, \"LASTCHANGED\" DESC NULLS LAST, \"_ul_server_last_modified\" DESC NULLS LAST, \"_ul_source\" DESC) AS _ul_rank FROM known) ranked WHERE _ul_rank = 1"),
         "{s}"
     );
     assert!(
@@ -83,10 +83,10 @@ fn each_kind_of_read_renders() {
         &lake,
     );
     assert!(
-        s.contains("PARTITION BY \"REGIONID\", \"DISPATCHINTERVAL\", \"INTERVENTION\", \"SETTLEMENTDATE\", \"RUNNO\", \"LASTCHANGED\" ORDER BY \"_nl_published\" DESC NULLS LAST, \"_nl_source\" DESC) AS _nl_rank"),
+        s.contains("PARTITION BY \"REGIONID\", \"DISPATCHINTERVAL\", \"INTERVENTION\", \"SETTLEMENTDATE\", \"RUNNO\", \"LASTCHANGED\" ORDER BY \"_ul_server_last_modified\" DESC NULLS LAST, \"_ul_source\" DESC) AS _ul_rank"),
         "{s}"
     );
-    assert!(!s.contains("WHERE _nl_known"), "{s}");
+    assert!(!s.contains("WHERE _ul_known_from"), "{s}");
 
     // A `from` table: the spans and the in-force window; `--at` too.
     let s = render_duck(
@@ -102,8 +102,8 @@ fn each_kind_of_read_renders() {
         &lake,
     );
     assert!(s.contains("lead(\"EFFECTIVEDATE\") OVER (PARTITION BY \"DUID\" ORDER BY \"EFFECTIVEDATE\") AS next_valid FROM ends"), "{s}");
-    assert!(s.contains("CASE WHEN next_ends.next_valid >= TIMESTAMP WITH TIME ZONE '2262-04-11 23:47:16.854775+00:00' THEN NULL ELSE next_ends.next_valid END AS _nl_valid_to FROM latest JOIN next_ends USING (\"DUID\", \"EFFECTIVEDATE\")"), "{s}");
-    assert!(s.ends_with("_nl_known, _nl_valid_to FROM spans WHERE \"EFFECTIVEDATE\" <= TIMESTAMP WITH TIME ZONE '2023-12-31 14:00:00.000000+00:00' AND (_nl_valid_to IS NULL OR _nl_valid_to > TIMESTAMP WITH TIME ZONE '2022-12-31 14:00:00.000000+00:00')"), "{s}");
+    assert!(s.contains("CASE WHEN next_ends.next_valid >= TIMESTAMP WITH TIME ZONE '2262-04-11 23:47:16.854775+00:00' THEN NULL ELSE next_ends.next_valid END AS _ul_valid_to FROM latest JOIN next_ends USING (\"DUID\", \"EFFECTIVEDATE\")"), "{s}");
+    assert!(s.ends_with("_ul_known_from, _ul_valid_to FROM spans WHERE \"EFFECTIVEDATE\" <= TIMESTAMP WITH TIME ZONE '2023-12-31 14:00:00.000000+00:00' AND (_ul_valid_to IS NULL OR _ul_valid_to > TIMESTAMP WITH TIME ZONE '2022-12-31 14:00:00.000000+00:00')"), "{s}");
     let s = render_duck(
         &bind(
             Query::new(
@@ -129,9 +129,9 @@ fn each_kind_of_read_renders() {
         &bind(Query::new("SSM_ENABLEMENT_COSTS", any, LATEST), &lake).unwrap(),
         &lake,
     );
-    assert!(s.contains("PARTITION BY \"END_TRADINGDATE\", \"ENABLEMENT_REASON\", \"ESTIMATED_COSTS\", \"LASTCHANGED\" ORDER BY \"_nl_published\" DESC NULLS LAST, \"_nl_source\" DESC) AS _nl_rank"), "{s}");
+    assert!(s.contains("PARTITION BY \"END_TRADINGDATE\", \"ENABLEMENT_REASON\", \"ESTIMATED_COSTS\", \"LASTCHANGED\" ORDER BY \"_ul_server_last_modified\" DESC NULLS LAST, \"_ul_source\" DESC) AS _ul_rank"), "{s}");
     assert!(
-        s.contains("SELECT \"END_TRADINGDATE\", \"ENABLEMENT_REASON\", \"ESTIMATED_COSTS\", \"LASTCHANGED\", \"_nl_source\", _nl_known FROM spans "),
+        s.contains("SELECT \"END_TRADINGDATE\", \"ENABLEMENT_REASON\", \"ESTIMATED_COSTS\", \"LASTCHANGED\", \"_ul_source\", \"_ul_server_last_modified\", \"_ul_zip_entry_modified\", \"_ul_filename_timestamp\", _ul_known_from FROM spans "),
         "{s}"
     );
 
@@ -151,7 +151,7 @@ fn each_kind_of_read_renders() {
     );
     assert!(
         s.contains(
-            "SELECT \"RRP\", \"_nl_source\" FROM spans WHERE \"SETTLEMENTDATE\" > TIMESTAMP WITH TIME ZONE '"
+            "SELECT \"RRP\", \"_ul_source\", \"_ul_server_last_modified\", \"_ul_zip_entry_modified\", \"_ul_filename_timestamp\" FROM spans WHERE \"SETTLEMENTDATE\" > TIMESTAMP WITH TIME ZONE '"
         ),
         "{s}"
     );
@@ -161,7 +161,7 @@ fn each_kind_of_read_renders() {
         &lake,
     );
     assert!(
-        s.ends_with("FROM spans ") && !s.contains("_nl_known"),
+        s.ends_with("FROM spans ") && !s.contains("_ul_known_from"),
         "{s}"
     );
 
@@ -179,15 +179,15 @@ fn each_kind_of_read_renders() {
         &lake,
     );
     assert!(
-        s.contains("CAST(NULL AS VARCHAR) AS \"_nl_source\", CAST(NULL AS TIMESTAMP WITH TIME ZONE) AS \"_nl_published\" WHERE 1 = 0"),
+        s.contains("CAST(NULL AS VARCHAR) AS \"_ul_source\", CAST(NULL AS TIMESTAMP WITH TIME ZONE) AS \"_ul_server_last_modified\", CAST(NULL AS TIMESTAMP WITH TIME ZONE) AS \"_ul_zip_entry_modified\", CAST(NULL AS TIMESTAMP WITH TIME ZONE) AS \"_ul_filename_timestamp\" WHERE 1 = 0"),
         "{s}"
     );
 
-    // Postgres: the relation named for the table, carrying `_nl_source`.
+    // Postgres: the relation named for the table, carrying `_ul_source`.
     let b = bind(Query::new("DISPATCHPRICE", day, LATEST), &lake).unwrap();
     let s = render(&b, &lake, Dialect::Postgres);
     assert!(
-        s.contains("\"_nl_source\", \"_nl_published\" FROM \"DISPATCHPRICE\""),
+        s.contains("\"_ul_source\", \"_ul_server_last_modified\", \"_ul_zip_entry_modified\", \"_ul_filename_timestamp\" FROM \"DISPATCHPRICE\""),
         "{s}"
     );
     assert!(!s.contains("read_parquet"), "{s}");

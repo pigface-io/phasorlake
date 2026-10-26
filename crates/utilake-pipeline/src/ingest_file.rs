@@ -13,6 +13,7 @@ use arrow_schema::{ArrowError, Field, Schema, SchemaRef};
 use tokio::sync::mpsc;
 use utilake_acquire::LocalFile;
 use utilake_core::event::Event;
+use utilake_core::source_times;
 use utilake_core::{Category, Diagnose, Diagnostic, Fingerprint, YearMonth};
 use utilake_kit::container::{
     Accepts, ArchiveError, WalkError, Walked, has_extension, walk_entries,
@@ -22,9 +23,10 @@ use utilake_kit::{
     Block, BlockSink, DecodeCtx, DecodeOptions, Flow, KitRegistry, LoadMode, RowAt, SourceKit,
     TableRef,
 };
+use utilake_provenance::layout::listing_offset;
 use utilake_writer::manifest::EntryShare;
 use utilake_writer::partition::split_by_month;
-use utilake_writer::provenance::Stamp;
+use utilake_writer::provenance::{Stamp, Times};
 use utilake_writer::{
     FileMeta, LakeWriter, ParquetHive, Partition, PartitionKey, Transform, WriterId, WrittenFile,
 };
@@ -217,8 +219,11 @@ struct LakeSink<'a> {
     local: &'a LocalFile,
     /// The entry being read.
     entry: String,
-    /// Its source's stamp for each market offset its tables were read in.
-    stamps: Vec<(i32, Stamp)>,
+    /// Its source's stamp, built on its first batch.
+    stamp: Option<Stamp>,
+    /// The entry's modified time in its zip's directory, when it was read
+    /// from a zip that records one.
+    zip_entry_modified: Option<i64>,
     /// When each entry first went public, from the records beside the file.
     entry_times: EntryTimes,
     period: Option<YearMonth>,
@@ -256,26 +261,38 @@ impl LakeSink<'_> {
 
     /// The current entry's source, `url!entry` (the URL alone for a file
     /// read whole), and its publish time in the market offset given.
-    fn stamp(&mut self, offset_secs: i32) -> &Stamp {
-        if let Some(i) = self.stamps.iter().position(|(o, _)| *o == offset_secs) {
-            return &self.stamps[i].1;
-        }
-        let local = self.local;
-        let url = local.remote.url.as_str();
-        let name = if self.entry.is_empty() {
-            url.to_owned()
-        } else {
-            format!("{url}!{}", self.entry)
-        };
-        // The entry's own first publication where the mirror holds it; the
-        // file's otherwise, which is never earlier than the truth.
-        let published = self.entry_times.published(&self.entry).or_else(|| {
+    fn stamp(&mut self) -> &Stamp {
+        if self.stamp.is_none() {
+            let local = self.local;
+            let url = local.remote.url.as_str();
+            let name = if self.entry.is_empty() {
+                url.to_owned()
+            } else {
+                format!("{url}!{}", self.entry)
+            };
+            // Each time as found, none chosen over another: the server's
+            // word for the entry's own bytes where the mirror holds them,
+            // else for the file; the zip's record of the entry; the stamp
+            // in the entry's name (or the file's, read whole), in the
+            // clock of the host that named it.
             let modified = local.last_modified_at.map(|s| s.rfc3339());
-            utilake_core::published::published(url, modified.as_deref(), offset_secs)
-        });
-        self.stamps
-            .push((offset_secs, Stamp::new(&name, published)));
-        &self.stamps[self.stamps.len() - 1].1
+            let server_last_modified = self
+                .entry_times
+                .server_last_modified(&self.entry)
+                .or_else(|| source_times::server_last_modified(modified.as_deref()));
+            let named = if self.entry.is_empty() {
+                url
+            } else {
+                self.entry.as_str()
+            };
+            let times = Times {
+                server_last_modified,
+                zip_entry_modified: self.zip_entry_modified,
+                filename_timestamp: source_times::filename_timestamp(named, listing_offset(url)),
+            };
+            self.stamp = Some(Stamp::new(&name, times));
+        }
+        self.stamp.as_ref().expect("built above")
     }
 
     /// The current entry's share of result `idx`.
@@ -295,9 +312,12 @@ impl LakeSink<'_> {
     }
 
     /// Begins entry `entry`: what is said from here on is said of it.
-    fn begin_entry(&mut self, entry: &str) {
+    /// `zip_entry_modified`: its modified time in its zip's directory, in
+    /// microseconds since 1970 (UTC), when it has one.
+    fn begin_entry(&mut self, entry: &str, zip_entry_modified: Option<i64>) {
         entry.clone_into(&mut self.entry);
-        self.stamps.clear();
+        self.stamp = None;
+        self.zip_entry_modified = zip_entry_modified;
         self.current = None;
     }
 
@@ -537,12 +557,15 @@ impl BlockSink for LakeSink<'_> {
             let bounds = table
                 .time_column
                 .map(|tc| utilake_writer::partition::time_bounds(&batch, tc));
-            let stamp = self.stamp(table.utc_offset_secs).clone();
+            let stamp = self.stamp().clone();
             let batch =
                 utilake_writer::provenance::stamped(&batch, &stamp, &lake).map_err(|e| fail(&e))?;
             self.writer.write(wid, &batch).map_err(|e| fail(&e))?;
             let share = self.share(idx);
-            share.published = stamp.published();
+            let times = stamp.times();
+            share.server_last_modified = times.server_last_modified;
+            share.zip_entry_modified = times.zip_entry_modified;
+            share.filename_timestamp = times.filename_timestamp;
             share.add(batch.num_rows() as u64, bounds);
             // A file that has grown to its size is closed; the partition
             // goes on in a further one.
@@ -610,6 +633,7 @@ fn ingest_entry(
     input: &IngestInput,
     kit: &SourceKit,
     entry: &str,
+    zip_entry_modified: Option<i64>,
     reader: &mut dyn std::io::Read,
     scan_buf: &mut Vec<u8>,
     sink: &mut LakeSink<'_>,
@@ -642,7 +666,7 @@ fn ingest_entry(
         report.error = Some(d);
         return report;
     };
-    sink.begin_entry(entry);
+    sink.begin_entry(entry, zip_entry_modified);
     let options = DecodeOptions {
         strictness: input.options.mode,
         max_bad_rows: input.options.max_bad_rows,
@@ -752,7 +776,8 @@ pub fn ingest_file(input: IngestInput) -> FileReport {
         quarantine_root: &input.quarantine_root,
         local: &input.local,
         entry: String::new(),
-        stamps: Vec::new(),
+        stamp: None,
+        zip_entry_modified: None,
         entry_times: EntryTimes::new(&input.local),
         period: input.local.remote.period.map(utilake_core::Period::month),
         day: match input.local.remote.period {
@@ -783,6 +808,7 @@ pub fn ingest_file(input: IngestInput) -> FileReport {
                 &input,
                 kit,
                 &name,
+                None,
                 &mut f,
                 &mut scan_buf,
                 &mut sink,
@@ -810,7 +836,19 @@ pub fn ingest_file(input: IngestInput) -> FileReport {
             &input.tmp_dir,
             accepts,
             &mut |e| {
-                let rep = ingest_entry(&input, kit, &e.name, e.reader, &mut scan_buf, &mut sink);
+                // The packer's clock: AEST for AEMO's zips, AWST for the WA host's.
+                let written = e
+                    .modified_at(listing_offset(input.local.remote.url.as_str()))
+                    .map(|s| s.unix() * 1_000_000);
+                let rep = ingest_entry(
+                    &input,
+                    kit,
+                    &e.name,
+                    written,
+                    e.reader,
+                    &mut scan_buf,
+                    &mut sink,
+                );
                 let stop = fail_fast && rep.error.is_some();
                 entries.push(rep);
                 if stop { Err(()) } else { Ok(()) }

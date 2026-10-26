@@ -131,9 +131,11 @@ pub struct Fixture {
     pub dir: tempfile::TempDir,
     pub registry: Arc<Registry>,
     pub outputs: Vec<LiveOutput>,
-    /// Whether rows are stamped with what the server said of their file;
-    /// off, only a time in the file's name stamps them.
+    /// Whether rows are stamped with what the server said of their file.
     pub server_times: bool,
+    /// The zip entry modified time the next files' rows are stamped with,
+    /// microseconds since 1970 (UTC).
+    pub zip_entry_modified: Option<i64>,
 }
 
 impl Fixture {
@@ -143,6 +145,7 @@ impl Fixture {
             registry: utilake_nem::registry(),
             outputs: Vec::new(),
             server_times: true,
+            zip_entry_modified: None,
         }
     }
 
@@ -221,11 +224,15 @@ impl Fixture {
         };
         let w = hive.open(&key, lake.clone(), &meta).unwrap();
         let modified = s.last_modified_at.filter(|_| self.server_times);
-        let published = utilake_core::published::published(s.url, modified, NEM.0);
+        let times = utilake_writer::provenance::Times {
+            server_last_modified: utilake_core::source_times::server_last_modified(modified),
+            zip_entry_modified: self.zip_entry_modified,
+            filename_timestamp: utilake_core::source_times::filename_timestamp(s.url, NEM.0),
+        };
         for e in sources {
             let stamp = utilake_writer::provenance::Stamp::new(
                 &utilake_query::source_name(s.url, e.entry),
-                published,
+                times,
             );
             let rows = utilake_writer::provenance::stamped(&e.rows, &stamp, &lake).unwrap();
             hive.write(w, &rows).unwrap();
@@ -245,7 +252,9 @@ impl Fixture {
                 .iter()
                 .map(|e| utilake_writer::manifest::EntryShare {
                     entry: e.entry.to_owned(),
-                    published,
+                    server_last_modified: times.server_last_modified,
+                    zip_entry_modified: times.zip_entry_modified,
+                    filename_timestamp: times.filename_timestamp,
                     ..Default::default()
                 })
                 .collect(),

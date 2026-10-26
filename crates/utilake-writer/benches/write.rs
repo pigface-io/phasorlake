@@ -28,7 +28,7 @@ fn batch(spill: bool) -> RecordBatch {
     ]));
     let duids: Vec<String> = (0..ROWS).map(|i| format!("UNIT{:03}", i % 400)).collect();
     let lake = utilake_writer::provenance::lake_schema(&schema);
-    let stamp = utilake_writer::provenance::Stamp::new("https://h/s.zip!S.CSV", None);
+    let stamp = utilake_writer::provenance::Stamp::new("https://h/s.zip!S.CSV", Default::default());
     let data = RecordBatch::try_new(
         schema,
         vec![

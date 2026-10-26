@@ -12,7 +12,7 @@
 //!   wins, so one revision published twice (a DVD and an archive copy, a
 //!   report and the settled month) is one row.
 //!
-//! On a `from` axis the rows then get `_nl_valid_to`: the next valid time
+//! On a `from` axis the rows then get `_ul_valid_to`: the next valid time
 //! of the same entity, null for the current version. The window is
 //! applied after that, because "in force at `after`" needs it.
 //!
@@ -39,7 +39,7 @@ use crate::window;
 
 /// The column a resolved row of a `from` table carries: where its version
 /// stops, null for the version in force now.
-pub const VALID_TO: &str = "_nl_valid_to";
+pub const VALID_TO: &str = "_ul_valid_to";
 
 /// One unit's rows, resolved.
 pub fn resolve(
@@ -318,6 +318,15 @@ mod tests {
                 Arc::new(
                     TimestampMicrosecondArray::from(vec![None, None, None]).with_timezone("+10:00"),
                 ),
+                Arc::new(
+                    TimestampMicrosecondArray::from(vec![None, None, None]).with_timezone("+10:00"),
+                ),
+                Arc::new(
+                    TimestampMicrosecondArray::from(vec![None, None, None]).with_timezone("+10:00"),
+                ),
+                Arc::new(
+                    TimestampMicrosecondArray::from(vec![None, None, None]).with_timezone("+10:00"),
+                ),
             ],
         )
         .unwrap();
@@ -367,6 +376,9 @@ mod tests {
                 Arc::new(Int64Array::from(vec![1])),
                 Arc::new(Float64Array::from(vec![Some(f64::NAN)])),
                 Arc::new(UInt32Array::from(vec![0])),
+                Arc::new(TimestampMicrosecondArray::from(vec![None]).with_timezone("+10:00")),
+                Arc::new(TimestampMicrosecondArray::from(vec![None]).with_timezone("+10:00")),
+                Arc::new(TimestampMicrosecondArray::from(vec![None]).with_timezone("+10:00")),
                 Arc::new(TimestampMicrosecondArray::from(vec![None]).with_timezone("+10:00")),
             ],
         )

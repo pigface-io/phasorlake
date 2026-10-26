@@ -61,7 +61,7 @@ pub struct Lake<'a> {
     /// The files, from the manifest's live outputs ([`catalog()`]).
     pub files: Vec<LakeFile>,
     /// The sources of their rows, in stamp order: a source's index is its
-    /// rank, which every row's `_nl_src` holds.
+    /// rank, which every row's `_ul_source_rank` holds.
     pub sources: Vec<Source>,
     /// The utilake version, written into every output.
     pub version: &'a str,
@@ -117,7 +117,9 @@ pub fn read_with(
             url: s.url.to_string(),
             entry: s.entry.to_string(),
             source_period: period,
-            published: s.published.map(|p| rfc3339(p.get(), 0)),
+            server_last_modified: s.server_last_modified.map(|p| rfc3339(p.get(), 0)),
+            zip_entry_modified: s.zip_entry_modified.map(|p| rfc3339(p.get(), 0)),
+            filename_timestamp: s.filename_timestamp.map(|p| rfc3339(p.get(), 0)),
         });
     }
     let names = output::source_names(lake);

@@ -77,8 +77,9 @@ pub enum Origin {
 /// value that does not fit is kept. Raise it when the same plan would be
 /// written differently by a newer utilake, so that lakes written by the
 /// older one are known to be behind. 6: a lake file holds a source
-/// file's entries together, each row naming its own.
-pub const PLAN_FORMAT: u32 = 6;
+/// file's entries together, each row naming its own. 7: the `_ul_`
+/// columns, with every time a source was stamped with.
+pub const PLAN_FORMAT: u32 = 7;
 
 /// The identity of a plan: everything that decides what files of its shape
 /// are written as, and nothing else. It is recorded with every Parquet file

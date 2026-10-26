@@ -341,7 +341,7 @@ mod tests {
                 vec![Arc::new(Int64Array::from(vec![1; n]))],
             )
             .unwrap();
-            let stamp = Stamp::new(&format!("{url}!{entry}"), None);
+            let stamp = Stamp::new(&format!("{url}!{entry}"), Default::default());
             hive.write(w, &stamped(&rows, &stamp, &lake).unwrap())
                 .unwrap();
         }

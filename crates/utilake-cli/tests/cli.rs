@@ -249,7 +249,7 @@ fn ingest_ls_errors_verify_round_trip() {
     ]);
     assert!(
         latest.contains("row_number() OVER (")
-            && latest.contains("_nl_known <=")
+            && latest.contains("_ul_known_from <=")
             && latest.contains("FROM \"DISPATCH_UNIT_SCADA\""),
         "{latest}"
     );

@@ -32,11 +32,11 @@ impl EntryTimes {
         }
     }
 
-    /// When `entry` (a direct entry, not one inside a nested zip) went
-    /// public, in microseconds since 1970 (UTC): the `Last-Modified` of
-    /// the same bytes held from their own address. None when they are not
-    /// held, or the server gave no time.
-    pub fn published(&mut self, entry: &str) -> Option<i64> {
+    /// The server's `Last-Modified` for `entry`'s own bytes (a direct
+    /// entry, not one inside a nested zip), where the mirror also holds
+    /// them from their own address, in microseconds since 1970 (UTC). None
+    /// when they are not held, or the server gave no time.
+    pub fn server_last_modified(&mut self, entry: &str) -> Option<i64> {
         if entry.is_empty() || entry.contains(['!', '/', '\\']) {
             return None;
         }

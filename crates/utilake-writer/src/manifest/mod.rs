@@ -45,6 +45,7 @@ const MIGRATIONS: &[(&str, &str)] = &[
         include_str!("migrations/0007_schema_id.sql"),
     ),
     ("0008_sources", include_str!("migrations/0008_sources.sql")),
+    ("0009_times", include_str!("migrations/0009_times.sql")),
 ];
 
 /// A row of `files`.
@@ -160,10 +161,19 @@ pub struct EntryShare {
     pub min_time: Option<i64>,
     /// Its greatest.
     pub max_time: Option<i64>,
-    /// When it went public, microseconds since 1970 (UTC): what its rows
-    /// carry as `_nl_published`.
+    /// The HTTP `Last-Modified` the web server gave for the entry's bytes,
+    /// microseconds since 1970 (UTC): what its rows carry as
+    /// `_ul_server_last_modified`.
     #[serde(default)]
-    pub published: Option<i64>,
+    pub server_last_modified: Option<i64>,
+    /// The entry's modified time in its zip's central directory, read in
+    /// the packer's clock: its rows' `_ul_zip_entry_modified`.
+    #[serde(default)]
+    pub zip_entry_modified: Option<i64>,
+    /// The fourteen-digit stamp in the entry's file name, read in the
+    /// host's clock: its rows' `_ul_filename_timestamp`.
+    #[serde(default)]
+    pub filename_timestamp: Option<i64>,
 }
 
 impl EntryShare {
@@ -204,7 +214,7 @@ pub struct LiveOutput {
     /// The source file.
     pub url: String,
     /// The entries of the source file its ingest read, with when each
-    /// went public; each row of the file names its own in `_nl_source`.
+    /// went public; each row of the file names its own in `_ul_source`.
     pub entries: Vec<EntryShare>,
     /// Its least time value, nanoseconds since 1970.
     pub min_time: Option<i64>,
@@ -645,7 +655,7 @@ impl Manifest {
         table: Option<&str>,
     ) -> Result<std::collections::HashMap<i64, Vec<EntryShare>>, ManifestError> {
         let mut stmt = self.sql(self.conn.prepare(
-            "SELECT e.ingest_id, e.entry, e.rows, e.bad_rows, e.min_time, e.max_time, e.published
+            "SELECT e.ingest_id, e.entry, e.rows, e.bad_rows, e.min_time, e.max_time, e.server_last_modified, e.zip_entry_modified, e.filename_timestamp
              FROM ingest_entries e JOIN ingests i ON e.ingest_id = i.id
              WHERE ?1 IS NULL OR i.table_name = ?1 ORDER BY e.ingest_id, e.entry",
         ))?;
@@ -659,7 +669,9 @@ impl Manifest {
                         bad_rows: r.get::<_, i64>(3)? as u64,
                         min_time: r.get(4)?,
                         max_time: r.get(5)?,
-                        published: r.get(6)?,
+                        server_last_modified: r.get(6)?,
+                        zip_entry_modified: r.get(7)?,
+                        filename_timestamp: r.get(8)?,
                     },
                 ))
             })
@@ -802,8 +814,8 @@ impl Manifest {
         }
         for x in &e.entries {
             tx.execute(
-                "INSERT OR REPLACE INTO ingest_entries (ingest_id, entry, rows, bad_rows, min_time, max_time, published) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7)",
-                params![ingest_id, x.entry, x.rows as i64, x.bad_rows as i64, x.min_time, x.max_time, x.published],
+                "INSERT OR REPLACE INTO ingest_entries (ingest_id, entry, rows, bad_rows, min_time, max_time, server_last_modified, zip_entry_modified, filename_timestamp) VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9)",
+                params![ingest_id, x.entry, x.rows as i64, x.bad_rows as i64, x.min_time, x.max_time, x.server_last_modified, x.zip_entry_modified, x.filename_timestamp],
             )
             .map_err(|er| ManifestError::Sqlite { path: path.clone(), message: er.to_string() })?;
         }
@@ -1569,7 +1581,11 @@ mod tests {
             .map(|e| (e.entry.as_str(), e.rows))
             .collect();
         assert_eq!(entries, [("A.CSV", 5), ("B.CSV", 7)]);
-        assert!(t.entries.iter().all(|e| e.published.is_none()));
+        assert!(t.entries.iter().all(|e| {
+            e.server_last_modified.is_none()
+                && e.zip_entry_modified.is_none()
+                && e.filename_timestamp.is_none()
+        }));
         let u = &recs[1];
         assert_eq!(
             (u.id, u.status),

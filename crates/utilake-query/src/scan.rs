@@ -17,7 +17,8 @@ use parquet::arrow::ProjectionMask;
 use parquet::arrow::arrow_reader::ParquetRecordBatchReaderBuilder;
 use utilake_core::{Category, Diagnostic};
 use utilake_iceberg::Column;
-use utilake_iceberg::provenance::{PUBLISHED, SOURCE};
+use utilake_iceberg::provenance::SOURCE;
+use utilake_writer::provenance::TIME_COLUMNS;
 
 use crate::error::QueryError;
 use crate::output::Report;
@@ -26,22 +27,30 @@ use crate::time::{KnownTime, MarketOffset};
 use crate::{Lake, LakeFile, window};
 
 /// The column of a scanned row that says which source it came from: its
-/// rank among the lake's sources. Replaced by `_nl_source` on output.
-pub const SOURCE_IX: &str = "_nl_src";
+/// rank among the lake's sources. Replaced by `_ul_source` on output.
+pub const SOURCE_IX: &str = "_ul_source_rank";
 /// The column of a scanned row that says when it was known: its source's
 /// publish time, or its cutoff column's value when that is later (a row
 /// is never known before it was published); the cutoff alone when the
 /// publish time is not known.
-pub const KNOWN: &str = "_nl_known";
+pub const KNOWN: &str = "_ul_known_from";
 
 /// Rows per batch read from a file.
 const BATCH_ROWS: usize = 65_536;
 
 /// The schema scanned rows have: the target's columns, then the source
-/// index and the known time.
+/// rank, the three times the row's source was stamped with, as the lake
+/// file holds them, and the known time.
 pub fn scan_schema(target: &SchemaRef, tz: &str) -> SchemaRef {
     let mut fields: Vec<Field> = target.fields().iter().map(|f| f.as_ref().clone()).collect();
     fields.push(Field::new(SOURCE_IX, DataType::UInt32, false));
+    for name in TIME_COLUMNS {
+        fields.push(Field::new(
+            name,
+            DataType::Timestamp(TimeUnit::Microsecond, Some(Arc::from(tz))),
+            true,
+        ));
+    }
     fields.push(Field::new(
         KNOWN,
         DataType::Timestamp(TimeUnit::Microsecond, Some(Arc::from(tz))),
@@ -107,14 +116,14 @@ pub fn scan(
     let unknown = file
         .sources
         .iter()
-        .all(|(_, r)| lake.sources[*r as usize].published.is_none());
+        .all(|(_, r)| lake.sources[*r as usize].server_last_modified.is_none());
     if known_at.is_some() && cutoff.is_none() && unknown {
         report.warnings.push(
             Diagnostic::warning(
                 "query.stamp_unknown",
                 Category::Query,
                 format!(
-                    "{} has no publish time, so none of its rows can be shown to have been known by the time asked for; they are left out.",
+                    "{} has no Last-Modified from its server, so none of its rows can be shown to have been known by the time asked for; they are left out.",
                     file.url
                 ),
             )
@@ -142,9 +151,9 @@ pub fn scan(
             _ => None,
         })
         .collect();
-    // Every row's source and publish time: a lake file without them was
-    // written before rows named their sources.
-    for c in [SOURCE.name, PUBLISHED.name] {
+    // Every row's source and the times its source was stamped with: a
+    // lake file without them was written before lake format 3.
+    for c in std::iter::once(SOURCE.name).chain(TIME_COLUMNS) {
         if file_schema.index_of(c).is_err() {
             return Err(QueryError::LakeFormat {
                 path: path.to_owned(),
@@ -153,7 +162,11 @@ pub fn scan(
     }
     let mask = ProjectionMask::columns(
         builder.parquet_schema(),
-        wanted.iter().copied().chain([SOURCE.name, PUBLISHED.name]),
+        wanted
+            .iter()
+            .copied()
+            .chain(std::iter::once(SOURCE.name))
+            .chain(TIME_COLUMNS),
     );
     let axis = b.spec.as_ref().map(|s| &s.valid);
     let valid_ix = match (axis, b.time) {
@@ -212,20 +225,33 @@ pub fn scan(
                 name,
             }
         })?));
-        // When each row was known: no earlier than its source was
-        // published, nor than its cutoff value says.
-        let published = batch
-            .column_by_name(PUBLISHED.name)
+        // The three times, as the file holds them, in the market's zone
+        // like every time of the frame: a reader's own rule needs them.
+        for name in TIME_COLUMNS {
+            let t = batch
+                .column_by_name(name)
+                .expect("projected above")
+                .as_primitive::<TimestampMicrosecondType>()
+                .clone()
+                .with_timezone(tz.as_str());
+            columns.push(Arc::new(t));
+        }
+        // When each row was known: no earlier than the server says its
+        // source was public, nor than its cutoff value says.
+        let public: Vec<Option<i64>> = batch
+            .column_by_name(TIME_COLUMNS[0])
             .expect("projected above")
-            .as_primitive::<TimestampMicrosecondType>();
+            .as_primitive::<TimestampMicrosecondType>()
+            .iter()
+            .collect();
         let known: Vec<Option<i64>> = match cutoff {
             Some(FieldIx(ix)) => micros_of(&columns[ix], b.offset)
                 .unwrap_or_else(|| vec![None; n])
                 .into_iter()
-                .zip(published.iter())
+                .zip(public)
                 .map(|(c, p)| c.max(p))
                 .collect(),
-            None => published.iter().collect(),
+            None => public,
         };
         let known: ArrayRef =
             Arc::new(TimestampMicrosecondArray::from(known).with_timezone(tz.as_str()));
@@ -257,7 +283,7 @@ pub fn scan(
     Ok(out)
 }
 
-/// Each row's source rank, from a file's `_nl_source`: a dictionary's
+/// Each row's source rank, from a file's `_ul_source`: a dictionary's
 /// values are looked up once each and its keys gathered, so no row costs
 /// a string comparison; plain text (a file rewritten by another tool) is
 /// looked up row by row. A name the file's sources do not hold is the
@@ -419,9 +445,10 @@ mod tests {
             .is_err()
         );
         let s = scan_schema(&batch.schema(), "+10:00");
-        assert_eq!(s.fields().len(), 4);
+        assert_eq!(s.fields().len(), 2 + 1 + 3 + 1);
         assert_eq!(s.field(2).name(), SOURCE_IX);
-        assert_eq!(s.field(3).name(), KNOWN);
+        assert_eq!(s.field(3).name(), TIME_COLUMNS[0]);
+        assert_eq!(s.field(6).name(), KNOWN);
     }
 }
 
@@ -476,7 +503,13 @@ mod file_tests {
     fn file_published(dir: &std::path::Path, published: Option<i64>) -> String {
         let rows = rows();
         let lake = utilake_writer::provenance::lake_schema(&rows.schema());
-        let stamp = utilake_writer::provenance::Stamp::new("file:///f", published);
+        let stamp = utilake_writer::provenance::Stamp::new(
+            "file:///f",
+            utilake_writer::provenance::Times {
+                server_last_modified: published,
+                ..Default::default()
+            },
+        );
         let batch = utilake_writer::provenance::stamped(&rows, &stamp, &lake).unwrap();
         write(&dir.join("f.parquet"), &batch)
     }
@@ -569,7 +602,9 @@ mod file_tests {
             sources: vec![crate::Source {
                 url: Arc::from("file:///f"),
                 entry: Arc::from(""),
-                published: published.map(KnownTime::new),
+                server_last_modified: published.map(KnownTime::new),
+                zip_entry_modified: None,
+                filename_timestamp: None,
             }],
             version: "test",
         }
@@ -593,7 +628,7 @@ mod file_tests {
         assert_eq!(batch.num_rows(), 2);
         assert_eq!(report.dropped_window, 1);
         // The cutoff is a date: its midnight in the market's clock.
-        let known = micros_of(batch.column(5), NEM).unwrap();
+        let known = micros_of(batch.column_by_name(KNOWN).unwrap(), NEM).unwrap();
         assert_eq!(
             known,
             [Some(NEM.midnight_us(19_723)), Some(NEM.midnight_us(19_724))]
@@ -602,7 +637,10 @@ mod file_tests {
         let b = bound(None, Resolution::Raw);
         let out = scan(&b, &lake, &b.files[0], None, &mut report).unwrap();
         assert_eq!(out[0].num_rows(), 2);
-        assert_eq!(micros_of(out[0].column(5), NEM).unwrap(), [None, None]);
+        assert_eq!(
+            micros_of(out[0].column_by_name(KNOWN).unwrap(), NEM).unwrap(),
+            [None, None]
+        );
     }
 
     #[test]
@@ -618,12 +656,13 @@ mod file_tests {
         let mut report = Report::default();
         let out = scan(&b, &lake, &b.files[0], None, &mut report).unwrap();
         assert_eq!(
-            micros_of(out[0].column(5), NEM).unwrap(),
+            micros_of(out[0].column_by_name(KNOWN).unwrap(), NEM).unwrap(),
             [Some(late), Some(NEM.midnight_us(19_724))]
         );
         // Every row's rank is its source's.
         let src = out[0]
-            .column(4)
+            .column_by_name(SOURCE_IX)
+            .unwrap()
             .as_primitive::<arrow_array::types::UInt32Type>();
         assert_eq!(src.values().to_vec(), [0, 0]);
     }
@@ -632,7 +671,7 @@ mod file_tests {
     fn a_source_is_ranked_from_text_and_an_unknown_one_is_refused() {
         let dir = tempfile::tempdir().unwrap();
         let registry = utilake_nem::registry();
-        // `_nl_source` as plain text, as another tool rewrites it.
+        // `_ul_source` as plain text, as another tool rewrites it.
         let rows = rows();
         let mut fields: Vec<Field> = rows
             .schema()
@@ -640,18 +679,22 @@ mod file_tests {
             .iter()
             .map(|f| f.as_ref().clone())
             .collect();
-        fields.push(Field::new("_nl_source", DataType::Utf8, false));
-        fields.push(Field::new(
-            "_nl_published",
-            DataType::Timestamp(TimeUnit::Microsecond, Some("UTC".into())),
-            true,
-        ));
+        fields.push(Field::new("_ul_source", DataType::Utf8, false));
+        for name in utilake_writer::provenance::TIME_COLUMNS {
+            fields.push(Field::new(
+                name,
+                DataType::Timestamp(TimeUnit::Microsecond, Some("UTC".into())),
+                true,
+            ));
+        }
         let with = |name: &str| {
             let mut cols = rows.columns().to_vec();
             cols.push(Arc::new(StringArray::from(vec![name; 3])));
-            cols.push(Arc::new(
-                TimestampMicrosecondArray::from(vec![None::<i64>; 3]).with_timezone("UTC"),
-            ));
+            for _ in 0..3 {
+                cols.push(Arc::new(
+                    TimestampMicrosecondArray::from(vec![None::<i64>; 3]).with_timezone("UTC"),
+                ));
+            }
             RecordBatch::try_new(Arc::new(Schema::new(fields.clone())), cols).unwrap()
         };
         let b = bound(None, Resolution::Raw);
@@ -683,7 +726,7 @@ mod file_tests {
         // So is a dictionary value the file's sources do not hold.
         let rows = self::rows();
         let lake_schema = utilake_writer::provenance::lake_schema(&rows.schema());
-        let stamp = utilake_writer::provenance::Stamp::new("file:///else", None);
+        let stamp = utilake_writer::provenance::Stamp::new("file:///else", Default::default());
         let batch = utilake_writer::provenance::stamped(&rows, &stamp, &lake_schema).unwrap();
         let dict = write(&dir.path().join("d.parquet"), &batch);
         let err = scan(
@@ -718,7 +761,7 @@ mod file_tests {
         let lake = self::lake(&registry, &path, Some(7));
         let out = scan(&b, &lake, &b.files[0], Some(KnownTime::new(5)), &mut report).unwrap();
         assert_eq!(
-            micros_of(out[0].column(5), NEM).unwrap(),
+            micros_of(out[0].column_by_name(KNOWN).unwrap(), NEM).unwrap(),
             [Some(7), Some(7)]
         );
         let gone = self::lake(&registry, "/nowhere/f.parquet", Some(7));

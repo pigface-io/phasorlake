@@ -305,8 +305,8 @@ mod tests {
         assert!(has(&t, "column list is empty") && has(&t, "schema list is empty"));
         assert!(has(&t, "report_pairs is empty") && has(&t, "name is empty"));
         let mut t = unit_scada();
-        t.columns[2].name = "_nl_source".into();
-        assert!(has(&t, "_nl_source starts with _NL_"));
+        t.columns[2].name = "_ul_source".into();
+        assert!(has(&t, "_ul_source starts with _UL_"));
     }
 
     #[test]

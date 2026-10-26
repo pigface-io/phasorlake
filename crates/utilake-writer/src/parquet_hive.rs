@@ -21,7 +21,6 @@ use parquet::file::metadata::KeyValue;
 use parquet::file::properties::{EnabledStatistics, WriterProperties, WriterVersion};
 
 use utilake_core::config::{Codec, Lake, Statistics};
-use utilake_iceberg::provenance::PUBLISHED;
 
 use crate::error::StoreError;
 use crate::partition::{is_sorted, time_bounds};
@@ -211,10 +210,10 @@ impl ParquetHive {
                         .map_or_else(String::new, |s| s.to_string()),
                 ),
             ]));
-        // Measures never benefit from dictionaries; ids do, and so does a
-        // source's publish time, one value over many rows.
+        // Measures never benefit from dictionaries; ids do, and so do a
+        // source's times, one value each over many rows.
         for f in schema.fields() {
-            if f.name() != PUBLISHED.name
+            if !crate::provenance::TIME_COLUMNS.contains(&f.name().as_str())
                 && matches!(
                     f.data_type(),
                     arrow_schema::DataType::Float64
@@ -255,11 +254,13 @@ impl LakeWriter for ParquetHive {
         meta: &FileMeta,
     ) -> Result<WriterId, StoreError> {
         zone!(OPEN);
-        // A lake file ends with every row's source and publish time.
-        let ends = schema.fields().len() >= 2
-            && schema.fields()[schema.fields().len() - 2..]
+        // A lake file ends with every row's source and the times its
+        // source was stamped with.
+        let tail = crate::provenance::fields();
+        let ends = schema.fields().len() >= tail.len()
+            && schema.fields()[schema.fields().len() - tail.len()..]
                 .iter()
-                .zip(crate::provenance::fields())
+                .zip(tail)
                 .all(|(f, p)| f.name() == p.name() && f.data_type() == p.data_type());
         if !ends {
             return Err(StoreError::NoProvenance {
@@ -378,7 +379,7 @@ impl LakeWriter for ParquetHive {
             message: e.to_string(),
         })?;
         o.rows += batch.num_rows() as u64;
-        let source = batch.column(batch.num_columns() - 2);
+        let source = batch.column(batch.num_columns() - crate::provenance::fields().len());
         crate::provenance::count(source.as_ref(), &mut o.sources);
         Ok(())
     }
@@ -567,8 +568,13 @@ mod tests {
             ],
         )
         .unwrap();
-        let stamp =
-            crate::provenance::Stamp::new("https://x/y.zip!Y.CSV", Some(1_704_067_200_000_000));
+        let stamp = crate::provenance::Stamp::new(
+            "https://x/y.zip!Y.CSV",
+            crate::provenance::Times {
+                server_last_modified: Some(1_704_067_200_000_000),
+                ..Default::default()
+            },
+        );
         crate::provenance::stamped(&data, &stamp, &schema()).unwrap()
     }
 
@@ -796,7 +802,7 @@ mod tests {
                     .and_then(|k| k.value.clone())
                     .unwrap()
             };
-            assert_eq!(value("utilake.lake_format"), "2");
+            assert_eq!(value("utilake.lake_format"), "3");
             assert_eq!(
                 value("utilake.sources"),
                 r#"[{"rows":2000,"source":"https://x/y.zip!Y.CSV"}]"#

@@ -313,7 +313,15 @@ mod tests {
             .iter()
             .map(|f| f.name.as_str())
             .collect::<Vec<_>>();
-        assert_eq!(&last[last.len() - 2..], ["_nl_source", "_nl_published"]);
+        assert_eq!(
+            &last[last.len() - 4..],
+            [
+                "_ul_source",
+                "_ul_server_last_modified",
+                "_ul_zip_entry_modified",
+                "_ul_filename_timestamp"
+            ]
+        );
         let snaps = &meta.snapshots;
         assert_eq!(
             snaps.iter().map(|s| s.schema_id).collect::<Vec<_>>(),

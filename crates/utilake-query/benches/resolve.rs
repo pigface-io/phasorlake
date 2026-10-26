@@ -24,6 +24,11 @@ const TZ: &str = "+10:00";
 const DAY: i64 = 86_400_000_000;
 const FIVE: i64 = 300_000_000;
 
+/// A time column of `n` nulls: a source stamped with no such time.
+fn none(n: usize) -> ArrayRef {
+    ts(vec![None; n])
+}
+
 fn ts(v: Vec<Option<i64>>) -> ArrayRef {
     Arc::new(TimestampMicrosecondArray::from(v).with_timezone(TZ))
 }
@@ -100,6 +105,9 @@ fn dispatchprice(sources: u32) -> (RecordBatch, Bound, BoundSpec) {
             Arc::new(Int64Array::from(rrp)),
             ts(lc.clone()),
             Arc::new(UInt32Array::from(src)),
+            none(lc.len()),
+            none(lc.len()),
+            none(lc.len()),
             ts(lc),
         ],
     )
@@ -159,6 +167,9 @@ fn p5min() -> (RecordBatch, Bound, BoundSpec) {
             Arc::new(Int64Array::from(rrp)),
             ts(lc.clone()),
             Arc::new(UInt32Array::from(vec![0u32; n])),
+            none(lc.len()),
+            none(lc.len()),
+            none(lc.len()),
             ts(lc),
         ],
     )
@@ -220,6 +231,9 @@ fn dudetail() -> (RecordBatch, Bound, BoundSpec) {
             Arc::new(Int64Array::from(cap)),
             ts(lc.clone()),
             Arc::new(UInt32Array::from(src)),
+            none(lc.len()),
+            none(lc.len()),
+            none(lc.len()),
             ts(lc),
         ],
     )

@@ -115,14 +115,14 @@ fn interval_table_latest_revisions_and_raw() {
         ints(&b, "INTERVENTION"),
         [Some(0), Some(0), Some(0), Some(1)]
     );
-    let sources = strings(&b, "_nl_source");
+    let sources = strings(&b, "_ul_source");
     assert!(sources[0].starts_with(ARCHIVE), "{}", sources[0]);
     assert!(sources[1].starts_with(DVD), "{}", sources[1]);
     // Known when its file was published (5 February, 10:00 in market
     // time), not at its LASTCHANGED of 00:12 on 1 January: nobody could
     // see the row before then.
-    assert_eq!(times(&b, "_nl_known")[1], t("2024-02-05T10:00:00"));
-    assert!(b.column_by_name("_nl_valid_to").is_none());
+    assert_eq!(times(&b, "_ul_known_from")[1], t("2024-02-05T10:00:00"));
+    assert!(b.column_by_name("_ul_valid_to").is_none());
     assert_eq!(report.rows_out, 4);
     assert_eq!(report.units, 1, "one partition read");
     assert_eq!(report.files, 3, "the December file is outside the window");
@@ -172,8 +172,8 @@ fn interval_table_latest_revisions_and_raw() {
         2 + 1,
         "report rows and the archive row"
     );
-    assert!(b.column_by_name("_nl_known").is_none());
-    assert!(b.column_by_name("_nl_source").is_some());
+    assert!(b.column_by_name("_ul_known_from").is_none());
+    assert!(b.column_by_name("_ul_source").is_some());
 
     // The window is `(after, upto]`: midnight belongs to December, and
     // the two partitions are two units.
@@ -247,7 +247,7 @@ fn filters_projection_and_as_of() {
     )
     .unwrap_err();
     assert!(matches!(err, QueryError::BadFilterValue { .. }));
-    // The projection: the named columns, then the `_nl_` ones.
+    // The projection: the named columns, then the `_ul_` ones.
     let (b, _) = rows(
         &fx,
         Query::new("DISPATCHPRICE", day, LATEST)
@@ -255,7 +255,18 @@ fn filters_projection_and_as_of() {
     );
     let schema = b.schema();
     let names: Vec<&str> = schema.fields().iter().map(|f| f.name().as_str()).collect();
-    assert_eq!(names, ["RRP", "REGIONID", "_nl_source", "_nl_known"]);
+    assert_eq!(
+        names,
+        [
+            "RRP",
+            "REGIONID",
+            "_ul_source",
+            "_ul_server_last_modified",
+            "_ul_zip_entry_modified",
+            "_ul_filename_timestamp",
+            "_ul_known_from"
+        ]
+    );
     assert_eq!(b.num_rows(), 4);
     let err = bind(
         Query::new("DISPATCHPRICE", day, LATEST).with_columns(vec!["NOPE".into()]),
@@ -299,7 +310,7 @@ fn from_table_versions_in_force() {
         [Some(21), Some(30), Some(40)]
     );
     assert_eq!(ints(&b, "VERSIONNO"), [Some(2), Some(1), Some(1)]);
-    assert_eq!(times(&b, "_nl_valid_to"), [None, None, None]);
+    assert_eq!(times(&b, "_ul_valid_to"), [None, None, None]);
 
     // A range: the version in force at its start, and every one after.
     let (b, _) = rows(
@@ -316,7 +327,7 @@ fn from_table_versions_in_force() {
         [Some(10), Some(21), Some(30), Some(40)]
     );
     assert_eq!(
-        times(&b, "_nl_valid_to"),
+        times(&b, "_ul_valid_to"),
         [t("2023-06-01T00:00"), None, None, None]
     );
 
@@ -352,7 +363,7 @@ fn from_table_versions_in_force() {
     // Before any version: nothing in force.
     let (b, _) = rows(&fx, Query::new("DUDETAIL", at("2019-01-01T00:00"), LATEST));
     assert_eq!(b.num_rows(), 0);
-    assert!(b.column_by_name("_nl_valid_to").is_some());
+    assert!(b.column_by_name("_ul_valid_to").is_some());
 }
 
 #[test]
@@ -382,7 +393,17 @@ fn keyless_and_derived_tables() {
     assert_eq!(strings(&b, "WHAT"), ["a", "a"]);
     let schema = b.schema();
     let names: Vec<&str> = schema.fields().iter().map(|f| f.name().as_str()).collect();
-    assert_eq!(names, ["WHEN", "WHAT", "_nl_source"]);
+    assert_eq!(
+        names,
+        [
+            "WHEN",
+            "WHAT",
+            "_ul_source",
+            "_ul_server_last_modified",
+            "_ul_zip_entry_modified",
+            "_ul_filename_timestamp"
+        ]
+    );
     let lake = fx.lake();
     let err = bind(Query::new("UTILAKE.NOBODY", any, LATEST), &lake).unwrap_err();
     assert!(matches!(err, QueryError::RawOnly(_)), "{err}");
@@ -547,7 +568,7 @@ fn a_file_without_a_publish_time_is_left_out_under_known_at() {
     // archive (no stamp now) lose to the report, stamped by its name.
     let (b, _) = rows(&fx, Query::new("DISPATCHPRICE", day, LATEST));
     assert_eq!(ints(&b, "RRP"), [Some(99), Some(111), Some(120), Some(125)]);
-    let sources = strings(&b, "_nl_source");
+    let sources = strings(&b, "_ul_source");
     assert!(sources[0].starts_with(REPORT), "{}", sources[0]);
     // The DVD's own copy of the 00:10 run 1 row now loses to the report's.
     let (b, _) = rows(
@@ -558,7 +579,7 @@ fn a_file_without_a_publish_time_is_left_out_under_known_at() {
             Resolution::Revisions { known_at: None },
         ),
     );
-    let sources = strings(&b, "_nl_source");
+    let sources = strings(&b, "_ul_source");
     assert!(sources[1].starts_with(REPORT), "{}", sources[1]);
 }
 
@@ -823,7 +844,7 @@ fn a_version_ends_at_its_end_column_or_the_next_version() {
     let lake = fx.lake();
     let ends = |w: ValidWindow| {
         let b = bind(Query::new("DUDETAILSUMMARY", w, LATEST), &lake).unwrap();
-        pairs(&read(&b, &lake).unwrap(), "REGIONID", "_nl_valid_to")
+        pairs(&read(&b, &lake).unwrap(), "REGIONID", "_ul_valid_to")
     };
     // In force on 2024-01-15: A's second version and C; B retired.
     assert_eq!(
@@ -864,13 +885,13 @@ fn provenance_rides_with_the_rows_through_a_compaction() {
     };
     let pairs = |b: &RecordBatch| -> Vec<(String, Option<i64>)> {
         let s = arrow_cast::cast(
-            b.column_by_name("_nl_source").unwrap(),
+            b.column_by_name("_ul_source").unwrap(),
             &arrow_schema::DataType::Utf8,
         )
         .unwrap();
         let s = s.as_string::<i32>();
         let p = b
-            .column_by_name("_nl_published")
+            .column_by_name("_ul_server_last_modified")
             .unwrap()
             .as_primitive::<TimestampMicrosecondType>();
         (0..b.num_rows())
@@ -916,9 +937,9 @@ fn provenance_rides_with_the_rows_through_a_compaction() {
     let window = range("2024-01-01T00:00", "2024-01-01T00:05");
     let (b, _) = rows(&fx, Query::new("DISPATCHPRICE", window, LATEST));
     assert_eq!(ints(&b, "RRP"), [Some(2)]);
-    assert!(strings(&b, "_nl_source")[0].ends_with("!B.CSV"));
+    assert!(strings(&b, "_ul_source")[0].ends_with("!B.CSV"));
     let (b, _) = rows(&fx, Query::new("DISPATCHPRICE", window, Resolution::Raw));
-    let mut sources = strings(&b, "_nl_source");
+    let mut sources = strings(&b, "_ul_source");
     sources.sort();
     assert!(
         sources[0].ends_with("!A.CSV") && sources[1].ends_with("!B.CSV"),
@@ -949,4 +970,67 @@ fn provenance_rides_with_the_rows_through_a_compaction() {
         .flat_map(pairs)
         .collect();
     assert_eq!(after, expected);
+}
+
+/// Every frame carries each time its rows' sources were stamped with, as
+/// the lake holds them, so a reader can apply a rule of their own; the one
+/// rule `--known-at` applies is the server's word. A file the server
+/// touched again in 2026 but AEMO wrote in 2016 is not known in 2017 by
+/// it, though its zip says when it was written.
+#[test]
+fn frames_carry_every_time_and_known_at_takes_the_servers() {
+    let mut fx = Fixture::new();
+    let schema = fx.schema("DISPATCHPRICE");
+    let row = common::batch(
+        &schema,
+        1,
+        &[
+            ("SETTLEMENTDATE", vec![common::V::T(ts("2016-12-01T00:05"))]),
+            ("RUNNO", vec![common::V::I(1)]),
+            ("REGIONID", vec![common::V::S("NSW1")]),
+            ("DISPATCHINTERVAL", vec![common::V::I(1)]),
+            ("INTERVENTION", vec![common::V::I(0)]),
+            ("RRP", vec![common::V::I(1)]),
+        ],
+    );
+    // Written into its zip on 2016-12-01 00:06 AEST; served again, as the
+    // whole archive was, in April 2026.
+    fx.zip_entry_modified = Some(ts("2016-12-01T00:06"));
+    fx.write(&common::Source {
+        table: "DISPATCHPRICE",
+        partition: utilake_writer::Partition::Month {
+            year: 2016,
+            month: 12,
+        },
+        schema_id: None,
+        url: "https://h/PUBLIC_DISPATCHIS_201612010005_20161201000612.zip",
+        entry: "A.CSV",
+        last_modified_at: Some("2026-04-16T00:00:00Z"),
+        source_period: Some("2016-12"),
+        rows: row,
+    });
+    let window = range("2016-12-01T00:00", "2016-12-01T00:05");
+    let (b, report) = rows(&fx, Query::new("DISPATCHPRICE", window, LATEST));
+    assert_eq!(ints(&b, "RRP"), [Some(1)]);
+    assert_eq!(
+        times(&b, "_ul_server_last_modified"),
+        [Some(1_776_297_600_000_000)]
+    );
+    assert_eq!(times(&b, "_ul_zip_entry_modified"), [t("2016-12-01T00:06")]);
+    // The fourteen digits in the zip's name: 2016-12-01 00:06:12 AEST.
+    assert_eq!(
+        times(&b, "_ul_filename_timestamp"),
+        [t("2016-12-01T00:06:12")]
+    );
+    let s = &report.sources[0];
+    assert!(s.server_last_modified.is_some() && s.zip_entry_modified.is_some());
+    // A raw read carries them too.
+    let (b, _) = rows(&fx, Query::new("DISPATCHPRICE", window, Resolution::Raw));
+    assert_eq!(times(&b, "_ul_zip_entry_modified"), [t("2016-12-01T00:06")]);
+    // By the server's word the row was not known in 2017.
+    let (b, _) = rows(
+        &fx,
+        Query::new("DISPATCHPRICE", window, known("2017-01-01T00:00")),
+    );
+    assert_eq!(b.num_rows(), 0);
 }

@@ -432,7 +432,7 @@ async fn an_entry_held_alone_is_stamped_when_it_first_went_public() {
     let b = parquet_batch(&files[0]);
     use arrow_array::Array as _;
     let source = b
-        .column_by_name("_nl_source")
+        .column_by_name("_ul_source")
         .unwrap()
         .as_any()
         .downcast_ref::<arrow_array::DictionaryArray<arrow_array::types::UInt16Type>>()
@@ -443,7 +443,7 @@ async fn an_entry_held_alone_is_stamped_when_it_first_went_public() {
         .downcast_ref::<arrow_array::StringArray>()
         .unwrap();
     let published = b
-        .column_by_name("_nl_published")
+        .column_by_name("_ul_server_last_modified")
         .unwrap()
         .as_any()
         .downcast_ref::<arrow_array::TimestampMicrosecondArray>()
@@ -466,11 +466,19 @@ async fn an_entry_held_alone_is_stamped_when_it_first_went_public() {
     let shares = &ingests[0].entries;
     assert_eq!(shares.len(), 2);
     assert_eq!(
-        shares.iter().find(|x| x.entry == held).unwrap().published,
+        shares
+            .iter()
+            .find(|x| x.entry == held)
+            .unwrap()
+            .server_last_modified,
         Some(first)
     );
     assert_eq!(
-        shares.iter().find(|x| x.entry == other).unwrap().published,
+        shares
+            .iter()
+            .find(|x| x.entry == other)
+            .unwrap()
+            .server_last_modified,
         None
     );
 }
@@ -1126,11 +1134,11 @@ C,\"END OF REPORT\",9\n";
     let first = parquet_batch(files.iter().find(|f| *f != second_name).unwrap());
     let second = parquet_batch(second_name);
     assert_eq!(first.num_rows(), 2);
-    // The table's columns, then each row's source and publish time.
-    assert_eq!(first.num_columns(), 4 + 2);
+    // The table's columns, then each row's source and its three times.
+    assert_eq!(first.num_columns(), 4 + 4);
     assert!(!first.schema().field(1).is_nullable());
     assert_eq!(second.num_rows(), 4);
-    assert_eq!(second.num_columns(), 5 + 2);
+    assert_eq!(second.num_columns(), 5 + 4);
     let names: Vec<String> = second
         .schema()
         .fields()
@@ -1139,7 +1147,13 @@ C,\"END OF REPORT\",9\n";
         .collect();
     assert_eq!(
         &names[4..],
-        ["SCADAVALUE__raw", "_nl_source", "_nl_published"]
+        [
+            "SCADAVALUE__raw",
+            "_ul_source",
+            "_ul_server_last_modified",
+            "_ul_zip_entry_modified",
+            "_ul_filename_timestamp"
+        ]
     );
     assert!(second.schema().field(1).is_nullable());
     assert_eq!(
@@ -2987,10 +3001,24 @@ async fn every_table_survives_the_lake() {
             let schema = b.schema();
             let fields = schema.fields();
             let n = fields.len();
-            assert_eq!(fields[n - 2].name(), "_nl_source", "{name}");
-            assert_eq!(fields[n - 1].name(), "_nl_published", "{name}");
-            assert_eq!(id_of(&fields[n - 2]), "2147483000", "{name}");
-            for field in &fields[..n - 2] {
+            let tail: Vec<&str> = fields[n - 4..].iter().map(|f| f.name().as_str()).collect();
+            assert_eq!(
+                tail,
+                [
+                    "_ul_source",
+                    "_ul_server_last_modified",
+                    "_ul_zip_entry_modified",
+                    "_ul_filename_timestamp"
+                ],
+                "{name}"
+            );
+            let ids: Vec<String> = fields[n - 4..].iter().map(|f| id_of(f)).collect();
+            assert_eq!(
+                ids,
+                ["2147483000", "2147483001", "2147483002", "2147483003"],
+                "{name}"
+            );
+            for field in &fields[..n - 4] {
                 assert!(
                     !field.name().ends_with("__raw"),
                     "{name}: {} kept as text",
@@ -3002,7 +3030,7 @@ async fn every_table_survives_the_lake() {
                 assert_eq!(id_of(field), id_of(declared), "{name}.{}", field.name());
             }
             let source = b
-                .column_by_name("_nl_source")
+                .column_by_name("_ul_source")
                 .unwrap()
                 .as_any()
                 .downcast_ref::<arrow_array::DictionaryArray<arrow_array::types::UInt16Type>>()
@@ -3134,6 +3162,7 @@ async fn a_blank_line_in_a_plain_file_is_no_row() {
 /// every lake file ends with each row's source and publish time.
 #[tokio::test]
 async fn every_real_head_survives_the_lake() {
+    use arrow_array::Array as _;
     let mut e = env();
     let registry = e.registry.clone();
     e.deps.kits = Arc::new(KitRegistry::new(vec![
@@ -3196,8 +3225,20 @@ async fn every_real_head_survives_the_lake() {
         let b = parquet_batch(f);
         let schema = b.schema();
         let n = schema.fields().len();
-        assert_eq!(schema.field(n - 2).name(), "_nl_source", "{f}");
-        assert_eq!(schema.field(n - 1).name(), "_nl_published", "{f}");
+        let tail: Vec<&str> = schema.fields()[n - 4..]
+            .iter()
+            .map(|x| x.name().as_str())
+            .collect();
+        assert_eq!(
+            tail,
+            [
+                "_ul_source",
+                "_ul_server_last_modified",
+                "_ul_zip_entry_modified",
+                "_ul_filename_timestamp"
+            ],
+            "{f}"
+        );
         raw.extend(
             schema
                 .fields()
@@ -3207,6 +3248,44 @@ async fn every_real_head_survives_the_lake() {
         );
     }
     assert!(raw.is_empty(), "values kept as text: {raw:#?}");
+    // Each head is a CSV read whole: no zip entry, so no zip time; a name
+    // stamp exactly where its file name holds a run of fourteen digits.
+    let fourteen = |name: &str| {
+        name.split(|c: char| !c.is_ascii_digit())
+            .any(|run| run.len() == 14)
+    };
+    let (mut named, mut unnamed) = (0, 0);
+    for f in &lake {
+        let b = parquet_batch(f);
+        let column = |n: &str| b.column_by_name(n).unwrap().clone();
+        assert_eq!(
+            column("_ul_zip_entry_modified").null_count(),
+            b.num_rows(),
+            "{f}"
+        );
+        let source = column("_ul_source");
+        let source = source
+            .as_any()
+            .downcast_ref::<arrow_array::DictionaryArray<arrow_array::types::UInt16Type>>()
+            .unwrap();
+        let values = source
+            .values()
+            .as_any()
+            .downcast_ref::<arrow_array::StringArray>()
+            .unwrap();
+        let stamp = column("_ul_filename_timestamp");
+        for row in 0..b.num_rows() {
+            let key = usize::from(source.keys().value(row));
+            let name = values.value(key).rsplit('/').next().unwrap();
+            assert_eq!(fourteen(name), stamp.is_valid(row), "{name}");
+            if stamp.is_valid(row) {
+                named += 1;
+            } else {
+                unnamed += 1;
+            }
+        }
+    }
+    assert!(named > 0 && unnamed > 0, "{named} named, {unnamed} not");
     // Every row of every file is in the lake, by the file's own share:
     // the same count, but for a feed that unpivots its forecast columns
     // into rows of their own, which gives a whole number of rows per row.
@@ -3236,4 +3315,125 @@ async fn every_real_head_survives_the_lake() {
         }
     }
     assert!(short.is_empty(), "{short:#?}");
+}
+
+/// Every time a source was stamped with is kept on its rows, each as
+/// found: the zip's record of when the entry was written (read in AEST,
+/// the packer's clock), the creation stamp in the entry's name, and the
+/// server's Last-Modified, here none for a local file. Nothing is chosen
+/// between them; the manifest's shares say the same.
+#[tokio::test]
+async fn each_time_a_source_was_stamped_with_is_kept_on_its_rows() {
+    use arrow_array::Array as _;
+    let e = env();
+    let scada = std::fs::read(fixtures().join("DISPATCH_UNIT_SCADA_v1_head.csv")).unwrap();
+    let zip_path = e
+        .home
+        .root()
+        .join("PUBLIC_DVD_DISPATCH_UNIT_SCADA_202401010000.zip");
+    let written = "PUBLIC_DVD_DISPATCH_UNIT_SCADA_202401010000.CSV";
+    let named = "PUBLIC_DISPATCH_UNIT_SCADA_202401010000_20240101000731.CSV";
+    {
+        let f = std::fs::File::create(&zip_path).unwrap();
+        let mut w = zip::ZipWriter::new(f);
+        let at = zip::DateTime::from_date_and_time(2024, 1, 1, 0, 5, 30).unwrap();
+        w.start_file(
+            written,
+            zip::write::SimpleFileOptions::default().last_modified_time(at),
+        )
+        .unwrap();
+        w.write_all(&scada).unwrap();
+        let at = zip::DateTime::from_date_and_time(2024, 1, 1, 0, 7, 40).unwrap();
+        w.start_file(
+            named,
+            zip::write::SimpleFileOptions::default().last_modified_time(at),
+        )
+        .unwrap();
+        w.write_all(&scada).unwrap();
+        w.finish().unwrap();
+    }
+    let (rep, _) = run_plan(
+        &e,
+        Plan {
+            request: "ingest stamped".into(),
+            input: Input::Local(vec![zip_path]),
+            options: RunOptions::default(),
+        },
+    )
+    .await;
+    assert_eq!(rep.exit_code, 0, "{:?}", rep.report.summary_lines());
+    let files = walk(&e.home.lake());
+    assert_eq!(files.len(), 1, "{files:?}");
+    let b = parquet_batch(&files[0]);
+    let source = b
+        .column_by_name("_ul_source")
+        .unwrap()
+        .as_any()
+        .downcast_ref::<arrow_array::DictionaryArray<arrow_array::types::UInt16Type>>()
+        .unwrap()
+        .clone();
+    let names = source
+        .values()
+        .as_any()
+        .downcast_ref::<arrow_array::StringArray>()
+        .unwrap()
+        .clone();
+    let time = |c: &str| {
+        b.column_by_name(c)
+            .unwrap()
+            .as_any()
+            .downcast_ref::<arrow_array::TimestampMicrosecondArray>()
+            .unwrap()
+            .clone()
+    };
+    let (server, zip_entry, filename) = (
+        time("_ul_server_last_modified"),
+        time("_ul_zip_entry_modified"),
+        time("_ul_filename_timestamp"),
+    );
+    // 2024-01-01 00:05:30 and 00:07:40 AEST; the name's 00:07:31 AEST.
+    let (written_at, named_at, named_zip) = (
+        1_704_031_530_000_000,
+        1_704_031_651_000_000,
+        1_704_031_660_000_000,
+    );
+    for i in 0..b.num_rows() {
+        let s = names.value(usize::from(source.keys().value(i)));
+        assert!(server.is_null(i), "a local file has no server: {s}");
+        if s.ends_with(&format!("!{written}")) {
+            assert_eq!(zip_entry.value(i), written_at, "{s}");
+            assert!(filename.is_null(i), "twelve digits are no time: {s}");
+        } else {
+            assert!(s.ends_with(&format!("!{named}")), "{s}");
+            assert_eq!(zip_entry.value(i), named_zip, "{s}");
+            assert_eq!(filename.value(i), named_at, "{s}");
+        }
+    }
+    let ingests = e.deps.manifest.list_ingests(None, false, 10).await.unwrap();
+    let share = |entry: &str| {
+        ingests[0]
+            .entries
+            .iter()
+            .find(|x| x.entry == entry)
+            .unwrap()
+            .clone()
+    };
+    let w = share(written);
+    assert_eq!(
+        (
+            w.server_last_modified,
+            w.zip_entry_modified,
+            w.filename_timestamp
+        ),
+        (None, Some(written_at), None)
+    );
+    let n = share(named);
+    assert_eq!(
+        (
+            n.server_last_modified,
+            n.zip_entry_modified,
+            n.filename_timestamp
+        ),
+        (None, Some(named_zip), Some(named_at))
+    );
 }

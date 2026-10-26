@@ -1,9 +1,9 @@
 -- An ingest is one shape of one source file, and each lake file it writes
 -- holds rows of many of the file's entries, every row naming its own
--- (`_nl_source`). What each entry gave is kept beside the ingest, in
+-- (`_ul_source`). What each entry gave is kept beside the ingest, in
 -- `ingest_entries`: the one place the manifest names an entry, with when
 -- it went public (microseconds since 1970, UTC), which its rows carry as
--- `_nl_published`. Entries merged from earlier runs have none: their
+-- `_ul_server_last_modified`. Entries merged from earlier runs have none: their
 -- source files are read again, as lake format 6 asks.
 --
 -- The ingests of earlier runs were one per entry. Those of one source

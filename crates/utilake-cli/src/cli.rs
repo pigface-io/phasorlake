@@ -291,7 +291,7 @@ pub enum DialectArg {
     /// The lake's Parquet files, read in place.
     #[default]
     Duckdb,
-    /// A relation named for the table whose rows carry `_nl_source`.
+    /// A relation named for the table whose rows carry `_ul_source`.
     Postgres,
 }
 
@@ -382,7 +382,7 @@ Examples:
       One trading day (04:00 to 04:00) of two tables.
   utilake get DUDETAIL --at 2026-08-15 --offline
       The version of every unit in force on the 15th, from the lake alone;
-      _nl_valid_to says where each version stops.
+      _ul_valid_to says where each version stops.
   utilake get DISPATCHPRICE --from 2026-08-01T16:00 --to 2026-08-01T17:00 --known-at 2026-08-01T16:30
       The prices as they were known at half past four.
   utilake get DISPATCHPRICE --from 2026-08 --to 2026-08 --revisions --columns REGIONID,RRP --where REGIONID=NSW1,VIC1

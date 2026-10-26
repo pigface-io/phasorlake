@@ -192,7 +192,7 @@ pub struct Bound {
     pub table: String,
     /// The schema read as; none for a table without a history.
     pub schema_id: Option<u32>,
-    /// The target schema: the columns a frame has before the `_nl_` ones.
+    /// The target schema: the columns a frame has before the `_ul_` ones.
     pub schema: SchemaRef,
     /// The roles; none for a table without a history (read raw only).
     pub spec: Option<BoundSpec>,

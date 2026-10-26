@@ -65,8 +65,27 @@ fn cell(b: &RecordBatch, col: &str, i: usize) -> String {
 /// source; `times` are the columns DuckDB must give as microseconds.
 fn compare(fx: &Fixture, q: Query, cols: &[&str], times: &[&str]) {
     // Every row's source is compared too: the same copy must win.
-    let cols: Vec<&str> = cols.iter().copied().chain(["_nl_source"]).collect();
+    let cols: Vec<&str> = cols
+        .iter()
+        .copied()
+        .chain([
+            "_ul_source",
+            "_ul_server_last_modified",
+            "_ul_zip_entry_modified",
+            "_ul_filename_timestamp",
+        ])
+        .collect();
     let cols = cols.as_slice();
+    let times: Vec<&str> = times
+        .iter()
+        .copied()
+        .chain([
+            "_ul_server_last_modified",
+            "_ul_zip_entry_modified",
+            "_ul_filename_timestamp",
+        ])
+        .collect();
+    let times = times.as_slice();
     let lake = fx.lake();
     let b = bind(q, &lake).unwrap();
     let frames = read(&b, &lake).unwrap();
@@ -133,9 +152,9 @@ fn the_kernel_agrees_with_duckdb() {
         "INTERVENTION",
         "RUNNO",
         "RRP",
-        "_nl_known",
+        "_ul_known_from",
     ];
-    let dp_times = ["SETTLEMENTDATE", "_nl_known"];
+    let dp_times = ["SETTLEMENTDATE", "_ul_known_from"];
     for res in [
         Resolution::Latest { known_at: None },
         Resolution::Latest {
@@ -166,9 +185,9 @@ fn the_kernel_agrees_with_duckdb() {
         "EFFECTIVEDATE",
         "VERSIONNO",
         "REGISTEREDCAPACITY",
-        "_nl_valid_to",
+        "_ul_valid_to",
     ];
-    let du_times = ["EFFECTIVEDATE", "_nl_valid_to"];
+    let du_times = ["EFFECTIVEDATE", "_ul_valid_to"];
     for res in [
         Resolution::Latest { known_at: None },
         Resolution::Latest {
@@ -213,7 +232,7 @@ fn the_kernel_agrees_with_duckdb() {
             &["SETTLEMENTDATE"],
         );
     }
-    let summary = ["DUID", "START_DATE", "REGIONID", "_nl_valid_to"];
+    let summary = ["DUID", "START_DATE", "REGIONID", "_ul_valid_to"];
     for w in [
         ValidWindow::At(ValidTime::new(ts("2024-01-15T00:00"))),
         ValidWindow::At(ValidTime::new(ts("2023-07-01T00:00"))),
@@ -223,7 +242,7 @@ fn the_kernel_agrees_with_duckdb() {
             &fx,
             Query::new("DUDETAILSUMMARY", w, Resolution::Latest { known_at: None }),
             &summary,
-            &["START_DATE", "_nl_valid_to"],
+            &["START_DATE", "_ul_valid_to"],
         );
     }
     compare(

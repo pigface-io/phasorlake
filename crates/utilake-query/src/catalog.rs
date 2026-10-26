@@ -1,7 +1,8 @@
 //! The lake's files of a table and the sources their rows came from, each
-//! source with when it was published, in one total order that the kernel
+//! source with every time it was stamped with, in one total order (by the
+//! server's word) that the kernel
 //! breaks ties by. A file holds the rows of one source file's entries;
-//! each row names its source in `_nl_source`.
+//! each row names its source in `_ul_source`.
 
 use std::sync::Arc;
 
@@ -16,12 +17,16 @@ pub struct Source {
     pub url: Arc<str>,
     /// The entry of the source file; empty for a file read whole.
     pub entry: Arc<str>,
-    /// When the source file was published.
-    pub published: Option<KnownTime>,
+    /// The HTTP `Last-Modified` the web server gave for its bytes.
+    pub server_last_modified: Option<KnownTime>,
+    /// Its modified time in its zip's central directory.
+    pub zip_entry_modified: Option<KnownTime>,
+    /// The fourteen-digit stamp in its file name.
+    pub filename_timestamp: Option<KnownTime>,
 }
 
 impl Source {
-    /// The source as `url!entry`, the `_nl_source` of its rows.
+    /// The source as `url!entry`, the `_ul_source` of its rows.
     pub fn name(&self) -> String {
         source_name(&self.url, &self.entry)
     }
@@ -29,7 +34,7 @@ impl Source {
     /// Where it stands among sources.
     pub fn stamp(&self) -> SourceStamp<'_> {
         SourceStamp {
-            published: self.published,
+            server_last_modified: self.server_last_modified,
             url: &self.url,
             entry: &self.entry,
         }
@@ -85,8 +90,9 @@ impl LakeFile {
 /// one row the greatest stamp wins, whatever order the files were read in.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
 pub struct SourceStamp<'a> {
-    /// When published.
-    pub published: Option<KnownTime>,
+    /// The server's `Last-Modified`: copies of a fact rank by the server's
+    /// word, whichever time a read is known by.
+    pub server_last_modified: Option<KnownTime>,
     /// The URL.
     pub url: &'a str,
     /// The entry.
@@ -112,7 +118,9 @@ pub fn catalog(outputs: &[LiveOutput]) -> Catalog {
             o.entries.iter().map(move |e| Source {
                 url: url.clone(),
                 entry: Arc::from(e.entry.as_str()),
-                published: e.published.map(KnownTime::new),
+                server_last_modified: e.server_last_modified.map(KnownTime::new),
+                zip_entry_modified: e.zip_entry_modified.map(KnownTime::new),
+                filename_timestamp: e.filename_timestamp.map(KnownTime::new),
             })
         })
         .collect();
@@ -179,7 +187,7 @@ mod tests {
                 .iter()
                 .map(|e| utilake_writer::manifest::EntryShare {
                     entry: (*e).to_owned(),
-                    published,
+                    server_last_modified: published,
                     ..Default::default()
                 })
                 .collect(),

@@ -31,7 +31,7 @@ use crate::scan::{KNOWN, SOURCE_IX};
 use crate::time::{ValidWindow, rfc3339};
 
 /// The column of every output row that names its source, `url!entry`.
-pub const SOURCE: &str = "_nl_source";
+pub const SOURCE: &str = "_ul_source";
 
 /// Rows with one row per fact (or per revision), as the roles say.
 #[derive(Debug, Clone, PartialEq)]
@@ -70,9 +70,16 @@ pub struct SourceRef {
     /// The month of the source.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub source_period: Option<String>,
-    /// When it was published, RFC 3339 UTC.
+    /// The HTTP `Last-Modified` the web server gave for its bytes,
+    /// RFC 3339 UTC.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub published: Option<String>,
+    pub server_last_modified: Option<String>,
+    /// Its modified time in its zip's central directory, RFC 3339 UTC.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub zip_entry_modified: Option<String>,
+    /// The fourteen-digit stamp in its file name, RFC 3339 UTC.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub filename_timestamp: Option<String>,
 }
 
 /// What a read did.
@@ -199,8 +206,8 @@ pub struct Written {
     pub report: Report,
 }
 
-/// The output schema: the kept target columns, then `_nl_source`, then,
-/// for resolved rows, `_nl_known` and (on a `from` axis) `_nl_valid_to`.
+/// The output schema: the kept target columns, then `_ul_source`, then,
+/// for resolved rows, `_ul_known_from` and (on a `from` axis) `_ul_valid_to`.
 /// A function of the bound query alone, so a writer can open before the
 /// first row is read.
 pub fn output_schema(b: &Bound) -> SchemaRef {
@@ -218,8 +225,13 @@ pub fn output_schema(b: &Bound) -> SchemaRef {
         DataType::Dictionary(Box::new(DataType::Int32), Box::new(DataType::Utf8)),
         false,
     ));
+    // Every time the row's source was stamped with, as the lake holds
+    // them: a reader's own point-in-time rule needs them.
+    let ts = DataType::Timestamp(TimeUnit::Microsecond, Some(Arc::from(b.offset.tz())));
+    for name in utilake_writer::provenance::TIME_COLUMNS {
+        fields.push(Field::new(name, ts.clone(), true));
+    }
     if b.query.resolution != Resolution::Raw {
-        let ts = DataType::Timestamp(TimeUnit::Microsecond, Some(Arc::from(b.offset.tz())));
         fields.push(Field::new(KNOWN, ts.clone(), true));
         if b.spec
             .as_ref()
@@ -262,7 +274,7 @@ pub fn finish(
     RecordBatch::try_new(out.clone(), columns).map_err(err)
 }
 
-/// The names of every source, as the dictionary of `_nl_source`.
+/// The names of every source, as the dictionary of `_ul_source`.
 pub fn source_names(lake: &crate::Lake<'_>) -> ArrayRef {
     let names: Vec<String> = lake.sources.iter().map(crate::Source::name).collect();
     Arc::new(StringArray::from(names))

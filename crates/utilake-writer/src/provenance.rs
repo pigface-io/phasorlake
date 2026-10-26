@@ -1,8 +1,14 @@
-//! The two columns every lake file ends with (see
+//! The four columns every lake file ends with (see
 //! [`utilake_iceberg::provenance`]): each row's source, `url!entry`, and
-//! when that source became public. They are built once per source and
-//! filled per batch with no string copied: a dictionary of one value and
-//! keys of zero, and one time repeated.
+//! every time that source was stamped with, each transcribed from where it
+//! was found and named for that place: the web server's `Last-Modified`,
+//! the zip entry's modified time in its zip's central directory, and the
+//! fourteen-digit timestamp in its file name. Nothing is combined here: a
+//! reader chooses which time to be known by.
+//!
+//! The columns are built once per source and filled per batch with no
+//! string copied: a dictionary of one value and keys of zero, and each time
+//! repeated.
 
 use std::collections::HashMap;
 use std::sync::Arc;
@@ -13,18 +19,36 @@ use arrow_array::{
     Array, ArrayRef, DictionaryArray, StringArray, TimestampMicrosecondArray, UInt16Array,
 };
 use arrow_schema::{ArrowError, DataType, Field, Schema, SchemaRef, TimeUnit};
-use utilake_iceberg::provenance::{PUBLISHED, SOURCE};
+use utilake_iceberg::provenance::{
+    FILENAME_TIMESTAMP, SERVER_LAST_MODIFIED, SOURCE, ZIP_ENTRY_MODIFIED,
+};
 
-/// The format of a lake file: 2 since every row names its source.
-pub const LAKE_FORMAT: &str = "2";
+/// The format of a lake file: 3 since every row carries each time its
+/// source was stamped with, under the `_ul_` prefix.
+pub const LAKE_FORMAT: &str = "3";
 
-/// The two fields, as a lake file's schema ends.
-pub fn fields() -> [Field; 2] {
+/// The names of the three time columns, in the order a file holds them.
+pub const TIME_COLUMNS: [&str; 3] = [
+    SERVER_LAST_MODIFIED.name,
+    ZIP_ENTRY_MODIFIED.name,
+    FILENAME_TIMESTAMP.name,
+];
+
+/// The four fields, as a lake file's schema ends.
+pub fn fields() -> [Field; 4] {
     let id = |id: u32| {
         HashMap::from([(
             parquet::arrow::PARQUET_FIELD_ID_META_KEY.to_owned(),
             id.to_string(),
         )])
+    };
+    let time = |c: utilake_iceberg::provenance::Column| {
+        Field::new(
+            c.name,
+            DataType::Timestamp(TimeUnit::Microsecond, Some("UTC".into())),
+            true,
+        )
+        .with_metadata(id(c.id))
     };
     [
         Field::new(
@@ -33,23 +57,20 @@ pub fn fields() -> [Field; 2] {
             false,
         )
         .with_metadata(id(SOURCE.id)),
-        Field::new(
-            PUBLISHED.name,
-            DataType::Timestamp(TimeUnit::Microsecond, Some("UTC".into())),
-            true,
-        )
-        .with_metadata(id(PUBLISHED.id)),
+        time(SERVER_LAST_MODIFIED),
+        time(ZIP_ENTRY_MODIFIED),
+        time(FILENAME_TIMESTAMP),
     ]
 }
 
-/// `schema` as a lake file holds it: its columns, then the two.
+/// `schema` as a lake file holds it: its columns, then the four.
 pub fn lake_schema(schema: &Schema) -> SchemaRef {
     let mut fields: Vec<Field> = schema.fields().iter().map(|f| f.as_ref().clone()).collect();
     fields.extend(self::fields());
     Arc::new(Schema::new_with_metadata(fields, schema.metadata().clone()))
 }
 
-/// `batch` with `stamp`'s two columns after its own, in `schema`, the
+/// `batch` with `stamp`'s four columns after its own, in `schema`, the
 /// batch's [`lake_schema`].
 pub fn stamped(
     batch: &RecordBatch,
@@ -61,22 +82,47 @@ pub fn stamped(
     RecordBatch::try_new(schema.clone(), columns)
 }
 
-/// One source's two columns, ready to be cut to any batch's length.
+/// Every time a source was stamped with, each as found, in microseconds
+/// since 1970 (UTC); none where the source carries no such stamp.
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
+pub struct Times {
+    /// The HTTP `Last-Modified` the web server gave for the source's bytes.
+    pub server_last_modified: Option<i64>,
+    /// The entry's modified time in its zip's central directory, read in
+    /// the packer's clock.
+    pub zip_entry_modified: Option<i64>,
+    /// The fourteen-digit `YYYYMMDDHHMMSS` stamp in the source's file
+    /// name, read in the host's clock.
+    pub filename_timestamp: Option<i64>,
+}
+
+impl Times {
+    /// The three, in the order a file holds them.
+    pub const fn all(&self) -> [Option<i64>; 3] {
+        [
+            self.server_last_modified,
+            self.zip_entry_modified,
+            self.filename_timestamp,
+        ]
+    }
+}
+
+/// One source's four columns, ready to be cut to any batch's length.
 #[derive(Debug, Clone)]
 pub struct Stamp {
     name: Arc<str>,
     values: ArrayRef,
-    published: Option<i64>,
+    times: Times,
 }
 
 impl Stamp {
-    /// The stamp of source `name` (`url!entry`), public at `published`
-    /// (microseconds since 1970, UTC).
-    pub fn new(name: &str, published: Option<i64>) -> Self {
+    /// The stamp of source `name` (`url!entry`) with the times it was
+    /// stamped with.
+    pub fn new(name: &str, times: Times) -> Self {
         Self {
             name: Arc::from(name),
             values: Arc::new(StringArray::from(vec![name])),
-            published,
+            times,
         }
     }
 
@@ -85,26 +131,31 @@ impl Stamp {
         &self.name
     }
 
-    /// When the source went public, microseconds since 1970 (UTC).
-    pub const fn published(&self) -> Option<i64> {
-        self.published
+    /// The times the source was stamped with.
+    pub const fn times(&self) -> Times {
+        self.times
     }
 
     /// The columns for `rows` rows.
-    pub fn columns(&self, rows: usize) -> [ArrayRef; 2] {
+    pub fn columns(&self, rows: usize) -> [ArrayRef; 4] {
         let keys = UInt16Array::from_value(0, rows);
         let source = DictionaryArray::<UInt16Type>::try_new(keys, self.values.clone())
             .expect("a key of 0 into one value");
-        let published = match self.published {
-            Some(t) => TimestampMicrosecondArray::from_value(t, rows),
-            None => TimestampMicrosecondArray::new_null(rows),
-        }
-        .with_timezone("UTC");
-        [Arc::new(source), Arc::new(published)]
+        let time = |t: Option<i64>| -> ArrayRef {
+            Arc::new(
+                match t {
+                    Some(t) => TimestampMicrosecondArray::from_value(t, rows),
+                    None => TimestampMicrosecondArray::new_null(rows),
+                }
+                .with_timezone("UTC"),
+            )
+        };
+        let [server, zip, name] = self.times.all();
+        [Arc::new(source), time(server), time(zip), time(name)]
     }
 }
 
-/// The rows of each source in `column`, a batch's `_nl_source`, added to
+/// The rows of each source in `column`, a batch's `_ul_source`, added to
 /// `counts` in the order sources first appear.
 pub(crate) fn count(column: &dyn Array, counts: &mut Vec<(String, u64)>) {
     let Some(dict) = column
@@ -133,39 +184,84 @@ pub(crate) fn count(column: &dyn Array, counts: &mut Vec<(String, u64)>) {
 mod tests {
     use super::*;
     use arrow_array::cast::AsArray;
+    use arrow_array::types::TimestampMicrosecondType;
+
+    fn server(t: i64) -> Times {
+        Times {
+            server_last_modified: Some(t),
+            ..Times::default()
+        }
+    }
 
     #[test]
     fn a_batch_is_stamped_after_its_columns() {
         let schema = Schema::new(vec![Field::new("X", DataType::Int64, true)]);
         let lake = lake_schema(&schema);
         let names: Vec<&str> = lake.fields().iter().map(|f| f.name().as_str()).collect();
-        assert_eq!(names, ["X", "_nl_source", "_nl_published"]);
+        assert_eq!(
+            names,
+            [
+                "X",
+                "_ul_source",
+                "_ul_server_last_modified",
+                "_ul_zip_entry_modified",
+                "_ul_filename_timestamp",
+            ]
+        );
         let batch = RecordBatch::try_new(
             Arc::new(schema),
             vec![Arc::new(arrow_array::Int64Array::from(vec![1, 2]))],
         )
         .unwrap();
-        let b = stamped(&batch, &Stamp::new("s", Some(5)), &lake).unwrap();
-        assert_eq!((b.num_rows(), b.num_columns()), (2, 3));
-        assert!(stamped(&batch, &Stamp::new("s", None), &batch.schema()).is_err());
+        let b = stamped(&batch, &Stamp::new("s", server(5)), &lake).unwrap();
+        assert_eq!((b.num_rows(), b.num_columns()), (2, 5));
+        assert!(stamped(&batch, &Stamp::new("s", Times::default()), &batch.schema()).is_err());
     }
 
     #[test]
-    fn a_stamp_fills_any_length_and_counts_back() {
-        let s = Stamp::new("https://h/a.zip!A.CSV", Some(1_000));
+    fn each_time_is_kept_as_found_and_none_is_null() {
+        let times = Times {
+            server_last_modified: Some(3_000),
+            zip_entry_modified: Some(1_000),
+            filename_timestamp: None,
+        };
+        let s = Stamp::new("https://h/a.zip!A.CSV", times);
         assert_eq!(s.name(), "https://h/a.zip!A.CSV");
-        assert_eq!(s.published(), Some(1_000));
-        let [source, published] = s.columns(3);
+        assert_eq!(s.times(), times);
+        let [source, server, zip, name] = s.columns(3);
         assert_eq!(source.len(), 3);
-        assert_eq!(source.data_type(), fields()[0].data_type());
-        assert_eq!(published.data_type(), fields()[1].data_type());
-        let p = published.as_primitive::<arrow_array::types::TimestampMicrosecondType>();
-        assert_eq!(p.value(2), 1_000);
-        let [_, none] = Stamp::new("x", None).columns(2);
-        assert_eq!(none.null_count(), 2);
+        for (column, field) in [&source, &server, &zip, &name].iter().zip(fields()) {
+            assert_eq!(column.data_type(), field.data_type());
+        }
+        // Each time independently: nothing is combined or chosen.
+        assert_eq!(
+            server.as_primitive::<TimestampMicrosecondType>().value(2),
+            3_000
+        );
+        assert_eq!(
+            zip.as_primitive::<TimestampMicrosecondType>().value(0),
+            1_000
+        );
+        assert_eq!(name.null_count(), 3);
+        assert_eq!(
+            TIME_COLUMNS,
+            [
+                fields()[1].name().as_str(),
+                fields()[2].name().as_str(),
+                fields()[3].name().as_str()
+            ]
+        );
+    }
+
+    #[test]
+    fn rows_are_counted_back_per_source() {
+        let [source, ..] = Stamp::new("https://h/a.zip!A.CSV", Times::default()).columns(3);
         let mut counts = Vec::new();
         count(source.as_ref(), &mut counts);
-        count(Stamp::new("y", None).columns(2)[0].as_ref(), &mut counts);
+        count(
+            Stamp::new("y", Times::default()).columns(2)[0].as_ref(),
+            &mut counts,
+        );
         count(source.as_ref(), &mut counts);
         // Not a source column: nothing counted.
         count(&StringArray::from(vec!["z"]), &mut counts);
@@ -183,6 +279,9 @@ mod tests {
             .iter()
             .map(|f| f.metadata()[parquet::arrow::PARQUET_FIELD_ID_META_KEY].as_str())
             .collect();
-        assert_eq!(ids, ["2147483000", "2147483001"]);
+        assert_eq!(
+            ids,
+            ["2147483000", "2147483001", "2147483002", "2147483003"]
+        );
     }
 }
