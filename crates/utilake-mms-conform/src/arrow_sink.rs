@@ -253,6 +253,7 @@ impl<'r, B: BatchSink> ArrowSink<'r, B> {
 
     fn flush(&mut self) -> Result<(), SinkError> {
         zone!(FLUSH);
+        let batch_rows = self.batch_rows;
         let Some(block) = self.block.as_mut() else {
             return Ok(());
         };
@@ -371,8 +372,19 @@ impl<'r, B: BatchSink> ArrowSink<'r, B> {
             fingerprint: block.fingerprint,
             batch,
         };
+        let full = block.rows >= batch_rows;
         block.rows = 0;
-        self.out.batch(out)
+        self.out.batch(out)?;
+        // A full batch is likely followed by another: once it is written
+        // and dropped, give the builders its room, not doubling again
+        // from empty.
+        if full && let Some(block) = self.block.as_mut() {
+            let lake = &block.resolved.plan.arrow;
+            for (b, f) in block.builders.iter_mut().zip(lake.fields()) {
+                *b = ColumnBuilder::new(f.data_type(), batch_rows);
+            }
+        }
+        Ok(())
     }
 }
 
