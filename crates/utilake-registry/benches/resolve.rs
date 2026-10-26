@@ -4,7 +4,7 @@ use std::hint::black_box;
 
 use criterion::{Criterion, criterion_group, criterion_main};
 use utilake_mms_decode::IRow;
-use utilake_mms_registry::{Registry, ResolveOptions};
+use utilake_registry::{Registry, ResolveOptions};
 
 fn bench(c: &mut Criterion) {
     let r = Registry::load_embedded();
@@ -43,8 +43,8 @@ fn bench(c: &mut Criterion) {
     });
     g.bench_function("load_embedded_from_blob", |b| {
         b.iter(|| {
-            let set = utilake_mms_registry::file_model::blob::SchemaSet::decode(black_box(
-                utilake_mms_registry::registry::embedded_blob(),
+            let set = utilake_registry::file_model::blob::SchemaSet::decode(black_box(
+                utilake_registry::registry::embedded_blob(),
             ))
             .unwrap();
             black_box(Registry::from_set(set).tables().count())

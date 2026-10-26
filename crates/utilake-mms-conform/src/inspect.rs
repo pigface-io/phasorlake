@@ -3,7 +3,7 @@
 use utilake_core::Fingerprint;
 
 use utilake_mms_decode::IRow;
-use utilake_mms_registry::{Registry, ResolveOptions};
+use utilake_registry::{Registry, ResolveOptions};
 
 use crate::error::{RowError, RowFailure, SinkError, ValueError};
 use utilake_mms_decode::fields::Row;
@@ -114,7 +114,7 @@ impl Sink for InspectSink<'_> {
 
 #[cfg(test)]
 mod tests {
-    use utilake_mms_registry::Mode;
+    use utilake_registry::Mode;
 
     use super::*;
     use utilake_mms_decode::scan::{ScanOptions, scan};

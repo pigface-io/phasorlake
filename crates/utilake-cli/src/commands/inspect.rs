@@ -6,8 +6,8 @@ use anyhow::Result;
 use utilake_mms_conform::MmsDiagnose;
 use utilake_mms_conform::inspect::{BlockSummary, InspectSink};
 use utilake_mms_decode::scan::{ScanOptions, scan};
-use utilake_mms_registry::{Mode, ResolveOptions};
 use utilake_pipeline::archive_diagnostic;
+use utilake_registry::{Mode, ResolveOptions};
 use utilake_zip::walk_csv_entries;
 
 use crate::context::Context;

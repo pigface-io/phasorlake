@@ -2,14 +2,13 @@
 
 use std::sync::Arc;
 
+use utilake_acquire::FeedFolders;
 use utilake_acquire::FetchError;
-use utilake_acquire::{FeedFolders, Serves, TableOf};
 use utilake_kit::Source;
 use utilake_kit::SourceKit;
-use utilake_mms_conform::MmsCatalog;
-use utilake_mms_registry::{Market, Registry};
-use utilake_plain_decode::BlockName;
+use utilake_kit::{Serves, TableOf};
 use utilake_plain_decode::feeds::feeds_of;
+use utilake_registry::{Market, Registry, RegistryCatalog, catalog};
 
 use crate::config::GasConfig;
 use crate::decoder::GasCsv;
@@ -39,27 +38,13 @@ pub fn source_id(feed: &str) -> Option<&'static str> {
 /// source per feed, the feed-aware `.csv` reader, and the registry's gas
 /// tables as the catalog.
 pub fn kit(registry: Arc<Registry>, config: &GasConfig) -> Result<SourceKit, FetchError> {
-    let table_of: TableOf = {
-        let registry = registry.clone();
-        Arc::new(move |b: &BlockName| {
-            registry
-                .table_by_pair(Market::Gas, &b.family, &b.name)
-                .map(|id| registry.table(id).name.clone())
-        })
-    };
+    let table_of: TableOf = catalog::table_of(registry.clone(), Market::Gas);
     let mut sources: Vec<Arc<dyn Source>> = Vec::new();
     for feed in feeds_of("gas") {
         let id = source_id(feed.id).expect("every gas feed has a source id");
         // A feed serves the tables the census saw in its folders
         // (folders.json): a table seen in none is served by no feed.
-        let serves: Serves = {
-            let registry = registry.clone();
-            Arc::new(move |table: &str| {
-                registry
-                    .table_by_name(&table.to_ascii_uppercase())
-                    .is_some_and(|id| registry.folders_of(id).iter().any(|f| f.feed == feed.id))
-            })
-        };
+        let serves: Serves = catalog::serves_feed(registry.clone(), feed.id);
         sources.push(Arc::new(
             FeedFolders::new(id, &config.base_url, feed, table_of.clone())?
                 .with_tables_served(serves),
@@ -69,7 +54,7 @@ pub fn kit(registry: Arc<Registry>, config: &GasConfig) -> Result<SourceKit, Fet
         id: KIT_ID,
         sources,
         decoders: vec![Arc::new(GasCsv::new(&registry))],
-        catalog: Arc::new(MmsCatalog::new(registry, Market::Gas)),
+        catalog: Arc::new(RegistryCatalog::new(registry, Market::Gas)),
     })
 }
 

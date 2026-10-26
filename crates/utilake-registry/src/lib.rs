@@ -11,6 +11,7 @@
 //! report pair no table claims, is derived from the file. See [`resolve`].
 
 pub mod arrow;
+pub mod catalog;
 pub mod error;
 pub mod file_model;
 pub mod plan;
@@ -21,6 +22,7 @@ pub use utilake_mms_decode::shape;
 pub use crate::file_model::{
     Column, Folder, FolderBlock, LakeType, LoadMode, Market, Run, Side, Table, TableSchema,
 };
+pub use catalog::RegistryCatalog;
 pub use error::ResolveError;
 pub use plan::{Cast, ColumnRoute, ConformancePlan, Origin, PLAN_FORMAT, PlanField, PlanHash};
 pub use registry::{Registry, SchemaSource, TableId};

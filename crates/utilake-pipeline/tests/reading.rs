@@ -21,7 +21,7 @@ use arrow_array::{
 use arrow_schema::{DataType, SchemaRef};
 use utilake_core::{Fingerprint, source_times, timetext};
 use utilake_kit::Transform;
-use utilake_mms_registry::{Market, Registry};
+use utilake_registry::{Market, Registry};
 use utilake_writer::{FileMeta, LakeWriter, ParquetHive, Partition, PartitionKey};
 use utilake_writer::{Stamp, Times, lake_schema, stamped};
 

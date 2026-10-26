@@ -17,7 +17,7 @@ pub mod kit;
 pub mod source;
 pub mod transform;
 
-pub use catalog::Catalog;
+pub use catalog::{Catalog, Serves, TableOf};
 pub use decoder::{
     Block, BlockSink, DecodeCtx, DecodeOptions, DecodeStats, Decoder, Flow, LoadMode, RowAt,
     Strictness, TableRef,

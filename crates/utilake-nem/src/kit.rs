@@ -4,8 +4,8 @@ use std::sync::Arc;
 
 use utilake_acquire::FetchError;
 use utilake_kit::SourceKit;
-use utilake_mms_conform::{MmsCatalog, MmsDecoder};
-use utilake_mms_registry::{Market, Registry};
+use utilake_mms_conform::MmsDecoder;
+use utilake_registry::{Market, Registry, RegistryCatalog};
 
 use crate::sources::mmsdm::MmsdmArchive;
 use crate::sources::reports::ReportFolders;
@@ -38,7 +38,7 @@ pub fn kit(registry: Arc<Registry>, base_url: &str) -> Result<SourceKit, FetchEr
         id: KIT_ID,
         sources: vec![Arc::new(reports), Arc::new(archive)],
         decoders: vec![Arc::new(MmsDecoder::new(registry.clone(), Market::Nem))],
-        catalog: Arc::new(MmsCatalog::new(registry, Market::Nem)),
+        catalog: Arc::new(RegistryCatalog::new(registry, Market::Nem)),
     })
 }
 

@@ -1,5 +1,5 @@
 [package]
-name = "utilake-mms-registry"
+name = "utilake-registry"
 description = "The utilake schema registry: resolves MMS I rows to typed Arrow schemas and casts."
 version.workspace = true
 edition.workspace = true
@@ -14,6 +14,7 @@ workspace = true
 
 [dependencies]
 utilake-plain-decode.workspace = true
+utilake-kit.workspace = true
 utilake-provenance.workspace = true
 utilake-core.workspace = true
 utilake-iceberg.workspace = true

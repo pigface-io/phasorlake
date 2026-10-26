@@ -7,7 +7,7 @@
 //! nanosecond range, and keeps columns no table declares as text.
 //! [`ArrowSink`] builds the typed `RecordBatch`es; [`inspect`] summarises a
 //! file without building anything; [`kit`] is the format as a kit's
-//! decoder and catalog; [`plain`] reads the header-row CSV and WEMDE JSON
+//! decoder; [`plain`] reads the header-row CSV and WEMDE JSON
 //! files of the other feeds through the same sink.
 
 /// Opens a zone of `zonetrace` until the end of the block, with the
@@ -33,5 +33,5 @@ pub mod plain;
 
 pub use arrow_sink::{ArrowSink, BlockBatch};
 pub use error::{MmsDiagnose, RowError, RowFailure, ScanError, SinkError, ValueError};
-pub use kit::{MmsCatalog, MmsDecoder};
+pub use kit::MmsDecoder;
 pub use plain::{PlainCsvDecoder, SniffedCsv, WemdeDecoder};

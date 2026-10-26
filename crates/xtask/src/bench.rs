@@ -275,14 +275,14 @@ pub fn run(set: &str, do_tighten: bool) -> Result<bool> {
     let targets: &[(&str, &str)] = match set {
         "fast" => &[
             ("utilake-mms-conform", "scan"),
-            ("utilake-mms-registry", "resolve"),
+            ("utilake-registry", "resolve"),
             ("utilake-mms-conform", "values"),
             ("utilake-mms-conform", "plain"),
             ("utilake-acquire", "fetch"),
         ],
         "full" => &[
             ("utilake-mms-conform", "scan"),
-            ("utilake-mms-registry", "resolve"),
+            ("utilake-registry", "resolve"),
             ("utilake-mms-conform", "values"),
             ("utilake-mms-conform", "plain"),
             ("utilake-acquire", "fetch"),

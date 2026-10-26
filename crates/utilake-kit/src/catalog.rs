@@ -28,3 +28,10 @@ pub trait Catalog: Send + Sync {
     /// file named after a declared table replaces it, others are added.
     fn with_overlay(&self, dir: &Path) -> Result<Arc<dyn Catalog>, Box<Diagnostic>>;
 }
+
+/// Names the table that claims a block, when the catalog declares one.
+pub type TableOf =
+    std::sync::Arc<dyn Fn(&utilake_plain_decode::BlockName) -> Option<String> + Send + Sync>;
+
+/// Whether a table is one a source publishes.
+pub type Serves = std::sync::Arc<dyn Fn(&str) -> bool + Send + Sync>;

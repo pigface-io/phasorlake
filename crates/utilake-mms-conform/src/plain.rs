@@ -21,12 +21,12 @@ use std::sync::Arc;
 use utilake_core::{Category, Diagnose, Diagnostic, Period};
 use utilake_kit::{BlockSink, DecodeCtx, DecodeStats, Decoder, Strictness};
 use utilake_mms_decode::{Flow, IRow, Pos, Row, RowError, RowFailure, Sink as _};
-use utilake_mms_registry::{Market, Mode, Registry, ResolveOptions};
 use utilake_plain_decode::names::block_name;
 use utilake_plain_decode::{
     BlockName, Dedupe, Feed, Format, Header, JsonError, PlainError, PlainOptions, PlainRowError,
     PlainSink, RowSet, peek, sniff,
 };
+use utilake_registry::{Market, Mode, Registry, ResolveOptions};
 use utilake_zip::has_extension;
 
 use crate::arrow_sink::ArrowSink;

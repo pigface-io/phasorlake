@@ -13,9 +13,9 @@ use std::sync::Arc;
 use utilake_core::{Category, Diagnostic};
 use utilake_kit::{BlockSink, DecodeCtx, DecodeStats, Decoder};
 use utilake_mms_conform::SniffedCsv;
-use utilake_mms_registry::Registry;
 use utilake_plain_decode::Feed;
 use utilake_plain_decode::feeds::feeds_of;
+use utilake_registry::Registry;
 use utilake_zip::has_extension;
 
 /// The gas feeds' `.csv` reader.

@@ -17,12 +17,12 @@ use utilake_core::event::Event;
 use utilake_core::paths::Home;
 use utilake_kit::{Catalog as _, KitRegistry, Strictness};
 use utilake_kit::{Listings, Query, RemoteFile, Source};
-use utilake_mms_conform::MmsCatalog;
-use utilake_mms_registry::file_model::{
+use utilake_pipeline::{Deps, Input, Plan, RunOptions, run};
+use utilake_registry::RegistryCatalog;
+use utilake_registry::file_model::{
     Column, ColumnId, LakeType, Market, RoleOrigin, Run, Table, TableSchema, Temporal, ValidAxis,
 };
-use utilake_mms_registry::{LoadMode, Registry};
-use utilake_pipeline::{Deps, Input, Plan, RunOptions, run};
+use utilake_registry::{LoadMode, Registry};
 use utilake_writer::manifest::DiagFilter;
 use utilake_writer::{Manifest, ManifestHandle, ManifestThread};
 
@@ -183,7 +183,7 @@ fn overlay(registry: &Registry, root: &Path, t: &Table) -> Arc<Registry> {
     std::fs::create_dir_all(&dir).unwrap();
     std::fs::write(
         dir.join("table.toml"),
-        utilake_mms_registry::file_model::file::write_table(t),
+        utilake_registry::file_model::file::write_table(t),
     )
     .unwrap();
     Arc::new(registry.with_overlay(root).unwrap())
@@ -1309,7 +1309,7 @@ fn a_recorded_source_becomes_a_file_to_read() {
     assert!(utilake_pipeline::local_remote(&kits, Path::new("/x/a.ctl")).is_none());
 
     // An ingest recorded before rules were is never current.
-    let catalog = MmsCatalog::new(Registry::load_embedded(), Market::Nem);
+    let catalog = RegistryCatalog::new(Registry::load_embedded(), Market::Nem);
     let old = utilake_kit::Transform::default();
     assert!(!catalog.plans_current(std::slice::from_ref(&old)));
     assert!(catalog.plans_current(&[]));

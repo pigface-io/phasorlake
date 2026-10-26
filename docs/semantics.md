@@ -27,7 +27,7 @@ as known at some time.
 
 Every declared table carries roles in its Iceberg metadata
 (`utilake.temporal.*`), derived from AEMO's primary key and the table's
-columns (`crates/utilake-mms-registry/src/file_model/temporal.rs`):
+columns (`crates/utilake-registry/src/file_model/temporal.rs`):
 
 | role | meaning | example (DISPATCHPRICE) |
 |---|---|---|

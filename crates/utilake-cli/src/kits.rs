@@ -5,7 +5,7 @@ use std::sync::Arc;
 use anyhow::Result;
 use utilake_core::config::Config;
 use utilake_kit::KitRegistry;
-use utilake_mms_registry::Registry;
+use utilake_registry::Registry;
 
 /// Every kit, each over its own settings from the config file. The kits
 /// whose sources know a file by its path (gas, WEM) come before the NEM,

@@ -4,9 +4,9 @@
 use anyhow::{Context as _, Result, bail};
 use utilake_core::timetext;
 use utilake_core::{Diagnose, TimeRange, YearMonth};
-use utilake_mms_registry::file_model::MarketDef;
-use utilake_mms_registry::{Market, Registry, TableId};
 use utilake_pipeline::days_of;
+use utilake_registry::file_model::MarketDef;
+use utilake_registry::{Market, Registry, TableId};
 
 use crate::cli::{TablesArg, WindowArgs};
 use crate::context::Context;
@@ -183,7 +183,7 @@ pub fn request(verb: &str, sel: &Selection, w: Option<&Window>, def: &MarketDef)
 #[cfg(test)]
 mod tests {
     use super::*;
-    use utilake_mms_registry::file_model::TimestampFormat;
+    use utilake_registry::file_model::TimestampFormat;
 
     fn nem() -> MarketDef {
         MarketDef {

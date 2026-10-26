@@ -19,7 +19,7 @@ use utilake_acquire::listing;
 use utilake_acquire::{Archive, FetchError};
 use utilake_core::{CivilDay, Period};
 use utilake_kit::{Entry, Listings, LocalFile, Pick, Picks, Query, RemoteFile, Source};
-use utilake_mms_registry::{Registry, Side};
+use utilake_registry::{Registry, Side};
 
 /// The source id, as the manifest records it.
 pub const REPORTS_SOURCE_ID: &str = "nem-reports";

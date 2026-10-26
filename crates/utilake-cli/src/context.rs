@@ -12,8 +12,8 @@ use utilake_acquire::{
 use utilake_core::config::Config;
 use utilake_core::paths::Home;
 use utilake_kit::KitRegistry;
-use utilake_mms_registry::Registry;
 use utilake_pipeline::Deps;
+use utilake_registry::Registry;
 use utilake_writer::{ManifestHandle, ManifestThread};
 
 use crate::cli::Cli;

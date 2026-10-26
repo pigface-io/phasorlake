@@ -5,7 +5,7 @@
 use std::collections::BTreeMap;
 
 use anyhow::Result;
-use utilake_mms_registry::TableId;
+use utilake_registry::TableId;
 use utilake_writer::manifest::LiveOutput;
 
 use crate::cli::ListCmd;

@@ -16,7 +16,9 @@ use std::sync::Arc;
 
 use async_trait::async_trait;
 use url::Url;
-use utilake_kit::{Entry, Listings, LocalFile, Pick, Picks, Query, RemoteFile, Source};
+use utilake_kit::{
+    Entry, Listings, LocalFile, Pick, Picks, Query, RemoteFile, Serves, Source, TableOf,
+};
 
 use crate::archive::{Archive, Held};
 use crate::error::FetchError;
@@ -24,14 +26,8 @@ use crate::listing;
 use utilake_core::calendar::local_year_month;
 use utilake_core::timetext::{Stamp, parse_iis_listing};
 use utilake_core::{Period, YearMonth};
+use utilake_plain_decode::Feed;
 use utilake_plain_decode::names::block_name;
-use utilake_plain_decode::{BlockName, Feed};
-
-/// Names the table that claims a block, when the registry declares one.
-pub type TableOf = Arc<dyn Fn(&BlockName) -> Option<String> + Send + Sync>;
-
-/// Whether a table is one of the feed's.
-pub type Serves = Arc<dyn Fn(&str) -> bool + Send + Sync>;
 
 /// A feed's folders under one host.
 pub struct FeedFolders {
@@ -403,15 +399,17 @@ mod tests {
     }
 
     fn tables() -> TableOf {
-        Arc::new(|b: &BlockName| match (b.family.as_str(), b.name.as_str()) {
-            ("GBB", "ACTUAL_FLOW_STORAGE" | "ACTUAL_FLOW_STORAGE_LAST31") => {
-                Some("GBB_ACTUAL_FLOW_STORAGE".to_owned())
-            }
-            ("STTM", n) if n.starts_with("INT651") => {
-                Some("STTM_INT651_EX_ANTE_MARKET_PRICE".to_owned())
-            }
-            _ => None,
-        })
+        Arc::new(
+            |b: &utilake_plain_decode::BlockName| match (b.family.as_str(), b.name.as_str()) {
+                ("GBB", "ACTUAL_FLOW_STORAGE" | "ACTUAL_FLOW_STORAGE_LAST31") => {
+                    Some("GBB_ACTUAL_FLOW_STORAGE".to_owned())
+                }
+                ("STTM", n) if n.starts_with("INT651") => {
+                    Some("STTM_INT651_EX_ANTE_MARKET_PRICE".to_owned())
+                }
+                _ => None,
+            },
+        )
     }
 
     fn months(a: &str, b: &str) -> TimeRange {

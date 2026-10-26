@@ -2,7 +2,7 @@
 //! under one report pair and the columns it renamed.
 
 use utilake_mms_decode::IRow;
-use utilake_mms_registry::{ResolveOptions, Status};
+use utilake_registry::{ResolveOptions, Status};
 
 fn irow<'a>(pair: (&'a str, &'a str), version: u16, columns: &'a [&'a str]) -> IRow<'a> {
     IRow {
@@ -45,7 +45,7 @@ fn an_area_report_goes_to_its_area_table_and_a_regional_one_to_the_regions() {
     assert_eq!(r.table(area.table).temporal.entity, ["AREAID", "TYPE"]);
     // The name of a pair is its regional table.
     assert_eq!(
-        r.table_by_pair(utilake_mms_registry::Market::Nem, "ROOFTOP", "ACTUAL"),
+        r.table_by_pair(utilake_registry::Market::Nem, "ROOFTOP", "ACTUAL"),
         Some(region.table)
     );
     let demand = [

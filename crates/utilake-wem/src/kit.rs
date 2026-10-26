@@ -3,14 +3,14 @@
 
 use std::sync::Arc;
 
+use utilake_acquire::FeedFolders;
 use utilake_acquire::FetchError;
-use utilake_acquire::{FeedFolders, TableOf};
 use utilake_kit::Source;
 use utilake_kit::SourceKit;
-use utilake_mms_conform::{MmsCatalog, PlainCsvDecoder, WemdeDecoder};
-use utilake_mms_registry::{Market, Registry};
-use utilake_plain_decode::BlockName;
+use utilake_kit::TableOf;
+use utilake_mms_conform::{PlainCsvDecoder, WemdeDecoder};
 use utilake_plain_decode::feeds::feed;
+use utilake_registry::{Market, Registry, RegistryCatalog, catalog};
 
 use crate::config::WemConfig;
 use crate::sources::datafiles::WemDatafiles;
@@ -25,14 +25,7 @@ pub const WEMDE_SOURCE_ID: &str = "wem-wemde";
 /// their manifests) and the WEMDE `previous/` zips as sources, the plain
 /// CSV and WEMDE decoders, and the registry's WEM tables as the catalog.
 pub fn kit(config: &WemConfig, registry: Arc<Registry>) -> Result<SourceKit, FetchError> {
-    let table_of: TableOf = {
-        let registry = registry.clone();
-        Arc::new(move |b: &BlockName| {
-            registry
-                .table_by_pair(Market::Wem, &b.family, &b.name)
-                .map(|id| registry.table(id).name.clone())
-        })
-    };
+    let table_of: TableOf = catalog::table_of(registry.clone(), Market::Wem);
     let datafiles = feed("datafiles").expect("the feeds table names the WEM datafiles");
     let wemde = feed("wemde").expect("the feeds table names WEMDE");
     let files = WemDatafiles::new(&config.base_url, config.datasets.clone())?
@@ -46,7 +39,7 @@ pub fn kit(config: &WemConfig, registry: Arc<Registry>) -> Result<SourceKit, Fet
             Arc::new(PlainCsvDecoder::new(registry.clone(), datafiles)),
             Arc::new(WemdeDecoder::new(registry.clone(), wemde)),
         ],
-        catalog: Arc::new(MmsCatalog::new(registry, Market::Wem)),
+        catalog: Arc::new(RegistryCatalog::new(registry, Market::Wem)),
     })
 }
 

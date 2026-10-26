@@ -11,7 +11,7 @@
 resolver = "3"
 members = [
     "crates/utilake-core",
-    "crates/utilake-mms-registry",
+    "crates/utilake-registry",
     "crates/utilake-mms-conform",
     "crates/utilake-acquire",
     "crates/utilake-kit",
@@ -30,7 +30,7 @@ members = [
 default-members = [
     "crates/utilake-core",
     "crates/utilake-iceberg-store",
-    "crates/utilake-mms-registry",
+    "crates/utilake-registry",
     "crates/utilake-mms-conform",
     "crates/utilake-net",
     "crates/utilake-acquire",
@@ -87,7 +87,7 @@ utilake-gates = { git = "ssh://git@github.com/g0itb4/utilake-schemas.git", rev =
 utilake-zip = { git = "ssh://git@github.com/g0itb4/utilake-schemas.git", rev = "374296824b08b77c20f7c6671493d36288047b78" }
 utilake-provenance = { git = "ssh://git@github.com/g0itb4/utilake-schemas.git", rev = "374296824b08b77c20f7c6671493d36288047b78" }
 utilake-iceberg-store = { path = "crates/utilake-iceberg-store" }
-utilake-mms-registry = { path = "crates/utilake-mms-registry" }
+utilake-registry = { path = "crates/utilake-registry" }
 utilake-mms-conform = { path = "crates/utilake-mms-conform" }
 utilake-acquire = { path = "crates/utilake-acquire" }
 utilake-kit = { path = "crates/utilake-kit" }

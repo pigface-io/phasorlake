@@ -13,9 +13,9 @@
     "utilake-kit",
     "utilake-mms-conform",
     "utilake-mms-decode",
-    "utilake-mms-registry",
     "utilake-nem",
     "utilake-pipeline",
+    "utilake-registry",
     "utilake-writer",
     "utilake-zip"
   ],
@@ -27,9 +27,9 @@
     "utilake-kit",
     "utilake-mms-conform",
     "utilake-mms-decode",
-    "utilake-mms-registry",
     "utilake-nem",
     "utilake-pipeline",
+    "utilake-registry",
     "utilake-wem",
     "utilake-writer",
     "utilake-zip"
@@ -43,8 +43,8 @@
     "utilake-core",
     "utilake-kit",
     "utilake-mms-conform",
-    "utilake-mms-registry",
     "utilake-plain-decode",
+    "utilake-registry",
     "utilake-zip"
   ],
   "utilake-iceberg-store": [
@@ -68,16 +68,9 @@
     "utilake-core",
     "utilake-kit",
     "utilake-mms-decode",
-    "utilake-mms-registry",
     "utilake-plain-decode",
+    "utilake-registry",
     "utilake-zip"
-  ],
-  "utilake-mms-registry": [
-    "utilake-core",
-    "utilake-iceberg",
-    "utilake-mms-decode",
-    "utilake-plain-decode",
-    "utilake-provenance"
   ],
   "utilake-nem": [
     "utilake-acquire",
@@ -85,7 +78,7 @@
     "utilake-kit",
     "utilake-mms-conform",
     "utilake-mms-decode",
-    "utilake-mms-registry"
+    "utilake-registry"
   ],
   "utilake-net": [
     "utilake-core",
@@ -99,13 +92,21 @@
     "utilake-writer",
     "utilake-zip"
   ],
+  "utilake-registry": [
+    "utilake-core",
+    "utilake-iceberg",
+    "utilake-kit",
+    "utilake-mms-decode",
+    "utilake-plain-decode",
+    "utilake-provenance"
+  ],
   "utilake-wem": [
     "utilake-acquire",
     "utilake-core",
     "utilake-kit",
     "utilake-mms-conform",
-    "utilake-mms-registry",
-    "utilake-plain-decode"
+    "utilake-plain-decode",
+    "utilake-registry"
   ],
   "utilake-writer": [
     "utilake-core",
@@ -118,6 +119,6 @@
     "utilake-gates",
     "utilake-iceberg",
     "utilake-mms-decode",
-    "utilake-mms-registry"
+    "utilake-registry"
   ]
 }

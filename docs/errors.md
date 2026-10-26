@@ -104,15 +104,15 @@ Every error and warning utilake reports carries one of these codes. Codes are st
 
 | code | raised in |
 |---|---|
-| `schema.blob_corrupt` | `crates/utilake-mms-registry/src/file_model/error.rs` |
-| `schema.deviates` | `crates/utilake-mms-registry/src/error.rs` |
-| `schema.file_invalid` | `crates/utilake-mms-registry/src/file_model/error.rs` |
-| `schema.file_parse` | `crates/utilake-mms-registry/src/file_model/error.rs` |
-| `schema.file_read` | `crates/utilake-mms-registry/src/file_model/error.rs` |
-| `schema.missing_key` | `crates/utilake-mms-registry/src/error.rs` |
-| `schema.no_columns` | `crates/utilake-mms-registry/src/error.rs` |
-| `schema.unknown_table` | `crates/utilake-mms-registry/src/error.rs` |
-| `schema.unseen_version` | `crates/utilake-mms-registry/src/resolve.rs` |
+| `schema.blob_corrupt` | `crates/utilake-registry/src/file_model/error.rs` |
+| `schema.deviates` | `crates/utilake-registry/src/error.rs` |
+| `schema.file_invalid` | `crates/utilake-registry/src/file_model/error.rs` |
+| `schema.file_parse` | `crates/utilake-registry/src/file_model/error.rs` |
+| `schema.file_read` | `crates/utilake-registry/src/file_model/error.rs` |
+| `schema.missing_key` | `crates/utilake-registry/src/error.rs` |
+| `schema.no_columns` | `crates/utilake-registry/src/error.rs` |
+| `schema.unknown_table` | `crates/utilake-registry/src/error.rs` |
+| `schema.unseen_version` | `crates/utilake-registry/src/resolve.rs` |
 
 ## store
 

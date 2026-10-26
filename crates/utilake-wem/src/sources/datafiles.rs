@@ -16,10 +16,11 @@ use std::sync::Arc;
 use async_trait::async_trait;
 use serde::Deserialize;
 use url::Url;
-use utilake_acquire::{FeedFolders, TableOf};
+use utilake_acquire::FeedFolders;
 use utilake_core::YearMonth;
 use utilake_core::calendar::WEM_OFFSET_SECS;
 use utilake_core::timetext::{self, Stamp};
+use utilake_kit::TableOf;
 use utilake_plain_decode::feeds::feed;
 
 use utilake_acquire::{Archive, FetchError};

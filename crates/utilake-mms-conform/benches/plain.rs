@@ -17,8 +17,8 @@ use utilake_kit::{
 use utilake_kit::{LocalFile, RemoteFile};
 use utilake_mms_conform::plain::{PlainCsvDecoder, WemdeDecoder};
 use utilake_mms_decode::Fingerprint;
-use utilake_mms_registry::Registry;
 use utilake_plain_decode::feeds::feed;
+use utilake_registry::Registry;
 
 const CSV_BYTES: usize = 16 << 20;
 const JSON_BYTES: usize = 8 << 20;

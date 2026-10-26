@@ -10,15 +10,13 @@ use arrow_array::{ArrayRef, RecordBatch};
 use arrow_schema::{DataType, Field, Schema};
 use utilake_core::{Category, Diagnose as _, Diagnostic, Fingerprint};
 use utilake_mms_decode::IRow;
-use utilake_mms_registry::{
-    Cast, ConformancePlan, Mode, Registry, ResolveOptions, Resolved, TableId,
-};
+use utilake_registry::{Cast, ConformancePlan, Mode, Registry, ResolveOptions, Resolved, TableId};
 
 use crate::error::{MmsDiagnose, RowError, RowFailure, SinkError, ValueError};
 use utilake_mms_decode::PREFIX_FIELDS;
 use utilake_mms_decode::fields::Row;
 use utilake_mms_decode::scan::{Flow, Pos, Sink};
-use utilake_mms_registry::arrow::RAW_OF_KEY;
+use utilake_registry::arrow::RAW_OF_KEY;
 
 use crate::builders::{ColumnBuilder, Fault, Parsed, parse_field};
 
@@ -175,7 +173,7 @@ pub struct ArrowSink<'r, B: BatchSink> {
     misfits: Vec<(u16, u16, Fault)>,
     /// The shapes (plan and I-row version) whose resolution warnings were
     /// passed on: a file of many blocks of one shape says them once.
-    warned: Vec<(utilake_mms_registry::PlanHash, u16)>,
+    warned: Vec<(utilake_registry::PlanHash, u16)>,
 }
 
 /// Rows a new column builder makes room for. Builders grow as rows come;
@@ -350,7 +348,7 @@ impl<'r, B: BatchSink> ArrowSink<'r, B> {
             let mut text = raw.text;
             let of = target
                 .metadata()
-                .get(utilake_mms_registry::arrow::FIELD_ID_KEY)
+                .get(utilake_registry::arrow::FIELD_ID_KEY)
                 .cloned()
                 .unwrap_or_else(|| column.clone());
             let md: HashMap<String, String> = [(RAW_OF_KEY.to_owned(), of)].into();
@@ -718,7 +716,7 @@ pub(crate) fn collect<R: std::io::Read>(
 #[cfg(test)]
 mod tests {
     use arrow_array::{Array, Decimal128Array, StringArray, TimestampMicrosecondArray};
-    use utilake_mms_registry::Mode;
+    use utilake_registry::Mode;
 
     use super::*;
     use utilake_mms_decode::scan::ScanOptions;
@@ -1222,7 +1220,7 @@ D,DISPATCH,UNIT_SCADA,1,\"2024/01/01 00:05:00\",E,2\n";
         );
         assert_eq!(
             b.schema().field(5).metadata()[RAW_OF_KEY],
-            b.schema().field(2).metadata()[utilake_mms_registry::arrow::FIELD_ID_KEY]
+            b.schema().field(2).metadata()[utilake_registry::arrow::FIELD_ID_KEY]
         );
         // The typed columns are null where the value did not fit, and the
         // key column allows it in this batch.

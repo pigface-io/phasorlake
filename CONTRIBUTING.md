@@ -19,7 +19,7 @@ crates/utilake-cli           L3  the command: flags, rendering, exit codes; kits
 
 The MMS format (AEMO's C/I/D rows and SQL*Loader control files):
 crates/utilake-mms-decode    F   the I row, MMS timestamps, scanner, field splitter; no registry
-crates/utilake-mms-registry  F   the table model (file_model), the shape id, the registry: build.rs validates schemas/ (the pulled histories), resolve() on the hot path
+crates/utilake-registry  F   the table model (file_model), the shape id, the registry: build.rs validates schemas/ (the pulled histories), resolve() on the hot path
 crates/utilake-mms-conform   F   resolves blocks through the registry, casts to typed Arrow batches; the kit's Decoder and Catalog
 
 The markets:

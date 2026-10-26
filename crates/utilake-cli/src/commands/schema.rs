@@ -4,7 +4,7 @@ use std::path::Path;
 
 use anyhow::Result;
 use utilake_core::Diagnose;
-use utilake_mms_registry::Registry;
+use utilake_registry::Registry;
 
 use crate::cli::SchemaCmd;
 use crate::context::Context;
@@ -63,7 +63,7 @@ pub async fn schema(ctx: &Context, cmd: &SchemaCmd) -> Result<i32> {
             if ctx.json {
                 render::json_line(t);
             } else {
-                print!("{}", utilake_mms_registry::file_model::file::write_table(t));
+                print!("{}", utilake_registry::file_model::file::write_table(t));
                 println!("\n# Arrow lake schema\n{}", r.lake_schema(id));
             }
             Ok(0)
@@ -195,11 +195,7 @@ fn plan(
         version,
         columns: &cols,
     };
-    match r.resolve_in(
-        &irow,
-        utilake_mms_registry::ResolveOptions::default(),
-        month,
-    ) {
+    match r.resolve_in(&irow, utilake_registry::ResolveOptions::default(), month) {
         Ok(res) => {
             render::json_line(&serde_json::json!({
                 "resolution": res.label(),

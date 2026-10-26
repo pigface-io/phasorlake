@@ -11,7 +11,7 @@ use utilake_mms_conform::{RowError, RowFailure, SinkError, ValueError};
 use utilake_mms_decode::IRow;
 use utilake_mms_decode::Row;
 use utilake_mms_decode::scan::{Flow, Pos, ScanOptions, Sink, scan};
-use utilake_mms_registry::{Registry, ResolveOptions};
+use utilake_registry::{Registry, ResolveOptions};
 
 const TARGET_BYTES: usize = 64 << 20;
 

@@ -8,7 +8,7 @@ use std::time::Duration;
 use utilake_acquire::{Archive, Fetcher, FetcherConfig, ReqwestTransport};
 use utilake_core::{TimeRange, YearMonth};
 use utilake_kit::Query;
-use utilake_mms_registry::Registry;
+use utilake_registry::Registry;
 
 #[tokio::test]
 async fn lists_every_source_and_downloads_the_smallest_file() {

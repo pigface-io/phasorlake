@@ -8,7 +8,7 @@ use arrow_array::builder::{
 };
 use arrow_schema::DataType;
 use utilake_core::num;
-use utilake_mms_registry::Cast;
+use utilake_registry::Cast;
 
 use crate::error::{RowError, ValueError};
 

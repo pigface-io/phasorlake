@@ -2985,9 +2985,9 @@ dependencies = [
  "utilake-kit",
  "utilake-mms-conform",
  "utilake-mms-decode",
- "utilake-mms-registry",
  "utilake-nem",
  "utilake-pipeline",
+ "utilake-registry",
  "utilake-writer",
  "utilake-zip",
  "zip",
@@ -3017,9 +3017,9 @@ dependencies = [
  "utilake-kit",
  "utilake-mms-conform",
  "utilake-mms-decode",
- "utilake-mms-registry",
  "utilake-nem",
  "utilake-pipeline",
+ "utilake-registry",
  "utilake-wem",
  "utilake-writer",
  "utilake-zip",
@@ -3057,8 +3057,8 @@ dependencies = [
  "utilake-kit",
  "utilake-mms-conform",
  "utilake-mms-decode",
- "utilake-mms-registry",
  "utilake-plain-decode",
+ "utilake-registry",
  "utilake-zip",
 ]
 
@@ -3160,8 +3160,8 @@ dependencies = [
  "utilake-core",
  "utilake-kit",
  "utilake-mms-decode",
- "utilake-mms-registry",
  "utilake-plain-decode",
+ "utilake-registry",
  "utilake-zip",
  "zonetrace",
 ]
@@ -3176,28 +3176,6 @@ dependencies = [
  "thiserror",
  "xxhash-rust",
  "zonetrace",
-]
-
-[[package]]
-name = "utilake-mms-registry"
-version = "0.1.0"
-dependencies = [
- "arrow-schema",
- "criterion",
- "hashbrown 0.17.1",
- "insta",
- "postcard",
- "serde",
- "serde_json",
- "tempfile",
- "thiserror",
- "toml",
- "utilake-core",
- "utilake-iceberg",
- "utilake-mms-decode",
- "utilake-plain-decode",
- "utilake-provenance",
- "xxhash-rust",
 ]
 
 [[package]]
@@ -3216,7 +3194,7 @@ dependencies = [
  "utilake-kit",
  "utilake-mms-conform",
  "utilake-mms-decode",
- "utilake-mms-registry",
+ "utilake-registry",
 ]
 
 [[package]]
@@ -3260,9 +3238,9 @@ dependencies = [
  "utilake-kit",
  "utilake-mms-conform",
  "utilake-mms-decode",
- "utilake-mms-registry",
  "utilake-nem",
  "utilake-provenance",
+ "utilake-registry",
  "utilake-wem",
  "utilake-writer",
  "utilake-zip",
@@ -3297,6 +3275,29 @@ dependencies = [
 ]
 
 [[package]]
+name = "utilake-registry"
+version = "0.1.0"
+dependencies = [
+ "arrow-schema",
+ "criterion",
+ "hashbrown 0.17.1",
+ "insta",
+ "postcard",
+ "serde",
+ "serde_json",
+ "tempfile",
+ "thiserror",
+ "toml",
+ "utilake-core",
+ "utilake-iceberg",
+ "utilake-kit",
+ "utilake-mms-decode",
+ "utilake-plain-decode",
+ "utilake-provenance",
+ "xxhash-rust",
+]
+
+[[package]]
 name = "utilake-wem"
 version = "0.1.0"
 dependencies = [
@@ -3311,8 +3312,8 @@ dependencies = [
  "utilake-core",
  "utilake-kit",
  "utilake-mms-conform",
- "utilake-mms-registry",
  "utilake-plain-decode",
+ "utilake-registry",
 ]
 
 [[package]]
@@ -3715,7 +3716,7 @@ dependencies = [
  "utilake-gates",
  "utilake-iceberg",
  "utilake-mms-decode",
- "utilake-mms-registry",
+ "utilake-registry",
 ]
 
 [[package]]
