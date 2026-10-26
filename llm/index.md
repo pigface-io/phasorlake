@@ -46,4 +46,4 @@ Entries name where it starts.
 - `docs/errors.md`: diagnostic codes.
 - `docs/layout.md`: crate groups; adding a source.
 - `docs/iceberg.md`: the Iceberg V3 contract: types, field ids, updates.
-- `docs/semantics.md`: a read: axes, roles, window, resolutions.
+- `docs/semantics.md`: the lake: axes, roles, window, revisions, provenance columns. `docs/reading.md`: reads as SQL, each example run by `crates/utilake-pipeline/tests/reading.rs`.

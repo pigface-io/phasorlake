@@ -18,8 +18,9 @@ use serde::{Deserialize, Serialize};
 
 use crate::file_model::model::{Column, ColumnId, LakeType, Table};
 
-/// Column names reserved for what utilake adds to a read (`_ul_source`,
-/// `_ul_valid_to`, …); no table may declare one.
+/// Column names reserved for what utilake adds to every lake row
+/// (`_ul_source` and the times its source was stamped with); no table may
+/// declare one.
 pub const RESERVED_PREFIX: &str = "_UL_";
 
 /// Who chose a table's roles.

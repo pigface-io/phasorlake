@@ -59,7 +59,8 @@ the file, and the manifest knows it is already in the lake.
 utilake writes the lake and does not read it. Every row keeps every
 revision and copy, with its source and the times that source was stamped
 with, so "latest", "every revision" and "as known at" are questions you
-ask in your own SQL. `docs/semantics.md` says what a window and a
+ask in your own SQL: `docs/reading.md` gives each as one query, tested
+against a fixture lake. `docs/semantics.md` says what a window and a
 revision mean on each kind of table, and `utilake list T` names a table's
 roles (its entity, valid time, order and cutoff columns).
 
