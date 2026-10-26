@@ -240,8 +240,15 @@ impl Source for FeedFolders {
     /// version's stamp as the URL's fragment.
     fn archived(&self, archive: &Archive, query: &Query) -> Result<Vec<LocalFile>, FetchError> {
         let mut out = Vec::new();
+        // A feed's roots on both sides of a listing (CURRENT and ARCHIVE)
+        // are kept in one local folder: each folder is walked once.
+        let mut walked: Vec<PathBuf> = Vec::new();
         for root in self.roots()? {
             let dir = archive.path_for(root.as_str());
+            if walked.contains(&dir) {
+                continue;
+            }
+            walked.push(dir.clone());
             let mut by_url: BTreeMap<String, Vec<Held>> = BTreeMap::new();
             for a in crate::archive::entries_under(archive, Some(&dir)) {
                 by_url
@@ -625,6 +632,29 @@ mod tests {
         let record = crate::Provenance::from_json(v1.to_string().as_bytes()).unwrap();
         Archive::write(&path, &record).unwrap();
         path
+    }
+
+    /// A feed listed on both sides (CURRENT and ARCHIVE) keeps them in one
+    /// local folder, which is read once: each file comes once.
+    #[test]
+    fn a_folder_both_sides_share_is_read_once() {
+        let dir = tempfile::tempdir().unwrap();
+        let archive = Archive::new(dir.path());
+        let gsh = feed("gsh").unwrap();
+        assert!(gsh.roots.len() > 1, "{:?}", gsh.roots);
+        let s = FeedFolders::new("gas-gsh", "https://www.nemweb.com.au", gsh, tables()).unwrap();
+        let roots = s.roots().unwrap();
+        assert_eq!(
+            archive.path_for(roots[0].as_str()),
+            archive.path_for(roots[1].as_str())
+        );
+        let url = roots[0].join("GSH_FILE.CSV").unwrap();
+        archived(&archive, url.as_str(), None, b"a,b\n1,2\n", None);
+        let all = s
+            .archived(&archive, &query(&[], months("2026-09", "2026-10")))
+            .unwrap();
+        let urls: Vec<&str> = all.iter().map(|l| l.remote.url.as_str()).collect();
+        assert_eq!(urls, [url.as_str()]);
     }
 
     #[test]

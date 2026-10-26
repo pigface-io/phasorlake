@@ -75,7 +75,6 @@ pub struct ParquetHive {
     layout: Lake,
     open: HashMap<u32, Open>,
     closed: Vec<Closed>,
-    next: u32,
     version: &'static str,
 }
 
@@ -87,7 +86,6 @@ impl ParquetHive {
             layout: Lake::default(),
             open: HashMap::new(),
             closed: Vec::new(),
-            next: 1,
             version: env!("CARGO_PKG_VERSION"),
         }
     }
@@ -292,8 +290,9 @@ impl LakeWriter for ParquetHive {
             source,
         })?;
         let final_path = dir.join(Self::file_name(meta));
-        let id = self.next;
-        self.next += 1;
+        // Unique in the process, not only in this writer: two writers of
+        // one run may open the same final name at once.
+        let id = NEXT_TMP.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
         let tmp = dir.join(format!(
             ".tmp-{}-{id}-{}",
             std::process::id(),
@@ -497,6 +496,9 @@ impl Drop for ParquetHive {
         self.discard(0);
     }
 }
+
+/// The number in each temporary file's name, unique in the process.
+static NEXT_TMP: std::sync::atomic::AtomicU32 = std::sync::atomic::AtomicU32::new(1);
 
 /// Removes stale `.tmp-*` files left by a crashed process under `lake_root`.
 pub fn sweep_tmp(lake_root: &Path) -> std::io::Result<usize> {
