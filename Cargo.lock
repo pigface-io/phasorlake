@@ -3141,6 +3141,7 @@ dependencies = [
  "tokio",
  "toml",
  "url",
+ "utilake-core",
  "utilake-plain-decode",
  "utilake-provenance",
  "utilake-zip",

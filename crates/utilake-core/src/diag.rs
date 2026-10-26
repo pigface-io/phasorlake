@@ -48,6 +48,8 @@ pub enum Category {
     Verify,
     /// Reading the lake: a query's window, roles, projection and files.
     Query,
+    /// The mirror's own records: crawl, peek, removed duplicates, map.
+    Mirror,
     /// A bug in utilake (panic, broken invariant).
     Internal,
 }
@@ -69,12 +71,13 @@ impl Category {
             Self::Manifest => "manifest",
             Self::Verify => "verify",
             Self::Query => "query",
+            Self::Mirror => "mirror",
             Self::Internal => "internal",
         }
     }
 
     /// Every category, for documentation and exhaustiveness tests.
-    pub const ALL: [Self; 14] = [
+    pub const ALL: [Self; 15] = [
         Self::Config,
         Self::Net,
         Self::Listing,
@@ -88,6 +91,7 @@ impl Category {
         Self::Manifest,
         Self::Verify,
         Self::Query,
+        Self::Mirror,
         Self::Internal,
     ];
 }
@@ -562,7 +566,8 @@ mod tests {
         assert_eq!(back.line, d.line);
         assert_eq!(Category::Csv.to_string(), "csv");
         assert_eq!(Severity::Warning.to_string(), "warning");
-        assert_eq!(Category::ALL.len(), 14);
+        assert_eq!(Category::ALL.len(), 15);
+        assert_eq!(Category::Mirror.to_string(), "mirror");
         assert_eq!(Category::Json.to_string(), "json");
     }
 

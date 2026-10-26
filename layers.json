@@ -55,6 +55,7 @@
   ],
   "utilake-mdff": [],
   "utilake-mirror": [
+    "utilake-core",
     "utilake-plain-decode",
     "utilake-provenance",
     "utilake-zip"
