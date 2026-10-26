@@ -275,6 +275,10 @@ fn ingest_ls_errors_verify_round_trip() {
         code == 4 && err.contains("Registration-and-Exemption-List"),
         "{err}"
     );
+    // A plan that cannot list offline: the exit says the network, and only
+    // offline does (a refusal or a server error is a failure, 1).
+    let (code, _, err) = cli.code(&["--offline", "fetch", "DISPATCHPRICE", "--at", "2024-01-01"]);
+    assert_eq!(code, 4, "{err}");
     let (code, _, err) = cli.code(&["--offline", "fetch", "NOBODY", "--at", "2024-01-01"]);
     assert!(
         code != 0 && err.contains("No table is named NOBODY"),

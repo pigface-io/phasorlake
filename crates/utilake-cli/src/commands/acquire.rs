@@ -53,7 +53,13 @@ pub async fn run(
             } else {
                 eprintln!("error: {}", d.render());
             }
-            let code = if d.code.starts_with("net.") { 4 } else { 1 };
+            // Offline is its own outcome; any other failure to plan, a
+            // refusal or a server error included, is a failure.
+            let code = if d.code == "net.offline" {
+                i32::from(utilake_core::diag::exit::OFFLINE)
+            } else {
+                i32::from(utilake_core::diag::exit::FAILURE)
+            };
             return Ok(Err(code));
         }
     };
