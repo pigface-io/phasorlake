@@ -175,7 +175,7 @@ impl zipdir::Spans for Ranged<'_> {
     async fn read(&mut self, start: u64, end: u64) -> Result<Vec<u8>, ReadError> {
         let mut r = self
             .fetcher
-            .fetch_range(self.url, Span { start, end })
+            .fetch_range(self.url, Span::Bytes { start, end })
             .await
             .map_err(ReadError::Fetch)?;
         let bytes = std::mem::take(&mut r.bytes);
@@ -446,7 +446,7 @@ mod tests {
         t.add("https://h/A/", Canned::ok(page.as_bytes()));
         t.add("https://h/A/M/", Canned::ok(b"<pre></pre>"));
         for (href, bytes) in files {
-            t.add(&format!("https://h{href}"), Canned::ok(bytes));
+            t.add(&format!("https://h{href}"), Canned::ranged(bytes));
         }
         t.add("https://h/A/flaky.zip", Canned::status(500));
         let f = fetcher(&t, &archive);

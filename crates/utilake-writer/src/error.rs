@@ -236,6 +236,21 @@ mod tests {
             source: std::io::Error::other("x"),
         };
         assert_eq!(e.diagnostic().code, "store.rename");
+        let e = StoreError::from(arrow_schema::ArrowError::SchemaError("s".into()));
+        assert_eq!(e.diagnostic().code, "store.arrow");
+        let e = StoreError::Quarantine {
+            path: "q/t.jsonl".into(),
+            source: std::io::Error::other("full"),
+        };
+        let d = e.diagnostic();
+        assert_eq!(
+            (d.code.as_ref(), d.file.as_deref(), d.cause.as_slice()),
+            (
+                "store.quarantine_write",
+                Some("q/t.jsonl"),
+                &["full".to_owned()][..]
+            )
+        );
         let e = StoreError::Io {
             path: "p".into(),
             source: std::io::Error::other("x"),

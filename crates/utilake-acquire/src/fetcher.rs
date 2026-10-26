@@ -516,7 +516,7 @@ impl Fetcher {
                     listed: Some(listed_of(remote)),
                 },
             };
-            add_address(&same.path, also)?;
+            add_address(&same.path, also, true)?;
             if again {
                 return Ok(LocalFile::from_held(remote, same.clone(), true));
             }

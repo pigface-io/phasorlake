@@ -640,6 +640,38 @@ mod tests {
     }
 
     #[test]
+    fn every_category_names_itself_causes_chain_and_contexts_fill() {
+        for c in Category::ALL {
+            assert_eq!(c.to_string(), c.as_str());
+        }
+        assert_eq!(Sample::of(b"a\tb").text, "a\\tb");
+        #[derive(Debug, thiserror::Error)]
+        #[error("outer")]
+        struct Outer(#[source] std::io::Error);
+        let d = Diagnostic::error("zip.bad_entry", Category::Zip, "m")
+            .caused_by(&Outer(std::io::Error::other("disk gone")));
+        assert_eq!(d.cause, ["outer", "disk gone"]);
+        let mut inner = Context {
+            entry: Some("INNER.CSV".into()),
+            ..Context::default()
+        };
+        let outer = Context {
+            request: Some("ingest".into()),
+            url: Some("https://h/a.zip".into()),
+            file: Some("a.zip".into()),
+            entry: Some("b.zip".into()),
+            table: Some("T".into()),
+            version: Some(2),
+        };
+        inner.fill_from(&outer);
+        assert_eq!(inner.entry.as_deref(), Some("b.zip!INNER.CSV"));
+        assert_eq!(
+            (inner.table.as_deref(), inner.version),
+            (Some("T"), Some(2))
+        );
+    }
+
+    #[test]
     #[should_panic(expected = "must start with")]
     fn code_must_match_category() {
         let _ = Diagnostic::error("net.x", Category::Csv, "m");

@@ -20,6 +20,7 @@
     "crates/utilake-pipeline/src": 83,
     "crates/utilake-cli/src": 78,
     "crates/utilake-mdff/src": 98,
-    "crates/utilake-mirror/src": 100
+    "crates/utilake-mirror/src": 100,
+    "crates/utilake-net/src": 100
   }
 }

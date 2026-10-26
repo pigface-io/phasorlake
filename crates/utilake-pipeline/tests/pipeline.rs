@@ -1380,6 +1380,43 @@ async fn a_file_of_a_kit_without_a_decoder_is_refused() {
     );
 }
 
+/// A file handed to a kit the binary was not assembled with is refused
+/// whole, before anything is read or written.
+#[test]
+fn a_file_for_a_kit_not_assembled_is_refused() {
+    use utilake_pipeline::ingest_file::{IngestInput, ingest_file};
+    let e = env();
+    let csv = e.home.root().join("x.csv");
+    std::fs::write(&csv, "C,NEMP.WORLD,TEST\n").unwrap();
+    let remote = RemoteFile {
+        url: Url::from_file_path(&csv).unwrap(),
+        source: "local",
+        table: None,
+        period: None,
+        size: None,
+        modified: None,
+        modified_at: None,
+    };
+    let rep = ingest_file(IngestInput {
+        local: utilake_pipeline::run::local_file(remote, &csv).unwrap(),
+        kits: e.deps.kits.clone(),
+        kit: "nobody",
+        lake_root: e.home.lake(),
+        quarantine_root: e.home.quarantine(),
+        tmp_dir: e.home.tmp(),
+        options: RunOptions::default(),
+        request: "ingest x.csv".into(),
+        events: None,
+        rules_changed: false,
+        skip: Vec::new(),
+    });
+    let d = rep.file_error.unwrap();
+    assert_eq!(d.code, "config.no_decoder");
+    assert_eq!(d.request.as_deref(), Some("ingest x.csv"));
+    assert!(rep.results.is_empty() && rep.entries.is_empty());
+    assert!(walk(&e.home.lake()).is_empty());
+}
+
 #[tokio::test]
 async fn a_zip_with_a_bad_entry_is_refused_whole_and_every_entry_is_read() {
     let e = env();

@@ -31,8 +31,8 @@ pub struct Context {
     pub json: bool,
     /// A progress line on stderr.
     pub progress: bool,
-    /// No network.
-    pub offline: bool,
+    /// What every fetcher's requests go through: the network, or none.
+    transport: Arc<dyn Transport>,
 }
 
 impl Context {
@@ -47,12 +47,27 @@ impl Context {
             || (!cli.no_progress
                 && !cli.json
                 && std::io::IsTerminal::is_terminal(&std::io::stderr()));
+        let transport: Arc<dyn Transport> = if cli.offline {
+            Arc::new(OfflineTransport)
+        } else {
+            let ua = format!(
+                "utilake-mirror/{} (+{}){}",
+                env!("CARGO_PKG_VERSION"),
+                env!("CARGO_PKG_REPOSITORY"),
+                config.user_agent_suffix
+            );
+            Arc::new(ReqwestTransport::new(
+                &ua,
+                Duration::from_secs(30),
+                Duration::from_secs(config.read_timeout_secs),
+            )?)
+        };
         Ok(Self {
             home,
             config,
             json: cli.json,
             progress,
-            offline: cli.offline,
+            transport,
         })
     }
 
@@ -81,20 +96,7 @@ impl Context {
 
     /// The transport and the knobs of one fetcher, paced at `interval`.
     fn fetcher_parts(&self, interval: Duration) -> (Arc<dyn Transport>, FetcherConfig) {
-        let ua = format!(
-            "utilake-mirror/{} (+https://github.com/g0itb4/utilake){}",
-            env!("CARGO_PKG_VERSION"),
-            self.config.user_agent_suffix
-        );
-        let transport: Arc<dyn Transport> = if self.offline {
-            Arc::new(OfflineTransport)
-        } else {
-            Arc::new(ReqwestTransport::new(
-                &ua,
-                Duration::from_secs(30),
-                Duration::from_secs(self.config.read_timeout_secs),
-            ))
-        };
+        let transport = self.transport.clone();
         let backoff = Duration::from_millis(self.config.backoff_ms);
         let cfg = FetcherConfig {
             attempts: self.config.attempts,

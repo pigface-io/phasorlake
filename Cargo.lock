@@ -2963,6 +2963,7 @@ dependencies = [
  "tokio",
  "url",
  "utilake-core",
+ "utilake-net",
  "utilake-plain-decode",
  "utilake-provenance",
  "utilake-zip",
@@ -3142,6 +3143,7 @@ dependencies = [
  "toml",
  "url",
  "utilake-core",
+ "utilake-net",
  "utilake-plain-decode",
  "utilake-provenance",
  "utilake-zip",
@@ -3218,6 +3220,23 @@ dependencies = [
  "utilake-mms-conform",
  "utilake-mms-decode",
  "utilake-mms-registry",
+]
+
+[[package]]
+name = "utilake-net"
+version = "0.1.0"
+dependencies = [
+ "async-trait",
+ "bytes",
+ "futures",
+ "reqwest",
+ "rustix",
+ "sha2",
+ "tempfile",
+ "thiserror",
+ "tokio",
+ "utilake-core",
+ "utilake-provenance",
 ]
 
 [[package]]

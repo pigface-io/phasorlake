@@ -1,5 +1,5 @@
 use super::*;
-use crate::diag::Diagnose as _;
+use utilake_core::Diagnose as _;
 
 const URL: &str = "https://h/d/f.zip";
 
@@ -148,4 +148,34 @@ fn addresses_are_added_and_folders_go() {
     let p = Archive::read(&path).unwrap().unwrap();
     assert_eq!(p.origin().gone, Some(at));
     assert_eq!(p.addresses[1].gone, None);
+}
+
+/// A reader interrupted once, then done.
+struct Flaky(usize, &'static [u8]);
+
+impl Read for Flaky {
+    fn read(&mut self, buf: &mut [u8]) -> std::io::Result<usize> {
+        self.0 += 1;
+        match self.0 {
+            1 => Err(std::io::Error::from(std::io::ErrorKind::Interrupted)),
+            2 => {
+                let n = self.1.len().min(buf.len());
+                buf[..n].copy_from_slice(&self.1[..n]);
+                self.1 = &self.1[n..];
+                Ok(n)
+            }
+            3 => Ok(0),
+            _ => Err(std::io::Error::other("gone")),
+        }
+    }
+}
+
+#[test]
+fn hashing_rides_out_an_interruption_and_reports_a_failure() {
+    let (sha, len) = sha256_read(&mut Flaky(0, b"abc")).unwrap();
+    assert_eq!((sha, len), (sha256_hex(b"abc"), 3));
+    let mut gone = Flaky(3, b"");
+    assert_eq!(sha256_read(&mut gone).unwrap_err().to_string(), "gone");
+    let dir = tempfile::tempdir().unwrap();
+    assert!(sha256_file(&dir.path().join("none")).is_err());
 }

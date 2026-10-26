@@ -9,8 +9,6 @@ pub mod event;
 pub mod fetcher;
 pub mod fetchers;
 pub mod source;
-#[cfg(test)]
-pub mod testserver;
 pub mod transport;
 
 pub use archive::{

@@ -17,34 +17,33 @@ Every error and warning utilake reports carries one of these codes. Codes are st
 
 | code | raised in |
 |---|---|
-| `net.blocked` | `crates/utilake-mirror/src/net/error.rs` |
-| `net.body` | `crates/utilake-mirror/src/net/error.rs` |
-| `net.connect` | `crates/utilake-mirror/src/net/error.rs` |
-| `net.content_length_mismatch` | `crates/utilake-mirror/src/net/error.rs` |
-| `net.http_status` | `crates/utilake-mirror/src/net/error.rs` |
+| `net.blocked` | `crates/utilake-net/src/error.rs` |
+| `net.body` | `crates/utilake-net/src/error.rs` |
+| `net.connect` | `crates/utilake-net/src/error.rs` |
+| `net.content_length_mismatch` | `crates/utilake-net/src/error.rs` |
+| `net.http_status` | `crates/utilake-net/src/error.rs` |
 | `net.offline` | `crates/utilake-pipeline/src/report.rs` |
-| `net.range_ignored` | `crates/utilake-acquire/src/error.rs` |
-| `net.range_unsupported` | `crates/utilake-mirror/src/net/error.rs` |
-| `net.retries_exhausted` | `crates/utilake-mirror/src/commands.rs` |
-| `net.timeout` | `crates/utilake-mirror/src/net/error.rs` |
+| `net.range_ignored` | `crates/utilake-net/src/error.rs` |
+| `net.retries_exhausted` | `crates/utilake-net/src/error.rs` |
+| `net.timeout` | `crates/utilake-net/src/error.rs` |
 
 ## listing
 
 | code | raised in |
 |---|---|
-| `listing.month_missing` | `crates/utilake-acquire/src/error.rs` |
+| `listing.month_missing` | `crates/utilake-net/src/error.rs` |
 | `listing.ndjson` | `crates/utilake-mirror/src/config.rs` |
-| `listing.no_match` | `crates/utilake-acquire/src/error.rs` |
-| `listing.parse_failed` | `crates/utilake-acquire/src/error.rs` |
+| `listing.no_match` | `crates/utilake-net/src/error.rs` |
+| `listing.parse_failed` | `crates/utilake-net/src/error.rs` |
 | `listing.unparsed_line` | `crates/utilake-mirror/src/error.rs` |
 
 ## cache
 
 | code | raised in |
 |---|---|
-| `cache.io` | `crates/utilake-mirror/src/net/error.rs` |
-| `cache.sha256_mismatch` | `crates/utilake-mirror/src/net/error.rs` |
-| `cache.sidecar_corrupt` | `crates/utilake-mirror/src/net/error.rs` |
+| `cache.io` | `crates/utilake-net/src/error.rs` |
+| `cache.sha256_mismatch` | `crates/utilake-net/src/error.rs` |
+| `cache.sidecar_corrupt` | `crates/utilake-net/src/error.rs` |
 | `cache.source_missing` | `crates/utilake-pipeline/src/run.rs` |
 
 ## zip
@@ -53,7 +52,7 @@ Every error and warning utilake reports carries one of these codes. Codes are st
 |---|---|
 | `zip.bad_directory` | `crates/utilake-mirror/src/map.rs` |
 | `zip.bad_entry` | `crates/utilake-pipeline/src/archive.rs` |
-| `zip.entry_corrupt` | `crates/utilake-acquire/src/error.rs` |
+| `zip.entry_corrupt` | `crates/utilake-net/src/error.rs` |
 | `zip.nesting_too_deep` | `crates/utilake-pipeline/src/archive.rs` |
 | `zip.no_entry` | `crates/utilake-pipeline/src/archive.rs` |
 | `zip.not_a_zip` | `crates/utilake-mirror/src/map.rs` |

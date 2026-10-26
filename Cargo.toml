@@ -24,6 +24,7 @@ members = [
     "crates/utilake-cli",
     "crates/utilake-mdff",
     "crates/utilake-mirror",
+    "crates/utilake-net",
     "crates/utilake-iceberg-store",
     "crates/utilake-bench",
     "crates/xtask",
@@ -33,6 +34,7 @@ default-members = [
     "crates/utilake-iceberg-store",
     "crates/utilake-mms-registry",
     "crates/utilake-mms-conform",
+    "crates/utilake-net",
     "crates/utilake-acquire",
     "crates/utilake-kit",
     "crates/utilake-nem",
@@ -97,6 +99,7 @@ utilake-gas = { path = "crates/utilake-gas" }
 utilake-writer = { path = "crates/utilake-writer" }
 utilake-pipeline = { path = "crates/utilake-pipeline" }
 utilake-mirror = { path = "crates/utilake-mirror" }
+utilake-net = { path = "crates/utilake-net", default-features = false }
 
 # hot path
 memchr = "2.8"

@@ -398,10 +398,7 @@ impl Fetcher {
                 last_modified: begun.last_modified,
             }));
         }
-        let span = Span {
-            start: from,
-            end: Span::TO_END,
-        };
+        let span = Span::From(from);
         let attempt = self
             .get_with_retries(url, Some(span), |resp| {
                 let same = resp.total_size == begun.size
@@ -420,9 +417,9 @@ impl Fetcher {
         match attempt {
             Ok(done) => Ok(done),
             // The whole file instead of the rest, or a range past its end.
-            Err(
-                FetchError::RangeUnsupported { .. } | FetchError::HttpStatus { status: 416, .. },
-            ) => Ok(None),
+            Err(FetchError::RangeIgnored { .. } | FetchError::HttpStatus { status: 416, .. }) => {
+                Ok(None)
+            }
             Err(e) => Err(e),
         }
     }
@@ -457,11 +454,15 @@ impl Fetcher {
             }
             self.pace().await;
             let answered = if range.is_some() { 206 } else { 200 };
-            let result = match self.transport.get(url, range).await {
+            let sent = match range {
+                Some(span) => self.transport.get_range(url, span).await,
+                None => self.transport.get(url).await,
+            };
+            let result = match sent {
                 Err(e) => Err(e),
                 Ok(resp) if resp.status == answered => consume(resp).await,
                 // The whole file instead of the range: not read.
-                Ok(resp) if resp.status == 200 => Err(FetchError::RangeUnsupported {
+                Ok(resp) if resp.status == 200 => Err(FetchError::RangeIgnored {
                     url: url.to_owned(),
                 }),
                 Ok(resp) if resp.status == 403 => {
@@ -1240,25 +1241,47 @@ mod tests {
     async fn a_range_of_a_file_and_a_server_that_sends_it_all() {
         let dir = tempfile::tempdir().unwrap();
         let t = Arc::new(StaticTransport::default());
-        t.add("https://h/z.zip", Canned::ok(b"0123456789"));
-        let mut whole = Canned::ok(b"0123456789");
-        whole.ranges = false;
+        t.add("https://h/z.zip", Canned::ranged(b"0123456789"));
+        let whole = Canned::ok(b"0123456789");
         t.add("https://h/w.zip", whole);
         let f = Fetcher::new(Arc::new(t.clone()), Archive::new(dir.path()), fast());
-        let span = Span { start: 6, end: 10 };
+        let span = Span::Bytes { start: 6, end: 10 };
         let r = f.fetch_range("https://h/z.zip", span).await.unwrap();
         assert_eq!((r.bytes.as_slice(), r.total_size), (&b"6789"[..], Some(10)));
         assert_eq!(r.etag.as_deref(), Some("\"etag\""));
         assert!(r.last_modified.is_some());
         assert_eq!(f.succeeded(), 1);
         let e = f.fetch_range("https://h/w.zip", span).await.unwrap_err();
-        assert!(matches!(e, FetchError::RangeUnsupported { .. }), "{e}");
+        assert!(matches!(e, FetchError::RangeIgnored { .. }), "{e}");
         assert_eq!(t.request_count(), 2, "not retried");
         let off = Fetcher::new(Arc::new(OfflineTransport), Archive::new(dir.path()), fast());
         assert!(matches!(
             off.fetch_range("https://h/z.zip", span).await,
             Err(FetchError::Offline { .. })
         ));
+    }
+
+    #[tokio::test]
+    async fn a_cut_off_download_of_a_file_since_rewritten_starts_again() {
+        let dir = tempfile::tempdir().unwrap();
+        let url = "https://h/r.zip";
+        let body: Vec<u8> = (0..50_000u32).map(|i| (i % 251) as u8).collect();
+        let t = Arc::new(StaticTransport::default());
+        let mut cut = Canned::ok(&body);
+        cut.fail_after = Some(20_000);
+        t.add(url, cut);
+        // The rest is asked for, but the file is no longer the one begun.
+        let rewritten: Vec<u8> = body.iter().rev().copied().collect();
+        let mut changed = Canned::ranged(&rewritten);
+        changed.etag = Some("\"other\"".into());
+        t.add(url, changed);
+        let mut once = fast();
+        once.attempts = 1;
+        let f = Fetcher::new(Arc::new(t.clone()), Archive::new(dir.path()), once);
+        assert!(f.fetch(&remote(url)).await.is_err());
+        let local = f.fetch(&remote(url)).await.unwrap();
+        assert_eq!(std::fs::read(&local.path).unwrap(), rewritten);
+        assert_eq!(t.request_count(), 3, "the rest, then the whole file");
     }
 
     #[tokio::test]
@@ -1270,7 +1293,7 @@ mod tests {
         let mut cut = Canned::ok(&body);
         cut.fail_after = Some(20_000);
         t.add(url, cut);
-        t.add(url, Canned::ok(&body));
+        t.add(url, Canned::ranged(&body));
         let mut once = fast();
         once.attempts = 1;
         let f = Fetcher::new(Arc::new(t.clone()), Archive::new(dir.path()), once);

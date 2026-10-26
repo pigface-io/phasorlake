@@ -264,7 +264,7 @@ mod tests {
             b"<pre></pre>"
         );
         assert!(
-            f.fetch_range("https://w/b/", Span { start: 0, end: 4 })
+            f.fetch_range("https://w/b/", Span::Bytes { start: 0, end: 4 })
                 .await
                 .is_err()
         );

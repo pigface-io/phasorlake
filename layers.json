@@ -1,6 +1,7 @@
 {
   "utilake-acquire": [
     "utilake-core",
+    "utilake-net",
     "utilake-plain-decode",
     "utilake-provenance",
     "utilake-zip"
@@ -56,6 +57,7 @@
   "utilake-mdff": [],
   "utilake-mirror": [
     "utilake-core",
+    "utilake-net",
     "utilake-plain-decode",
     "utilake-provenance",
     "utilake-zip"
@@ -81,6 +83,10 @@
     "utilake-mms-conform",
     "utilake-mms-decode",
     "utilake-mms-registry"
+  ],
+  "utilake-net": [
+    "utilake-core",
+    "utilake-provenance"
   ],
   "utilake-pipeline": [
     "utilake-acquire",

@@ -165,10 +165,7 @@ fn the_mirror_downloads_what_the_crawl_listed() {
     );
 }
 
-#[path = "../src/net/testserver.rs"]
-mod server;
-
-use server::{Reply, Server};
+use utilake_net::testserver::{Reply, Server};
 
 /// An IIS listing of `(href, size)`: a size of `None` is a folder.
 fn page(entries: &[(&str, Option<usize>)]) -> Vec<u8> {
@@ -475,6 +472,11 @@ fn the_lock_the_home_and_the_config() {
     let (code, _, err) = cli.code(&["status"]);
     assert_eq!(code, 2);
     assert!(err.contains("config.parse"), "{err}");
+    // A user agent no HTTP header can carry.
+    cli.config("user_agent_suffix = \"\\n\"\n");
+    let (code, _, err) = cli.code(&["status"]);
+    assert_eq!(code, 2);
+    assert!(err.contains("Connecting to"), "{err}");
 
     let out = Command::new(env!("CARGO_BIN_EXE_utilake-mirror"))
         .arg("status")
