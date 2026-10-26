@@ -284,7 +284,9 @@ pub async fn read_head(
 pub async fn read_all(url: &str, resp: HttpResponse) -> Result<Vec<u8>, FetchError> {
     let mut body = resp.body;
     let expected = resp.content_length;
-    let room = expected.map_or(64 << 10, |n| usize::try_from(n).unwrap_or(0));
+    // The server's length is a hint, held to 8 MiB: a body that claims
+    // more grows as it comes, rather than reserving what it claims.
+    let room = expected.map_or(64 << 10, |n| usize::try_from(n).unwrap_or(0).min(8 << 20));
     let mut out = Vec::with_capacity(room);
     while let Some(chunk) = body.next().await {
         let chunk = chunk.map_err(|message| FetchError::Body {

@@ -208,9 +208,13 @@ pub async fn run(
     };
 
     // 1. List.
+    // Two URLs the archive keeps at one path (a feed listed on both sides
+    // of nemweb) are one file: fetched once, not twice into one `.part`.
     let remote_listed = |source: &Arc<dyn Source>, query: &Query, files: Vec<RemoteFile>| {
+        let mut seen = std::collections::HashSet::new();
         files
             .into_iter()
+            .filter(|r| seen.insert(deps.fetcher.archive().path_for(r.url.as_str())))
             .map(|remote| Listed {
                 kit: kit_of(&deps.kits, source.id()).map_or("none", |k| k.id),
                 picks: source

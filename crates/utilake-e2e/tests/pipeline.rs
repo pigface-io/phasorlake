@@ -1818,6 +1818,63 @@ async fn fetch_only_downloads_and_ingest_reads_the_archived_month() {
     assert!(!walk(&e.home.lake()).is_empty());
 }
 
+/// Two URLs the archive keeps at one path (a folder listed on both sides
+/// of nemweb) are fetched once in a run, never both into one `.part`.
+#[tokio::test]
+async fn urls_the_archive_keeps_at_one_path_are_fetched_once() {
+    let e = env();
+    let zip_tmp = e.home.root().join("z.zip");
+    make_zip(
+        &zip_tmp,
+        &[(
+            "PUBLIC_DVD_TRADINGPRICE_202401010000.CSV",
+            &std::fs::read(fixtures().join("TRADINGPRICE_v2_head.csv")).unwrap(),
+        )],
+    );
+    let bytes = std::fs::read(&zip_tmp).unwrap();
+    let ym = utilake_core::YearMonth::new(2024, 1).unwrap();
+    let remote = |side: &str| {
+        let url = format!(
+            "https://www.nemweb.com.au/Reports/{side}/Trading/PUBLIC_DVD_TRADINGPRICE_202401010000.zip"
+        );
+        e.transport.add(&url, Canned::ok(&bytes));
+        RemoteFile {
+            url: Url::parse(&url).unwrap(),
+            source: "nem-mmsdm",
+            table: Some("TRADINGPRICE".into()),
+            period: Some(ym.into()),
+            size: None,
+            modified: None,
+            modified_at: None,
+        }
+    };
+    let source = Arc::new(OneFile(vec![remote("CURRENT"), remote("ARCHIVE")]));
+    let (rep, _) = run_plan(
+        &e,
+        Plan {
+            request: "fetch nem".into(),
+            input: Input::Remote {
+                source,
+                query: Query {
+                    exclude: Vec::new(),
+                    tables: vec![],
+                    range: TimeRange::months(ym, ym),
+                    instants: None,
+                },
+            },
+            options: RunOptions::default(),
+        },
+    )
+    .await;
+    assert_eq!(
+        rep.summary.downloaded,
+        1,
+        "{:?}",
+        rep.report.summary_lines()
+    );
+    assert_eq!(e.transport.request_count(), 1);
+}
+
 #[tokio::test]
 async fn remote_source_downloads_then_serves_from_cache_and_reports_fetch_failures() {
     let e = env();
