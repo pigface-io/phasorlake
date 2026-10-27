@@ -24,6 +24,11 @@ pub struct Cli {
     /// Never touch the network.
     #[arg(long, global = true)]
     pub offline: bool,
+    /// Keep nothing whose data is for a month before this (`YYYY-MM`):
+    /// not downloaded, peeked, watched or counted; `prune` deletes what is
+    /// held of it. Overrides `keep_from` in the config.
+    #[arg(long, global = true, value_name = "YYYY-MM")]
+    pub keep_from: Option<utilake_mirror::Month>,
     /// Threads that read zips for the map (default: the config, else half the cores).
     #[arg(long, global = true)]
     pub jobs: Option<usize>,
@@ -179,6 +184,14 @@ pub enum Command {
     /// what a download pass takes as archived without reading a record.
     /// Reads every record once; offline.
     Reindex,
+    /// Delete from the archive every file whose data is for a month
+    /// before `keep_from` (or `--keep-from`), with its record and versions;
+    /// offline. Without `--yes`, only say what would go.
+    Prune {
+        /// Delete; this cannot be undone.
+        #[arg(long)]
+        yes: bool,
+    },
     /// Pages read, and files archived out of those listed, per root.
     Status {
         /// The roots the crawl used, when not the default ones.

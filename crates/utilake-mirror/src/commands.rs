@@ -41,8 +41,9 @@ impl Context {
         let user_home = std::env::var_os("HOME").map(PathBuf::from);
         let home = Home::resolve(cli.home.as_deref(), user_home.as_deref())
             .context("No home directory: pass --home or set UTILAKE_MIRROR_HOME.")?;
-        let config = Config::load(&home.config_file())
+        let mut config = Config::load(&home.config_file())
             .map_err(|e| anyhow::anyhow!("{}", e.diagnostic().render()))?;
+        config.keep_from = cli.keep_from.or(config.keep_from);
         let progress = cli.progress
             || (!cli.no_progress
                 && !cli.json
@@ -112,7 +113,7 @@ impl Context {
 pub async fn run_command(cli: &Cli) -> Result<i32> {
     let ctx = &Context::new(cli)?;
     let cmd = &cli.command;
-    let mirror = ctx.home.records();
+    let mirror = ctx.home.records().keeping(ctx.config.keep_from);
     if !matches!(cmd, Command::Upgrade { .. })
         && ctx.home.old_records().exists()
         && !mirror.dir().exists()
@@ -191,6 +192,7 @@ pub async fn run_command(cli: &Cli) -> Result<i32> {
             let jobs = cli.jobs.unwrap_or_else(|| ctx.config.effective_jobs());
             map(ctx, &mirror, roots, jobs)
         }
+        Command::Prune { yes } => locked(&mirror, async { prune(ctx, &mirror, *yes) }).await,
         Command::Hash { all } => hash(ctx, *all),
         Command::Compare { verify: true, .. } => verify(ctx, &mirror),
         Command::Compare { delete, .. } => compare(ctx, &mirror, *delete),
@@ -466,7 +468,7 @@ async fn watch(ctx: &Context, mirror: &Mirror, plan: &WatchPlan<'_>) -> Result<i
         });
     }
     let folders = mirror
-        .record()?
+        .kept()?
         .into_iter()
         .filter(|r| r.kind == utilake_mirror::RemoteKind::Dir)
         .map(|r| r.url)
@@ -596,6 +598,28 @@ async fn versions(ctx: &Context, mirror: &Mirror, prune: bool) -> Result<i32, Mi
             s.removed,
             s.bytes as f64 / 1e6,
         );
+    }
+    Ok(0)
+}
+
+fn prune(ctx: &Context, mirror: &Mirror, yes: bool) -> Result<i32, MirrorError> {
+    let s = utilake_mirror::prune(mirror, &ctx.archive(), yes)?;
+    if ctx.json {
+        render::json_line(&serde_json::json!({ "event": "prune_done", "summary": s }));
+        return Ok(0);
+    }
+    let before = s.before.map(|m| m.to_string()).unwrap_or_default();
+    println!(
+        "{} {} files listed before {before} ({:.1} GB); {} held ({:.1} GB); {} folders whole",
+        if s.applied { "deleted" } else { "would delete" },
+        s.files,
+        s.listed_bytes as f64 / 1e9,
+        s.held_files,
+        s.held_bytes as f64 / 1e9,
+        s.folders.len(),
+    );
+    if !s.applied {
+        println!("pass --yes to delete; this cannot be undone");
     }
     Ok(0)
 }

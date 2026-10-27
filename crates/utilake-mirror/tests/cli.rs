@@ -906,3 +906,64 @@ fn a_home_before_state_is_upgraded_first() {
     assert!(cli.ok(&["reindex"]).starts_with("1 held lines written"));
     assert!(cli.ok(&["--json", "reindex"]).contains("\"reindex_done\""));
 }
+
+/// A month to keep from leaves out what is before it, and prune deletes
+/// what the archive holds of that, once asked to.
+#[test]
+fn prune_deletes_what_is_before_the_month_kept_from() {
+    let cli = Cli::new();
+    let root = "https://h/A/";
+    let pages = cli.home.path().join("state/folders/h/A");
+    std::fs::create_dir_all(pages.join("pages")).unwrap();
+    std::fs::create_dir_all(pages.join("2015/pages")).unwrap();
+    std::fs::write(
+        pages.join("pages/index.html"),
+        "<pre> Monday, October 12, 2026 10:45 AM &lt;dir&gt; <A HREF=\"/A/2015/\">2015</A><br> Monday, October 12, 2026 10:45 AM 1 <A HREF=\"/A/c_20200101.csv\">c_20200101.csv</A><br></pre>",
+    )
+    .unwrap();
+    std::fs::write(
+        pages.join("2015/pages/index.html"),
+        "<pre> Monday, October 12, 2026 10:45 AM 3 <A HREF=\"/A/2015/M_2015_01.zip\">M_2015_01.zip</A><br></pre>",
+    )
+    .unwrap();
+    cli.ok(&["--offline", "crawl", "--root", root]);
+    let old = cli.home.path().join("archive/h/A/2015/M_2015_01.zip");
+    let new = cli.home.path().join("archive/h/A/c_20200101.csv");
+    for (path, bytes) in [(&old, &b"abc"[..]), (&new, &b"x"[..])] {
+        std::fs::create_dir_all(path.parent().unwrap()).unwrap();
+        std::fs::write(path, bytes).unwrap();
+    }
+
+    let (code, _, err) = cli.code(&["prune"]);
+    assert_eq!(code, 1);
+    assert!(err.contains("config.keep_from_missing"), "{err}");
+    let (code, _, err) = cli.code(&["--keep-from", "2020-13", "prune"]);
+    assert_eq!(code, 2);
+    assert!(err.contains("YYYY-MM"), "{err}");
+
+    let out = cli.ok(&["--keep-from", "2020-01", "prune"]);
+    assert!(
+        out.contains(
+            "would delete 1 files listed before 2020-01 (0.0 GB); 0 held (0.0 GB); 1 folders whole"
+        ),
+        "{out}"
+    );
+    assert!(out.contains("pass --yes"), "{out}");
+    assert!(old.exists());
+
+    std::fs::write(
+        cli.home.path().join("config.toml"),
+        "keep_from = \"2020-01\"\n",
+    )
+    .unwrap();
+    let out = cli.ok(&["--json", "prune", "--yes"]);
+    assert!(out.contains("\"event\":\"prune_done\""), "{out}");
+    assert!(out.contains("\"applied\":true"), "{out}");
+    assert!(!old.parent().unwrap().exists());
+    assert!(new.exists());
+    let out = cli.ok(&["prune", "--yes"]);
+    assert!(out.starts_with("deleted 1 files"), "{out}");
+    // Only what is kept is listed for download: the pruned file never is.
+    let (_, out, _) = cli.code(&["--offline", "download"]);
+    assert!(out.starts_with("1 files:"), "{out}");
+}

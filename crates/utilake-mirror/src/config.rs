@@ -6,7 +6,7 @@
 //! {home}/config.toml               settings
 //! {home}/archive/                  the bytes and their provenance records
 //! {home}/state/                    the mirror's records ([`Mirror`])
-//!   lock, crawl.json, peeks.ndjson, removals.ndjson
+//!   lock, crawl.json, peeks.ndjson, removals.ndjson, pruned.ndjson
 //!   folders/{host}/{folder}/       listing.ndjson, pages/{LISTING}.html, events.ndjson
 //!   migrations/                    relayout.ndjson, upgrade.ndjson
 //!   cache/                         held.ndjson, status.json, catalog.ndjson, catalog.txt
@@ -22,6 +22,7 @@ use url::Url;
 use crate::diag::{Category, Diagnose, Diagnostic};
 use crate::error::MirrorError;
 use crate::hosts::Host;
+use crate::keep::Month;
 use crate::net::Archive;
 use crate::watch::Cadence;
 
@@ -72,7 +73,7 @@ impl Home {
         self.root.join("config.toml")
     }
 
-    /// The mirror's records, as a [`Mirror`].
+    /// The mirror's records, as a [`Mirror`] that keeps everything.
     pub fn records(&self) -> Mirror {
         Mirror::new(self.state())
     }
@@ -83,12 +84,35 @@ impl Home {
 #[derive(Debug, Clone)]
 pub struct Mirror {
     dir: PathBuf,
+    keep_from: Option<Month>,
 }
 
 impl Mirror {
-    /// The mirror at `dir`.
+    /// The mirror at `dir`, keeping every month.
     pub fn new(dir: impl Into<PathBuf>) -> Self {
-        Self { dir: dir.into() }
+        Self {
+            dir: dir.into(),
+            keep_from: None,
+        }
+    }
+
+    /// The same records, keeping nothing whose data is for a month before
+    /// `from` ([`crate::keep`]): [`Mirror::kept`] leaves it out.
+    pub fn keeping(self, from: Option<Month>) -> Self {
+        Self {
+            keep_from: from,
+            ..self
+        }
+    }
+
+    /// The month before which nothing is kept, if any.
+    pub fn keep_from(&self) -> Option<Month> {
+        self.keep_from
+    }
+
+    /// What `prune` deleted, one line a folder or file.
+    pub fn pruned_path(&self) -> PathBuf {
+        self.dir.join("pruned.ndjson")
     }
 
     /// The mirror's directory.
@@ -185,6 +209,12 @@ pub struct Config {
     /// Further hosts, each with its own roots and clock, read after
     /// nemweb; none by default.
     pub hosts: Vec<HostConfig>,
+    /// Keep nothing whose data is for a month before this (`"2020-01"`):
+    /// no download, peek, watch read or count of it, and `prune` deletes
+    /// what the archive holds of it. Every month when absent;
+    /// `--keep-from` overrides it.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub keep_from: Option<Month>,
 }
 
 /// A further host: `[[hosts]]` in the config file.
@@ -239,6 +269,7 @@ impl Default for Config {
             watch_secs: 24 * 60 * 60,
             watch_least_secs: 5 * 60,
             hosts: Vec::new(),
+            keep_from: None,
         }
     }
 }

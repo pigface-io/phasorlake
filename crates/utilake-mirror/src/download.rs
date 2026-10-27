@@ -87,7 +87,7 @@ pub async fn download(
         .into_iter()
         .map(|p| (p.zip.clone(), p))
         .collect();
-    let mut record = mirror.record()?;
+    let mut record = mirror.kept()?;
     // Only the files under the prefixes given, when any are.
     record.retain(|r| only.is_empty() || only.iter().any(|p| r.url.starts_with(p.as_str())));
     if let Some(folders) = options.folders {

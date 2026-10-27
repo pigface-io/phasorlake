@@ -74,6 +74,18 @@ what the data means, this knows what exists.
   `--skip-records` to leave the sidecars for later.
 - **Reindex**: `state/cache/held.ndjson` written again from the records,
   for a cache deleted or out of step.
+- **Keep from**: `keep_from = "2020-01"` in the config, or `--keep-from
+  2020-01` on any command, keeps nothing whose data is for a month before
+  it: it is not downloaded, peeked, read by a watch or counted by
+  `status`. A file's month is read from its name (`MMSDM_2015_01.zip`, the
+  first `_YYYYMMDD` stamp of `PUBLIC_…_201612220000_….zip`), else from
+  its `/YYYY/` folder; a file with neither is always kept. The listings
+  still hold it, so moving the month back downloads it again.
+- **Prune**: deletes from the archive what is before `keep_from`, with
+  its records, versions and AppleDouble twins: a folder every file of
+  which is before goes whole, one removal; a file before in a folder that
+  keeps others goes alone. Without `--yes` it only says what would go.
+  Each deletion is a line of `state/pruned.ndjson`. Offline.
 
 ## Run
 
@@ -144,7 +156,7 @@ the mirror's own; what is under `state/cache/` it derives from them and
 writes again, so it may be deleted.
 
 ```
-{home}/config.toml                         downloads, request_interval_ms, attempts, backoff_ms, read_timeout_secs, progress_every_secs, base_url, user_agent_suffix, jobs; watch_fast, watch_fast_secs, watch_current, watch_current_secs, watch_secs, watch_least_secs; [[hosts]] (base_url, listing_offset_secs, request_interval_ms, roots, watch_fast, watch_current)
+{home}/config.toml                         downloads, request_interval_ms, attempts, backoff_ms, read_timeout_secs, progress_every_secs, base_url, user_agent_suffix, jobs; watch_fast, watch_fast_secs, watch_current, watch_current_secs, watch_secs, watch_least_secs; keep_from; [[hosts]] (base_url, listing_offset_secs, request_interval_ms, roots, watch_fast, watch_current)
 {home}/archive/{host}/{folder}/{name}      every file, as served; a report folder's listing segment dropped (docs/archive.md)
 {home}/archive/…/{name}.provenance.json    its record: content, and every address that served it
 {home}/archive/…/{name}@{at}               a later version under the same name, with its own record
@@ -156,6 +168,7 @@ writes again, so it may be deleted.
     events.ndjson                          what no record holds: same, repacked, folder_gone
 {home}/state/peeks.ndjson                  zip directories read before download, with when, the listing and the response
 {home}/state/removals.ndjson               zips removed as the same as their folders
+{home}/state/pruned.ndjson                 folders and files prune deleted, before keep_from
 {home}/state/migrations/                   relayout.ndjson, upgrade.ndjson: every move, logged before it was made
 {home}/state/cache/held.ndjson             every file a download pass found archived or fetched: its size, listing and version
 {home}/state/cache/status.json             a run's counts, which `status` reads while it runs

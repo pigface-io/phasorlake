@@ -91,7 +91,7 @@ pub fn status(mirror: &Mirror, archive: &Archive, roots: &[Url]) -> Result<Statu
     let removed = mirror.removed()?;
     let held = mirror.held()?;
     let mut listed = DirNames::default();
-    for remote in mirror.record()? {
+    for remote in mirror.kept()? {
         match remote.kind {
             RemoteKind::External => status.external += 1,
             RemoteKind::Dir => {}

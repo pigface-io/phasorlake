@@ -87,6 +87,9 @@ pub enum MirrorError {
         /// The old records' folder.
         path: String,
     },
+    /// `prune` with no month to keep from.
+    #[error("Prune needs a month to keep from: set keep_from in config.toml or pass --keep-from.")]
+    NoKeepFrom,
     /// A root is not a folder URL.
     #[error("The root {url} is not a folder: a root is an http(s) URL ending in `/`.")]
     Root {
@@ -146,6 +149,9 @@ impl Diagnose for MirrorError {
             }
             Self::OldLayout { path } => {
                 Diagnostic::error("mirror.old_layout", MIRROR, msg).with_file(path.clone())
+            }
+            Self::NoKeepFrom => {
+                Diagnostic::error("config.keep_from_missing", Category::CONFIG, msg)
             }
             Self::Root { url } => {
                 Diagnostic::error("config.mirror_root", Category::CONFIG, msg).with_url(url.clone())

@@ -212,7 +212,7 @@ pub async fn peek(
         .map(|p| p.zip)
         .collect();
     let mut zips: Vec<Remote> = mirror
-        .record()?
+        .kept()?
         .into_iter()
         .filter(|r| r.kind == RemoteKind::File && is_zip_name(&r.url))
         .filter(|r| !peeked.contains_key(&r.url) && !removed.contains_key(&r.url))

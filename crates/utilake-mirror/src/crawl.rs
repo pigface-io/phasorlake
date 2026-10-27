@@ -52,6 +52,14 @@ impl Mirror {
         Ok(record)
     }
 
+    /// The record less what is not kept ([`Mirror::keeping`]): what
+    /// download, peek, watch and status go by.
+    pub fn kept(&self) -> Result<Vec<Remote>, MirrorError> {
+        let mut record = self.record()?;
+        record.retain(|r| crate::keep::keeps(&r.url, self.keep_from()));
+        Ok(record)
+    }
+
     /// Records `links` as what the listing `folder` shows now, in place of
     /// what it showed before. The other listing of its local folder keeps
     /// its lines.

@@ -8,6 +8,7 @@ Every error and warning utilake reports carries one of these codes. Codes are st
 |---|---|
 | `config.bad_path` | `crates/utilake-pipeline/src/run.rs` |
 | `config.invalid` | `crates/utilake-core/src/config.rs` |
+| `config.keep_from_missing` | `crates/utilake-mirror/src/error.rs` |
 | `config.mirror_root` | `crates/utilake-mirror/src/error.rs` |
 | `config.no_decoder` | `crates/utilake-pipeline/src/get.rs` |
 | `config.parse` | `crates/utilake-mirror/src/config.rs` |
