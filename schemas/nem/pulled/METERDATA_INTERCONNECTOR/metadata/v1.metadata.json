@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1722434400000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/METERDATA_INTERCONNECTOR",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/METERDATA_INTERCONNECTOR",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -19,22 +19,22 @@
   ],
   "properties": {
     "comment": "Publishes metering data associated with wholesale interconnectors for a given CASE_ID",
-    "utilake.declared": "true",
-    "utilake.format": "4",
-    "utilake.key": "[\"CASE_ID\",\"SETTLEMENTDATE\",\"INTERCONNECTORID\",\"PERIODID\"]",
-    "utilake.load": "append",
-    "utilake.model-types": "{\"1\":\"NUMERIC(15,0)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"VARCHAR(20)\",\"4\":\"NUMERIC(3,0)\",\"5\":\"NUMERIC(18,8)\",\"6\":\"NUMERIC(18,8)\",\"7\":\"TIMESTAMP(0)\"}",
-    "utilake.package": "METER_DATA",
-    "utilake.reports": "[[\"METERDATA\",\"INTERCONNECTOR\"]]",
-    "utilake.table": "METERDATA_INTERCONNECTOR",
-    "utilake.temporal.cutoff": "LASTCHANGED",
-    "utilake.temporal.entity": "[\"CASE_ID\",\"INTERCONNECTORID\",\"PERIODID\"]",
-    "utilake.temporal.order": "[\"LASTCHANGED\"]",
-    "utilake.temporal.origin": "hand",
-    "utilake.temporal.valid.column": "SETTLEMENTDATE",
-    "utilake.temporal.valid.kind": "day",
-    "utilake.time": "SETTLEMENTDATE",
-    "utilake.visibility": "PUBLIC"
+    "phasor.declared": "true",
+    "phasor.format": "4",
+    "phasor.key": "[\"CASE_ID\",\"SETTLEMENTDATE\",\"INTERCONNECTORID\",\"PERIODID\"]",
+    "phasor.load": "append",
+    "phasor.model-types": "{\"1\":\"NUMERIC(15,0)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"VARCHAR(20)\",\"4\":\"NUMERIC(3,0)\",\"5\":\"NUMERIC(18,8)\",\"6\":\"NUMERIC(18,8)\",\"7\":\"TIMESTAMP(0)\"}",
+    "phasor.package": "METER_DATA",
+    "phasor.reports": "[[\"METERDATA\",\"INTERCONNECTOR\"]]",
+    "phasor.table": "METERDATA_INTERCONNECTOR",
+    "phasor.temporal.cutoff": "LASTCHANGED",
+    "phasor.temporal.entity": "[\"CASE_ID\",\"INTERCONNECTORID\",\"PERIODID\"]",
+    "phasor.temporal.order": "[\"LASTCHANGED\"]",
+    "phasor.temporal.origin": "hand",
+    "phasor.temporal.valid.column": "SETTLEMENTDATE",
+    "phasor.temporal.valid.kind": "day",
+    "phasor.time": "SETTLEMENTDATE",
+    "phasor.visibility": "PUBLIC"
   },
   "refs": {
     "main": {
@@ -115,27 +115,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/METERDATA_INTERCONNECTOR/metadata/snap-5545382590377441421-1-e3906bde-9f48-8856-8c92-5e97996cb968.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/METERDATA_INTERCONNECTOR/metadata/snap-5545382590377441421-1-6712ecc1-90d0-826b-ad36-08f267351a33.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 5545382590377441421,
       "summary": {
         "operation": "append",
-        "utilake.files": "26",
-        "utilake.from.file": "PUBLIC_ARCHIVE#METERDATA_INTERCONNECTOR#FILE01#202408010000.zip",
-        "utilake.from.release": "2024-08",
-        "utilake.from.sha256": "393533f074116b60c8a252ee5fea44b54b22f3e9aafb4bc7cd2eac46930ad6f4",
-        "utilake.from.time": "2024-01-14T00:00:00+10:00",
-        "utilake.kinds": "[\"archive\"]",
-        "utilake.report-subtype": "INTERCONNECTOR",
-        "utilake.report-type": "METERDATA",
-        "utilake.rows": "4570560",
-        "utilake.to.file": "PUBLIC_ARCHIVE#METERDATA_INTERCONNECTOR#FILE01#202609010000.zip",
-        "utilake.to.release": "2026-09",
-        "utilake.to.sha256": "4b6a607ec397b6e919a25a1faffa1c92833aa01bbf7328d97f7dd227d17cd5a2",
-        "utilake.to.time": "2026-09-26T00:00:00+10:00",
-        "utilake.total-rows": "4570560",
-        "utilake.version": "1"
+        "phasor.files": "26",
+        "phasor.from.file": "PUBLIC_ARCHIVE#METERDATA_INTERCONNECTOR#FILE01#202408010000.zip",
+        "phasor.from.release": "2024-08",
+        "phasor.from.sha256": "393533f074116b60c8a252ee5fea44b54b22f3e9aafb4bc7cd2eac46930ad6f4",
+        "phasor.from.time": "2024-01-14T00:00:00+10:00",
+        "phasor.kinds": "[\"archive\"]",
+        "phasor.report-subtype": "INTERCONNECTOR",
+        "phasor.report-type": "METERDATA",
+        "phasor.rows": "4570560",
+        "phasor.to.file": "PUBLIC_ARCHIVE#METERDATA_INTERCONNECTOR#FILE01#202609010000.zip",
+        "phasor.to.release": "2026-09",
+        "phasor.to.sha256": "4b6a607ec397b6e919a25a1faffa1c92833aa01bbf7328d97f7dd227d17cd5a2",
+        "phasor.to.time": "2026-09-26T00:00:00+10:00",
+        "phasor.total-rows": "4570560",
+        "phasor.version": "1"
       },
       "timestamp-ms": 1722434400000
     }
@@ -146,5 +146,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "e3906bde-9f48-8856-8c92-5e97996cb968"
+  "table-uuid": "6712ecc1-90d0-826b-ad36-08f267351a33"
 }

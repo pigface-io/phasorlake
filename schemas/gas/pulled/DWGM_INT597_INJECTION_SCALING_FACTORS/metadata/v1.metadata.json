@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1788184800000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/DWGM_INT597_INJECTION_SCALING_FACTORS",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/gas/DWGM_INT597_INJECTION_SCALING_FACTORS",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -18,23 +18,23 @@
     }
   ],
   "properties": {
-    "utilake.declared": "true",
-    "utilake.format": "4",
-    "utilake.headers": "{\"1\":\"network_name\",\"2\":\"version_id\",\"3\":\"gas_date\",\"4\":\"distributor_name\",\"5\":\"withdrawal_zone\",\"6\":\"scaling_factor\",\"7\":\"current_date\"}",
-    "utilake.key": "[]",
-    "utilake.load": "append",
-    "utilake.market": "gas",
-    "utilake.offset": "+10:00",
-    "utilake.reports": "[[\"DWGM\",\"INT597_INJECTION_SCALING_FACTORS_1\"]]",
-    "utilake.table": "DWGM_INT597_INJECTION_SCALING_FACTORS",
-    "utilake.temporal.cutoff": "CURRENT_DATE",
-    "utilake.temporal.entity": "[\"VERSION_ID\"]",
-    "utilake.temporal.order": "[\"CURRENT_DATE\"]",
-    "utilake.temporal.origin": "hand",
-    "utilake.temporal.valid.column": "GAS_DATE",
-    "utilake.temporal.valid.kind": "instant",
-    "utilake.time": "GAS_DATE",
-    "utilake.visibility": "PUBLIC"
+    "phasor.declared": "true",
+    "phasor.format": "4",
+    "phasor.headers": "{\"1\":\"network_name\",\"2\":\"version_id\",\"3\":\"gas_date\",\"4\":\"distributor_name\",\"5\":\"withdrawal_zone\",\"6\":\"scaling_factor\",\"7\":\"current_date\"}",
+    "phasor.key": "[]",
+    "phasor.load": "append",
+    "phasor.market": "gas",
+    "phasor.offset": "+10:00",
+    "phasor.reports": "[[\"DWGM\",\"INT597_INJECTION_SCALING_FACTORS_1\"]]",
+    "phasor.table": "DWGM_INT597_INJECTION_SCALING_FACTORS",
+    "phasor.temporal.cutoff": "CURRENT_DATE",
+    "phasor.temporal.entity": "[\"VERSION_ID\"]",
+    "phasor.temporal.order": "[\"CURRENT_DATE\"]",
+    "phasor.temporal.origin": "hand",
+    "phasor.temporal.valid.column": "GAS_DATE",
+    "phasor.temporal.valid.kind": "instant",
+    "phasor.time": "GAS_DATE",
+    "phasor.visibility": "PUBLIC"
   },
   "refs": {
     "main": {
@@ -103,27 +103,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/DWGM_INT597_INJECTION_SCALING_FACTORS/metadata/snap-8976317633222122355-1-afa2e2d4-d797-87d4-a5a0-04dd4a82cbd8.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/gas/DWGM_INT597_INJECTION_SCALING_FACTORS/metadata/snap-8976317633222122355-1-de4d0d99-d60c-8cb6-aa95-6e4c941f51da.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 8976317633222122355,
       "summary": {
         "operation": "append",
-        "utilake.files": "6",
-        "utilake.from.file": "PublicRpts22.zip",
-        "utilake.from.release": "2026-09",
-        "utilake.from.sha256": "20d32cafc8e00f1760ea246fec625d26dd91304d25f9a1caeb65db5bf23993a1",
-        "utilake.from.time": "2026-08-01T00:00:00+10:00",
-        "utilake.kinds": "[\"dwgm\"]",
-        "utilake.report-subtype": "INT597_INJECTION_SCALING_FACTORS_1",
-        "utilake.report-type": "DWGM",
-        "utilake.rows": "736",
-        "utilake.to.file": "int597_v4_injection_scaling_factors_1.csv@20261024T113600+1000",
-        "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "dd8c4eacf76c4a02146612cda7c1fde8da53ed1cb3d0e20b11f34b15ec973cf9",
-        "utilake.to.time": "2026-09-30T00:00:00+10:00",
-        "utilake.total-rows": "736",
-        "utilake.version": "4"
+        "phasor.files": "6",
+        "phasor.from.file": "PublicRpts22.zip",
+        "phasor.from.release": "2026-09",
+        "phasor.from.sha256": "20d32cafc8e00f1760ea246fec625d26dd91304d25f9a1caeb65db5bf23993a1",
+        "phasor.from.time": "2026-08-01T00:00:00+10:00",
+        "phasor.kinds": "[\"dwgm\"]",
+        "phasor.report-subtype": "INT597_INJECTION_SCALING_FACTORS_1",
+        "phasor.report-type": "DWGM",
+        "phasor.rows": "736",
+        "phasor.to.file": "int597_v4_injection_scaling_factors_1.csv@20261024T113600+1000",
+        "phasor.to.release": "2026-10",
+        "phasor.to.sha256": "dd8c4eacf76c4a02146612cda7c1fde8da53ed1cb3d0e20b11f34b15ec973cf9",
+        "phasor.to.time": "2026-09-30T00:00:00+10:00",
+        "phasor.total-rows": "736",
+        "phasor.version": "4"
       },
       "timestamp-ms": 1788184800000
     }
@@ -134,5 +134,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "afa2e2d4-d797-87d4-a5a0-04dd4a82cbd8"
+  "table-uuid": "de4d0d99-d60c-8cb6-aa95-6e4c941f51da"
 }

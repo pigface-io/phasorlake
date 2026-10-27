@@ -12,10 +12,10 @@ use std::path::PathBuf;
 use std::process::ExitCode;
 
 use clap::{Parser, Subcommand};
-use utilake_gates::{covergate, ratchet};
+use phasor_gates::{covergate, ratchet};
 
 #[derive(Parser)]
-#[command(name = "xtask", about = "utilake repository tooling")]
+#[command(name = "xtask", about = "phasor repository tooling")]
 struct Cli {
     #[command(subcommand)]
     cmd: Cmd,
@@ -43,17 +43,17 @@ enum Cmd {
         #[arg(long, default_value = "origin/main")]
         base: String,
     },
-    /// Copy utilake-schemas' tables and manifest at a commit into
+    /// Copy phasor-schemas' tables and manifest at a commit into
     /// schemas/{market}/pulled/, every market it publishes.
     SchemasPull {
         /// The commit, or anything git names one by.
         rev: String,
-        /// The utilake-schemas checkout to read it from.
-        #[arg(long, default_value = "../utilake-schemas")]
+        /// The phasor-schemas checkout to read it from.
+        #[arg(long, default_value = "../phasorlake-schemas")]
         from: PathBuf,
     },
     /// Fail unless each schemas/{market}/pulled/ is its manifest's, of the commit
-    /// Cargo.lock takes utilake-iceberg from.
+    /// Cargo.lock takes phasor-iceberg from.
     SchemasCheck,
     /// Fail on a dependency between the workspace's crates that layers.json
     /// does not declare, or one it declares that is gone.

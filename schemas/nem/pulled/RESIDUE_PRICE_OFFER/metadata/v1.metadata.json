@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1575122400000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/RESIDUE_PRICE_OFFER",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/RESIDUE_PRICE_OFFER",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -18,9 +18,9 @@
     }
   ],
   "properties": {
-    "utilake.declared": "false",
-    "utilake.format": "4",
-    "utilake.table": "RESIDUE_PRICE_OFFER"
+    "phasor.declared": "false",
+    "phasor.format": "4",
+    "phasor.table": "RESIDUE_PRICE_OFFER"
   },
   "refs": {
     "main": {
@@ -83,25 +83,25 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/RESIDUE_PRICE_OFFER/metadata/snap-3801555115214802891-1-0b0c5763-7a03-8337-be96-0b179ed0da5b.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/RESIDUE_PRICE_OFFER/metadata/snap-3801555115214802891-1-731e5198-b6bc-8040-bd5d-bcf59d658dd7.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 3801555115214802891,
       "summary": {
         "operation": "append",
-        "utilake.files": "28",
-        "utilake.from.file": "PUBLIC_SROFFER_A201912_20191216151208.CSV",
-        "utilake.from.release": "2019-12",
-        "utilake.from.sha256": "1f19adc72edb9fd150918aad112047dce446bc892a60d5a45daa665b9d581d2c",
-        "utilake.kinds": "[\"reports\"]",
-        "utilake.report-subtype": "",
-        "utilake.report-type": "RESIDUE_PRICE_OFFER",
-        "utilake.rows": "37388",
-        "utilake.to.file": "PUBLIC_SROFFER_A202609_20260915141605.CSV",
-        "utilake.to.release": "2026-09",
-        "utilake.to.sha256": "8e5e2ef36ec9525aa33094838bdf21c015b950222ebc9965af00d23c5eaf1794",
-        "utilake.total-rows": "37388",
-        "utilake.version": "1"
+        "phasor.files": "28",
+        "phasor.from.file": "PUBLIC_SROFFER_A201912_20191216151208.CSV",
+        "phasor.from.release": "2019-12",
+        "phasor.from.sha256": "1f19adc72edb9fd150918aad112047dce446bc892a60d5a45daa665b9d581d2c",
+        "phasor.kinds": "[\"reports\"]",
+        "phasor.report-subtype": "",
+        "phasor.report-type": "RESIDUE_PRICE_OFFER",
+        "phasor.rows": "37388",
+        "phasor.to.file": "PUBLIC_SROFFER_A202609_20260915141605.CSV",
+        "phasor.to.release": "2026-09",
+        "phasor.to.sha256": "8e5e2ef36ec9525aa33094838bdf21c015b950222ebc9965af00d23c5eaf1794",
+        "phasor.total-rows": "37388",
+        "phasor.version": "1"
       },
       "timestamp-ms": 1575122400000
     }
@@ -112,5 +112,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "0b0c5763-7a03-8337-be96-0b179ed0da5b"
+  "table-uuid": "731e5198-b6bc-8040-bd5d-bcf59d658dd7"
 }

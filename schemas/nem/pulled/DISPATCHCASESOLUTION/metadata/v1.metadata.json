@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1246370400000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DISPATCHCASESOLUTION",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/DISPATCHCASESOLUTION",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -19,22 +19,22 @@
   ],
   "properties": {
     "comment": "DISPATCHCASESOLUTION shows information relating to the complete dispatch run. The fields in DISPATCHCASESOLUTION provide an overview of the dispatch run results allowing immediate identification of conditions such as energy or FCAS deficiencies.",
-    "utilake.declared": "true",
-    "utilake.format": "4",
-    "utilake.key": "[\"SETTLEMENTDATE\",\"RUNNO\"]",
-    "utilake.load": "append",
-    "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(3,0)\",\"3\":\"NUMERIC(2,0)\",\"4\":\"VARCHAR(3)\",\"5\":\"NUMERIC(2,0)\",\"6\":\"VARCHAR(20)\",\"7\":\"NUMERIC(1,0)\",\"8\":\"NUMERIC(27,10)\",\"9\":\"NUMERIC(15,5)\",\"10\":\"NUMERIC(15,5)\",\"11\":\"NUMERIC(15,5)\",\"12\":\"NUMERIC(15,5)\",\"13\":\"NUMERIC(15,5)\",\"14\":\"NUMERIC(15,5)\",\"15\":\"NUMERIC(15,5)\",\"16\":\"NUMERIC(15,5)\",\"17\":\"NUMERIC(15,5)\",\"18\":\"NUMERIC(15,5)\",\"19\":\"NUMERIC(15,5)\",\"20\":\"NUMERIC(15,5)\",\"21\":\"TIMESTAMP(0)\",\"22\":\"NUMERIC(1,0)\",\"23\":\"NUMERIC(1,0)\",\"24\":\"NUMERIC(1,0)\"}",
-    "utilake.package": "DISPATCH",
-    "utilake.reports": "[[\"DISPATCH\",\"CASE_SOLUTION\"]]",
-    "utilake.table": "DISPATCHCASESOLUTION",
-    "utilake.temporal.cutoff": "LASTCHANGED",
-    "utilake.temporal.entity": "[\"INTERVENTION\"]",
-    "utilake.temporal.order": "[\"RUNNO\",\"LASTCHANGED\"]",
-    "utilake.temporal.origin": "derived",
-    "utilake.temporal.valid.column": "SETTLEMENTDATE",
-    "utilake.temporal.valid.kind": "interval_end",
-    "utilake.time": "SETTLEMENTDATE",
-    "utilake.visibility": "PUBLIC"
+    "phasor.declared": "true",
+    "phasor.format": "4",
+    "phasor.key": "[\"SETTLEMENTDATE\",\"RUNNO\"]",
+    "phasor.load": "append",
+    "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(3,0)\",\"3\":\"NUMERIC(2,0)\",\"4\":\"VARCHAR(3)\",\"5\":\"NUMERIC(2,0)\",\"6\":\"VARCHAR(20)\",\"7\":\"NUMERIC(1,0)\",\"8\":\"NUMERIC(27,10)\",\"9\":\"NUMERIC(15,5)\",\"10\":\"NUMERIC(15,5)\",\"11\":\"NUMERIC(15,5)\",\"12\":\"NUMERIC(15,5)\",\"13\":\"NUMERIC(15,5)\",\"14\":\"NUMERIC(15,5)\",\"15\":\"NUMERIC(15,5)\",\"16\":\"NUMERIC(15,5)\",\"17\":\"NUMERIC(15,5)\",\"18\":\"NUMERIC(15,5)\",\"19\":\"NUMERIC(15,5)\",\"20\":\"NUMERIC(15,5)\",\"21\":\"TIMESTAMP(0)\",\"22\":\"NUMERIC(1,0)\",\"23\":\"NUMERIC(1,0)\",\"24\":\"NUMERIC(1,0)\"}",
+    "phasor.package": "DISPATCH",
+    "phasor.reports": "[[\"DISPATCH\",\"CASE_SOLUTION\"]]",
+    "phasor.table": "DISPATCHCASESOLUTION",
+    "phasor.temporal.cutoff": "LASTCHANGED",
+    "phasor.temporal.entity": "[\"INTERVENTION\"]",
+    "phasor.temporal.order": "[\"RUNNO\",\"LASTCHANGED\"]",
+    "phasor.temporal.origin": "derived",
+    "phasor.temporal.valid.column": "SETTLEMENTDATE",
+    "phasor.temporal.valid.kind": "interval_end",
+    "phasor.time": "SETTLEMENTDATE",
+    "phasor.visibility": "PUBLIC"
   },
   "refs": {
     "main": {
@@ -232,27 +232,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DISPATCHCASESOLUTION/metadata/snap-2445221871394293187-1-52f62ceb-f03a-8fd6-a208-e4667d47aebb.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/DISPATCHCASESOLUTION/metadata/snap-2445221871394293187-1-f3596bc3-6d55-8b8f-9b66-c19319d6a9d3.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 2445221871394293187,
       "summary": {
         "operation": "append",
-        "utilake.files": "110044",
-        "utilake.from.file": "PUBLIC_DVD_DISPATCHCASESOLUTION_200907010000.zip",
-        "utilake.from.release": "2009-07",
-        "utilake.from.sha256": "44539eb2dbd1be88df4d0e25d3424acce148a40d2632a20dc0d5556981bbd261",
-        "utilake.from.time": "2009-07-01T00:05:00+10:00",
-        "utilake.kinds": "[\"archive\",\"dvd\",\"reports\"]",
-        "utilake.report-subtype": "CASE_SOLUTION",
-        "utilake.report-type": "DISPATCH",
-        "utilake.rows": "1926541",
-        "utilake.to.file": "PUBLIC_DISPATCHIS_202610241145_0000000544595545.zip",
-        "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "b23cfa8a2f5c84a4535aa22e8d0f81b1bce96dcb5ff7b6b3292cab8c0495b919",
-        "utilake.to.time": "2026-10-24T11:45:00+10:00",
-        "utilake.total-rows": "1926541",
-        "utilake.version": "2"
+        "phasor.files": "110044",
+        "phasor.from.file": "PUBLIC_DVD_DISPATCHCASESOLUTION_200907010000.zip",
+        "phasor.from.release": "2009-07",
+        "phasor.from.sha256": "44539eb2dbd1be88df4d0e25d3424acce148a40d2632a20dc0d5556981bbd261",
+        "phasor.from.time": "2009-07-01T00:05:00+10:00",
+        "phasor.kinds": "[\"archive\",\"dvd\",\"reports\"]",
+        "phasor.report-subtype": "CASE_SOLUTION",
+        "phasor.report-type": "DISPATCH",
+        "phasor.rows": "1926541",
+        "phasor.to.file": "PUBLIC_DISPATCHIS_202610241145_0000000544595545.zip",
+        "phasor.to.release": "2026-10",
+        "phasor.to.sha256": "b23cfa8a2f5c84a4535aa22e8d0f81b1bce96dcb5ff7b6b3292cab8c0495b919",
+        "phasor.to.time": "2026-10-24T11:45:00+10:00",
+        "phasor.total-rows": "1926541",
+        "phasor.version": "2"
       },
       "timestamp-ms": 1246370400000
     }
@@ -263,5 +263,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "52f62ceb-f03a-8fd6-a208-e4667d47aebb"
+  "table-uuid": "f3596bc3-6d55-8b8f-9b66-c19319d6a9d3"
 }

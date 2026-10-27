@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1246370400000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/REGION",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/REGION",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -19,20 +19,20 @@
   ],
   "properties": {
     "comment": "REGION sets out valid region IDs.",
-    "utilake.declared": "true",
-    "utilake.format": "4",
-    "utilake.key": "[\"REGIONID\"]",
-    "utilake.load": "snapshot",
-    "utilake.model-types": "{\"1\":\"VARCHAR(10)\",\"2\":\"VARCHAR(64)\",\"3\":\"VARCHAR(8)\",\"4\":\"TIMESTAMP(0)\"}",
-    "utilake.package": "MARKET_CONFIG",
-    "utilake.reports": "[[\"MARKET_CONFIG\",\"REGION\"]]",
-    "utilake.table": "REGION",
-    "utilake.temporal.cutoff": "LASTCHANGED",
-    "utilake.temporal.entity": "[\"REGIONID\"]",
-    "utilake.temporal.order": "[\"LASTCHANGED\"]",
-    "utilake.temporal.origin": "derived",
-    "utilake.temporal.valid.kind": "timeless",
-    "utilake.visibility": "PUBLIC"
+    "phasor.declared": "true",
+    "phasor.format": "4",
+    "phasor.key": "[\"REGIONID\"]",
+    "phasor.load": "snapshot",
+    "phasor.model-types": "{\"1\":\"VARCHAR(10)\",\"2\":\"VARCHAR(64)\",\"3\":\"VARCHAR(8)\",\"4\":\"TIMESTAMP(0)\"}",
+    "phasor.package": "MARKET_CONFIG",
+    "phasor.reports": "[[\"MARKET_CONFIG\",\"REGION\"]]",
+    "phasor.table": "REGION",
+    "phasor.temporal.cutoff": "LASTCHANGED",
+    "phasor.temporal.entity": "[\"REGIONID\"]",
+    "phasor.temporal.order": "[\"LASTCHANGED\"]",
+    "phasor.temporal.origin": "derived",
+    "phasor.temporal.valid.kind": "timeless",
+    "phasor.visibility": "PUBLIC"
   },
   "refs": {
     "main": {
@@ -89,27 +89,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/REGION/metadata/snap-233120339235244258-1-48a7fc26-2385-87b5-8e42-6a7220db18a1.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/REGION/metadata/snap-233120339235244258-1-83a6b3eb-8bd1-86c2-969c-67c9d56afc4d.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 233120339235244258,
       "summary": {
         "operation": "append",
-        "utilake.files": "207",
-        "utilake.from.file": "PUBLIC_DVD_REGION_200907010000.zip",
-        "utilake.from.release": "2009-07",
-        "utilake.from.sha256": "44539eb2dbd1be88df4d0e25d3424acce148a40d2632a20dc0d5556981bbd261",
-        "utilake.from.time": "2004-06-11T10:43:05+10:00",
-        "utilake.kinds": "[\"archive\",\"dvd\"]",
-        "utilake.report-subtype": "REGION",
-        "utilake.report-type": "MARKET_CONFIG",
-        "utilake.rows": "1242",
-        "utilake.to.file": "PUBLIC_ARCHIVE#REGION#FILE01#202609010000.zip",
-        "utilake.to.release": "2026-09",
-        "utilake.to.sha256": "d41e003079b537f037a5e6c087eadc2f4d127c5b10ac466996820630dbb15cb5",
-        "utilake.to.time": "2005-05-16T13:25:25+10:00",
-        "utilake.total-rows": "1242",
-        "utilake.version": "1"
+        "phasor.files": "207",
+        "phasor.from.file": "PUBLIC_DVD_REGION_200907010000.zip",
+        "phasor.from.release": "2009-07",
+        "phasor.from.sha256": "44539eb2dbd1be88df4d0e25d3424acce148a40d2632a20dc0d5556981bbd261",
+        "phasor.from.time": "2004-06-11T10:43:05+10:00",
+        "phasor.kinds": "[\"archive\",\"dvd\"]",
+        "phasor.report-subtype": "REGION",
+        "phasor.report-type": "MARKET_CONFIG",
+        "phasor.rows": "1242",
+        "phasor.to.file": "PUBLIC_ARCHIVE#REGION#FILE01#202609010000.zip",
+        "phasor.to.release": "2026-09",
+        "phasor.to.sha256": "d41e003079b537f037a5e6c087eadc2f4d127c5b10ac466996820630dbb15cb5",
+        "phasor.to.time": "2005-05-16T13:25:25+10:00",
+        "phasor.total-rows": "1242",
+        "phasor.version": "1"
       },
       "timestamp-ms": 1246370400000
     }
@@ -120,5 +120,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "48a7fc26-2385-87b5-8e42-6a7220db18a1"
+  "table-uuid": "83a6b3eb-8bd1-86c2-969c-67c9d56afc4d"
 }

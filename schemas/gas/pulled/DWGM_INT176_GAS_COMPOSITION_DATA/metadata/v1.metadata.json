@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1788184800000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/DWGM_INT176_GAS_COMPOSITION_DATA",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/gas/DWGM_INT176_GAS_COMPOSITION_DATA",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -18,23 +18,23 @@
     }
   ],
   "properties": {
-    "utilake.declared": "true",
-    "utilake.format": "4",
-    "utilake.headers": "{\"1\":\"hv_zone\",\"2\":\"hv_zone_desc\",\"3\":\"gas_date\",\"4\":\"methane\",\"5\":\"ethane\",\"6\":\"propane\",\"7\":\"butane_i\",\"8\":\"butane_n\",\"9\":\"pentane_i\",\"10\":\"pentane_n\",\"11\":\"pentane_neo\",\"12\":\"hexane\",\"13\":\"nitrogen\",\"14\":\"carbon_dioxide\",\"15\":\"hydrogen\",\"16\":\"spec_gravity\",\"17\":\"current_date\"}",
-    "utilake.key": "[]",
-    "utilake.load": "append",
-    "utilake.market": "gas",
-    "utilake.offset": "+10:00",
-    "utilake.reports": "[[\"DWGM\",\"INT176_GAS_COMPOSITION_DATA_1\"]]",
-    "utilake.table": "DWGM_INT176_GAS_COMPOSITION_DATA",
-    "utilake.temporal.cutoff": "CURRENT_DATE",
-    "utilake.temporal.entity": "[]",
-    "utilake.temporal.order": "[\"CURRENT_DATE\"]",
-    "utilake.temporal.origin": "hand",
-    "utilake.temporal.valid.column": "GAS_DATE",
-    "utilake.temporal.valid.kind": "instant",
-    "utilake.time": "GAS_DATE",
-    "utilake.visibility": "PUBLIC"
+    "phasor.declared": "true",
+    "phasor.format": "4",
+    "phasor.headers": "{\"1\":\"hv_zone\",\"2\":\"hv_zone_desc\",\"3\":\"gas_date\",\"4\":\"methane\",\"5\":\"ethane\",\"6\":\"propane\",\"7\":\"butane_i\",\"8\":\"butane_n\",\"9\":\"pentane_i\",\"10\":\"pentane_n\",\"11\":\"pentane_neo\",\"12\":\"hexane\",\"13\":\"nitrogen\",\"14\":\"carbon_dioxide\",\"15\":\"hydrogen\",\"16\":\"spec_gravity\",\"17\":\"current_date\"}",
+    "phasor.key": "[]",
+    "phasor.load": "append",
+    "phasor.market": "gas",
+    "phasor.offset": "+10:00",
+    "phasor.reports": "[[\"DWGM\",\"INT176_GAS_COMPOSITION_DATA_1\"]]",
+    "phasor.table": "DWGM_INT176_GAS_COMPOSITION_DATA",
+    "phasor.temporal.cutoff": "CURRENT_DATE",
+    "phasor.temporal.entity": "[]",
+    "phasor.temporal.order": "[\"CURRENT_DATE\"]",
+    "phasor.temporal.origin": "hand",
+    "phasor.temporal.valid.column": "GAS_DATE",
+    "phasor.temporal.valid.kind": "instant",
+    "phasor.time": "GAS_DATE",
+    "phasor.visibility": "PUBLIC"
   },
   "refs": {
     "main": {
@@ -163,27 +163,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/DWGM_INT176_GAS_COMPOSITION_DATA/metadata/snap-3187182720766352362-1-076babc2-cfd2-88bb-8e18-b9e34b81eed8.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/gas/DWGM_INT176_GAS_COMPOSITION_DATA/metadata/snap-3187182720766352362-1-294e3f35-5e13-8a81-899f-74ee3d949f91.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 3187182720766352362,
       "summary": {
         "operation": "append",
-        "utilake.files": "6",
-        "utilake.from.file": "PublicRpts20.zip",
-        "utilake.from.release": "2026-09",
-        "utilake.from.sha256": "631725ac99f0eadc5f841bbc113ce882c1d694f05cdd5eb1465f3885aa320fb4",
-        "utilake.from.time": "2026-07-22T00:00:00+10:00",
-        "utilake.kinds": "[\"dwgm\"]",
-        "utilake.report-subtype": "INT176_GAS_COMPOSITION_DATA_1",
-        "utilake.report-type": "DWGM",
-        "utilake.rows": "18850",
-        "utilake.to.file": "int176_v4_gas_composition_data_1.csv",
-        "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "865435654eac9dc607002a9accda593885b228d9af693bec5fdd679d61ef3ba2",
-        "utilake.to.time": "2026-10-17T00:00:00+10:00",
-        "utilake.total-rows": "18850",
-        "utilake.version": "4"
+        "phasor.files": "6",
+        "phasor.from.file": "PublicRpts20.zip",
+        "phasor.from.release": "2026-09",
+        "phasor.from.sha256": "631725ac99f0eadc5f841bbc113ce882c1d694f05cdd5eb1465f3885aa320fb4",
+        "phasor.from.time": "2026-07-22T00:00:00+10:00",
+        "phasor.kinds": "[\"dwgm\"]",
+        "phasor.report-subtype": "INT176_GAS_COMPOSITION_DATA_1",
+        "phasor.report-type": "DWGM",
+        "phasor.rows": "18850",
+        "phasor.to.file": "int176_v4_gas_composition_data_1.csv",
+        "phasor.to.release": "2026-10",
+        "phasor.to.sha256": "865435654eac9dc607002a9accda593885b228d9af693bec5fdd679d61ef3ba2",
+        "phasor.to.time": "2026-10-17T00:00:00+10:00",
+        "phasor.total-rows": "18850",
+        "phasor.version": "4"
       },
       "timestamp-ms": 1788184800000
     }
@@ -194,5 +194,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "076babc2-cfd2-88bb-8e18-b9e34b81eed8"
+  "table-uuid": "294e3f35-5e13-8a81-899f-74ee3d949f91"
 }

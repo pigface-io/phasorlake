@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1759240800000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GSH_AUCTION_QUANTITIES",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/gas/GSH_AUCTION_QUANTITIES",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -19,23 +19,23 @@
   ],
   "properties": {
     "comment": "Auction limit quantities for each product component available for the day ahead auction",
-    "utilake.declared": "true",
-    "utilake.format": "4",
-    "utilake.key": "[\"AUCTION_DATE\",\"FACILITY_ID\",\"GAS_DATE\",\"LIMIT_ID\",\"LIMIT_TYPE\"]",
-    "utilake.load": "append",
-    "utilake.market": "gas",
-    "utilake.model-types": "{\"1\":\"DATE\",\"2\":\"DATE\",\"3\":\"NUMBER(8,0)\",\"4\":\"VARCHAR2(100)\",\"5\":\"NUMBER(8,0)\",\"6\":\"VARCHAR2(100)\",\"7\":\"VARCHAR2(100)\",\"8\":\"NUMBER(10,0)\",\"9\":\"NUMBER(10,0)\",\"10\":\"VARCHAR2(3)\",\"11\":\"DATE\",\"12\":\"DATE\"}",
-    "utilake.offset": "+10:00",
-    "utilake.reports": "[[\"GSH\",\"AUCTION_QUANTITIES\"]]",
-    "utilake.table": "GSH_AUCTION_QUANTITIES",
-    "utilake.temporal.cutoff": "LASTCHANGED",
-    "utilake.temporal.entity": "[\"FACILITY_ID\",\"LIMIT_ID\",\"LIMIT_TYPE\",\"GAS_DATE\"]",
-    "utilake.temporal.order": "[\"VERSION_DATETIME\",\"LASTCHANGED\"]",
-    "utilake.temporal.origin": "hand",
-    "utilake.temporal.valid.column": "AUCTION_DATE",
-    "utilake.temporal.valid.kind": "instant",
-    "utilake.time": "AUCTION_DATE",
-    "utilake.visibility": "PUBLIC"
+    "phasor.declared": "true",
+    "phasor.format": "4",
+    "phasor.key": "[\"AUCTION_DATE\",\"FACILITY_ID\",\"GAS_DATE\",\"LIMIT_ID\",\"LIMIT_TYPE\"]",
+    "phasor.load": "append",
+    "phasor.market": "gas",
+    "phasor.model-types": "{\"1\":\"DATE\",\"2\":\"DATE\",\"3\":\"NUMBER(8,0)\",\"4\":\"VARCHAR2(100)\",\"5\":\"NUMBER(8,0)\",\"6\":\"VARCHAR2(100)\",\"7\":\"VARCHAR2(100)\",\"8\":\"NUMBER(10,0)\",\"9\":\"NUMBER(10,0)\",\"10\":\"VARCHAR2(3)\",\"11\":\"DATE\",\"12\":\"DATE\"}",
+    "phasor.offset": "+10:00",
+    "phasor.reports": "[[\"GSH\",\"AUCTION_QUANTITIES\"]]",
+    "phasor.table": "GSH_AUCTION_QUANTITIES",
+    "phasor.temporal.cutoff": "LASTCHANGED",
+    "phasor.temporal.entity": "[\"FACILITY_ID\",\"LIMIT_ID\",\"LIMIT_TYPE\",\"GAS_DATE\"]",
+    "phasor.temporal.order": "[\"VERSION_DATETIME\",\"LASTCHANGED\"]",
+    "phasor.temporal.origin": "hand",
+    "phasor.temporal.valid.column": "AUCTION_DATE",
+    "phasor.temporal.valid.kind": "instant",
+    "phasor.time": "AUCTION_DATE",
+    "phasor.visibility": "PUBLIC"
   },
   "refs": {
     "main": {
@@ -152,27 +152,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GSH_AUCTION_QUANTITIES/metadata/snap-6710557361362801409-1-263dc756-a57a-8274-a714-9d76ce9987ce.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/gas/GSH_AUCTION_QUANTITIES/metadata/snap-6710557361362801409-1-5e05ba7a-089d-8807-b5eb-6ef1a716052b.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 6710557361362801409,
       "summary": {
         "operation": "append",
-        "utilake.files": "388",
-        "utilake.from.file": "PUBLIC_AUCTIONQUANTITIES_20251001.zip",
-        "utilake.from.release": "2025-10",
-        "utilake.from.sha256": "b1691ba3140cfced2ddddac2a5915faa6528981b4805f11ff09b036b11e66da3",
-        "utilake.from.time": "2025-10-01T00:00:00+10:00",
-        "utilake.kinds": "[\"gsh\"]",
-        "utilake.report-subtype": "AUCTION_QUANTITIES",
-        "utilake.report-type": "GSH",
-        "utilake.rows": "204408",
-        "utilake.to.file": "PUBLIC_AUCTIONQUANTITIES_20261023_0000000544448859.zip",
-        "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "200eae731711315756852360bdf789237e6c1b2f946216e360b4847f2b43920a",
-        "utilake.to.time": "2026-10-23T00:00:00+10:00",
-        "utilake.total-rows": "204408",
-        "utilake.version": "1"
+        "phasor.files": "388",
+        "phasor.from.file": "PUBLIC_AUCTIONQUANTITIES_20251001.zip",
+        "phasor.from.release": "2025-10",
+        "phasor.from.sha256": "b1691ba3140cfced2ddddac2a5915faa6528981b4805f11ff09b036b11e66da3",
+        "phasor.from.time": "2025-10-01T00:00:00+10:00",
+        "phasor.kinds": "[\"gsh\"]",
+        "phasor.report-subtype": "AUCTION_QUANTITIES",
+        "phasor.report-type": "GSH",
+        "phasor.rows": "204408",
+        "phasor.to.file": "PUBLIC_AUCTIONQUANTITIES_20261023_0000000544448859.zip",
+        "phasor.to.release": "2026-10",
+        "phasor.to.sha256": "200eae731711315756852360bdf789237e6c1b2f946216e360b4847f2b43920a",
+        "phasor.to.time": "2026-10-23T00:00:00+10:00",
+        "phasor.total-rows": "204408",
+        "phasor.version": "1"
       },
       "timestamp-ms": 1759240800000
     }
@@ -183,5 +183,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "263dc756-a57a-8274-a714-9d76ce9987ce"
+  "table-uuid": "5e05ba7a-089d-8807-b5eb-6ef1a716052b"
 }

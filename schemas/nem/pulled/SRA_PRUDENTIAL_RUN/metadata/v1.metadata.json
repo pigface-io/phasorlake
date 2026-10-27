@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1722434400000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/SRA_PRUDENTIAL_RUN",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/SRA_PRUDENTIAL_RUN",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -19,21 +19,21 @@
   ],
   "properties": {
     "comment": "Records the prudential run details for each prudential date",
-    "utilake.declared": "true",
-    "utilake.format": "4",
-    "utilake.key": "[\"PRUDENTIAL_DATE\",\"PRUDENTIAL_RUNNO\"]",
-    "utilake.load": "append",
-    "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(8)\"}",
-    "utilake.package": "IRAUCTION",
-    "utilake.reports": "[[\"IRAUCTION\",\"SRA_PRUDENTIAL_RUN\"]]",
-    "utilake.table": "SRA_PRUDENTIAL_RUN",
-    "utilake.temporal.entity": "[\"PRUDENTIAL_RUNNO\"]",
-    "utilake.temporal.order": "[]",
-    "utilake.temporal.origin": "derived",
-    "utilake.temporal.valid.column": "PRUDENTIAL_DATE",
-    "utilake.temporal.valid.kind": "instant",
-    "utilake.time": "PRUDENTIAL_DATE",
-    "utilake.visibility": "PUBLIC"
+    "phasor.declared": "true",
+    "phasor.format": "4",
+    "phasor.key": "[\"PRUDENTIAL_DATE\",\"PRUDENTIAL_RUNNO\"]",
+    "phasor.load": "append",
+    "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(8)\"}",
+    "phasor.package": "IRAUCTION",
+    "phasor.reports": "[[\"IRAUCTION\",\"SRA_PRUDENTIAL_RUN\"]]",
+    "phasor.table": "SRA_PRUDENTIAL_RUN",
+    "phasor.temporal.entity": "[\"PRUDENTIAL_RUNNO\"]",
+    "phasor.temporal.order": "[]",
+    "phasor.temporal.origin": "derived",
+    "phasor.temporal.valid.column": "PRUDENTIAL_DATE",
+    "phasor.temporal.valid.kind": "instant",
+    "phasor.time": "PRUDENTIAL_DATE",
+    "phasor.visibility": "PUBLIC"
   },
   "refs": {
     "main": {
@@ -77,27 +77,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/SRA_PRUDENTIAL_RUN/metadata/snap-4375977501508292344-1-14a0336a-989c-8d56-a300-3368aca6f08f.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/SRA_PRUDENTIAL_RUN/metadata/snap-4375977501508292344-1-f64c785a-0bc1-8926-b23c-e8e04c54f5be.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 4375977501508292344,
       "summary": {
         "operation": "append",
-        "utilake.files": "26",
-        "utilake.from.file": "PUBLIC_ARCHIVE#SRA_PRUDENTIAL_RUN#FILE01#202408010000.zip",
-        "utilake.from.release": "2024-08",
-        "utilake.from.sha256": "a2c7b6174b185e4cddab448819657ec4ec353574179d1561be012c83f75ddc47",
-        "utilake.from.time": "2021-10-21T20:00:00+10:00",
-        "utilake.kinds": "[\"archive\"]",
-        "utilake.report-subtype": "SRA_PRUDENTIAL_RUN",
-        "utilake.report-type": "IRAUCTION",
-        "utilake.rows": "121161",
-        "utilake.to.file": "PUBLIC_ARCHIVE#SRA_PRUDENTIAL_RUN#FILE01#202609010000.zip",
-        "utilake.to.release": "2026-09",
-        "utilake.to.sha256": "b5bedeb0e9ccfae4eda7aa3623b08e0c6f523c7efa6dfa4f5aa20a49f4fb21ba",
-        "utilake.to.time": "2026-10-09T11:00:05+10:00",
-        "utilake.total-rows": "121161",
-        "utilake.version": "1"
+        "phasor.files": "26",
+        "phasor.from.file": "PUBLIC_ARCHIVE#SRA_PRUDENTIAL_RUN#FILE01#202408010000.zip",
+        "phasor.from.release": "2024-08",
+        "phasor.from.sha256": "a2c7b6174b185e4cddab448819657ec4ec353574179d1561be012c83f75ddc47",
+        "phasor.from.time": "2021-10-21T20:00:00+10:00",
+        "phasor.kinds": "[\"archive\"]",
+        "phasor.report-subtype": "SRA_PRUDENTIAL_RUN",
+        "phasor.report-type": "IRAUCTION",
+        "phasor.rows": "121161",
+        "phasor.to.file": "PUBLIC_ARCHIVE#SRA_PRUDENTIAL_RUN#FILE01#202609010000.zip",
+        "phasor.to.release": "2026-09",
+        "phasor.to.sha256": "b5bedeb0e9ccfae4eda7aa3623b08e0c6f523c7efa6dfa4f5aa20a49f4fb21ba",
+        "phasor.to.time": "2026-10-09T11:00:05+10:00",
+        "phasor.total-rows": "121161",
+        "phasor.version": "1"
       },
       "timestamp-ms": 1722434400000
     }
@@ -108,5 +108,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "14a0336a-989c-8d56-a300-3368aca6f08f"
+  "table-uuid": "f64c785a-0bc1-8926-b23c-e8e04c54f5be"
 }

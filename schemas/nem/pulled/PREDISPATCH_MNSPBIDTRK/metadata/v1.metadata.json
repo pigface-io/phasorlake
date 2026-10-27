@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1246370400000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PREDISPATCH_MNSPBIDTRK",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/PREDISPATCH_MNSPBIDTRK",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -19,21 +19,21 @@
   ],
   "properties": {
     "comment": "PREDISPATCH_MNSPBIDTRK shows the MNSP bid tracking, including the bid version used in each predispatch run for each MNSP Interconnector Link. PREDISPATCH_MNSPBIDTRK shows the audit trail of the bid used for each predispatch run.",
-    "utilake.declared": "true",
-    "utilake.format": "4",
-    "utilake.key": "[\"PREDISPATCHSEQNO\",\"LINKID\",\"PERIODID\"]",
-    "utilake.load": "append",
-    "utilake.model-types": "{\"1\":\"VARCHAR(20)\",\"2\":\"VARCHAR(10)\",\"3\":\"VARCHAR(20)\",\"4\":\"VARCHAR(10)\",\"5\":\"TIMESTAMP(0)\",\"6\":\"TIMESTAMP(3)\",\"7\":\"NUMERIC(3,0)\",\"8\":\"TIMESTAMP(0)\",\"9\":\"TIMESTAMP(0)\"}",
-    "utilake.package": "PRE_DISPATCH",
-    "utilake.reports": "[[\"PREDISPATCH\",\"MNSPBIDTRK\"]]",
-    "utilake.table": "PREDISPATCH_MNSPBIDTRK",
-    "utilake.temporal.cutoff": "LASTCHANGED",
-    "utilake.temporal.entity": "[\"LINKID\",\"PERIODID\"]",
-    "utilake.temporal.order": "[\"PREDISPATCHSEQNO\",\"OFFERDATE\",\"VERSIONNO\",\"LASTCHANGED\"]",
-    "utilake.temporal.origin": "derived",
-    "utilake.temporal.valid.kind": "timeless",
-    "utilake.time": "SETTLEMENTDATE",
-    "utilake.visibility": "PUBLIC"
+    "phasor.declared": "true",
+    "phasor.format": "4",
+    "phasor.key": "[\"PREDISPATCHSEQNO\",\"LINKID\",\"PERIODID\"]",
+    "phasor.load": "append",
+    "phasor.model-types": "{\"1\":\"VARCHAR(20)\",\"2\":\"VARCHAR(10)\",\"3\":\"VARCHAR(20)\",\"4\":\"VARCHAR(10)\",\"5\":\"TIMESTAMP(0)\",\"6\":\"TIMESTAMP(3)\",\"7\":\"NUMERIC(3,0)\",\"8\":\"TIMESTAMP(0)\",\"9\":\"TIMESTAMP(0)\"}",
+    "phasor.package": "PRE_DISPATCH",
+    "phasor.reports": "[[\"PREDISPATCH\",\"MNSPBIDTRK\"]]",
+    "phasor.table": "PREDISPATCH_MNSPBIDTRK",
+    "phasor.temporal.cutoff": "LASTCHANGED",
+    "phasor.temporal.entity": "[\"LINKID\",\"PERIODID\"]",
+    "phasor.temporal.order": "[\"PREDISPATCHSEQNO\",\"OFFERDATE\",\"VERSIONNO\",\"LASTCHANGED\"]",
+    "phasor.temporal.origin": "derived",
+    "phasor.temporal.valid.kind": "timeless",
+    "phasor.time": "SETTLEMENTDATE",
+    "phasor.visibility": "PUBLIC"
   },
   "refs": {
     "main": {
@@ -127,27 +127,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PREDISPATCH_MNSPBIDTRK/metadata/snap-117103460594219184-1-3e19c8dd-07f3-8ebc-86cd-a6bdc92965dd.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/PREDISPATCH_MNSPBIDTRK/metadata/snap-117103460594219184-1-f88dcaa3-c220-8507-ac51-23aee2504f51.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 117103460594219184,
       "summary": {
         "operation": "append",
-        "utilake.files": "814",
-        "utilake.from.file": "PUBLIC_DVD_PREDISPATCH_MNSPBIDTRK_200907010000.zip",
-        "utilake.from.release": "2009-07",
-        "utilake.from.sha256": "44539eb2dbd1be88df4d0e25d3424acce148a40d2632a20dc0d5556981bbd261",
-        "utilake.from.time": "2009-07-01T00:00:00+10:00",
-        "utilake.kinds": "[\"archive\",\"dvd\",\"reports\"]",
-        "utilake.report-subtype": "MNSPBIDTRK",
-        "utilake.report-type": "PREDISPATCH",
-        "utilake.rows": "1078252",
-        "utilake.to.file": "PUBLIC_NEXT_DAY_PREDISPATCH_D_20260602.zip",
-        "utilake.to.release": "2026-06",
-        "utilake.to.sha256": "3db4f152639fa11be1b132159c38c18d003870aec02a8cb1f3f8cab48ac0b6c3",
-        "utilake.to.time": "2026-06-30T00:00:00+10:00",
-        "utilake.total-rows": "1078252",
-        "utilake.version": "1"
+        "phasor.files": "814",
+        "phasor.from.file": "PUBLIC_DVD_PREDISPATCH_MNSPBIDTRK_200907010000.zip",
+        "phasor.from.release": "2009-07",
+        "phasor.from.sha256": "44539eb2dbd1be88df4d0e25d3424acce148a40d2632a20dc0d5556981bbd261",
+        "phasor.from.time": "2009-07-01T00:00:00+10:00",
+        "phasor.kinds": "[\"archive\",\"dvd\",\"reports\"]",
+        "phasor.report-subtype": "MNSPBIDTRK",
+        "phasor.report-type": "PREDISPATCH",
+        "phasor.rows": "1078252",
+        "phasor.to.file": "PUBLIC_NEXT_DAY_PREDISPATCH_D_20260602.zip",
+        "phasor.to.release": "2026-06",
+        "phasor.to.sha256": "3db4f152639fa11be1b132159c38c18d003870aec02a8cb1f3f8cab48ac0b6c3",
+        "phasor.to.time": "2026-06-30T00:00:00+10:00",
+        "phasor.total-rows": "1078252",
+        "phasor.version": "1"
       },
       "timestamp-ms": 1246370400000
     }
@@ -158,5 +158,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "3e19c8dd-07f3-8ebc-86cd-a6bdc92965dd"
+  "table-uuid": "f88dcaa3-c220-8507-ac51-23aee2504f51"
 }

@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1496239200000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/BILLING_NMAS_TST_RECVRY_TRK",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/BILLING_NMAS_TST_RECVRY_TRK",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -19,19 +19,19 @@
   ],
   "properties": {
     "comment": "BILLING_NMAS_TEST_RECVRY_TRK tracks the energy data used to allocate the test payment recovery over the recovery period. This Table may also be used for NSCAS and Type 1 transitional services procured by AEMO under the ISF framework during 2025 and prior to the implementation of all system changes. During this time descriptions in these tables may not be correct.",
-    "utilake.declared": "true",
-    "utilake.format": "4",
-    "utilake.key": "[\"CONTRACTYEAR\",\"WEEKNO\",\"BILLRUNNO\",\"RECOVERY_CONTRACTYEAR\",\"RECOVERY_WEEKNO\",\"RECOVERY_BILLRUNNO\"]",
-    "utilake.load": "append",
-    "utilake.model-types": "{\"1\":\"NUMERIC(4,0)\",\"2\":\"NUMERIC(3,0)\",\"3\":\"NUMERIC(3,0)\",\"4\":\"NUMERIC(4,0)\",\"5\":\"NUMERIC(3,0)\",\"6\":\"NUMERIC(3,0)\"}",
-    "utilake.package": "BILLING_RUN",
-    "utilake.reports": "[[\"BILLING\",\"NMAS_TST_RECVRY_TRK\"]]",
-    "utilake.table": "BILLING_NMAS_TST_RECVRY_TRK",
-    "utilake.temporal.entity": "[\"CONTRACTYEAR\",\"WEEKNO\",\"RECOVERY_CONTRACTYEAR\",\"RECOVERY_WEEKNO\",\"RECOVERY_BILLRUNNO\"]",
-    "utilake.temporal.order": "[\"BILLRUNNO\"]",
-    "utilake.temporal.origin": "derived",
-    "utilake.temporal.valid.kind": "timeless",
-    "utilake.visibility": "PUBLIC"
+    "phasor.declared": "true",
+    "phasor.format": "4",
+    "phasor.key": "[\"CONTRACTYEAR\",\"WEEKNO\",\"BILLRUNNO\",\"RECOVERY_CONTRACTYEAR\",\"RECOVERY_WEEKNO\",\"RECOVERY_BILLRUNNO\"]",
+    "phasor.load": "append",
+    "phasor.model-types": "{\"1\":\"NUMERIC(4,0)\",\"2\":\"NUMERIC(3,0)\",\"3\":\"NUMERIC(3,0)\",\"4\":\"NUMERIC(4,0)\",\"5\":\"NUMERIC(3,0)\",\"6\":\"NUMERIC(3,0)\"}",
+    "phasor.package": "BILLING_RUN",
+    "phasor.reports": "[[\"BILLING\",\"NMAS_TST_RECVRY_TRK\"]]",
+    "phasor.table": "BILLING_NMAS_TST_RECVRY_TRK",
+    "phasor.temporal.entity": "[\"CONTRACTYEAR\",\"WEEKNO\",\"RECOVERY_CONTRACTYEAR\",\"RECOVERY_WEEKNO\",\"RECOVERY_BILLRUNNO\"]",
+    "phasor.temporal.order": "[\"BILLRUNNO\"]",
+    "phasor.temporal.origin": "derived",
+    "phasor.temporal.valid.kind": "timeless",
+    "phasor.visibility": "PUBLIC"
   },
   "refs": {
     "main": {
@@ -107,25 +107,25 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/BILLING_NMAS_TST_RECVRY_TRK/metadata/snap-865062216067034029-1-bb89709d-4cd7-8162-ab1b-4378bf545a2f.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/BILLING_NMAS_TST_RECVRY_TRK/metadata/snap-865062216067034029-1-0213ae9f-bfce-8e3c-bce3-c516b2757f2c.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 865062216067034029,
       "summary": {
         "operation": "append",
-        "utilake.files": "78",
-        "utilake.from.file": "PUBLIC_BILLING_20170616124141_0000000284563656.zip",
-        "utilake.from.release": "2017-06",
-        "utilake.from.sha256": "ff2ffe63ad625190e84cd6cdc38d781445ef664a79a28d187e54c7c5d2ae9eda",
-        "utilake.kinds": "[\"archive\",\"reports\"]",
-        "utilake.report-subtype": "NMAS_TST_RECVRY_TRK",
-        "utilake.report-type": "BILLING",
-        "utilake.rows": "1269",
-        "utilake.to.file": "PUBLIC_BILLING_20260802.zip",
-        "utilake.to.release": "2026-08",
-        "utilake.to.sha256": "9b08d83d90b963b1d1f56eb1d2ad88b9b18fb852a1c0ff9e1b87ac918341ea98",
-        "utilake.total-rows": "1269",
-        "utilake.version": "1"
+        "phasor.files": "78",
+        "phasor.from.file": "PUBLIC_BILLING_20170616124141_0000000284563656.zip",
+        "phasor.from.release": "2017-06",
+        "phasor.from.sha256": "ff2ffe63ad625190e84cd6cdc38d781445ef664a79a28d187e54c7c5d2ae9eda",
+        "phasor.kinds": "[\"archive\",\"reports\"]",
+        "phasor.report-subtype": "NMAS_TST_RECVRY_TRK",
+        "phasor.report-type": "BILLING",
+        "phasor.rows": "1269",
+        "phasor.to.file": "PUBLIC_BILLING_20260802.zip",
+        "phasor.to.release": "2026-08",
+        "phasor.to.sha256": "9b08d83d90b963b1d1f56eb1d2ad88b9b18fb852a1c0ff9e1b87ac918341ea98",
+        "phasor.total-rows": "1269",
+        "phasor.version": "1"
       },
       "timestamp-ms": 1496239200000
     }
@@ -136,5 +136,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "bb89709d-4cd7-8162-ab1b-4378bf545a2f"
+  "table-uuid": "0213ae9f-bfce-8e3c-bce3-c516b2757f2c"
 }

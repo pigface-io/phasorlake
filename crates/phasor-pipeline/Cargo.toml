@@ -1,0 +1,32 @@
+[package]
+name = "phasor-pipeline"
+description = "Orchestration only: list, fetch, decode on blocking workers and hand each file's blocks to a writer session, then record the run."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+zonetrace = { workspace = true, optional = true }
+arrow-array.workspace = true
+arrow-schema.workspace = true
+phasor-core.workspace = true
+phasor-kit.workspace = true
+phasor-zip.workspace = true
+phasor-acquire.workspace = true
+phasor-provenance.workspace = true
+phasor-writer.workspace = true
+futures.workspace = true
+serde_json.workspace = true
+tokio = { workspace = true, features = ["rt-multi-thread", "sync", "macros", "time"] }
+tokio-util.workspace = true
+url.workspace = true
+
+[features]
+# Times the work in zones of zonetrace.
+zones = ["dep:zonetrace", "phasor-writer/zones"]

@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1756648800000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DISPATCHOCD_CONSTRAINTRELAXATION",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/DISPATCHOCD_CONSTRAINTRELAXATION",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -18,9 +18,9 @@
     }
   ],
   "properties": {
-    "utilake.declared": "false",
-    "utilake.format": "4",
-    "utilake.table": "DISPATCHOCD_CONSTRAINTRELAXATION"
+    "phasor.declared": "false",
+    "phasor.format": "4",
+    "phasor.table": "DISPATCHOCD_CONSTRAINTRELAXATION"
   },
   "refs": {
     "main": {
@@ -83,27 +83,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DISPATCHOCD_CONSTRAINTRELAXATION/metadata/snap-2269327535219543767-1-d257c125-70f2-8206-96bf-18d9d6efa8a6.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/DISPATCHOCD_CONSTRAINTRELAXATION/metadata/snap-2269327535219543767-1-5438f412-2a1d-8de4-9071-07d4b0ba8285.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 2269327535219543767,
       "summary": {
         "operation": "append",
-        "utilake.files": "39",
-        "utilake.from.file": "PUBLIC_DAILYOCD_202509270000_20250928040506.zip",
-        "utilake.from.release": "2025-09",
-        "utilake.from.sha256": "373f78bd6b6ac5dc6f3b276a7f70c1107db719568fa36b086ea6946f617c0e54",
-        "utilake.from.time": "2025-09-27T16:25:00+10:00",
-        "utilake.kinds": "[\"reports\"]",
-        "utilake.report-subtype": "CONSTRAINTRELAXATION",
-        "utilake.report-type": "DISPATCHOCD",
-        "utilake.rows": "109",
-        "utilake.to.file": "PUBLIC_DAILYOCD_202610160000_20261017040501.zip",
-        "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "b52259058d9dbfc4301b07754bdc6734bdde169c2488f5c5d0b1ae7caa322f0b",
-        "utilake.to.time": "2026-10-17T02:40:00+10:00",
-        "utilake.total-rows": "109",
-        "utilake.version": "2"
+        "phasor.files": "39",
+        "phasor.from.file": "PUBLIC_DAILYOCD_202509270000_20250928040506.zip",
+        "phasor.from.release": "2025-09",
+        "phasor.from.sha256": "373f78bd6b6ac5dc6f3b276a7f70c1107db719568fa36b086ea6946f617c0e54",
+        "phasor.from.time": "2025-09-27T16:25:00+10:00",
+        "phasor.kinds": "[\"reports\"]",
+        "phasor.report-subtype": "CONSTRAINTRELAXATION",
+        "phasor.report-type": "DISPATCHOCD",
+        "phasor.rows": "109",
+        "phasor.to.file": "PUBLIC_DAILYOCD_202610160000_20261017040501.zip",
+        "phasor.to.release": "2026-10",
+        "phasor.to.sha256": "b52259058d9dbfc4301b07754bdc6734bdde169c2488f5c5d0b1ae7caa322f0b",
+        "phasor.to.time": "2026-10-17T02:40:00+10:00",
+        "phasor.total-rows": "109",
+        "phasor.version": "2"
       },
       "timestamp-ms": 1756648800000
     }
@@ -114,5 +114,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "d257c125-70f2-8206-96bf-18d9d6efa8a6"
+  "table-uuid": "5438f412-2a1d-8de4-9071-07d4b0ba8285"
 }

@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1722434400000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/NETWORK_OUTAGESTATUSCODE",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/NETWORK_OUTAGESTATUSCODE",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -19,21 +19,21 @@
   ],
   "properties": {
     "comment": "NETWORK_OUTAGESTATUSCODE describes the different outage status codes",
-    "utilake.declared": "true",
-    "utilake.format": "4",
-    "utilake.key": "[\"OUTAGESTATUSCODE\"]",
-    "utilake.load": "append",
-    "utilake.model-types": "{\"1\":\"VARCHAR(10)\",\"2\":\"VARCHAR(100)\",\"3\":\"TIMESTAMP(0)\"}",
-    "utilake.package": "NETWORK",
-    "utilake.reports": "[[\"NETWORK\",\"OUTAGESTATUSCODE\"]]",
-    "utilake.table": "NETWORK_OUTAGESTATUSCODE",
-    "utilake.temporal.cutoff": "LASTCHANGED",
-    "utilake.temporal.entity": "[\"OUTAGESTATUSCODE\"]",
-    "utilake.temporal.order": "[\"LASTCHANGED\"]",
-    "utilake.temporal.origin": "derived",
-    "utilake.temporal.valid.kind": "timeless",
-    "utilake.time": "LASTCHANGED",
-    "utilake.visibility": "PUBLIC"
+    "phasor.declared": "true",
+    "phasor.format": "4",
+    "phasor.key": "[\"OUTAGESTATUSCODE\"]",
+    "phasor.load": "append",
+    "phasor.model-types": "{\"1\":\"VARCHAR(10)\",\"2\":\"VARCHAR(100)\",\"3\":\"TIMESTAMP(0)\"}",
+    "phasor.package": "NETWORK",
+    "phasor.reports": "[[\"NETWORK\",\"OUTAGESTATUSCODE\"]]",
+    "phasor.table": "NETWORK_OUTAGESTATUSCODE",
+    "phasor.temporal.cutoff": "LASTCHANGED",
+    "phasor.temporal.entity": "[\"OUTAGESTATUSCODE\"]",
+    "phasor.temporal.order": "[\"LASTCHANGED\"]",
+    "phasor.temporal.origin": "derived",
+    "phasor.temporal.valid.kind": "timeless",
+    "phasor.time": "LASTCHANGED",
+    "phasor.visibility": "PUBLIC"
   },
   "refs": {
     "main": {
@@ -83,27 +83,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/NETWORK_OUTAGESTATUSCODE/metadata/snap-8251606560919910731-1-4a9110e6-7b85-8805-a026-50e28d29f4d8.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/NETWORK_OUTAGESTATUSCODE/metadata/snap-8251606560919910731-1-82c6e468-ae42-86b7-bf14-236a94628055.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 8251606560919910731,
       "summary": {
         "operation": "append",
-        "utilake.files": "415",
-        "utilake.from.file": "PUBLIC_ARCHIVE#NETWORK_OUTAGESTATUSCODE#FILE01#202408010000.zip",
-        "utilake.from.release": "2024-08",
-        "utilake.from.sha256": "e79cd8edda3bb5e069f37ff1d6c563eedb3e16c8b40b9ecef50c37f51e48ad01",
-        "utilake.from.time": "2012-04-01T00:00:00+10:00",
-        "utilake.kinds": "[\"archive\",\"reports\"]",
-        "utilake.report-subtype": "OUTAGESTATUSCODE",
-        "utilake.report-type": "NETWORK",
-        "utilake.rows": "4980",
-        "utilake.to.file": "PUBLIC_NETWORK_20261024100006_0000000544582327.zip",
-        "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "c29c04794134ee5fc75ebbdbcd1fe84e1d111bdb9673bca895da35d7a8dacc7d",
-        "utilake.to.time": "2012-04-01T00:00:00+10:00",
-        "utilake.total-rows": "4980",
-        "utilake.version": "1"
+        "phasor.files": "415",
+        "phasor.from.file": "PUBLIC_ARCHIVE#NETWORK_OUTAGESTATUSCODE#FILE01#202408010000.zip",
+        "phasor.from.release": "2024-08",
+        "phasor.from.sha256": "e79cd8edda3bb5e069f37ff1d6c563eedb3e16c8b40b9ecef50c37f51e48ad01",
+        "phasor.from.time": "2012-04-01T00:00:00+10:00",
+        "phasor.kinds": "[\"archive\",\"reports\"]",
+        "phasor.report-subtype": "OUTAGESTATUSCODE",
+        "phasor.report-type": "NETWORK",
+        "phasor.rows": "4980",
+        "phasor.to.file": "PUBLIC_NETWORK_20261024100006_0000000544582327.zip",
+        "phasor.to.release": "2026-10",
+        "phasor.to.sha256": "c29c04794134ee5fc75ebbdbcd1fe84e1d111bdb9673bca895da35d7a8dacc7d",
+        "phasor.to.time": "2012-04-01T00:00:00+10:00",
+        "phasor.total-rows": "4980",
+        "phasor.version": "1"
       },
       "timestamp-ms": 1722434400000
     }
@@ -114,5 +114,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "4a9110e6-7b85-8805-a026-50e28d29f4d8"
+  "table-uuid": "82c6e468-ae42-86b7-bf14-236a94628055"
 }

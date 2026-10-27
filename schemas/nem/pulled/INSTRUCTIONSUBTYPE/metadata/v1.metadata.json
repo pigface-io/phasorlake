@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1246370400000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/INSTRUCTIONSUBTYPE",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/INSTRUCTIONSUBTYPE",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -19,20 +19,20 @@
   ],
   "properties": {
     "comment": "Each Dispatch instruction (GD instruct) has a type and subtype. INSTRUCTIONSUBTYPE, together with INSTRUCTIONTYPE, sets out valid instruction types.",
-    "utilake.declared": "true",
-    "utilake.format": "4",
-    "utilake.key": "[\"INSTRUCTIONTYPEID\",\"INSTRUCTIONSUBTYPEID\"]",
-    "utilake.load": "snapshot",
-    "utilake.model-types": "{\"1\":\"VARCHAR(10)\",\"2\":\"VARCHAR(10)\",\"3\":\"VARCHAR(64)\",\"4\":\"TIMESTAMP(0)\"}",
-    "utilake.package": "GD_INSTRUCT",
-    "utilake.reports": "[[\"GD_INSTRUCT\",\"INSTRUCTIONSUBTYPE\"]]",
-    "utilake.table": "INSTRUCTIONSUBTYPE",
-    "utilake.temporal.cutoff": "LASTCHANGED",
-    "utilake.temporal.entity": "[\"INSTRUCTIONTYPEID\",\"INSTRUCTIONSUBTYPEID\"]",
-    "utilake.temporal.order": "[\"LASTCHANGED\"]",
-    "utilake.temporal.origin": "derived",
-    "utilake.temporal.valid.kind": "timeless",
-    "utilake.visibility": "PUBLIC"
+    "phasor.declared": "true",
+    "phasor.format": "4",
+    "phasor.key": "[\"INSTRUCTIONTYPEID\",\"INSTRUCTIONSUBTYPEID\"]",
+    "phasor.load": "snapshot",
+    "phasor.model-types": "{\"1\":\"VARCHAR(10)\",\"2\":\"VARCHAR(10)\",\"3\":\"VARCHAR(64)\",\"4\":\"TIMESTAMP(0)\"}",
+    "phasor.package": "GD_INSTRUCT",
+    "phasor.reports": "[[\"GD_INSTRUCT\",\"INSTRUCTIONSUBTYPE\"]]",
+    "phasor.table": "INSTRUCTIONSUBTYPE",
+    "phasor.temporal.cutoff": "LASTCHANGED",
+    "phasor.temporal.entity": "[\"INSTRUCTIONTYPEID\",\"INSTRUCTIONSUBTYPEID\"]",
+    "phasor.temporal.order": "[\"LASTCHANGED\"]",
+    "phasor.temporal.origin": "derived",
+    "phasor.temporal.valid.kind": "timeless",
+    "phasor.visibility": "PUBLIC"
   },
   "refs": {
     "main": {
@@ -90,27 +90,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/INSTRUCTIONSUBTYPE/metadata/snap-6018063869530747504-1-3e394a15-acdd-85d5-ab85-ee61cc572ece.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/INSTRUCTIONSUBTYPE/metadata/snap-6018063869530747504-1-f38630b7-a9cd-882b-ac96-a626abeda0cf.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 6018063869530747504,
       "summary": {
         "operation": "append",
-        "utilake.files": "207",
-        "utilake.from.file": "PUBLIC_DVD_INSTRUCTIONSUBTYPE_200907010000.zip",
-        "utilake.from.release": "2009-07",
-        "utilake.from.sha256": "44539eb2dbd1be88df4d0e25d3424acce148a40d2632a20dc0d5556981bbd261",
-        "utilake.from.time": "1999-04-20T14:56:19+10:00",
-        "utilake.kinds": "[\"archive\",\"dvd\"]",
-        "utilake.report-subtype": "INSTRUCTIONSUBTYPE",
-        "utilake.report-type": "GD_INSTRUCT",
-        "utilake.rows": "14076",
-        "utilake.to.file": "PUBLIC_ARCHIVE#INSTRUCTIONSUBTYPE#FILE01#202609010000.zip",
-        "utilake.to.release": "2026-09",
-        "utilake.to.sha256": "7cd40a1a9561bb24eedb55c742a3e31dfce7b61f47984e0885d7e7e91316193c",
-        "utilake.to.time": "2000-05-22T23:40:43+10:00",
-        "utilake.total-rows": "14076",
-        "utilake.version": "1"
+        "phasor.files": "207",
+        "phasor.from.file": "PUBLIC_DVD_INSTRUCTIONSUBTYPE_200907010000.zip",
+        "phasor.from.release": "2009-07",
+        "phasor.from.sha256": "44539eb2dbd1be88df4d0e25d3424acce148a40d2632a20dc0d5556981bbd261",
+        "phasor.from.time": "1999-04-20T14:56:19+10:00",
+        "phasor.kinds": "[\"archive\",\"dvd\"]",
+        "phasor.report-subtype": "INSTRUCTIONSUBTYPE",
+        "phasor.report-type": "GD_INSTRUCT",
+        "phasor.rows": "14076",
+        "phasor.to.file": "PUBLIC_ARCHIVE#INSTRUCTIONSUBTYPE#FILE01#202609010000.zip",
+        "phasor.to.release": "2026-09",
+        "phasor.to.sha256": "7cd40a1a9561bb24eedb55c742a3e31dfce7b61f47984e0885d7e7e91316193c",
+        "phasor.to.time": "2000-05-22T23:40:43+10:00",
+        "phasor.total-rows": "14076",
+        "phasor.version": "1"
       },
       "timestamp-ms": 1246370400000
     }
@@ -121,5 +121,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "3e394a15-acdd-85d5-ab85-ee61cc572ece"
+  "table-uuid": "f38630b7-a9cd-882b-ac96-a626abeda0cf"
 }

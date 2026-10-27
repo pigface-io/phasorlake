@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1246370400000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MARKETSUSPENSION",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/MARKETSUSPENSION",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -19,20 +19,20 @@
   ],
   "properties": {
     "comment": "MARKETSUSPENSION is obsolete from 2017 End of Year DM4.27 Release. \nMARKETSUSPENSION sets out a start and end periods of any market suspension and the reason.",
-    "utilake.declared": "true",
-    "utilake.format": "4",
-    "utilake.key": "[\"SUSPENSIONID\"]",
-    "utilake.load": "snapshot",
-    "utilake.model-types": "{\"1\":\"VARCHAR(10)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"NUMERIC(3,0)\",\"4\":\"TIMESTAMP(0)\",\"5\":\"NUMERIC(3,0)\",\"6\":\"VARCHAR(64)\",\"7\":\"VARCHAR(15)\",\"8\":\"VARCHAR(15)\",\"9\":\"TIMESTAMP(0)\"}",
-    "utilake.package": "HISTORICAL TABLES",
-    "utilake.reports": "[[\"FORCE_MAJEURE\",\"MARKETSUSPENSION\"]]",
-    "utilake.table": "MARKETSUSPENSION",
-    "utilake.temporal.cutoff": "LASTCHANGED",
-    "utilake.temporal.entity": "[\"SUSPENSIONID\"]",
-    "utilake.temporal.order": "[\"LASTCHANGED\"]",
-    "utilake.temporal.origin": "derived",
-    "utilake.temporal.valid.kind": "timeless",
-    "utilake.visibility": "PUBLIC"
+    "phasor.declared": "true",
+    "phasor.format": "4",
+    "phasor.key": "[\"SUSPENSIONID\"]",
+    "phasor.load": "snapshot",
+    "phasor.model-types": "{\"1\":\"VARCHAR(10)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"NUMERIC(3,0)\",\"4\":\"TIMESTAMP(0)\",\"5\":\"NUMERIC(3,0)\",\"6\":\"VARCHAR(64)\",\"7\":\"VARCHAR(15)\",\"8\":\"VARCHAR(15)\",\"9\":\"TIMESTAMP(0)\"}",
+    "phasor.package": "HISTORICAL TABLES",
+    "phasor.reports": "[[\"FORCE_MAJEURE\",\"MARKETSUSPENSION\"]]",
+    "phasor.table": "MARKETSUSPENSION",
+    "phasor.temporal.cutoff": "LASTCHANGED",
+    "phasor.temporal.entity": "[\"SUSPENSIONID\"]",
+    "phasor.temporal.order": "[\"LASTCHANGED\"]",
+    "phasor.temporal.origin": "derived",
+    "phasor.temporal.valid.kind": "timeless",
+    "phasor.visibility": "PUBLIC"
   },
   "refs": {
     "main": {
@@ -124,27 +124,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MARKETSUSPENSION/metadata/snap-4236624417036237267-1-d8cacaa9-4433-8ad4-8d25-15a689ba6412.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/MARKETSUSPENSION/metadata/snap-4236624417036237267-1-fa0fb260-09fc-8e18-962d-2cd55c88c60e.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 4236624417036237267,
       "summary": {
         "operation": "append",
-        "utilake.files": "207",
-        "utilake.from.file": "PUBLIC_DVD_MARKETSUSPENSION_200907010000.zip",
-        "utilake.from.release": "2009-07",
-        "utilake.from.sha256": "44539eb2dbd1be88df4d0e25d3424acce148a40d2632a20dc0d5556981bbd261",
-        "utilake.from.time": "1999-12-31T00:00:00+10:00",
-        "utilake.kinds": "[\"archive\",\"dvd\"]",
-        "utilake.report-subtype": "MARKETSUSPENSION",
-        "utilake.report-type": "FORCE_MAJEURE",
-        "utilake.rows": "328",
-        "utilake.to.file": "PUBLIC_ARCHIVE#MARKETSUSPENSION#FILE01#202609010000.zip",
-        "utilake.to.release": "2026-09",
-        "utilake.to.sha256": "e4abf977b62167003c4d47a1ee877e64183f1f374ebdc6c35085dcf1edf74f27",
-        "utilake.to.time": "2016-09-28T00:00:00+10:00",
-        "utilake.total-rows": "328",
-        "utilake.version": "1"
+        "phasor.files": "207",
+        "phasor.from.file": "PUBLIC_DVD_MARKETSUSPENSION_200907010000.zip",
+        "phasor.from.release": "2009-07",
+        "phasor.from.sha256": "44539eb2dbd1be88df4d0e25d3424acce148a40d2632a20dc0d5556981bbd261",
+        "phasor.from.time": "1999-12-31T00:00:00+10:00",
+        "phasor.kinds": "[\"archive\",\"dvd\"]",
+        "phasor.report-subtype": "MARKETSUSPENSION",
+        "phasor.report-type": "FORCE_MAJEURE",
+        "phasor.rows": "328",
+        "phasor.to.file": "PUBLIC_ARCHIVE#MARKETSUSPENSION#FILE01#202609010000.zip",
+        "phasor.to.release": "2026-09",
+        "phasor.to.sha256": "e4abf977b62167003c4d47a1ee877e64183f1f374ebdc6c35085dcf1edf74f27",
+        "phasor.to.time": "2016-09-28T00:00:00+10:00",
+        "phasor.total-rows": "328",
+        "phasor.version": "1"
       },
       "timestamp-ms": 1246370400000
     }
@@ -155,5 +155,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "d8cacaa9-4433-8ad4-8d25-15a689ba6412"
+  "table-uuid": "fa0fb260-09fc-8e18-962d-2cd55c88c60e"
 }

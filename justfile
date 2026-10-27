@@ -49,12 +49,12 @@ check:
 
 # the release binary, into bin/
 build:
-    cargo build --release --locked -p utilake-cli
-    mkdir -p bin && cp target/release/utilake bin/utilake
+    cargo build --release --locked -p phasor-cli
+    mkdir -p bin && cp target/release/phasor bin/phasor
 
 # run the release binary
 run *args:
-    cargo run --release -q -p utilake-cli -- "$@"
+    cargo run --release -q -p phasor-cli -- "$@"
 
 # ── style and lint ───────────────────────────────────────────────────────────
 
@@ -85,14 +85,14 @@ cover:
 
 # the real nemweb and WA host: a month listed per kit and the smallest file fetched (needs the network)
 net-test:
-    UTILAKE_NET_TESTS=1 cargo test --locked -p utilake-nem -p utilake-gas -p utilake-wem --test net -- --nocapture
+    PHASOR_NET_TESTS=1 cargo test --locked -p phasor-nem -p phasor-gas -p phasor-wem --test net -- --nocapture
 
 # ── benchmarks ───────────────────────────────────────────────────────────────
 
 # where an ingest's time goes, in zones (zonetrace): the synthetic zip, or
 # the zips given
 zones *zips:
-    cargo run -q --release -p utilake-bench --features zones -- {{zips}}
+    cargo run -q --release -p phasor-bench --features zones -- {{zips}}
 
 # the fast benchmark set (parse, registry), held to bench/budgets.json
 bench-fast:
@@ -112,8 +112,8 @@ budget-check base="origin/main":
 
 # ── schemas ──────────────────────────────────────────────────────────────────
 
-# copy utilake-schemas' tables and manifest at REV into schemas/{market}/pulled/
-schemas-pull rev from="../utilake-schemas":
+# copy phasor-schemas' tables and manifest at REV into schemas/{market}/pulled/
+schemas-pull rev from="../phasorlake-schemas":
     cargo run -q -p xtask -- schemas-pull {{ rev }} --from {{ from }}
 
 # fail unless each schemas/{market}/pulled/ is its manifest's, at the rev Cargo.lock pins
@@ -134,6 +134,11 @@ llm-check:
 # docs/errors.md lists every diagnostic code; regenerate it
 errors-doc:
     cargo run -q -p xtask -- errors-doc --write
+
+# fail if any tracked file or path names the project's old name
+old-name:
+    ! git grep -I -l -i -e 'uti''lake'
+    ! git ls-files | grep -i -e 'uti''lake'
 
 # fail if docs/errors.md is out of date
 errors-check:

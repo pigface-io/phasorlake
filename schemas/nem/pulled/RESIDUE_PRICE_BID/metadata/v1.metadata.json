@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1764511200000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/RESIDUE_PRICE_BID",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/RESIDUE_PRICE_BID",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -19,10 +19,10 @@
   ],
   "properties": {
     "comment": "RESIDUE_PRICE_BID supports the Settlement Residue Auction, holding the unit and bid price details for each participant.",
-    "utilake.declared": "false",
-    "utilake.format": "4",
-    "utilake.model-types": "{\"1\":\"VARCHAR(30)\",\"5\":\"NUMERIC(17,5)\",\"7\":\"VARCHAR(30)\"}",
-    "utilake.table": "RESIDUE_PRICE_BID"
+    "phasor.declared": "false",
+    "phasor.format": "4",
+    "phasor.model-types": "{\"1\":\"VARCHAR(30)\",\"5\":\"NUMERIC(17,5)\",\"7\":\"VARCHAR(30)\"}",
+    "phasor.table": "RESIDUE_PRICE_BID"
   },
   "refs": {
     "main": {
@@ -94,25 +94,25 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/RESIDUE_PRICE_BID/metadata/snap-762764202932130229-1-d7a88ee9-2948-82b5-bdfe-4904bbed0e16.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/RESIDUE_PRICE_BID/metadata/snap-762764202932130229-1-83f7922c-3192-8336-8e3d-812635be383b.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 762764202932130229,
       "summary": {
         "operation": "append",
-        "utilake.files": "4",
-        "utilake.from.file": "PUBLIC_SRBID_A202512_20251215141754.CSV",
-        "utilake.from.release": "2025-12",
-        "utilake.from.sha256": "4f8636b892e9be656cb90bba2e66445af5bdf9d533bf0171e0d413b5b03e1553",
-        "utilake.kinds": "[\"reports\"]",
-        "utilake.report-subtype": "",
-        "utilake.report-type": "RESIDUE_PRICE_BID",
-        "utilake.rows": "42259",
-        "utilake.to.file": "PUBLIC_SRBID_A202609_20260915141606.CSV",
-        "utilake.to.release": "2026-09",
-        "utilake.to.sha256": "27b8d0789d2c14d96643c0f67474fce75d9d27d06cde3d1301b2b80f3313e6f6",
-        "utilake.total-rows": "42259",
-        "utilake.version": "1"
+        "phasor.files": "4",
+        "phasor.from.file": "PUBLIC_SRBID_A202512_20251215141754.CSV",
+        "phasor.from.release": "2025-12",
+        "phasor.from.sha256": "4f8636b892e9be656cb90bba2e66445af5bdf9d533bf0171e0d413b5b03e1553",
+        "phasor.kinds": "[\"reports\"]",
+        "phasor.report-subtype": "",
+        "phasor.report-type": "RESIDUE_PRICE_BID",
+        "phasor.rows": "42259",
+        "phasor.to.file": "PUBLIC_SRBID_A202609_20260915141606.CSV",
+        "phasor.to.release": "2026-09",
+        "phasor.to.sha256": "27b8d0789d2c14d96643c0f67474fce75d9d27d06cde3d1301b2b80f3313e6f6",
+        "phasor.total-rows": "42259",
+        "phasor.version": "1"
       },
       "timestamp-ms": 1764511200000
     }
@@ -123,5 +123,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "d7a88ee9-2948-82b5-bdfe-4904bbed0e16"
+  "table-uuid": "83f7922c-3192-8336-8e3d-812635be383b"
 }

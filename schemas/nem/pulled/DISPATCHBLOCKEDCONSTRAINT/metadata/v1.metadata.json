@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1725112800000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DISPATCHBLOCKEDCONSTRAINT",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/DISPATCHBLOCKEDCONSTRAINT",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -19,21 +19,21 @@
   ],
   "properties": {
     "comment": "DISPATCH Blocked Constraints lists any constraints that were blocked in a dispatch run. If no constraints are blocked, there will be no rows for that dispatch run.",
-    "utilake.declared": "true",
-    "utilake.format": "4",
-    "utilake.key": "[\"SETTLEMENTDATE\",\"RUNNO\",\"CONSTRAINTID\"]",
-    "utilake.load": "append",
-    "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(3,0)\",\"3\":\"VARCHAR(20)\"}",
-    "utilake.package": "DISPATCH",
-    "utilake.reports": "[[\"DISPATCH\",\"BLOCKED_CONSTRAINTS\"]]",
-    "utilake.table": "DISPATCHBLOCKEDCONSTRAINT",
-    "utilake.temporal.entity": "[\"CONSTRAINTID\"]",
-    "utilake.temporal.order": "[\"RUNNO\"]",
-    "utilake.temporal.origin": "derived",
-    "utilake.temporal.valid.column": "SETTLEMENTDATE",
-    "utilake.temporal.valid.kind": "interval_end",
-    "utilake.time": "SETTLEMENTDATE",
-    "utilake.visibility": "PUBLIC"
+    "phasor.declared": "true",
+    "phasor.format": "4",
+    "phasor.key": "[\"SETTLEMENTDATE\",\"RUNNO\",\"CONSTRAINTID\"]",
+    "phasor.load": "append",
+    "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(3,0)\",\"3\":\"VARCHAR(20)\"}",
+    "phasor.package": "DISPATCH",
+    "phasor.reports": "[[\"DISPATCH\",\"BLOCKED_CONSTRAINTS\"]]",
+    "phasor.table": "DISPATCHBLOCKEDCONSTRAINT",
+    "phasor.temporal.entity": "[\"CONSTRAINTID\"]",
+    "phasor.temporal.order": "[\"RUNNO\"]",
+    "phasor.temporal.origin": "derived",
+    "phasor.temporal.valid.column": "SETTLEMENTDATE",
+    "phasor.temporal.valid.kind": "interval_end",
+    "phasor.time": "SETTLEMENTDATE",
+    "phasor.visibility": "PUBLIC"
   },
   "refs": {
     "main": {
@@ -85,27 +85,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DISPATCHBLOCKEDCONSTRAINT/metadata/snap-7245093163558386660-1-31f84b9f-52ad-82d0-af0f-d8f3de46888e.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/DISPATCHBLOCKEDCONSTRAINT/metadata/snap-7245093163558386660-1-64bb46fe-da53-8673-8d78-fee64f8ae6da.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 7245093163558386660,
       "summary": {
         "operation": "append",
-        "utilake.files": "4914",
-        "utilake.from.file": "PUBLIC_ARCHIVE#DISPATCHBLOCKEDCONSTRAINT#FILE01#202409010000.zip",
-        "utilake.from.release": "2024-09",
-        "utilake.from.sha256": "76637d754a9a4f519e8435c0deccaeab710157ace6c7f38f788cc470e9fb7fb8",
-        "utilake.from.time": "2024-09-24T12:45:00+10:00",
-        "utilake.kinds": "[\"archive\",\"reports\"]",
-        "utilake.report-subtype": "BLOCKED_CONSTRAINTS",
-        "utilake.report-type": "DISPATCH",
-        "utilake.rows": "13788",
-        "utilake.to.file": "PUBLIC_DISPATCHIS_20261013.zip",
-        "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "ab883e0bb0b850a6ff1a573a909bae10e09c6a7a23c66376729fac45b86d725d",
-        "utilake.to.time": "2026-10-13T09:30:00+10:00",
-        "utilake.total-rows": "13788",
-        "utilake.version": "1"
+        "phasor.files": "4914",
+        "phasor.from.file": "PUBLIC_ARCHIVE#DISPATCHBLOCKEDCONSTRAINT#FILE01#202409010000.zip",
+        "phasor.from.release": "2024-09",
+        "phasor.from.sha256": "76637d754a9a4f519e8435c0deccaeab710157ace6c7f38f788cc470e9fb7fb8",
+        "phasor.from.time": "2024-09-24T12:45:00+10:00",
+        "phasor.kinds": "[\"archive\",\"reports\"]",
+        "phasor.report-subtype": "BLOCKED_CONSTRAINTS",
+        "phasor.report-type": "DISPATCH",
+        "phasor.rows": "13788",
+        "phasor.to.file": "PUBLIC_DISPATCHIS_20261013.zip",
+        "phasor.to.release": "2026-10",
+        "phasor.to.sha256": "ab883e0bb0b850a6ff1a573a909bae10e09c6a7a23c66376729fac45b86d725d",
+        "phasor.to.time": "2026-10-13T09:30:00+10:00",
+        "phasor.total-rows": "13788",
+        "phasor.version": "1"
       },
       "timestamp-ms": 1725112800000
     }
@@ -116,5 +116,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "31f84b9f-52ad-82d0-af0f-d8f3de46888e"
+  "table-uuid": "64bb46fe-da53-8673-8d78-fee64f8ae6da"
 }

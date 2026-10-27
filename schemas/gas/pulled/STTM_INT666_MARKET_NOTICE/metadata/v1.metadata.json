@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1790776800000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/STTM_INT666_MARKET_NOTICE",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/gas/STTM_INT666_MARKET_NOTICE",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -18,23 +18,23 @@
     }
   ],
   "properties": {
-    "utilake.declared": "true",
-    "utilake.format": "4",
-    "utilake.headers": "{\"1\":\"market_notice_identifier\",\"2\":\"critical_notice_flag\",\"3\":\"market_message\",\"4\":\"notice_start_date\",\"5\":\"notice_end_date\",\"6\":\"url_path\",\"7\":\"report_datetime\"}",
-    "utilake.key": "[]",
-    "utilake.load": "append",
-    "utilake.market": "gas",
-    "utilake.offset": "+10:00",
-    "utilake.reports": "[[\"STTM\",\"INT666_MARKET_NOTICE_RPT_1\"]]",
-    "utilake.table": "STTM_INT666_MARKET_NOTICE",
-    "utilake.temporal.cutoff": "REPORT_DATETIME",
-    "utilake.temporal.entity": "[\"MARKET_NOTICE_IDENTIFIER\"]",
-    "utilake.temporal.order": "[\"REPORT_DATETIME\"]",
-    "utilake.temporal.origin": "hand",
-    "utilake.temporal.valid.column": "NOTICE_START_DATE",
-    "utilake.temporal.valid.kind": "instant",
-    "utilake.time": "NOTICE_START_DATE",
-    "utilake.visibility": "PUBLIC"
+    "phasor.declared": "true",
+    "phasor.format": "4",
+    "phasor.headers": "{\"1\":\"market_notice_identifier\",\"2\":\"critical_notice_flag\",\"3\":\"market_message\",\"4\":\"notice_start_date\",\"5\":\"notice_end_date\",\"6\":\"url_path\",\"7\":\"report_datetime\"}",
+    "phasor.key": "[]",
+    "phasor.load": "append",
+    "phasor.market": "gas",
+    "phasor.offset": "+10:00",
+    "phasor.reports": "[[\"STTM\",\"INT666_MARKET_NOTICE_RPT_1\"]]",
+    "phasor.table": "STTM_INT666_MARKET_NOTICE",
+    "phasor.temporal.cutoff": "REPORT_DATETIME",
+    "phasor.temporal.entity": "[\"MARKET_NOTICE_IDENTIFIER\"]",
+    "phasor.temporal.order": "[\"REPORT_DATETIME\"]",
+    "phasor.temporal.origin": "hand",
+    "phasor.temporal.valid.column": "NOTICE_START_DATE",
+    "phasor.temporal.valid.kind": "instant",
+    "phasor.time": "NOTICE_START_DATE",
+    "phasor.visibility": "PUBLIC"
   },
   "refs": {
     "main": {
@@ -103,27 +103,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/STTM_INT666_MARKET_NOTICE/metadata/snap-7615107850583846953-1-1c80f47f-0b2e-8914-89d9-7b0f63fa65bb.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/gas/STTM_INT666_MARKET_NOTICE/metadata/snap-7615107850583846953-1-e044504a-60fa-8ebd-b41a-4193e3af06f5.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 7615107850583846953,
       "summary": {
         "operation": "append",
-        "utilake.files": "2",
-        "utilake.from.file": "Day08.zip",
-        "utilake.from.release": "2026-10",
-        "utilake.from.sha256": "004e2e84a873da621d198d6d2110a23acc370eeff7151d0dff2de8928fa5b965",
-        "utilake.from.time": "2026-10-08T00:00:00+10:00",
-        "utilake.kinds": "[\"sttm\"]",
-        "utilake.report-subtype": "INT666_MARKET_NOTICE_RPT_1",
-        "utilake.report-type": "STTM",
-        "utilake.rows": "1",
-        "utilake.to.file": "int666_v1_market_notice_rpt_1.csv",
-        "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "f849deb35ba11adc0d8574d46e17a3034b687d6292b71ac856d69b1a91cea055",
-        "utilake.to.time": "2026-10-08T00:00:00+10:00",
-        "utilake.total-rows": "1",
-        "utilake.version": "1"
+        "phasor.files": "2",
+        "phasor.from.file": "Day08.zip",
+        "phasor.from.release": "2026-10",
+        "phasor.from.sha256": "004e2e84a873da621d198d6d2110a23acc370eeff7151d0dff2de8928fa5b965",
+        "phasor.from.time": "2026-10-08T00:00:00+10:00",
+        "phasor.kinds": "[\"sttm\"]",
+        "phasor.report-subtype": "INT666_MARKET_NOTICE_RPT_1",
+        "phasor.report-type": "STTM",
+        "phasor.rows": "1",
+        "phasor.to.file": "int666_v1_market_notice_rpt_1.csv",
+        "phasor.to.release": "2026-10",
+        "phasor.to.sha256": "f849deb35ba11adc0d8574d46e17a3034b687d6292b71ac856d69b1a91cea055",
+        "phasor.to.time": "2026-10-08T00:00:00+10:00",
+        "phasor.total-rows": "1",
+        "phasor.version": "1"
       },
       "timestamp-ms": 1790776800000
     }
@@ -134,5 +134,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "1c80f47f-0b2e-8914-89d9-7b0f63fa65bb"
+  "table-uuid": "e044504a-60fa-8ebd-b41a-4193e3af06f5"
 }

@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1246370400000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/SETCFG_PARTICIPANT_MPF",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/SETCFG_PARTICIPANT_MPF",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -19,22 +19,22 @@
   ],
   "properties": {
     "comment": "SETCFG_PARTICIPANT_MPF shows the Market Participation Factors (MPF) for each participant for each connection point. The MPF values are used to determine recovery amounts for regulation FCAS.",
-    "utilake.declared": "true",
-    "utilake.format": "4",
-    "utilake.key": "[\"PARTICIPANTID\",\"EFFECTIVEDATE\",\"VERSIONNO\",\"PARTICIPANTCATEGORYID\",\"CONNECTIONPOINTID\"]",
-    "utilake.load": "append",
-    "utilake.model-types": "{\"1\":\"VARCHAR(10)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"NUMERIC(3,0)\",\"4\":\"VARCHAR(10)\",\"5\":\"VARCHAR(10)\",\"6\":\"NUMERIC(15,5)\",\"7\":\"TIMESTAMP(0)\"}",
-    "utilake.package": "SETTLEMENT_CONFIG",
-    "utilake.reports": "[[\"SETTLEMENT_CONFIG\",\"SETCFG_PARTICIPANT_MPF\"]]",
-    "utilake.table": "SETCFG_PARTICIPANT_MPF",
-    "utilake.temporal.cutoff": "LASTCHANGED",
-    "utilake.temporal.entity": "[\"PARTICIPANTID\",\"PARTICIPANTCATEGORYID\",\"CONNECTIONPOINTID\"]",
-    "utilake.temporal.order": "[\"VERSIONNO\",\"LASTCHANGED\"]",
-    "utilake.temporal.origin": "derived",
-    "utilake.temporal.valid.column": "EFFECTIVEDATE",
-    "utilake.temporal.valid.kind": "from",
-    "utilake.time": "EFFECTIVEDATE",
-    "utilake.visibility": "PUBLIC"
+    "phasor.declared": "true",
+    "phasor.format": "4",
+    "phasor.key": "[\"PARTICIPANTID\",\"EFFECTIVEDATE\",\"VERSIONNO\",\"PARTICIPANTCATEGORYID\",\"CONNECTIONPOINTID\"]",
+    "phasor.load": "append",
+    "phasor.model-types": "{\"1\":\"VARCHAR(10)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"NUMERIC(3,0)\",\"4\":\"VARCHAR(10)\",\"5\":\"VARCHAR(10)\",\"6\":\"NUMERIC(15,5)\",\"7\":\"TIMESTAMP(0)\"}",
+    "phasor.package": "SETTLEMENT_CONFIG",
+    "phasor.reports": "[[\"SETTLEMENT_CONFIG\",\"SETCFG_PARTICIPANT_MPF\"]]",
+    "phasor.table": "SETCFG_PARTICIPANT_MPF",
+    "phasor.temporal.cutoff": "LASTCHANGED",
+    "phasor.temporal.entity": "[\"PARTICIPANTID\",\"PARTICIPANTCATEGORYID\",\"CONNECTIONPOINTID\"]",
+    "phasor.temporal.order": "[\"VERSIONNO\",\"LASTCHANGED\"]",
+    "phasor.temporal.origin": "derived",
+    "phasor.temporal.valid.column": "EFFECTIVEDATE",
+    "phasor.temporal.valid.kind": "from",
+    "phasor.time": "EFFECTIVEDATE",
+    "phasor.visibility": "PUBLIC"
   },
   "refs": {
     "main": {
@@ -116,27 +116,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/SETCFG_PARTICIPANT_MPF/metadata/snap-5740627887162760060-1-70bd5833-f83f-8b64-a8d8-38501f47a39b.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/SETCFG_PARTICIPANT_MPF/metadata/snap-5740627887162760060-1-9409091e-6448-82b3-bb5b-2f3097227891.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 5740627887162760060,
       "summary": {
         "operation": "append",
-        "utilake.files": "207",
-        "utilake.from.file": "PUBLIC_DVD_SETCFG_PARTICIPANT_MPF_200907010000.zip",
-        "utilake.from.release": "2009-07",
-        "utilake.from.sha256": "44539eb2dbd1be88df4d0e25d3424acce148a40d2632a20dc0d5556981bbd261",
-        "utilake.from.time": "2009-07-24T00:00:00+10:00",
-        "utilake.kinds": "[\"archive\",\"dvd\"]",
-        "utilake.report-subtype": "SETCFG_PARTICIPANT_MPF",
-        "utilake.report-type": "SETTLEMENT_CONFIG",
-        "utilake.rows": "144306",
-        "utilake.to.file": "PUBLIC_ARCHIVE#SETCFG_PARTICIPANT_MPF#FILE01#202609010000.zip",
-        "utilake.to.release": "2026-09",
-        "utilake.to.sha256": "94e81934740a85138697b4d03df9ccd8d201fba47007f075b646634fb8399fb7",
-        "utilake.to.time": "2026-09-29T00:00:00+10:00",
-        "utilake.total-rows": "144306",
-        "utilake.version": "1"
+        "phasor.files": "207",
+        "phasor.from.file": "PUBLIC_DVD_SETCFG_PARTICIPANT_MPF_200907010000.zip",
+        "phasor.from.release": "2009-07",
+        "phasor.from.sha256": "44539eb2dbd1be88df4d0e25d3424acce148a40d2632a20dc0d5556981bbd261",
+        "phasor.from.time": "2009-07-24T00:00:00+10:00",
+        "phasor.kinds": "[\"archive\",\"dvd\"]",
+        "phasor.report-subtype": "SETCFG_PARTICIPANT_MPF",
+        "phasor.report-type": "SETTLEMENT_CONFIG",
+        "phasor.rows": "144306",
+        "phasor.to.file": "PUBLIC_ARCHIVE#SETCFG_PARTICIPANT_MPF#FILE01#202609010000.zip",
+        "phasor.to.release": "2026-09",
+        "phasor.to.sha256": "94e81934740a85138697b4d03df9ccd8d201fba47007f075b646634fb8399fb7",
+        "phasor.to.time": "2026-09-29T00:00:00+10:00",
+        "phasor.total-rows": "144306",
+        "phasor.version": "1"
       },
       "timestamp-ms": 1246370400000
     }
@@ -147,5 +147,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "70bd5833-f83f-8b64-a8d8-38501f47a39b"
+  "table-uuid": "9409091e-6448-82b3-bb5b-2f3097227891"
 }

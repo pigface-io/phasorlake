@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1785506400000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/DWGM_INT235_SCHED_SYSTEM_TOTAL",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/gas/DWGM_INT235_SCHED_SYSTEM_TOTAL",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -18,23 +18,23 @@
     }
   ],
   "properties": {
-    "utilake.declared": "true",
-    "utilake.format": "4",
-    "utilake.headers": "{\"1\":\"transmission_id\",\"2\":\"gas_date\",\"3\":\"flag\",\"4\":\"day_in_advance\",\"5\":\"data_type\",\"6\":\"detail\",\"7\":\"transmission_doc_id\",\"8\":\"id\",\"9\":\"value\",\"10\":\"current_date\"}",
-    "utilake.key": "[]",
-    "utilake.load": "append",
-    "utilake.market": "gas",
-    "utilake.offset": "+10:00",
-    "utilake.reports": "[[\"DWGM\",\"INT235_SCHED_SYSTEM_TOTAL_1\"]]",
-    "utilake.table": "DWGM_INT235_SCHED_SYSTEM_TOTAL",
-    "utilake.temporal.cutoff": "CURRENT_DATE",
-    "utilake.temporal.entity": "[\"TRANSMISSION_ID\",\"TRANSMISSION_DOC_ID\",\"ID\"]",
-    "utilake.temporal.order": "[\"CURRENT_DATE\"]",
-    "utilake.temporal.origin": "hand",
-    "utilake.temporal.valid.column": "GAS_DATE",
-    "utilake.temporal.valid.kind": "instant",
-    "utilake.time": "GAS_DATE",
-    "utilake.visibility": "PUBLIC"
+    "phasor.declared": "true",
+    "phasor.format": "4",
+    "phasor.headers": "{\"1\":\"transmission_id\",\"2\":\"gas_date\",\"3\":\"flag\",\"4\":\"day_in_advance\",\"5\":\"data_type\",\"6\":\"detail\",\"7\":\"transmission_doc_id\",\"8\":\"id\",\"9\":\"value\",\"10\":\"current_date\"}",
+    "phasor.key": "[]",
+    "phasor.load": "append",
+    "phasor.market": "gas",
+    "phasor.offset": "+10:00",
+    "phasor.reports": "[[\"DWGM\",\"INT235_SCHED_SYSTEM_TOTAL_1\"]]",
+    "phasor.table": "DWGM_INT235_SCHED_SYSTEM_TOTAL",
+    "phasor.temporal.cutoff": "CURRENT_DATE",
+    "phasor.temporal.entity": "[\"TRANSMISSION_ID\",\"TRANSMISSION_DOC_ID\",\"ID\"]",
+    "phasor.temporal.order": "[\"CURRENT_DATE\"]",
+    "phasor.temporal.origin": "hand",
+    "phasor.temporal.valid.column": "GAS_DATE",
+    "phasor.temporal.valid.kind": "instant",
+    "phasor.time": "GAS_DATE",
+    "phasor.visibility": "PUBLIC"
   },
   "refs": {
     "main": {
@@ -121,27 +121,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/DWGM_INT235_SCHED_SYSTEM_TOTAL/metadata/snap-6712805428615893171-1-4f06634f-2e93-82f5-96ab-d0b90f24c57b.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/gas/DWGM_INT235_SCHED_SYSTEM_TOTAL/metadata/snap-6712805428615893171-1-2be94550-30ab-835e-acee-297c66478735.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 6712805428615893171,
       "summary": {
         "operation": "append",
-        "utilake.files": "313",
-        "utilake.from.file": "PublicRpts31.zip",
-        "utilake.from.release": "2026-08",
-        "utilake.from.sha256": "735fad42989ef107a70ecdfc43f290c13afc957673461c78e4538d9ffcc9b0fe",
-        "utilake.from.time": "2026-08-29T00:00:00+10:00",
-        "utilake.kinds": "[\"dwgm\"]",
-        "utilake.report-subtype": "INT235_SCHED_SYSTEM_TOTAL_1",
-        "utilake.report-type": "DWGM",
-        "utilake.rows": "18011",
-        "utilake.to.file": "int235_v4_sched_system_total_1.csv@20261024T113600+1000",
-        "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "bc338d477516ed623fbbc4f0c60f6646a53dfa9958a98674029c2d56b2f95102",
-        "utilake.to.time": "2026-10-26T00:00:00+10:00",
-        "utilake.total-rows": "18011",
-        "utilake.version": "4"
+        "phasor.files": "313",
+        "phasor.from.file": "PublicRpts31.zip",
+        "phasor.from.release": "2026-08",
+        "phasor.from.sha256": "735fad42989ef107a70ecdfc43f290c13afc957673461c78e4538d9ffcc9b0fe",
+        "phasor.from.time": "2026-08-29T00:00:00+10:00",
+        "phasor.kinds": "[\"dwgm\"]",
+        "phasor.report-subtype": "INT235_SCHED_SYSTEM_TOTAL_1",
+        "phasor.report-type": "DWGM",
+        "phasor.rows": "18011",
+        "phasor.to.file": "int235_v4_sched_system_total_1.csv@20261024T113600+1000",
+        "phasor.to.release": "2026-10",
+        "phasor.to.sha256": "bc338d477516ed623fbbc4f0c60f6646a53dfa9958a98674029c2d56b2f95102",
+        "phasor.to.time": "2026-10-26T00:00:00+10:00",
+        "phasor.total-rows": "18011",
+        "phasor.version": "4"
       },
       "timestamp-ms": 1785506400000
     }
@@ -152,5 +152,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "4f06634f-2e93-82f5-96ab-d0b90f24c57b"
+  "table-uuid": "2be94550-30ab-835e-acee-297c66478735"
 }

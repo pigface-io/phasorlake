@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1633010400000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DAILY_WDR_NO_SCADA",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/DAILY_WDR_NO_SCADA",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -18,9 +18,9 @@
     }
   ],
   "properties": {
-    "utilake.declared": "false",
-    "utilake.format": "4",
-    "utilake.table": "DAILY_WDR_NO_SCADA"
+    "phasor.declared": "false",
+    "phasor.format": "4",
+    "phasor.table": "DAILY_WDR_NO_SCADA"
   },
   "refs": {
     "main": {
@@ -65,27 +65,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DAILY_WDR_NO_SCADA/metadata/snap-4398770350080881903-1-b3679481-b202-8c16-8697-aa94e77cdcd3.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/DAILY_WDR_NO_SCADA/metadata/snap-4398770350080881903-1-6024e795-7da3-8557-a8fd-01320a28ddb3.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 4398770350080881903,
       "summary": {
         "operation": "append",
-        "utilake.files": "1829",
-        "utilake.from.file": "PUBLIC_WDR_CAPACITY_NO_SCADA_20211021_0000000351232024.zip",
-        "utilake.from.release": "2021-10",
-        "utilake.from.sha256": "78da1a3eb1e46b8c128a9f6072be5b2e35e7d373d1f0dce98e5cb9c50ca728e1",
-        "utilake.from.time": "2021-10-21T00:00:00+10:00",
-        "utilake.kinds": "[\"reports\"]",
-        "utilake.report-subtype": "WDR_NO_SCADA",
-        "utilake.report-type": "DAILY",
-        "utilake.rows": "9145",
-        "utilake.to.file": "PUBLIC_WDR_CAPACITY_NO_SCADA_20261023_0000000544544781.zip",
-        "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "130c2bd7c2c736618b2ecc21bad78671c5a4ab742c21c1a09eb5d64f8b9d7f6f",
-        "utilake.to.time": "2026-10-23T00:00:00+10:00",
-        "utilake.total-rows": "9145",
-        "utilake.version": "1"
+        "phasor.files": "1829",
+        "phasor.from.file": "PUBLIC_WDR_CAPACITY_NO_SCADA_20211021_0000000351232024.zip",
+        "phasor.from.release": "2021-10",
+        "phasor.from.sha256": "78da1a3eb1e46b8c128a9f6072be5b2e35e7d373d1f0dce98e5cb9c50ca728e1",
+        "phasor.from.time": "2021-10-21T00:00:00+10:00",
+        "phasor.kinds": "[\"reports\"]",
+        "phasor.report-subtype": "WDR_NO_SCADA",
+        "phasor.report-type": "DAILY",
+        "phasor.rows": "9145",
+        "phasor.to.file": "PUBLIC_WDR_CAPACITY_NO_SCADA_20261023_0000000544544781.zip",
+        "phasor.to.release": "2026-10",
+        "phasor.to.sha256": "130c2bd7c2c736618b2ecc21bad78671c5a4ab742c21c1a09eb5d64f8b9d7f6f",
+        "phasor.to.time": "2026-10-23T00:00:00+10:00",
+        "phasor.total-rows": "9145",
+        "phasor.version": "1"
       },
       "timestamp-ms": 1633010400000
     }
@@ -96,5 +96,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "b3679481-b202-8c16-8697-aa94e77cdcd3"
+  "table-uuid": "6024e795-7da3-8557-a8fd-01320a28ddb3"
 }

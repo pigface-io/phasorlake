@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1785506400000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/DWGM_INT871_ERFTDAILYNSLRPT",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/gas/DWGM_INT871_ERFTDAILYNSLRPT",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -18,23 +18,23 @@
     }
   ],
   "properties": {
-    "utilake.declared": "true",
-    "utilake.format": "4",
-    "utilake.headers": "{\"1\":\"network_id\",\"2\":\"gas_date\",\"3\":\"gas_date_historical\",\"4\":\"nsl_mj\",\"5\":\"total_meter_count_basic\",\"6\":\"normalisation_factor\",\"7\":\"current_date\"}",
-    "utilake.key": "[]",
-    "utilake.load": "append",
-    "utilake.market": "gas",
-    "utilake.offset": "+10:00",
-    "utilake.reports": "[[\"DWGM\",\"INT871_ERFTDAILYNSLRPT_1\"]]",
-    "utilake.table": "DWGM_INT871_ERFTDAILYNSLRPT",
-    "utilake.temporal.cutoff": "CURRENT_DATE",
-    "utilake.temporal.entity": "[\"NETWORK_ID\"]",
-    "utilake.temporal.order": "[\"CURRENT_DATE\"]",
-    "utilake.temporal.origin": "hand",
-    "utilake.temporal.valid.column": "GAS_DATE",
-    "utilake.temporal.valid.kind": "instant",
-    "utilake.time": "GAS_DATE",
-    "utilake.visibility": "PUBLIC"
+    "phasor.declared": "true",
+    "phasor.format": "4",
+    "phasor.headers": "{\"1\":\"network_id\",\"2\":\"gas_date\",\"3\":\"gas_date_historical\",\"4\":\"nsl_mj\",\"5\":\"total_meter_count_basic\",\"6\":\"normalisation_factor\",\"7\":\"current_date\"}",
+    "phasor.key": "[]",
+    "phasor.load": "append",
+    "phasor.market": "gas",
+    "phasor.offset": "+10:00",
+    "phasor.reports": "[[\"DWGM\",\"INT871_ERFTDAILYNSLRPT_1\"]]",
+    "phasor.table": "DWGM_INT871_ERFTDAILYNSLRPT",
+    "phasor.temporal.cutoff": "CURRENT_DATE",
+    "phasor.temporal.entity": "[\"NETWORK_ID\"]",
+    "phasor.temporal.order": "[\"CURRENT_DATE\"]",
+    "phasor.temporal.origin": "hand",
+    "phasor.temporal.valid.column": "GAS_DATE",
+    "phasor.temporal.valid.kind": "instant",
+    "phasor.time": "GAS_DATE",
+    "phasor.visibility": "PUBLIC"
   },
   "refs": {
     "main": {
@@ -103,27 +103,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/DWGM_INT871_ERFTDAILYNSLRPT/metadata/snap-6674356990266846563-1-bd439291-968b-8554-af57-43dfa7a1ee08.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/gas/DWGM_INT871_ERFTDAILYNSLRPT/metadata/snap-6674356990266846563-1-9343e72b-7558-8a7c-bb4e-7bfde8360505.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 6674356990266846563,
       "summary": {
         "operation": "append",
-        "utilake.files": "72",
-        "utilake.from.file": "PublicRpts31.zip",
-        "utilake.from.release": "2026-08",
-        "utilake.from.sha256": "735fad42989ef107a70ecdfc43f290c13afc957673461c78e4538d9ffcc9b0fe",
-        "utilake.from.time": "2026-08-29T00:00:00+10:00",
-        "utilake.kinds": "[\"dwgm\"]",
-        "utilake.report-subtype": "INT871_ERFTDAILYNSLRPT_1",
-        "utilake.report-type": "DWGM",
-        "utilake.rows": "566568",
-        "utilake.to.file": "int871_v1_erftdailynslrpt_1.csv@20261024T113600+1000",
-        "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "35627b6622d513022a0963b5cefe522b27b003e5b958becda96c75e3a5eff794",
-        "utilake.to.time": "2026-10-23T00:00:00+10:00",
-        "utilake.total-rows": "566568",
-        "utilake.version": "1"
+        "phasor.files": "72",
+        "phasor.from.file": "PublicRpts31.zip",
+        "phasor.from.release": "2026-08",
+        "phasor.from.sha256": "735fad42989ef107a70ecdfc43f290c13afc957673461c78e4538d9ffcc9b0fe",
+        "phasor.from.time": "2026-08-29T00:00:00+10:00",
+        "phasor.kinds": "[\"dwgm\"]",
+        "phasor.report-subtype": "INT871_ERFTDAILYNSLRPT_1",
+        "phasor.report-type": "DWGM",
+        "phasor.rows": "566568",
+        "phasor.to.file": "int871_v1_erftdailynslrpt_1.csv@20261024T113600+1000",
+        "phasor.to.release": "2026-10",
+        "phasor.to.sha256": "35627b6622d513022a0963b5cefe522b27b003e5b958becda96c75e3a5eff794",
+        "phasor.to.time": "2026-10-23T00:00:00+10:00",
+        "phasor.total-rows": "566568",
+        "phasor.version": "1"
       },
       "timestamp-ms": 1785506400000
     }
@@ -134,5 +134,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "bd439291-968b-8554-af57-43dfa7a1ee08"
+  "table-uuid": "9343e72b-7558-8a7c-bb4e-7bfde8360505"
 }

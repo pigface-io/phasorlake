@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1785506400000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/DWGM_INT112_DFPC",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/gas/DWGM_INT112_DFPC",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -18,23 +18,23 @@
     }
   ],
   "properties": {
-    "utilake.declared": "true",
-    "utilake.format": "4",
-    "utilake.headers": "{\"1\":\"dfpc_id\",\"2\":\"injection_mirn\",\"3\":\"withdrawal_mirn\",\"4\":\"commencement_date\",\"5\":\"termination_date\",\"6\":\"daily_max_net_inj_qty_gj\",\"7\":\"daily_max_net_wdl_qty_gj\",\"8\":\"ti\",\"9\":\"hourly_max_net_inj_qty_gj\",\"10\":\"hourly_max_net_wdl_qty_gj\",\"11\":\"mod_datetime\",\"12\":\"current_date\"}",
-    "utilake.key": "[]",
-    "utilake.load": "append",
-    "utilake.market": "gas",
-    "utilake.offset": "+10:00",
-    "utilake.reports": "[[\"DWGM\",\"INT112_DFPC_1\"]]",
-    "utilake.table": "DWGM_INT112_DFPC",
-    "utilake.temporal.cutoff": "CURRENT_DATE",
-    "utilake.temporal.entity": "[\"DFPC_ID\"]",
-    "utilake.temporal.order": "[\"CURRENT_DATE\"]",
-    "utilake.temporal.origin": "hand",
-    "utilake.temporal.valid.column": "COMMENCEMENT_DATE",
-    "utilake.temporal.valid.kind": "instant",
-    "utilake.time": "COMMENCEMENT_DATE",
-    "utilake.visibility": "PUBLIC"
+    "phasor.declared": "true",
+    "phasor.format": "4",
+    "phasor.headers": "{\"1\":\"dfpc_id\",\"2\":\"injection_mirn\",\"3\":\"withdrawal_mirn\",\"4\":\"commencement_date\",\"5\":\"termination_date\",\"6\":\"daily_max_net_inj_qty_gj\",\"7\":\"daily_max_net_wdl_qty_gj\",\"8\":\"ti\",\"9\":\"hourly_max_net_inj_qty_gj\",\"10\":\"hourly_max_net_wdl_qty_gj\",\"11\":\"mod_datetime\",\"12\":\"current_date\"}",
+    "phasor.key": "[]",
+    "phasor.load": "append",
+    "phasor.market": "gas",
+    "phasor.offset": "+10:00",
+    "phasor.reports": "[[\"DWGM\",\"INT112_DFPC_1\"]]",
+    "phasor.table": "DWGM_INT112_DFPC",
+    "phasor.temporal.cutoff": "CURRENT_DATE",
+    "phasor.temporal.entity": "[\"DFPC_ID\"]",
+    "phasor.temporal.order": "[\"CURRENT_DATE\"]",
+    "phasor.temporal.origin": "hand",
+    "phasor.temporal.valid.column": "COMMENCEMENT_DATE",
+    "phasor.temporal.valid.kind": "instant",
+    "phasor.time": "COMMENCEMENT_DATE",
+    "phasor.visibility": "PUBLIC"
   },
   "refs": {
     "main": {
@@ -133,27 +133,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/DWGM_INT112_DFPC/metadata/snap-1076655616819132648-1-61a05c8b-8497-8ffe-a1b5-561d7610a4e6.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/gas/DWGM_INT112_DFPC/metadata/snap-1076655616819132648-1-e3e6259a-d48b-85b0-8a0c-827a1bfa9720.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 1076655616819132648,
       "summary": {
         "operation": "append",
-        "utilake.files": "313",
-        "utilake.from.file": "PublicRpts31.zip",
-        "utilake.from.release": "2026-08",
-        "utilake.from.sha256": "735fad42989ef107a70ecdfc43f290c13afc957673461c78e4538d9ffcc9b0fe",
-        "utilake.from.time": "2026-08-29T00:00:00+10:00",
-        "utilake.kinds": "[\"dwgm\"]",
-        "utilake.report-subtype": "INT112_DFPC_1",
-        "utilake.report-type": "DWGM",
-        "utilake.rows": "5472",
-        "utilake.to.file": "int112_v4_dfpc_1.csv@20261024T113400+1000",
-        "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "1f0ea4da93ad6092c48d11bd47cac93c64f2eb560e9b16d8e6e2edf1bc7c717e",
-        "utilake.to.time": "2026-10-26T00:00:00+10:00",
-        "utilake.total-rows": "5472",
-        "utilake.version": "4"
+        "phasor.files": "313",
+        "phasor.from.file": "PublicRpts31.zip",
+        "phasor.from.release": "2026-08",
+        "phasor.from.sha256": "735fad42989ef107a70ecdfc43f290c13afc957673461c78e4538d9ffcc9b0fe",
+        "phasor.from.time": "2026-08-29T00:00:00+10:00",
+        "phasor.kinds": "[\"dwgm\"]",
+        "phasor.report-subtype": "INT112_DFPC_1",
+        "phasor.report-type": "DWGM",
+        "phasor.rows": "5472",
+        "phasor.to.file": "int112_v4_dfpc_1.csv@20261024T113400+1000",
+        "phasor.to.release": "2026-10",
+        "phasor.to.sha256": "1f0ea4da93ad6092c48d11bd47cac93c64f2eb560e9b16d8e6e2edf1bc7c717e",
+        "phasor.to.time": "2026-10-26T00:00:00+10:00",
+        "phasor.total-rows": "5472",
+        "phasor.version": "4"
       },
       "timestamp-ms": 1785506400000
     }
@@ -164,5 +164,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "61a05c8b-8497-8ffe-a1b5-561d7610a4e6"
+  "table-uuid": "e3e6259a-d48b-85b0-8a0c-827a1bfa9720"
 }

@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1722434400000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/NETWORK_SUBSTATIONDETAIL",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/NETWORK_SUBSTATIONDETAIL",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -19,23 +19,23 @@
   ],
   "properties": {
     "comment": "NETWORK_SUBSTATIONDETAIL sets out the attributes of sub-stations across time",
-    "utilake.declared": "true",
-    "utilake.format": "4",
-    "utilake.key": "[\"SUBSTATIONID\",\"VALIDFROM\"]",
-    "utilake.load": "append",
-    "utilake.model-types": "{\"1\":\"VARCHAR(30)\",\"2\":\"TIMESTAMP(3)\",\"3\":\"TIMESTAMP(3)\",\"4\":\"VARCHAR(100)\",\"5\":\"VARCHAR(10)\",\"6\":\"VARCHAR(30)\",\"7\":\"TIMESTAMP(3)\"}",
-    "utilake.package": "NETWORK",
-    "utilake.reports": "[[\"NETWORK\",\"SUBSTATIONDETAIL\"]]",
-    "utilake.table": "NETWORK_SUBSTATIONDETAIL",
-    "utilake.temporal.cutoff": "LASTCHANGED",
-    "utilake.temporal.entity": "[\"SUBSTATIONID\"]",
-    "utilake.temporal.order": "[\"LASTCHANGED\"]",
-    "utilake.temporal.origin": "derived",
-    "utilake.temporal.valid.column": "VALIDFROM",
-    "utilake.temporal.valid.kind": "from",
-    "utilake.temporal.valid.until": "VALIDTO",
-    "utilake.time": "LASTCHANGED",
-    "utilake.visibility": "PUBLIC"
+    "phasor.declared": "true",
+    "phasor.format": "4",
+    "phasor.key": "[\"SUBSTATIONID\",\"VALIDFROM\"]",
+    "phasor.load": "append",
+    "phasor.model-types": "{\"1\":\"VARCHAR(30)\",\"2\":\"TIMESTAMP(3)\",\"3\":\"TIMESTAMP(3)\",\"4\":\"VARCHAR(100)\",\"5\":\"VARCHAR(10)\",\"6\":\"VARCHAR(30)\",\"7\":\"TIMESTAMP(3)\"}",
+    "phasor.package": "NETWORK",
+    "phasor.reports": "[[\"NETWORK\",\"SUBSTATIONDETAIL\"]]",
+    "phasor.table": "NETWORK_SUBSTATIONDETAIL",
+    "phasor.temporal.cutoff": "LASTCHANGED",
+    "phasor.temporal.entity": "[\"SUBSTATIONID\"]",
+    "phasor.temporal.order": "[\"LASTCHANGED\"]",
+    "phasor.temporal.origin": "derived",
+    "phasor.temporal.valid.column": "VALIDFROM",
+    "phasor.temporal.valid.kind": "from",
+    "phasor.temporal.valid.until": "VALIDTO",
+    "phasor.time": "LASTCHANGED",
+    "phasor.visibility": "PUBLIC"
   },
   "refs": {
     "main": {
@@ -114,27 +114,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/NETWORK_SUBSTATIONDETAIL/metadata/snap-6552772676758213654-1-980dedb9-7d6a-8342-96c7-ce93ed5c01af.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/NETWORK_SUBSTATIONDETAIL/metadata/snap-6552772676758213654-1-36b8815d-f260-8b16-bc44-15d62db937b1.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 6552772676758213654,
       "summary": {
         "operation": "append",
-        "utilake.files": "415",
-        "utilake.from.file": "PUBLIC_ARCHIVE#NETWORK_SUBSTATIONDETAIL#FILE01#202408010000.zip",
-        "utilake.from.release": "2024-08",
-        "utilake.from.sha256": "12bd724b5b3dd3eaa26496c752e72610b58e4a77a3c1bb99ec58dde5e202cba4",
-        "utilake.from.time": "2003-04-28T16:51:18.000+10:00",
-        "utilake.kinds": "[\"archive\",\"reports\"]",
-        "utilake.report-subtype": "SUBSTATIONDETAIL",
-        "utilake.report-type": "NETWORK",
-        "utilake.rows": "388974",
-        "utilake.to.file": "PUBLIC_NETWORK_20261024100006_0000000544582327.zip",
-        "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "c29c04794134ee5fc75ebbdbcd1fe84e1d111bdb9673bca895da35d7a8dacc7d",
-        "utilake.to.time": "2999-01-01T00:00:10.000+10:00",
-        "utilake.total-rows": "388974",
-        "utilake.version": "2"
+        "phasor.files": "415",
+        "phasor.from.file": "PUBLIC_ARCHIVE#NETWORK_SUBSTATIONDETAIL#FILE01#202408010000.zip",
+        "phasor.from.release": "2024-08",
+        "phasor.from.sha256": "12bd724b5b3dd3eaa26496c752e72610b58e4a77a3c1bb99ec58dde5e202cba4",
+        "phasor.from.time": "2003-04-28T16:51:18.000+10:00",
+        "phasor.kinds": "[\"archive\",\"reports\"]",
+        "phasor.report-subtype": "SUBSTATIONDETAIL",
+        "phasor.report-type": "NETWORK",
+        "phasor.rows": "388974",
+        "phasor.to.file": "PUBLIC_NETWORK_20261024100006_0000000544582327.zip",
+        "phasor.to.release": "2026-10",
+        "phasor.to.sha256": "c29c04794134ee5fc75ebbdbcd1fe84e1d111bdb9673bca895da35d7a8dacc7d",
+        "phasor.to.time": "2999-01-01T00:00:10.000+10:00",
+        "phasor.total-rows": "388974",
+        "phasor.version": "2"
       },
       "timestamp-ms": 1722434400000
     }
@@ -145,5 +145,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "980dedb9-7d6a-8342-96c7-ce93ed5c01af"
+  "table-uuid": "36b8815d-f260-8b16-bc44-15d62db937b1"
 }

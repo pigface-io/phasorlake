@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1785506400000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/DWGM_INT039B_INDICATIVE_LOCATIONAL_PRICE",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/gas/DWGM_INT039B_INDICATIVE_LOCATIONAL_PRICE",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -18,20 +18,20 @@
     }
   ],
   "properties": {
-    "utilake.declared": "true",
-    "utilake.format": "4",
-    "utilake.headers": "{\"1\":\"gas_date\",\"2\":\"node_name\",\"3\":\"ti\",\"4\":\"nodal_price_value_gst_ex\",\"5\":\"transmission_id\",\"6\":\"current_date\"}",
-    "utilake.key": "[]",
-    "utilake.load": "append",
-    "utilake.market": "gas",
-    "utilake.offset": "+10:00",
-    "utilake.reports": "[[\"DWGM\",\"INT039B_INDICATIVE_LOCATIONAL_PRICE_1\"]]",
-    "utilake.table": "DWGM_INT039B_INDICATIVE_LOCATIONAL_PRICE",
-    "utilake.temporal.entity": "[\"TRANSMISSION_ID\"]",
-    "utilake.temporal.order": "[\"CURRENT_DATE\"]",
-    "utilake.temporal.origin": "hand",
-    "utilake.temporal.valid.kind": "timeless",
-    "utilake.visibility": "PUBLIC"
+    "phasor.declared": "true",
+    "phasor.format": "4",
+    "phasor.headers": "{\"1\":\"gas_date\",\"2\":\"node_name\",\"3\":\"ti\",\"4\":\"nodal_price_value_gst_ex\",\"5\":\"transmission_id\",\"6\":\"current_date\"}",
+    "phasor.key": "[]",
+    "phasor.load": "append",
+    "phasor.market": "gas",
+    "phasor.offset": "+10:00",
+    "phasor.reports": "[[\"DWGM\",\"INT039B_INDICATIVE_LOCATIONAL_PRICE_1\"]]",
+    "phasor.table": "DWGM_INT039B_INDICATIVE_LOCATIONAL_PRICE",
+    "phasor.temporal.entity": "[\"TRANSMISSION_ID\"]",
+    "phasor.temporal.order": "[\"CURRENT_DATE\"]",
+    "phasor.temporal.origin": "hand",
+    "phasor.temporal.valid.kind": "timeless",
+    "phasor.visibility": "PUBLIC"
   },
   "refs": {
     "main": {
@@ -94,25 +94,25 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/DWGM_INT039B_INDICATIVE_LOCATIONAL_PRICE/metadata/snap-6212922200941735380-1-c585f0fc-6d8e-86a6-990d-952dee3ad787.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/gas/DWGM_INT039B_INDICATIVE_LOCATIONAL_PRICE/metadata/snap-6212922200941735380-1-18b356e8-5870-897f-9fb5-816b9906ad81.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 6212922200941735380,
       "summary": {
         "operation": "append",
-        "utilake.files": "35",
-        "utilake.from.file": "PublicRpts31.zip",
-        "utilake.from.release": "2026-08",
-        "utilake.from.sha256": "735fad42989ef107a70ecdfc43f290c13afc957673461c78e4538d9ffcc9b0fe",
-        "utilake.kinds": "[\"dwgm\"]",
-        "utilake.report-subtype": "INT039B_INDICATIVE_LOCATIONAL_PRICE_1",
-        "utilake.report-type": "DWGM",
-        "utilake.rows": "0",
-        "utilake.to.file": "int039b_v4_indicative_locational_price_1.csv",
-        "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "d172ac1ab8d452031e3f566676bf1cf1a2533f0d3150dc1d77c631766c23209d",
-        "utilake.total-rows": "0",
-        "utilake.version": "4"
+        "phasor.files": "35",
+        "phasor.from.file": "PublicRpts31.zip",
+        "phasor.from.release": "2026-08",
+        "phasor.from.sha256": "735fad42989ef107a70ecdfc43f290c13afc957673461c78e4538d9ffcc9b0fe",
+        "phasor.kinds": "[\"dwgm\"]",
+        "phasor.report-subtype": "INT039B_INDICATIVE_LOCATIONAL_PRICE_1",
+        "phasor.report-type": "DWGM",
+        "phasor.rows": "0",
+        "phasor.to.file": "int039b_v4_indicative_locational_price_1.csv",
+        "phasor.to.release": "2026-10",
+        "phasor.to.sha256": "d172ac1ab8d452031e3f566676bf1cf1a2533f0d3150dc1d77c631766c23209d",
+        "phasor.total-rows": "0",
+        "phasor.version": "4"
       },
       "timestamp-ms": 1785506400000
     }
@@ -123,5 +123,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "c585f0fc-6d8e-86a6-990d-952dee3ad787"
+  "table-uuid": "18b356e8-5870-897f-9fb5-816b9906ad81"
 }

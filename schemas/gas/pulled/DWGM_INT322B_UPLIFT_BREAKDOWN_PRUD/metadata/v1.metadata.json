@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1785506400000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/DWGM_INT322B_UPLIFT_BREAKDOWN_PRUD",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/gas/DWGM_INT322B_UPLIFT_BREAKDOWN_PRUD",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -18,23 +18,23 @@
     }
   ],
   "properties": {
-    "utilake.declared": "true",
-    "utilake.format": "4",
-    "utilake.headers": "{\"1\":\"gas_date\",\"2\":\"sched_no\",\"3\":\"total_uplift_amt\",\"4\":\"tuq_qty\",\"5\":\"dts_uplift_amt\",\"6\":\"final_qds_gj\",\"7\":\"event_cap_rate\",\"8\":\"event_liability_amt\",\"9\":\"event_liability_qty\",\"10\":\"annual_cap_limit\",\"11\":\"annual_liability_amt\",\"12\":\"annual_liability_qty\",\"13\":\"net_dts_uplift_amt\",\"14\":\"modified_surprise_uplift_amt\",\"15\":\"modified_surprise_uplift_qty\",\"16\":\"common_uplift_amt\",\"17\":\"common_uplift_qty\",\"18\":\"current_date\"}",
-    "utilake.key": "[]",
-    "utilake.load": "append",
-    "utilake.market": "gas",
-    "utilake.offset": "+10:00",
-    "utilake.reports": "[[\"DWGM\",\"INT322B_UPLIFT_BREAKDOWN_PRUD_1\"]]",
-    "utilake.table": "DWGM_INT322B_UPLIFT_BREAKDOWN_PRUD",
-    "utilake.temporal.cutoff": "CURRENT_DATE",
-    "utilake.temporal.entity": "[]",
-    "utilake.temporal.order": "[\"CURRENT_DATE\"]",
-    "utilake.temporal.origin": "hand",
-    "utilake.temporal.valid.column": "GAS_DATE",
-    "utilake.temporal.valid.kind": "instant",
-    "utilake.time": "GAS_DATE",
-    "utilake.visibility": "PUBLIC"
+    "phasor.declared": "true",
+    "phasor.format": "4",
+    "phasor.headers": "{\"1\":\"gas_date\",\"2\":\"sched_no\",\"3\":\"total_uplift_amt\",\"4\":\"tuq_qty\",\"5\":\"dts_uplift_amt\",\"6\":\"final_qds_gj\",\"7\":\"event_cap_rate\",\"8\":\"event_liability_amt\",\"9\":\"event_liability_qty\",\"10\":\"annual_cap_limit\",\"11\":\"annual_liability_amt\",\"12\":\"annual_liability_qty\",\"13\":\"net_dts_uplift_amt\",\"14\":\"modified_surprise_uplift_amt\",\"15\":\"modified_surprise_uplift_qty\",\"16\":\"common_uplift_amt\",\"17\":\"common_uplift_qty\",\"18\":\"current_date\"}",
+    "phasor.key": "[]",
+    "phasor.load": "append",
+    "phasor.market": "gas",
+    "phasor.offset": "+10:00",
+    "phasor.reports": "[[\"DWGM\",\"INT322B_UPLIFT_BREAKDOWN_PRUD_1\"]]",
+    "phasor.table": "DWGM_INT322B_UPLIFT_BREAKDOWN_PRUD",
+    "phasor.temporal.cutoff": "CURRENT_DATE",
+    "phasor.temporal.entity": "[]",
+    "phasor.temporal.order": "[\"CURRENT_DATE\"]",
+    "phasor.temporal.origin": "hand",
+    "phasor.temporal.valid.column": "GAS_DATE",
+    "phasor.temporal.valid.kind": "instant",
+    "phasor.time": "GAS_DATE",
+    "phasor.visibility": "PUBLIC"
   },
   "refs": {
     "main": {
@@ -169,27 +169,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/DWGM_INT322B_UPLIFT_BREAKDOWN_PRUD/metadata/snap-6379598243584187548-1-61f567c0-b9dd-810a-804c-f84398a417b8.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/gas/DWGM_INT322B_UPLIFT_BREAKDOWN_PRUD/metadata/snap-6379598243584187548-1-1324e7a7-26a5-838c-b028-214262245e4a.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 6379598243584187548,
       "summary": {
         "operation": "append",
-        "utilake.files": "28",
-        "utilake.from.file": "PublicRpts31.zip",
-        "utilake.from.release": "2026-08",
-        "utilake.from.sha256": "735fad42989ef107a70ecdfc43f290c13afc957673461c78e4538d9ffcc9b0fe",
-        "utilake.from.time": "2026-08-01T00:00:00+10:00",
-        "utilake.kinds": "[\"dwgm\"]",
-        "utilake.report-subtype": "INT322B_UPLIFT_BREAKDOWN_PRUD_1",
-        "utilake.report-type": "DWGM",
-        "utilake.rows": "851",
-        "utilake.to.file": "int322b_v4_uplift_breakdown_prud_1.csv@20261024T113600+1000",
-        "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "bb8bc8fb4150baafae9d76fc9694e15f0e27b3a20d8019ea89d3d1b6b95b70c6",
-        "utilake.to.time": "2026-10-20T00:00:00+10:00",
-        "utilake.total-rows": "851",
-        "utilake.version": "4"
+        "phasor.files": "28",
+        "phasor.from.file": "PublicRpts31.zip",
+        "phasor.from.release": "2026-08",
+        "phasor.from.sha256": "735fad42989ef107a70ecdfc43f290c13afc957673461c78e4538d9ffcc9b0fe",
+        "phasor.from.time": "2026-08-01T00:00:00+10:00",
+        "phasor.kinds": "[\"dwgm\"]",
+        "phasor.report-subtype": "INT322B_UPLIFT_BREAKDOWN_PRUD_1",
+        "phasor.report-type": "DWGM",
+        "phasor.rows": "851",
+        "phasor.to.file": "int322b_v4_uplift_breakdown_prud_1.csv@20261024T113600+1000",
+        "phasor.to.release": "2026-10",
+        "phasor.to.sha256": "bb8bc8fb4150baafae9d76fc9694e15f0e27b3a20d8019ea89d3d1b6b95b70c6",
+        "phasor.to.time": "2026-10-20T00:00:00+10:00",
+        "phasor.total-rows": "851",
+        "phasor.version": "4"
       },
       "timestamp-ms": 1785506400000
     }
@@ -200,5 +200,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "61f567c0-b9dd-810a-804c-f84398a417b8"
+  "table-uuid": "1324e7a7-26a5-838c-b028-214262245e4a"
 }

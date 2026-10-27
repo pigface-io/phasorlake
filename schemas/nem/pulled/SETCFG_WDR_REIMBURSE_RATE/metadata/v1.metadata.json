@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1722434400000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/SETCFG_WDR_REIMBURSE_RATE",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/SETCFG_WDR_REIMBURSE_RATE",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -19,20 +19,20 @@
   ],
   "properties": {
     "comment": "Settlements WDR transactions",
-    "utilake.declared": "true",
-    "utilake.format": "4",
-    "utilake.key": "[]",
-    "utilake.load": "append",
-    "utilake.model-types": "{\"1\":\"VARCHAR(20)\",\"2\":\"VARCHAR(20)\",\"3\":\"TIMESTAMP(3)\",\"4\":\"NUMERIC(18,8)\",\"5\":\"NUMERIC(3,0)\",\"6\":\"TIMESTAMP(3)\"}",
-    "utilake.reports": "[[\"SETTLEMENTS_CONFIG\",\"WDR_REIMBURSE_RATE\"]]",
-    "utilake.table": "SETCFG_WDR_REIMBURSE_RATE",
-    "utilake.temporal.cutoff": "LASTCHANGED",
-    "utilake.temporal.entity": "[]",
-    "utilake.temporal.order": "[\"VERSION_DATETIME\",\"LASTCHANGED\"]",
-    "utilake.temporal.origin": "derived",
-    "utilake.temporal.valid.kind": "timeless",
-    "utilake.time": "LASTCHANGED",
-    "utilake.visibility": "PUBLIC"
+    "phasor.declared": "true",
+    "phasor.format": "4",
+    "phasor.key": "[]",
+    "phasor.load": "append",
+    "phasor.model-types": "{\"1\":\"VARCHAR(20)\",\"2\":\"VARCHAR(20)\",\"3\":\"TIMESTAMP(3)\",\"4\":\"NUMERIC(18,8)\",\"5\":\"NUMERIC(3,0)\",\"6\":\"TIMESTAMP(3)\"}",
+    "phasor.reports": "[[\"SETTLEMENTS_CONFIG\",\"WDR_REIMBURSE_RATE\"]]",
+    "phasor.table": "SETCFG_WDR_REIMBURSE_RATE",
+    "phasor.temporal.cutoff": "LASTCHANGED",
+    "phasor.temporal.entity": "[]",
+    "phasor.temporal.order": "[\"VERSION_DATETIME\",\"LASTCHANGED\"]",
+    "phasor.temporal.origin": "derived",
+    "phasor.temporal.valid.kind": "timeless",
+    "phasor.time": "LASTCHANGED",
+    "phasor.visibility": "PUBLIC"
   },
   "refs": {
     "main": {
@@ -101,27 +101,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/SETCFG_WDR_REIMBURSE_RATE/metadata/snap-7699435748723979167-1-fe29e131-071d-8891-966d-ea9fec977b3f.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/SETCFG_WDR_REIMBURSE_RATE/metadata/snap-7699435748723979167-1-3bf2cea8-0446-8936-a015-77903a938317.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 7699435748723979167,
       "summary": {
         "operation": "append",
-        "utilake.files": "26",
-        "utilake.from.file": "PUBLIC_ARCHIVE#SETCFG_WDR_REIMBURSE_RATE#FILE01#202408010000.zip",
-        "utilake.from.release": "2024-08",
-        "utilake.from.sha256": "55be28716bc74f3fc670297fb9f3d5d8297a4cb595c29dd3b7bd1550dbaf65c2",
-        "utilake.from.time": "2021-10-26T09:15:10.363+10:00",
-        "utilake.kinds": "[\"archive\"]",
-        "utilake.report-subtype": "WDR_REIMBURSE_RATE",
-        "utilake.report-type": "SETTLEMENTS_CONFIG",
-        "utilake.rows": "2665",
-        "utilake.to.file": "PUBLIC_ARCHIVE#SETCFG_WDR_REIMBURSE_RATE#FILE01#202609010000.zip",
-        "utilake.to.release": "2026-09",
-        "utilake.to.sha256": "3880af8dd3f43e9b141bec32bf976af5f79d06fa42d02d168fa26aa66df36e5e",
-        "utilake.to.time": "2026-10-01T00:01:08.730+10:00",
-        "utilake.total-rows": "2665",
-        "utilake.version": "1"
+        "phasor.files": "26",
+        "phasor.from.file": "PUBLIC_ARCHIVE#SETCFG_WDR_REIMBURSE_RATE#FILE01#202408010000.zip",
+        "phasor.from.release": "2024-08",
+        "phasor.from.sha256": "55be28716bc74f3fc670297fb9f3d5d8297a4cb595c29dd3b7bd1550dbaf65c2",
+        "phasor.from.time": "2021-10-26T09:15:10.363+10:00",
+        "phasor.kinds": "[\"archive\"]",
+        "phasor.report-subtype": "WDR_REIMBURSE_RATE",
+        "phasor.report-type": "SETTLEMENTS_CONFIG",
+        "phasor.rows": "2665",
+        "phasor.to.file": "PUBLIC_ARCHIVE#SETCFG_WDR_REIMBURSE_RATE#FILE01#202609010000.zip",
+        "phasor.to.release": "2026-09",
+        "phasor.to.sha256": "3880af8dd3f43e9b141bec32bf976af5f79d06fa42d02d168fa26aa66df36e5e",
+        "phasor.to.time": "2026-10-01T00:01:08.730+10:00",
+        "phasor.total-rows": "2665",
+        "phasor.version": "1"
       },
       "timestamp-ms": 1722434400000
     }
@@ -132,5 +132,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "fe29e131-071d-8891-966d-ea9fec977b3f"
+  "table-uuid": "3bf2cea8-0446-8936-a015-77903a938317"
 }

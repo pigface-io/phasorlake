@@ -13,9 +13,9 @@ const CATEGORIES: [&str; 14] = [
     "manifest", "verify", "query", "internal",
 ];
 
-/// Codes utilake reports that a utilake-schemas crate raises on its behalf,
+/// Codes phasor reports that a phasor-schemas crate raises on its behalf,
 /// with where: the decoders' and the zip walker's own diagnostics. Listed
-/// beside utilake's own, since they reach its users the same way.
+/// beside phasor's own, since they reach its users the same way.
 const INHERITED: [(&str, &str); 13] = [
     ("csv.block_mismatch", MMS_DECODE),
     ("csv.data_before_header", MMS_DECODE),
@@ -31,9 +31,9 @@ const INHERITED: [(&str, &str); 13] = [
     ("zip.no_entry", ZIP),
     ("zip.spool_failed", ZIP),
 ];
-const MMS_DECODE: &str = "utilake-schemas/crates/utilake-mms-decode/src/diagnose.rs";
-const PLAIN_DECODE: &str = "utilake-schemas/crates/utilake-plain-decode/src/diagnose.rs";
-const ZIP: &str = "utilake-schemas/crates/utilake-zip/src/diagnose.rs";
+const MMS_DECODE: &str = "phasorlake-schemas/crates/phasor-mms-decode/src/diagnose.rs";
+const PLAIN_DECODE: &str = "phasorlake-schemas/crates/phasor-plain-decode/src/diagnose.rs";
+const ZIP: &str = "phasorlake-schemas/crates/phasor-zip/src/diagnose.rs";
 
 /// Codes that are no longer raised. A code is a promise to whoever matches
 /// on it, so a retired one stays listed and may never be given a new meaning.
@@ -88,87 +88,87 @@ const RETIRED: [(&str, &str); 33] = [
     ),
     (
         "schema.breaking_change",
-        "a table file changed in a way the lake does not survive; tables come from the histories utilake-schemas publishes, which hold their own changes",
+        "a table file changed in a way the lake does not survive; tables come from the histories phasor-schemas publishes, which hold their own changes",
     ),
     (
         "query.at_on_interval_table",
-        "raised by utilake's read of the lake, which is gone: utilake writes the lake and reading it is the reader's own SQL",
+        "raised by phasor's read of the lake, which is gone: phasor writes the lake and reading it is the reader's own SQL",
     ),
     (
         "query.bad_filter_value",
-        "raised by utilake's read of the lake, which is gone: utilake writes the lake and reading it is the reader's own SQL",
+        "raised by phasor's read of the lake, which is gone: phasor writes the lake and reading it is the reader's own SQL",
     ),
     (
         "query.bad_time",
-        "raised by utilake's read of the lake, which is gone: utilake writes the lake and reading it is the reader's own SQL",
+        "raised by phasor's read of the lake, which is gone: phasor writes the lake and reading it is the reader's own SQL",
     ),
     (
         "query.filter_after_resolution",
-        "raised by utilake's read of the lake, which is gone: utilake writes the lake and reading it is the reader's own SQL",
+        "raised by phasor's read of the lake, which is gone: phasor writes the lake and reading it is the reader's own SQL",
     ),
     (
         "query.lake_format",
-        "raised by utilake's read of the lake, which is gone: utilake writes the lake and reading it is the reader's own SQL",
+        "raised by phasor's read of the lake, which is gone: phasor writes the lake and reading it is the reader's own SQL",
     ),
     (
         "query.order_nan",
-        "raised by utilake's read of the lake, which is gone: utilake writes the lake and reading it is the reader's own SQL",
+        "raised by phasor's read of the lake, which is gone: phasor writes the lake and reading it is the reader's own SQL",
     ),
     (
         "query.plan_failed",
-        "raised by utilake's read of the lake, which is gone: utilake writes the lake and reading it is the reader's own SQL",
+        "raised by phasor's read of the lake, which is gone: phasor writes the lake and reading it is the reader's own SQL",
     ),
     (
         "query.raw_only",
-        "raised by utilake's read of the lake, which is gone: utilake writes the lake and reading it is the reader's own SQL",
+        "raised by phasor's read of the lake, which is gone: phasor writes the lake and reading it is the reader's own SQL",
     ),
     (
         "query.read_failed",
-        "raised by utilake's read of the lake, which is gone: utilake writes the lake and reading it is the reader's own SQL",
+        "raised by phasor's read of the lake, which is gone: phasor writes the lake and reading it is the reader's own SQL",
     ),
     (
         "query.role_missing",
-        "raised by utilake's read of the lake, which is gone: utilake writes the lake and reading it is the reader's own SQL",
+        "raised by phasor's read of the lake, which is gone: phasor writes the lake and reading it is the reader's own SQL",
     ),
     (
         "query.role_type",
-        "raised by utilake's read of the lake, which is gone: utilake writes the lake and reading it is the reader's own SQL",
+        "raised by phasor's read of the lake, which is gone: phasor writes the lake and reading it is the reader's own SQL",
     ),
     (
         "query.roles_invalid",
-        "raised by utilake's read of the lake, which is gone: utilake writes the lake and reading it is the reader's own SQL",
+        "raised by phasor's read of the lake, which is gone: phasor writes the lake and reading it is the reader's own SQL",
     ),
     (
         "query.source_unknown",
-        "raised by utilake's read of the lake, which is gone: utilake writes the lake and reading it is the reader's own SQL",
+        "raised by phasor's read of the lake, which is gone: phasor writes the lake and reading it is the reader's own SQL",
     ),
     (
         "query.stamp_unknown",
-        "raised by utilake's read of the lake, which is gone: utilake writes the lake and reading it is the reader's own SQL",
+        "raised by phasor's read of the lake, which is gone: phasor writes the lake and reading it is the reader's own SQL",
     ),
     (
         "query.unknown_column",
-        "raised by utilake's read of the lake, which is gone: utilake writes the lake and reading it is the reader's own SQL",
+        "raised by phasor's read of the lake, which is gone: phasor writes the lake and reading it is the reader's own SQL",
     ),
     (
         "query.unknown_table",
-        "raised by utilake's read of the lake, which is gone: utilake writes the lake and reading it is the reader's own SQL",
+        "raised by phasor's read of the lake, which is gone: phasor writes the lake and reading it is the reader's own SQL",
     ),
     (
         "query.window_empty",
-        "raised by utilake's read of the lake, which is gone: utilake writes the lake and reading it is the reader's own SQL",
+        "raised by phasor's read of the lake, which is gone: phasor writes the lake and reading it is the reader's own SQL",
     ),
     (
         "query.window_ignored",
-        "raised by utilake's read of the lake, which is gone: utilake writes the lake and reading it is the reader's own SQL",
+        "raised by phasor's read of the lake, which is gone: phasor writes the lake and reading it is the reader's own SQL",
     ),
     (
         "query.window_uncovered",
-        "raised by utilake's read of the lake, which is gone: utilake writes the lake and reading it is the reader's own SQL",
+        "raised by phasor's read of the lake, which is gone: phasor writes the lake and reading it is the reader's own SQL",
     ),
     (
         "query.write_failed",
-        "raised by utilake's read of the lake, which is gone: utilake writes the lake and reading it is the reader's own SQL",
+        "raised by phasor's read of the lake, which is gone: phasor writes the lake and reading it is the reader's own SQL",
     ),
 ];
 
@@ -277,7 +277,7 @@ fn literals(text: &str) -> Vec<String> {
 pub fn render(codes: &BTreeMap<String, String>) -> String {
     use std::fmt::Write as _;
     let mut s = String::from(
-        "# Diagnostic codes\n\nEvery error and warning utilake reports carries one of these codes. Codes are stable: never renamed, never reused. The category is the first segment. This file is generated by `just errors-doc`; `just errors-check` fails when it is out of date.\n\n",
+        "# Diagnostic codes\n\nEvery error and warning phasor reports carries one of these codes. Codes are stable: never renamed, never reused. The category is the first segment. This file is generated by `just errors-doc`; `just errors-check` fails when it is out of date.\n\n",
     );
     let mut by_cat: BTreeMap<&str, Vec<(&str, &str)>> = BTreeMap::new();
     for (code, file) in codes {

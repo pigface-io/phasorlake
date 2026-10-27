@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1759240800000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GSH_PARTICIPANTS",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/gas/GSH_PARTICIPANTS",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -19,22 +19,22 @@
   ],
   "properties": {
     "comment": "The report contains the registration details of all participants currently registered in the GSH market.",
-    "utilake.declared": "true",
-    "utilake.format": "4",
-    "utilake.key": "[\"MARKET_ID\",\"PARTICIPANT_ID\"]",
-    "utilake.load": "snapshot",
-    "utilake.market": "gas",
-    "utilake.model-types": "{\"2\":\"VARCHAR2(20)\",\"3\":\"VARCHAR2(20)\",\"4\":\"VARCHAR2(80)\",\"5\":\"VARCHAR2(20)\",\"6\":\"VARCHAR2(80)\",\"7\":\"VARCHAR2(80)\",\"8\":\"VARCHAR2(80)\",\"9\":\"VARCHAR2(80)\",\"10\":\"VARCHAR2(80)\",\"11\":\"VARCHAR2(80)\",\"12\":\"VARCHAR2(80)\",\"13\":\"VARCHAR2(20)\",\"14\":\"VARCHAR2(20)\",\"15\":\"VARCHAR2(20)\",\"16\":\"VARCHAR2(20)\",\"17\":\"VARCHAR2(80)\",\"18\":\"VARCHAR2(255)\",\"19\":\"DATE\",\"20\":\"VARCHAR2(20)\"}",
-    "utilake.offset": "+10:00",
-    "utilake.reports": "[[\"GSH\",\"PARTICIPANTS\"]]",
-    "utilake.table": "GSH_PARTICIPANTS",
-    "utilake.temporal.cutoff": "LASTCHANGED",
-    "utilake.temporal.entity": "[\"MARKET_ID\",\"PARTICIPANT_ID\"]",
-    "utilake.temporal.order": "[\"LASTCHANGED\"]",
-    "utilake.temporal.origin": "hand",
-    "utilake.temporal.valid.kind": "timeless",
-    "utilake.time": "LASTCHANGED",
-    "utilake.visibility": "PUBLIC"
+    "phasor.declared": "true",
+    "phasor.format": "4",
+    "phasor.key": "[\"MARKET_ID\",\"PARTICIPANT_ID\"]",
+    "phasor.load": "snapshot",
+    "phasor.market": "gas",
+    "phasor.model-types": "{\"2\":\"VARCHAR2(20)\",\"3\":\"VARCHAR2(20)\",\"4\":\"VARCHAR2(80)\",\"5\":\"VARCHAR2(20)\",\"6\":\"VARCHAR2(80)\",\"7\":\"VARCHAR2(80)\",\"8\":\"VARCHAR2(80)\",\"9\":\"VARCHAR2(80)\",\"10\":\"VARCHAR2(80)\",\"11\":\"VARCHAR2(80)\",\"12\":\"VARCHAR2(80)\",\"13\":\"VARCHAR2(20)\",\"14\":\"VARCHAR2(20)\",\"15\":\"VARCHAR2(20)\",\"16\":\"VARCHAR2(20)\",\"17\":\"VARCHAR2(80)\",\"18\":\"VARCHAR2(255)\",\"19\":\"DATE\",\"20\":\"VARCHAR2(20)\"}",
+    "phasor.offset": "+10:00",
+    "phasor.reports": "[[\"GSH\",\"PARTICIPANTS\"]]",
+    "phasor.table": "GSH_PARTICIPANTS",
+    "phasor.temporal.cutoff": "LASTCHANGED",
+    "phasor.temporal.entity": "[\"MARKET_ID\",\"PARTICIPANT_ID\"]",
+    "phasor.temporal.order": "[\"LASTCHANGED\"]",
+    "phasor.temporal.origin": "hand",
+    "phasor.temporal.valid.kind": "timeless",
+    "phasor.time": "LASTCHANGED",
+    "phasor.visibility": "PUBLIC"
   },
   "refs": {
     "main": {
@@ -203,27 +203,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GSH_PARTICIPANTS/metadata/snap-1778631858789677411-1-7feb8c41-6e66-8512-bea5-fe1f6579431a.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/gas/GSH_PARTICIPANTS/metadata/snap-1778631858789677411-1-9e407723-4b24-8162-a760-8ceca4ee7b47.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 1778631858789677411,
       "summary": {
         "operation": "append",
-        "utilake.files": "80",
-        "utilake.from.file": "PUBLIC_REGISTEREDPARTICIPANTS_20251001.zip",
-        "utilake.from.release": "2025-10",
-        "utilake.from.sha256": "9862f38fbe1ffa9d5c5b0817578a2358d1f6b88d770f76c6f77e6423b27338f6",
-        "utilake.from.time": "2014-07-01T01:29:45+10:00",
-        "utilake.kinds": "[\"gsh\"]",
-        "utilake.report-subtype": "PARTICIPANTS",
-        "utilake.report-type": "GSH",
-        "utilake.rows": "163",
-        "utilake.to.file": "PUBLIC_REGISTEREDPARTICIPANTS_20261021_0000000544029183.zip",
-        "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "554ffd0991605f3b8a909435ec5748d112faef3708bd4ee4c7638301ae76b312",
-        "utilake.to.time": "2026-10-21T10:04:10+10:00",
-        "utilake.total-rows": "163",
-        "utilake.version": "2"
+        "phasor.files": "80",
+        "phasor.from.file": "PUBLIC_REGISTEREDPARTICIPANTS_20251001.zip",
+        "phasor.from.release": "2025-10",
+        "phasor.from.sha256": "9862f38fbe1ffa9d5c5b0817578a2358d1f6b88d770f76c6f77e6423b27338f6",
+        "phasor.from.time": "2014-07-01T01:29:45+10:00",
+        "phasor.kinds": "[\"gsh\"]",
+        "phasor.report-subtype": "PARTICIPANTS",
+        "phasor.report-type": "GSH",
+        "phasor.rows": "163",
+        "phasor.to.file": "PUBLIC_REGISTEREDPARTICIPANTS_20261021_0000000544029183.zip",
+        "phasor.to.release": "2026-10",
+        "phasor.to.sha256": "554ffd0991605f3b8a909435ec5748d112faef3708bd4ee4c7638301ae76b312",
+        "phasor.to.time": "2026-10-21T10:04:10+10:00",
+        "phasor.total-rows": "163",
+        "phasor.version": "2"
       },
       "timestamp-ms": 1759240800000
     }
@@ -234,5 +234,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "7feb8c41-6e66-8512-bea5-fe1f6579431a"
+  "table-uuid": "9e407723-4b24-8162-a760-8ceca4ee7b47"
 }

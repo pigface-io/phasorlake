@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1756648800000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/BIDS_BIDOFFERPERIOD_SPARSE",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/BIDS_BIDOFFERPERIOD_SPARSE",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -18,9 +18,9 @@
     }
   ],
   "properties": {
-    "utilake.declared": "false",
-    "utilake.format": "4",
-    "utilake.table": "BIDS_BIDOFFERPERIOD_SPARSE"
+    "phasor.declared": "false",
+    "phasor.format": "4",
+    "phasor.table": "BIDS_BIDOFFERPERIOD_SPARSE"
   },
   "refs": {
     "main": {
@@ -215,27 +215,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/BIDS_BIDOFFERPERIOD_SPARSE/metadata/snap-143946397974641448-1-5a11aa5d-627b-8742-879d-55da4c3eca34.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/BIDS_BIDOFFERPERIOD_SPARSE/metadata/snap-143946397974641448-1-862a9f23-92eb-856c-b802-4c967328dd8d.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 143946397974641448,
       "summary": {
         "operation": "append",
-        "utilake.files": "836",
-        "utilake.from.file": "PUBLIC_NEXT_DAY_OFFER_ENERGY_SPARSE_20250901.zip",
-        "utilake.from.release": "2025-09",
-        "utilake.from.sha256": "a1c5797b5a552ca7312c9b619df523d77d9c8ff0ca1a12b6ce4b982a8e34ccdc",
-        "utilake.from.time": "2025-09-01T00:00:00+10:00",
-        "utilake.kinds": "[\"reports\"]",
-        "utilake.report-subtype": "BIDOFFERPERIOD_SPARSE",
-        "utilake.report-type": "BIDS",
-        "utilake.rows": "3315715939",
-        "utilake.to.file": "PUBLIC_NEXT_DAY_OFFER_FCAS_SPARSE_20261023_0000000544544774.zip",
-        "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "3ba35fcaa8a07771a348bc14aac1bd4b43ed2f1144a726c1a6321e1c5973cefd",
-        "utilake.to.time": "2026-10-23T00:00:00+10:00",
-        "utilake.total-rows": "3315715939",
-        "utilake.version": "2"
+        "phasor.files": "836",
+        "phasor.from.file": "PUBLIC_NEXT_DAY_OFFER_ENERGY_SPARSE_20250901.zip",
+        "phasor.from.release": "2025-09",
+        "phasor.from.sha256": "a1c5797b5a552ca7312c9b619df523d77d9c8ff0ca1a12b6ce4b982a8e34ccdc",
+        "phasor.from.time": "2025-09-01T00:00:00+10:00",
+        "phasor.kinds": "[\"reports\"]",
+        "phasor.report-subtype": "BIDOFFERPERIOD_SPARSE",
+        "phasor.report-type": "BIDS",
+        "phasor.rows": "3315715939",
+        "phasor.to.file": "PUBLIC_NEXT_DAY_OFFER_FCAS_SPARSE_20261023_0000000544544774.zip",
+        "phasor.to.release": "2026-10",
+        "phasor.to.sha256": "3ba35fcaa8a07771a348bc14aac1bd4b43ed2f1144a726c1a6321e1c5973cefd",
+        "phasor.to.time": "2026-10-23T00:00:00+10:00",
+        "phasor.total-rows": "3315715939",
+        "phasor.version": "2"
       },
       "timestamp-ms": 1756648800000
     }
@@ -246,5 +246,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "5a11aa5d-627b-8742-879d-55da4c3eca34"
+  "table-uuid": "862a9f23-92eb-856c-b802-4c967328dd8d"
 }

@@ -1,0 +1,45 @@
+[package]
+name = "phasor-mms-conform"
+description = "Reading AEMO's files into typed Arrow batches through the registry: the MMS and plain decoders, casts, quarantine decisions, and what inspect shows."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+zonetrace = { workspace = true, optional = true }
+phasor-core.workspace = true
+phasor-mms-decode.workspace = true
+phasor-plain-decode.workspace = true
+phasor-registry.workspace = true
+phasor-kit.workspace = true
+phasor-zip.workspace = true
+arrow-array.workspace = true
+arrow-schema.workspace = true
+thiserror.workspace = true
+
+[dev-dependencies]
+criterion.workspace = true
+tempfile.workspace = true
+url.workspace = true
+
+[[bench]]
+name = "scan"
+harness = false
+
+[[bench]]
+name = "values"
+harness = false
+
+[[bench]]
+name = "plain"
+harness = false
+
+[features]
+# Times the work in zones of zonetrace.
+zones = ["dep:zonetrace"]

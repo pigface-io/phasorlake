@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1246370400000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DISPATCH_FCAS_REQ",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/DISPATCH_FCAS_REQ",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -19,22 +19,22 @@
   ],
   "properties": {
     "comment": "DISPATCH_FCAS_REQ shows Dispatch Constraint tracking for Regional FCAS recovery.",
-    "utilake.declared": "true",
-    "utilake.format": "4",
-    "utilake.key": "[\"SETTLEMENTDATE\",\"RUNNO\",\"INTERVENTION\",\"GENCONID\",\"REGIONID\",\"BIDTYPE\"]",
-    "utilake.load": "append",
-    "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(3,0)\",\"3\":\"NUMERIC(2,0)\",\"4\":\"VARCHAR(20)\",\"5\":\"VARCHAR(10)\",\"6\":\"VARCHAR(10)\",\"7\":\"TIMESTAMP(0)\",\"8\":\"NUMERIC(3,0)\",\"9\":\"NUMERIC(16,6)\",\"10\":\"TIMESTAMP(0)\",\"11\":\"NUMERIC(18,8)\",\"12\":\"NUMERIC(18,8)\",\"13\":\"NUMERIC(18,8)\",\"14\":\"NUMERIC(18,8)\",\"15\":\"NUMERIC(18,8)\",\"16\":\"NUMERIC(18,8)\"}",
-    "utilake.package": "DISPATCH",
-    "utilake.reports": "[[\"DISPATCH\",\"FCAS_REQ\"]]",
-    "utilake.table": "DISPATCH_FCAS_REQ",
-    "utilake.temporal.cutoff": "LASTCHANGED",
-    "utilake.temporal.entity": "[\"INTERVENTION\",\"GENCONID\",\"REGIONID\",\"BIDTYPE\"]",
-    "utilake.temporal.order": "[\"RUNNO\",\"LASTCHANGED\"]",
-    "utilake.temporal.origin": "derived",
-    "utilake.temporal.valid.column": "SETTLEMENTDATE",
-    "utilake.temporal.valid.kind": "interval_end",
-    "utilake.time": "SETTLEMENTDATE",
-    "utilake.visibility": "PUBLIC"
+    "phasor.declared": "true",
+    "phasor.format": "4",
+    "phasor.key": "[\"SETTLEMENTDATE\",\"RUNNO\",\"INTERVENTION\",\"GENCONID\",\"REGIONID\",\"BIDTYPE\"]",
+    "phasor.load": "append",
+    "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(3,0)\",\"3\":\"NUMERIC(2,0)\",\"4\":\"VARCHAR(20)\",\"5\":\"VARCHAR(10)\",\"6\":\"VARCHAR(10)\",\"7\":\"TIMESTAMP(0)\",\"8\":\"NUMERIC(3,0)\",\"9\":\"NUMERIC(16,6)\",\"10\":\"TIMESTAMP(0)\",\"11\":\"NUMERIC(18,8)\",\"12\":\"NUMERIC(18,8)\",\"13\":\"NUMERIC(18,8)\",\"14\":\"NUMERIC(18,8)\",\"15\":\"NUMERIC(18,8)\",\"16\":\"NUMERIC(18,8)\"}",
+    "phasor.package": "DISPATCH",
+    "phasor.reports": "[[\"DISPATCH\",\"FCAS_REQ\"]]",
+    "phasor.table": "DISPATCH_FCAS_REQ",
+    "phasor.temporal.cutoff": "LASTCHANGED",
+    "phasor.temporal.entity": "[\"INTERVENTION\",\"GENCONID\",\"REGIONID\",\"BIDTYPE\"]",
+    "phasor.temporal.order": "[\"RUNNO\",\"LASTCHANGED\"]",
+    "phasor.temporal.origin": "derived",
+    "phasor.temporal.valid.column": "SETTLEMENTDATE",
+    "phasor.temporal.valid.kind": "interval_end",
+    "phasor.time": "SETTLEMENTDATE",
+    "phasor.visibility": "PUBLIC"
   },
   "refs": {
     "main": {
@@ -178,27 +178,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DISPATCH_FCAS_REQ/metadata/snap-5716298083811486358-1-e567d824-d18d-871c-8e1f-1ec1baff97e3.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/DISPATCH_FCAS_REQ/metadata/snap-5716298083811486358-1-d74c429f-ebcf-85e4-ad2c-4a7865529bff.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 5716298083811486358,
       "summary": {
         "operation": "append",
-        "utilake.files": "190",
-        "utilake.from.file": "PUBLIC_DVD_DISPATCH_FCAS_REQ_200907010000.zip",
-        "utilake.from.release": "2009-07",
-        "utilake.from.sha256": "44539eb2dbd1be88df4d0e25d3424acce148a40d2632a20dc0d5556981bbd261",
-        "utilake.from.time": "2009-07-01T00:05:00+10:00",
-        "utilake.kinds": "[\"archive\",\"dvd\"]",
-        "utilake.report-subtype": "FCAS_REQ",
-        "utilake.report-type": "DISPATCH",
-        "utilake.rows": "759554863",
-        "utilake.to.file": "PUBLIC_ARCHIVE#DISPATCH_FCAS_REQ#FILE01#202505010000.zip",
-        "utilake.to.release": "2025-05",
-        "utilake.to.sha256": "82dc20754cb60c11d24f3ab80a2cef336ec5cadb7072cc25b2c7ebded474e154",
-        "utilake.to.time": "2025-06-01T00:00:00+10:00",
-        "utilake.total-rows": "759554863",
-        "utilake.version": "2"
+        "phasor.files": "190",
+        "phasor.from.file": "PUBLIC_DVD_DISPATCH_FCAS_REQ_200907010000.zip",
+        "phasor.from.release": "2009-07",
+        "phasor.from.sha256": "44539eb2dbd1be88df4d0e25d3424acce148a40d2632a20dc0d5556981bbd261",
+        "phasor.from.time": "2009-07-01T00:05:00+10:00",
+        "phasor.kinds": "[\"archive\",\"dvd\"]",
+        "phasor.report-subtype": "FCAS_REQ",
+        "phasor.report-type": "DISPATCH",
+        "phasor.rows": "759554863",
+        "phasor.to.file": "PUBLIC_ARCHIVE#DISPATCH_FCAS_REQ#FILE01#202505010000.zip",
+        "phasor.to.release": "2025-05",
+        "phasor.to.sha256": "82dc20754cb60c11d24f3ab80a2cef336ec5cadb7072cc25b2c7ebded474e154",
+        "phasor.to.time": "2025-06-01T00:00:00+10:00",
+        "phasor.total-rows": "759554863",
+        "phasor.version": "2"
       },
       "timestamp-ms": 1246370400000
     }
@@ -209,5 +209,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "e567d824-d18d-871c-8e1f-1ec1baff97e3"
+  "table-uuid": "d74c429f-ebcf-85e4-ad2c-4a7865529bff"
 }

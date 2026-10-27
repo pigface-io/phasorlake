@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1346421600000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/DWGM_INT128_ACTUAL_LINEPACK",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/gas/DWGM_INT128_ACTUAL_LINEPACK",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -18,23 +18,23 @@
     }
   ],
   "properties": {
-    "utilake.declared": "true",
-    "utilake.format": "4",
-    "utilake.headers": "{\"1\":\"commencement_datetime\",\"2\":\"actual_linepack\",\"3\":\"current_date\"}",
-    "utilake.key": "[]",
-    "utilake.load": "append",
-    "utilake.market": "gas",
-    "utilake.offset": "+10:00",
-    "utilake.reports": "[[\"DWGM\",\"INT128_ACTUAL_LINEPACK_1\"]]",
-    "utilake.table": "DWGM_INT128_ACTUAL_LINEPACK",
-    "utilake.temporal.cutoff": "CURRENT_DATE",
-    "utilake.temporal.entity": "[]",
-    "utilake.temporal.order": "[\"CURRENT_DATE\"]",
-    "utilake.temporal.origin": "hand",
-    "utilake.temporal.valid.column": "COMMENCEMENT_DATETIME",
-    "utilake.temporal.valid.kind": "instant",
-    "utilake.time": "COMMENCEMENT_DATETIME",
-    "utilake.visibility": "PUBLIC"
+    "phasor.declared": "true",
+    "phasor.format": "4",
+    "phasor.headers": "{\"1\":\"commencement_datetime\",\"2\":\"actual_linepack\",\"3\":\"current_date\"}",
+    "phasor.key": "[]",
+    "phasor.load": "append",
+    "phasor.market": "gas",
+    "phasor.offset": "+10:00",
+    "phasor.reports": "[[\"DWGM\",\"INT128_ACTUAL_LINEPACK_1\"]]",
+    "phasor.table": "DWGM_INT128_ACTUAL_LINEPACK",
+    "phasor.temporal.cutoff": "CURRENT_DATE",
+    "phasor.temporal.entity": "[]",
+    "phasor.temporal.order": "[\"CURRENT_DATE\"]",
+    "phasor.temporal.origin": "hand",
+    "phasor.temporal.valid.column": "COMMENCEMENT_DATETIME",
+    "phasor.temporal.valid.kind": "instant",
+    "phasor.time": "COMMENCEMENT_DATETIME",
+    "phasor.visibility": "PUBLIC"
   },
   "refs": {
     "main": {
@@ -79,27 +79,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/DWGM_INT128_ACTUAL_LINEPACK/metadata/snap-7956794666360108588-1-04c4b63b-50d8-8b27-b19e-3d52392e2deb.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/gas/DWGM_INT128_ACTUAL_LINEPACK/metadata/snap-7956794666360108588-1-0f7cfa42-6ff9-8e15-a0e9-4d32a2fcacb6.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 7956794666360108588,
       "summary": {
         "operation": "append",
-        "utilake.files": "1290",
-        "utilake.from.file": "int128_v4_actual_linepack_1~20120908043621.csv",
-        "utilake.from.release": "2012-09",
-        "utilake.from.sha256": "ded9775c66c6f7445091484a057fe3ebf30b92081ae99718e1a2628eb6e5307b",
-        "utilake.from.time": "2012-09-05T06:00:00+10:00",
-        "utilake.kinds": "[\"dwgm\"]",
-        "utilake.report-subtype": "INT128_ACTUAL_LINEPACK_1",
-        "utilake.report-type": "DWGM",
-        "utilake.rows": "1481",
-        "utilake.to.file": "int128_v4_actual_linepack_1.csv@20261024T113400+1000",
-        "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "3433b7dac77418d5ca678315a4e68d2223d6e9b3c6918cbe82423b9a54aa5f30",
-        "utilake.to.time": "2026-10-24T10:00:00+10:00",
-        "utilake.total-rows": "1481",
-        "utilake.version": "4"
+        "phasor.files": "1290",
+        "phasor.from.file": "int128_v4_actual_linepack_1~20120908043621.csv",
+        "phasor.from.release": "2012-09",
+        "phasor.from.sha256": "ded9775c66c6f7445091484a057fe3ebf30b92081ae99718e1a2628eb6e5307b",
+        "phasor.from.time": "2012-09-05T06:00:00+10:00",
+        "phasor.kinds": "[\"dwgm\"]",
+        "phasor.report-subtype": "INT128_ACTUAL_LINEPACK_1",
+        "phasor.report-type": "DWGM",
+        "phasor.rows": "1481",
+        "phasor.to.file": "int128_v4_actual_linepack_1.csv@20261024T113400+1000",
+        "phasor.to.release": "2026-10",
+        "phasor.to.sha256": "3433b7dac77418d5ca678315a4e68d2223d6e9b3c6918cbe82423b9a54aa5f30",
+        "phasor.to.time": "2026-10-24T10:00:00+10:00",
+        "phasor.total-rows": "1481",
+        "phasor.version": "4"
       },
       "timestamp-ms": 1346421600000
     }
@@ -110,5 +110,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "04c4b63b-50d8-8b27-b19e-3d52392e2deb"
+  "table-uuid": "0f7cfa42-6ff9-8e15-a0e9-4d32a2fcacb6"
 }

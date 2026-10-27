@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1761919200000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/SSM_ENABLEMENT_PERIOD",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/SSM_ENABLEMENT_PERIOD",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -19,20 +19,20 @@
   ],
   "properties": {
     "comment": "SSM Contract Enablement Periods",
-    "utilake.declared": "true",
-    "utilake.format": "4",
-    "utilake.key": "[]",
-    "utilake.load": "append",
-    "utilake.model-types": "{\"1\":\"VARCHAR(20)\",\"2\":\"VARCHAR(20)\",\"3\":\"TIMESTAMP(0)\",\"4\":\"TIMESTAMP(0)\",\"5\":\"VARCHAR(40)\",\"6\":\"TIMESTAMP(0)\"}",
-    "utilake.reports": "[[\"SSM\",\"ENABLEMENT_PERIOD\"]]",
-    "utilake.table": "SSM_ENABLEMENT_PERIOD",
-    "utilake.temporal.cutoff": "LASTCHANGED",
-    "utilake.temporal.entity": "[]",
-    "utilake.temporal.order": "[\"LASTCHANGED\"]",
-    "utilake.temporal.origin": "derived",
-    "utilake.temporal.valid.kind": "timeless",
-    "utilake.time": "LASTCHANGED",
-    "utilake.visibility": "PUBLIC"
+    "phasor.declared": "true",
+    "phasor.format": "4",
+    "phasor.key": "[]",
+    "phasor.load": "append",
+    "phasor.model-types": "{\"1\":\"VARCHAR(20)\",\"2\":\"VARCHAR(20)\",\"3\":\"TIMESTAMP(0)\",\"4\":\"TIMESTAMP(0)\",\"5\":\"VARCHAR(40)\",\"6\":\"TIMESTAMP(0)\"}",
+    "phasor.reports": "[[\"SSM\",\"ENABLEMENT_PERIOD\"]]",
+    "phasor.table": "SSM_ENABLEMENT_PERIOD",
+    "phasor.temporal.cutoff": "LASTCHANGED",
+    "phasor.temporal.entity": "[]",
+    "phasor.temporal.order": "[\"LASTCHANGED\"]",
+    "phasor.temporal.origin": "derived",
+    "phasor.temporal.valid.kind": "timeless",
+    "phasor.time": "LASTCHANGED",
+    "phasor.visibility": "PUBLIC"
   },
   "refs": {
     "main": {
@@ -101,27 +101,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/SSM_ENABLEMENT_PERIOD/metadata/snap-8564845137886305892-1-920c265b-5487-8146-82b4-41633cf494ae.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/SSM_ENABLEMENT_PERIOD/metadata/snap-8564845137886305892-1-a3d7689a-8575-834a-8e8e-3900e1c3e777.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 8564845137886305892,
       "summary": {
         "operation": "append",
-        "utilake.files": "265",
-        "utilake.from.file": "PUBLIC_ARCHIVE#SSM_ENABLEMENT_PERIOD#FILE01#202511010000.zip",
-        "utilake.from.release": "2025-11",
-        "utilake.from.sha256": "66eba899473cf20567db8388ca225e8c74b228560ed7c1396e13ebd7de70c98d",
-        "utilake.from.time": "2025-12-02T12:00:16+10:00",
-        "utilake.kinds": "[\"archive\",\"reports\"]",
-        "utilake.report-subtype": "ENABLEMENT_PERIOD",
-        "utilake.report-type": "SSM",
-        "utilake.rows": "3188",
-        "utilake.to.file": "PUBLIC_NEXT_DAY_ENABLEMENT_PERIOD_20261023_120009_0000000544408983.zip",
-        "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "b443c9d3fa1c831005c95d47c30d70c8db7425e16cd825b79b645d80cfeb7b9c",
-        "utilake.to.time": "2026-10-22T14:50:36+10:00",
-        "utilake.total-rows": "3188",
-        "utilake.version": "1"
+        "phasor.files": "265",
+        "phasor.from.file": "PUBLIC_ARCHIVE#SSM_ENABLEMENT_PERIOD#FILE01#202511010000.zip",
+        "phasor.from.release": "2025-11",
+        "phasor.from.sha256": "66eba899473cf20567db8388ca225e8c74b228560ed7c1396e13ebd7de70c98d",
+        "phasor.from.time": "2025-12-02T12:00:16+10:00",
+        "phasor.kinds": "[\"archive\",\"reports\"]",
+        "phasor.report-subtype": "ENABLEMENT_PERIOD",
+        "phasor.report-type": "SSM",
+        "phasor.rows": "3188",
+        "phasor.to.file": "PUBLIC_NEXT_DAY_ENABLEMENT_PERIOD_20261023_120009_0000000544408983.zip",
+        "phasor.to.release": "2026-10",
+        "phasor.to.sha256": "b443c9d3fa1c831005c95d47c30d70c8db7425e16cd825b79b645d80cfeb7b9c",
+        "phasor.to.time": "2026-10-22T14:50:36+10:00",
+        "phasor.total-rows": "3188",
+        "phasor.version": "1"
       },
       "timestamp-ms": 1761919200000
     }
@@ -132,5 +132,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "920c265b-5487-8146-82b4-41633cf494ae"
+  "table-uuid": "a3d7689a-8575-834a-8e8e-3900e1c3e777"
 }

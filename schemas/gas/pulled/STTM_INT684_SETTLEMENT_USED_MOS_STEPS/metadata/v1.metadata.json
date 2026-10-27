@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1788184800000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/STTM_INT684_SETTLEMENT_USED_MOS_STEPS",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/gas/STTM_INT684_SETTLEMENT_USED_MOS_STEPS",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -18,23 +18,23 @@
     }
   ],
   "properties": {
-    "utilake.declared": "true",
-    "utilake.format": "4",
-    "utilake.headers": "{\"1\":\"settlement_run_identifier\",\"2\":\"gas_date\",\"3\":\"hub_identifier\",\"4\":\"hub_name\",\"5\":\"facility_identifier\",\"6\":\"facility_name\",\"7\":\"stack_identifier\",\"8\":\"stack_type\",\"9\":\"stack_step_identifier\",\"10\":\"report_datetime\"}",
-    "utilake.key": "[]",
-    "utilake.load": "append",
-    "utilake.market": "gas",
-    "utilake.offset": "+10:00",
-    "utilake.reports": "[[\"STTM\",\"INT684_SETTLEMENT_USED_MOS_STEPS_RPT_1\"]]",
-    "utilake.table": "STTM_INT684_SETTLEMENT_USED_MOS_STEPS",
-    "utilake.temporal.cutoff": "REPORT_DATETIME",
-    "utilake.temporal.entity": "[\"SETTLEMENT_RUN_IDENTIFIER\",\"HUB_IDENTIFIER\",\"FACILITY_IDENTIFIER\",\"STACK_IDENTIFIER\",\"STACK_STEP_IDENTIFIER\"]",
-    "utilake.temporal.order": "[\"REPORT_DATETIME\"]",
-    "utilake.temporal.origin": "hand",
-    "utilake.temporal.valid.column": "GAS_DATE",
-    "utilake.temporal.valid.kind": "instant",
-    "utilake.time": "GAS_DATE",
-    "utilake.visibility": "PUBLIC"
+    "phasor.declared": "true",
+    "phasor.format": "4",
+    "phasor.headers": "{\"1\":\"settlement_run_identifier\",\"2\":\"gas_date\",\"3\":\"hub_identifier\",\"4\":\"hub_name\",\"5\":\"facility_identifier\",\"6\":\"facility_name\",\"7\":\"stack_identifier\",\"8\":\"stack_type\",\"9\":\"stack_step_identifier\",\"10\":\"report_datetime\"}",
+    "phasor.key": "[]",
+    "phasor.load": "append",
+    "phasor.market": "gas",
+    "phasor.offset": "+10:00",
+    "phasor.reports": "[[\"STTM\",\"INT684_SETTLEMENT_USED_MOS_STEPS_RPT_1\"]]",
+    "phasor.table": "STTM_INT684_SETTLEMENT_USED_MOS_STEPS",
+    "phasor.temporal.cutoff": "REPORT_DATETIME",
+    "phasor.temporal.entity": "[\"SETTLEMENT_RUN_IDENTIFIER\",\"HUB_IDENTIFIER\",\"FACILITY_IDENTIFIER\",\"STACK_IDENTIFIER\",\"STACK_STEP_IDENTIFIER\"]",
+    "phasor.temporal.order": "[\"REPORT_DATETIME\"]",
+    "phasor.temporal.origin": "hand",
+    "phasor.temporal.valid.column": "GAS_DATE",
+    "phasor.temporal.valid.kind": "instant",
+    "phasor.time": "GAS_DATE",
+    "phasor.visibility": "PUBLIC"
   },
   "refs": {
     "main": {
@@ -121,27 +121,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/STTM_INT684_SETTLEMENT_USED_MOS_STEPS/metadata/snap-995202284090001086-1-d1f648cf-946b-8af4-b159-50c69e0a8d37.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/gas/STTM_INT684_SETTLEMENT_USED_MOS_STEPS/metadata/snap-995202284090001086-1-4994432d-046e-8cf8-8a8b-b90d43e22375.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 995202284090001086,
       "summary": {
         "operation": "append",
-        "utilake.files": "4",
-        "utilake.from.file": "Day24.zip",
-        "utilake.from.release": "2026-09",
-        "utilake.from.sha256": "93d3280f33572aae5ab124371171d23d919fc22cbba7faba01d06c46b49950c0",
-        "utilake.from.time": "2026-08-01T00:00:00+10:00",
-        "utilake.kinds": "[\"sttm\"]",
-        "utilake.report-subtype": "INT684_SETTLEMENT_USED_MOS_STEPS_RPT_1",
-        "utilake.report-type": "STTM",
-        "utilake.rows": "3262",
-        "utilake.to.file": "int684_v1_settlement_used_mos_steps_rpt_1.csv",
-        "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "9c525aceb8e4d056eaa039011d8a3807ee53ebe37449bec61cf5ed54e73966cf",
-        "utilake.to.time": "2026-09-30T00:00:00+10:00",
-        "utilake.total-rows": "3262",
-        "utilake.version": "1"
+        "phasor.files": "4",
+        "phasor.from.file": "Day24.zip",
+        "phasor.from.release": "2026-09",
+        "phasor.from.sha256": "93d3280f33572aae5ab124371171d23d919fc22cbba7faba01d06c46b49950c0",
+        "phasor.from.time": "2026-08-01T00:00:00+10:00",
+        "phasor.kinds": "[\"sttm\"]",
+        "phasor.report-subtype": "INT684_SETTLEMENT_USED_MOS_STEPS_RPT_1",
+        "phasor.report-type": "STTM",
+        "phasor.rows": "3262",
+        "phasor.to.file": "int684_v1_settlement_used_mos_steps_rpt_1.csv",
+        "phasor.to.release": "2026-10",
+        "phasor.to.sha256": "9c525aceb8e4d056eaa039011d8a3807ee53ebe37449bec61cf5ed54e73966cf",
+        "phasor.to.time": "2026-09-30T00:00:00+10:00",
+        "phasor.total-rows": "3262",
+        "phasor.version": "1"
       },
       "timestamp-ms": 1788184800000
     }
@@ -152,5 +152,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "d1f648cf-946b-8af4-b159-50c69e0a8d37"
+  "table-uuid": "4994432d-046e-8cf8-8a8b-b90d43e22375"
 }

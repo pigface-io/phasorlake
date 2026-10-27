@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1246370400000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/STATIONOWNER",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/STATIONOWNER",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -19,21 +19,21 @@
   ],
   "properties": {
     "comment": "STATIONOWNER sets out the owner details of each station.",
-    "utilake.declared": "true",
-    "utilake.format": "4",
-    "utilake.key": "[\"EFFECTIVEDATE\",\"PARTICIPANTID\",\"STATIONID\",\"VERSIONNO\"]",
-    "utilake.load": "snapshot",
-    "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"VARCHAR(10)\",\"3\":\"VARCHAR(10)\",\"4\":\"NUMERIC(3,0)\",\"5\":\"TIMESTAMP(0)\"}",
-    "utilake.package": "PARTICIPANT_REGISTRATION",
-    "utilake.reports": "[[\"PARTICIPANT_REGISTRATION\",\"STATIONOWNER\"]]",
-    "utilake.table": "STATIONOWNER",
-    "utilake.temporal.cutoff": "LASTCHANGED",
-    "utilake.temporal.entity": "[\"PARTICIPANTID\",\"STATIONID\"]",
-    "utilake.temporal.order": "[\"VERSIONNO\",\"LASTCHANGED\"]",
-    "utilake.temporal.origin": "derived",
-    "utilake.temporal.valid.column": "EFFECTIVEDATE",
-    "utilake.temporal.valid.kind": "from",
-    "utilake.visibility": "PUBLIC"
+    "phasor.declared": "true",
+    "phasor.format": "4",
+    "phasor.key": "[\"EFFECTIVEDATE\",\"PARTICIPANTID\",\"STATIONID\",\"VERSIONNO\"]",
+    "phasor.load": "snapshot",
+    "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"VARCHAR(10)\",\"3\":\"VARCHAR(10)\",\"4\":\"NUMERIC(3,0)\",\"5\":\"TIMESTAMP(0)\"}",
+    "phasor.package": "PARTICIPANT_REGISTRATION",
+    "phasor.reports": "[[\"PARTICIPANT_REGISTRATION\",\"STATIONOWNER\"]]",
+    "phasor.table": "STATIONOWNER",
+    "phasor.temporal.cutoff": "LASTCHANGED",
+    "phasor.temporal.entity": "[\"PARTICIPANTID\",\"STATIONID\"]",
+    "phasor.temporal.order": "[\"VERSIONNO\",\"LASTCHANGED\"]",
+    "phasor.temporal.origin": "derived",
+    "phasor.temporal.valid.column": "EFFECTIVEDATE",
+    "phasor.temporal.valid.kind": "from",
+    "phasor.visibility": "PUBLIC"
   },
   "refs": {
     "main": {
@@ -100,27 +100,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/STATIONOWNER/metadata/snap-5283430256761349963-1-e7579c15-b2fa-8d59-ab07-d7f3415e9957.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/STATIONOWNER/metadata/snap-5283430256761349963-1-522dbd4a-9c4a-8df8-9237-4ed516c30179.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 5283430256761349963,
       "summary": {
         "operation": "append",
-        "utilake.files": "207",
-        "utilake.from.file": "PUBLIC_DVD_STATIONOWNER_200907010000.zip",
-        "utilake.from.release": "2009-07",
-        "utilake.from.sha256": "44539eb2dbd1be88df4d0e25d3424acce148a40d2632a20dc0d5556981bbd261",
-        "utilake.from.time": "1998-10-25T00:00:00+10:00",
-        "utilake.kinds": "[\"archive\",\"dvd\"]",
-        "utilake.report-subtype": "STATIONOWNER",
-        "utilake.report-type": "PARTICIPANT_REGISTRATION",
-        "utilake.rows": "550670",
-        "utilake.to.file": "PUBLIC_ARCHIVE#STATIONOWNER#FILE01#202609010000.zip",
-        "utilake.to.release": "2026-09",
-        "utilake.to.sha256": "68c34db6c021e2f58816ade1b6a3ab41c50b149ddf584e9b7dd7c7dbd1fbb7a1",
-        "utilake.to.time": "2026-10-09T00:00:00+10:00",
-        "utilake.total-rows": "550670",
-        "utilake.version": "1"
+        "phasor.files": "207",
+        "phasor.from.file": "PUBLIC_DVD_STATIONOWNER_200907010000.zip",
+        "phasor.from.release": "2009-07",
+        "phasor.from.sha256": "44539eb2dbd1be88df4d0e25d3424acce148a40d2632a20dc0d5556981bbd261",
+        "phasor.from.time": "1998-10-25T00:00:00+10:00",
+        "phasor.kinds": "[\"archive\",\"dvd\"]",
+        "phasor.report-subtype": "STATIONOWNER",
+        "phasor.report-type": "PARTICIPANT_REGISTRATION",
+        "phasor.rows": "550670",
+        "phasor.to.file": "PUBLIC_ARCHIVE#STATIONOWNER#FILE01#202609010000.zip",
+        "phasor.to.release": "2026-09",
+        "phasor.to.sha256": "68c34db6c021e2f58816ade1b6a3ab41c50b149ddf584e9b7dd7c7dbd1fbb7a1",
+        "phasor.to.time": "2026-10-09T00:00:00+10:00",
+        "phasor.total-rows": "550670",
+        "phasor.version": "1"
       },
       "timestamp-ms": 1246370400000
     }
@@ -131,5 +131,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "e7579c15-b2fa-8d59-ab07-d7f3415e9957"
+  "table-uuid": "522dbd4a-9c4a-8df8-9237-4ed516c30179"
 }

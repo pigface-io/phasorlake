@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1767189600000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/SETTLEMENTS_FCAS_CLAWBACK_REQ",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/SETTLEMENTS_FCAS_CLAWBACK_REQ",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -18,9 +18,9 @@
     }
   ],
   "properties": {
-    "utilake.declared": "false",
-    "utilake.format": "4",
-    "utilake.table": "SETTLEMENTS_FCAS_CLAWBACK_REQ"
+    "phasor.declared": "false",
+    "phasor.format": "4",
+    "phasor.table": "SETTLEMENTS_FCAS_CLAWBACK_REQ"
   },
   "refs": {
     "main": {
@@ -149,27 +149,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/SETTLEMENTS_FCAS_CLAWBACK_REQ/metadata/snap-4736424010621194845-1-384d976d-ba6a-85df-bc4b-0e2450d2e2d3.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/SETTLEMENTS_FCAS_CLAWBACK_REQ/metadata/snap-4736424010621194845-1-4697e822-9194-8c0b-9b3b-a23ffa8f3202.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 4736424010621194845,
       "summary": {
         "operation": "append",
-        "utilake.files": "45",
-        "utilake.from.file": "PUBLIC_ARCHIVE#SET_FCAS_CLAWBACK_REQ#FILE01#202601010000.zip",
-        "utilake.from.release": "2026-01",
-        "utilake.from.sha256": "86e6548f9913c3e7efa240d67d8c5cc2694ab0c1119183de602c84a35ba2119d",
-        "utilake.from.time": "2025-07-06T07:50:00+10:00",
-        "utilake.kinds": "[\"archive\",\"reports\"]",
-        "utilake.report-subtype": "FCAS_CLAWBACK_REQ",
-        "utilake.report-type": "SETTLEMENTS",
-        "utilake.rows": "1985094",
-        "utilake.to.file": "PUBLIC_SETTLEMENTS_EXTN_20261022105216_0000000544217029.zip",
-        "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "ad1795cbc5f4a10603ff70b888af6cfede2a506776064c0cad6b2be7e4980d98",
-        "utilake.to.time": "2026-03-23T18:20:00+10:00",
-        "utilake.total-rows": "1985094",
-        "utilake.version": "1"
+        "phasor.files": "45",
+        "phasor.from.file": "PUBLIC_ARCHIVE#SET_FCAS_CLAWBACK_REQ#FILE01#202601010000.zip",
+        "phasor.from.release": "2026-01",
+        "phasor.from.sha256": "86e6548f9913c3e7efa240d67d8c5cc2694ab0c1119183de602c84a35ba2119d",
+        "phasor.from.time": "2025-07-06T07:50:00+10:00",
+        "phasor.kinds": "[\"archive\",\"reports\"]",
+        "phasor.report-subtype": "FCAS_CLAWBACK_REQ",
+        "phasor.report-type": "SETTLEMENTS",
+        "phasor.rows": "1985094",
+        "phasor.to.file": "PUBLIC_SETTLEMENTS_EXTN_20261022105216_0000000544217029.zip",
+        "phasor.to.release": "2026-10",
+        "phasor.to.sha256": "ad1795cbc5f4a10603ff70b888af6cfede2a506776064c0cad6b2be7e4980d98",
+        "phasor.to.time": "2026-03-23T18:20:00+10:00",
+        "phasor.total-rows": "1985094",
+        "phasor.version": "1"
       },
       "timestamp-ms": 1767189600000
     }
@@ -180,5 +180,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "384d976d-ba6a-85df-bc4b-0e2450d2e2d3"
+  "table-uuid": "4697e822-9194-8c0b-9b3b-a23ffa8f3202"
 }

@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1790776800000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GBB_MISSING_NOMINATION_AND_FORECAST",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/gas/GBB_MISSING_NOMINATION_AND_FORECAST",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -19,24 +19,24 @@
   ],
   "properties": {
     "comment": "Provides the aggregate of forecast and nominations by location.",
-    "utilake.declared": "true",
-    "utilake.format": "4",
-    "utilake.headers": "{\"1\":\"GasDate\",\"2\":\"FacilityName\",\"3\":\"FacilityId\",\"4\":\"ConnectionPointId\"}",
-    "utilake.key": "[]",
-    "utilake.load": "append",
-    "utilake.market": "gas",
-    "utilake.model": "[\"GAS_NOMINATIONS_FORECAST_AGG\",\"GAS_FACILITY\"]",
-    "utilake.model-types": "{\"1\":\"DATE\",\"2\":\"VARCHAR2(100)\",\"3\":\"NUMBER(10,0)\"}",
-    "utilake.offset": "+10:00",
-    "utilake.reports": "[[\"GBB\",\"MISSING_NOMINATION_AND_FORECAST\"]]",
-    "utilake.table": "GBB_MISSING_NOMINATION_AND_FORECAST",
-    "utilake.temporal.entity": "[\"FACILITYID\",\"CONNECTIONPOINTID\"]",
-    "utilake.temporal.order": "[]",
-    "utilake.temporal.origin": "hand",
-    "utilake.temporal.valid.column": "GASDATE",
-    "utilake.temporal.valid.kind": "instant",
-    "utilake.time": "GASDATE",
-    "utilake.visibility": "PUBLIC"
+    "phasor.declared": "true",
+    "phasor.format": "4",
+    "phasor.headers": "{\"1\":\"GasDate\",\"2\":\"FacilityName\",\"3\":\"FacilityId\",\"4\":\"ConnectionPointId\"}",
+    "phasor.key": "[]",
+    "phasor.load": "append",
+    "phasor.market": "gas",
+    "phasor.model": "[\"GAS_NOMINATIONS_FORECAST_AGG\",\"GAS_FACILITY\"]",
+    "phasor.model-types": "{\"1\":\"DATE\",\"2\":\"VARCHAR2(100)\",\"3\":\"NUMBER(10,0)\"}",
+    "phasor.offset": "+10:00",
+    "phasor.reports": "[[\"GBB\",\"MISSING_NOMINATION_AND_FORECAST\"]]",
+    "phasor.table": "GBB_MISSING_NOMINATION_AND_FORECAST",
+    "phasor.temporal.entity": "[\"FACILITYID\",\"CONNECTIONPOINTID\"]",
+    "phasor.temporal.order": "[]",
+    "phasor.temporal.origin": "hand",
+    "phasor.temporal.valid.column": "GASDATE",
+    "phasor.temporal.valid.kind": "instant",
+    "phasor.time": "GASDATE",
+    "phasor.visibility": "PUBLIC"
   },
   "refs": {
     "main": {
@@ -90,27 +90,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GBB_MISSING_NOMINATION_AND_FORECAST/metadata/snap-5354467261965664599-1-8073f8cc-14f3-8b09-893a-d62519a6e915.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/gas/GBB_MISSING_NOMINATION_AND_FORECAST/metadata/snap-5354467261965664599-1-521c694b-fe6f-8217-ae47-26575220982d.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 5354467261965664599,
       "summary": {
         "operation": "append",
-        "utilake.files": "4",
-        "utilake.from.file": "GasBBMissingNominationAndForecast.zip",
-        "utilake.from.release": "2026-10",
-        "utilake.from.sha256": "a8e79c044dc43a1799db5e169d2e6b6ef6c26b1a49684bf2d3d0bf68f294ebfa",
-        "utilake.from.time": "2025-10-19T00:00:00+10:00",
-        "utilake.kinds": "[\"gbb\"]",
-        "utilake.report-subtype": "MISSING_NOMINATION_AND_FORECAST",
-        "utilake.report-type": "GBB",
-        "utilake.rows": "54163",
-        "utilake.to.file": "GasBBMissingNominationAndForecast.zip@20261023T231200+1000",
-        "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "487516293c66fecd4ea10c57fe25747a841249d68406d8b2267f7f5553c0fab7",
-        "utilake.to.time": "2026-10-30T00:00:00+10:00",
-        "utilake.total-rows": "54163",
-        "utilake.version": "1"
+        "phasor.files": "4",
+        "phasor.from.file": "GasBBMissingNominationAndForecast.zip",
+        "phasor.from.release": "2026-10",
+        "phasor.from.sha256": "a8e79c044dc43a1799db5e169d2e6b6ef6c26b1a49684bf2d3d0bf68f294ebfa",
+        "phasor.from.time": "2025-10-19T00:00:00+10:00",
+        "phasor.kinds": "[\"gbb\"]",
+        "phasor.report-subtype": "MISSING_NOMINATION_AND_FORECAST",
+        "phasor.report-type": "GBB",
+        "phasor.rows": "54163",
+        "phasor.to.file": "GasBBMissingNominationAndForecast.zip@20261023T231200+1000",
+        "phasor.to.release": "2026-10",
+        "phasor.to.sha256": "487516293c66fecd4ea10c57fe25747a841249d68406d8b2267f7f5553c0fab7",
+        "phasor.to.time": "2026-10-30T00:00:00+10:00",
+        "phasor.total-rows": "54163",
+        "phasor.version": "1"
       },
       "timestamp-ms": 1790776800000
     }
@@ -121,5 +121,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "8073f8cc-14f3-8b09-893a-d62519a6e915"
+  "table-uuid": "521c694b-fe6f-8217-ae47-26575220982d"
 }

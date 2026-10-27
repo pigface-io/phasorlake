@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1785506400000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/DWGM_INT188_CTM_TO_HV_ZONE_MAPPING",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/gas/DWGM_INT188_CTM_TO_HV_ZONE_MAPPING",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -18,23 +18,23 @@
     }
   ],
   "properties": {
-    "utilake.declared": "true",
-    "utilake.format": "4",
-    "utilake.headers": "{\"1\":\"mirn\",\"2\":\"site_company\",\"3\":\"hv_zone\",\"4\":\"hv_zone_desc\",\"5\":\"effective_from\",\"6\":\"current_date\"}",
-    "utilake.key": "[]",
-    "utilake.load": "append",
-    "utilake.market": "gas",
-    "utilake.offset": "+10:00",
-    "utilake.reports": "[[\"DWGM\",\"INT188_CTM_TO_HV_ZONE_MAPPING_1\"]]",
-    "utilake.table": "DWGM_INT188_CTM_TO_HV_ZONE_MAPPING",
-    "utilake.temporal.cutoff": "CURRENT_DATE",
-    "utilake.temporal.entity": "[]",
-    "utilake.temporal.order": "[\"CURRENT_DATE\"]",
-    "utilake.temporal.origin": "hand",
-    "utilake.temporal.valid.column": "EFFECTIVE_FROM",
-    "utilake.temporal.valid.kind": "instant",
-    "utilake.time": "EFFECTIVE_FROM",
-    "utilake.visibility": "PUBLIC"
+    "phasor.declared": "true",
+    "phasor.format": "4",
+    "phasor.headers": "{\"1\":\"mirn\",\"2\":\"site_company\",\"3\":\"hv_zone\",\"4\":\"hv_zone_desc\",\"5\":\"effective_from\",\"6\":\"current_date\"}",
+    "phasor.key": "[]",
+    "phasor.load": "append",
+    "phasor.market": "gas",
+    "phasor.offset": "+10:00",
+    "phasor.reports": "[[\"DWGM\",\"INT188_CTM_TO_HV_ZONE_MAPPING_1\"]]",
+    "phasor.table": "DWGM_INT188_CTM_TO_HV_ZONE_MAPPING",
+    "phasor.temporal.cutoff": "CURRENT_DATE",
+    "phasor.temporal.entity": "[]",
+    "phasor.temporal.order": "[\"CURRENT_DATE\"]",
+    "phasor.temporal.origin": "hand",
+    "phasor.temporal.valid.column": "EFFECTIVE_FROM",
+    "phasor.temporal.valid.kind": "instant",
+    "phasor.time": "EFFECTIVE_FROM",
+    "phasor.visibility": "PUBLIC"
   },
   "refs": {
     "main": {
@@ -97,27 +97,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/DWGM_INT188_CTM_TO_HV_ZONE_MAPPING/metadata/snap-7502652405454561701-1-090e50ab-76f1-8c60-904d-fcc0873d59a6.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/gas/DWGM_INT188_CTM_TO_HV_ZONE_MAPPING/metadata/snap-7502652405454561701-1-a6615204-2eb4-8d20-8f0e-6e63becfc73f.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 7502652405454561701,
       "summary": {
         "operation": "append",
-        "utilake.files": "37",
-        "utilake.from.file": "PublicRpts31.zip",
-        "utilake.from.release": "2026-08",
-        "utilake.from.sha256": "735fad42989ef107a70ecdfc43f290c13afc957673461c78e4538d9ffcc9b0fe",
-        "utilake.from.time": "2024-05-01T00:00:00+10:00",
-        "utilake.kinds": "[\"dwgm\"]",
-        "utilake.report-subtype": "INT188_CTM_TO_HV_ZONE_MAPPING_1",
-        "utilake.report-type": "DWGM",
-        "utilake.rows": "152",
-        "utilake.to.file": "int188_v4_ctm_to_hv_zone_mapping_1.csv@20261024T113600+1000",
-        "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "2ea6a6917db00a2cba2bb1b25439144f1eefb0b56da0bf781c617d841ac7a09d",
-        "utilake.to.time": "2024-05-01T00:00:00+10:00",
-        "utilake.total-rows": "152",
-        "utilake.version": "4"
+        "phasor.files": "37",
+        "phasor.from.file": "PublicRpts31.zip",
+        "phasor.from.release": "2026-08",
+        "phasor.from.sha256": "735fad42989ef107a70ecdfc43f290c13afc957673461c78e4538d9ffcc9b0fe",
+        "phasor.from.time": "2024-05-01T00:00:00+10:00",
+        "phasor.kinds": "[\"dwgm\"]",
+        "phasor.report-subtype": "INT188_CTM_TO_HV_ZONE_MAPPING_1",
+        "phasor.report-type": "DWGM",
+        "phasor.rows": "152",
+        "phasor.to.file": "int188_v4_ctm_to_hv_zone_mapping_1.csv@20261024T113600+1000",
+        "phasor.to.release": "2026-10",
+        "phasor.to.sha256": "2ea6a6917db00a2cba2bb1b25439144f1eefb0b56da0bf781c617d841ac7a09d",
+        "phasor.to.time": "2024-05-01T00:00:00+10:00",
+        "phasor.total-rows": "152",
+        "phasor.version": "4"
       },
       "timestamp-ms": 1785506400000
     }
@@ -128,5 +128,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "090e50ab-76f1-8c60-904d-fcc0873d59a6"
+  "table-uuid": "a6615204-2eb4-8d20-8f0e-6e63becfc73f"
 }

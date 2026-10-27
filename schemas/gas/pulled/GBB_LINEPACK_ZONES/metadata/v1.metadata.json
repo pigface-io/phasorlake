@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1790776800000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GBB_LINEPACK_ZONES",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/gas/GBB_LINEPACK_ZONES",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -19,21 +19,21 @@
   ],
   "properties": {
     "comment": "Lists all production and demand locations within the Bulletin Board system.",
-    "utilake.declared": "true",
-    "utilake.format": "4",
-    "utilake.headers": "{\"1\":\"Operator\",\"2\":\"LinepackZone\",\"3\":\"LinepackZoneDescription\"}",
-    "utilake.key": "[]",
-    "utilake.load": "append",
-    "utilake.market": "gas",
-    "utilake.model": "[\"GAS_LOCATION\",\"GAS_LOCATION_NODE\"]",
-    "utilake.offset": "+10:00",
-    "utilake.reports": "[[\"GBB\",\"LINEPACK_ZONES\"]]",
-    "utilake.table": "GBB_LINEPACK_ZONES",
-    "utilake.temporal.entity": "[]",
-    "utilake.temporal.order": "[]",
-    "utilake.temporal.origin": "hand",
-    "utilake.temporal.valid.kind": "timeless",
-    "utilake.visibility": "PUBLIC"
+    "phasor.declared": "true",
+    "phasor.format": "4",
+    "phasor.headers": "{\"1\":\"Operator\",\"2\":\"LinepackZone\",\"3\":\"LinepackZoneDescription\"}",
+    "phasor.key": "[]",
+    "phasor.load": "append",
+    "phasor.market": "gas",
+    "phasor.model": "[\"GAS_LOCATION\",\"GAS_LOCATION_NODE\"]",
+    "phasor.offset": "+10:00",
+    "phasor.reports": "[[\"GBB\",\"LINEPACK_ZONES\"]]",
+    "phasor.table": "GBB_LINEPACK_ZONES",
+    "phasor.temporal.entity": "[]",
+    "phasor.temporal.order": "[]",
+    "phasor.temporal.origin": "hand",
+    "phasor.temporal.valid.kind": "timeless",
+    "phasor.visibility": "PUBLIC"
   },
   "refs": {
     "main": {
@@ -78,25 +78,25 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GBB_LINEPACK_ZONES/metadata/snap-6884137470561234878-1-ba6ea0e5-ae95-8b00-9c48-de7df2d53a48.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/gas/GBB_LINEPACK_ZONES/metadata/snap-6884137470561234878-1-4e096368-4355-8fed-920c-e179ddd36e05.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 6884137470561234878,
       "summary": {
         "operation": "append",
-        "utilake.files": "1",
-        "utilake.from.file": "GasBBLinepackZones.CSV",
-        "utilake.from.release": "2026-10",
-        "utilake.from.sha256": "bd019316c5a2a9a73f94216e308469624b196841acff655fc11b54dbb61574d5",
-        "utilake.kinds": "[\"gbb\"]",
-        "utilake.report-subtype": "LINEPACK_ZONES",
-        "utilake.report-type": "GBB",
-        "utilake.rows": "56",
-        "utilake.to.file": "GasBBLinepackZones.CSV",
-        "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "bd019316c5a2a9a73f94216e308469624b196841acff655fc11b54dbb61574d5",
-        "utilake.total-rows": "56",
-        "utilake.version": "1"
+        "phasor.files": "1",
+        "phasor.from.file": "GasBBLinepackZones.CSV",
+        "phasor.from.release": "2026-10",
+        "phasor.from.sha256": "bd019316c5a2a9a73f94216e308469624b196841acff655fc11b54dbb61574d5",
+        "phasor.kinds": "[\"gbb\"]",
+        "phasor.report-subtype": "LINEPACK_ZONES",
+        "phasor.report-type": "GBB",
+        "phasor.rows": "56",
+        "phasor.to.file": "GasBBLinepackZones.CSV",
+        "phasor.to.release": "2026-10",
+        "phasor.to.sha256": "bd019316c5a2a9a73f94216e308469624b196841acff655fc11b54dbb61574d5",
+        "phasor.total-rows": "56",
+        "phasor.version": "1"
       },
       "timestamp-ms": 1790776800000
     }
@@ -107,5 +107,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "ba6ea0e5-ae95-8b00-9c48-de7df2d53a48"
+  "table-uuid": "4e096368-4355-8fed-920c-e179ddd36e05"
 }

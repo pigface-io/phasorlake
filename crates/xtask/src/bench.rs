@@ -2,7 +2,7 @@
 //!
 //! Micro benchmarks are criterion benches in the crates; their medians are
 //! read from `target/criterion/*/new/estimates.json`. The end-to-end case
-//! runs the `utilake-bench` harness, which ingests the fixture zip with a
+//! runs the `phasor-bench` harness, which ingests the fixture zip with a
 //! counting allocator and reports wall time, peak heap and allocations, under
 //! `/usr/bin/time` for the peak resident set size.
 //!
@@ -191,13 +191,13 @@ const E2E_RUNS: usize = 3;
 
 fn run_e2e(root: &Path) -> Result<Measurements> {
     let status = Command::new("cargo")
-        .args(["build", "--release", "-q", "-p", "utilake-bench"])
+        .args(["build", "--release", "-q", "-p", "phasor-bench"])
         .current_dir(root)
         .status()?;
     if !status.success() {
-        bail!("building utilake-bench failed");
+        bail!("building phasor-bench failed");
     }
-    let bin = root.join("target/release/utilake-bench");
+    let bin = root.join("target/release/phasor-bench");
     let mut best: Measurements = BTreeMap::new();
     for _ in 0..E2E_RUNS {
         for (bench, keys) in run_e2e_once(root, &bin)? {
@@ -234,14 +234,14 @@ fn run_e2e_once(root: &Path, bin: &Path) -> Result<Measurements> {
     };
     if !out.status.success() {
         bail!(
-            "utilake-bench failed: {}",
+            "phasor-bench failed: {}",
             String::from_utf8_lossy(&out.stderr)
         );
     }
     let stdout = String::from_utf8_lossy(&out.stdout);
     let stderr = String::from_utf8_lossy(&out.stderr);
     let mut measured: Measurements = serde_json::from_str(stdout.trim())
-        .context("utilake-bench did not print JSON measurements")?;
+        .context("phasor-bench did not print JSON measurements")?;
     if let Some(rss) = parse_rss_mb(&stderr) {
         for keys in measured.values_mut() {
             keys.insert("max_rss_mb".into(), round3(rss));
@@ -274,19 +274,19 @@ pub fn run(set: &str, do_tighten: bool) -> Result<bool> {
     // library's unit tests as a benchmark harness, which rejects criterion flags.
     let targets: &[(&str, &str)] = match set {
         "fast" => &[
-            ("utilake-mms-conform", "scan"),
-            ("utilake-registry", "resolve"),
-            ("utilake-mms-conform", "values"),
-            ("utilake-mms-conform", "plain"),
-            ("utilake-acquire", "fetch"),
+            ("phasor-mms-conform", "scan"),
+            ("phasor-registry", "resolve"),
+            ("phasor-mms-conform", "values"),
+            ("phasor-mms-conform", "plain"),
+            ("phasor-acquire", "fetch"),
         ],
         "full" => &[
-            ("utilake-mms-conform", "scan"),
-            ("utilake-registry", "resolve"),
-            ("utilake-mms-conform", "values"),
-            ("utilake-mms-conform", "plain"),
-            ("utilake-acquire", "fetch"),
-            ("utilake-writer", "write"),
+            ("phasor-mms-conform", "scan"),
+            ("phasor-registry", "resolve"),
+            ("phasor-mms-conform", "values"),
+            ("phasor-mms-conform", "plain"),
+            ("phasor-acquire", "fetch"),
+            ("phasor-writer", "write"),
         ],
         other => bail!("unknown set {other}; use fast or full"),
     };

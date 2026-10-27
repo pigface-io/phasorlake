@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1790776800000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GBB_GAS_FIELD_INTEREST",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/gas/GBB_GAS_FIELD_INTEREST",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -19,24 +19,24 @@
   ],
   "properties": {
     "comment": "Field location",
-    "utilake.declared": "true",
-    "utilake.format": "4",
-    "utilake.headers": "{\"1\":\"FieldName\",\"2\":\"FieldInterestId\",\"3\":\"CompanyId\",\"4\":\"CompanyName\",\"5\":\"GroupMembers\",\"6\":\"PercentageShare\",\"7\":\"EffectiveDate\"}",
-    "utilake.key": "[\"FIELDINTERESTID\",\"COMPANYID\"]",
-    "utilake.load": "snapshot",
-    "utilake.market": "gas",
-    "utilake.model": "[\"GAS_FIELD\",\"GAS_FIELD_DETAIL\",\"GAS_FIELDINTEREST\"]",
-    "utilake.model-types": "{\"1\":\"VARCHAR2(100)\",\"2\":\"NUMBER(20,0)\",\"7\":\"DATE\"}",
-    "utilake.offset": "+10:00",
-    "utilake.reports": "[[\"GBB\",\"GAS_FIELD_INTEREST\"]]",
-    "utilake.table": "GBB_GAS_FIELD_INTEREST",
-    "utilake.temporal.entity": "[\"FIELDINTERESTID\",\"COMPANYID\"]",
-    "utilake.temporal.order": "[]",
-    "utilake.temporal.origin": "hand",
-    "utilake.temporal.valid.column": "EFFECTIVEDATE",
-    "utilake.temporal.valid.kind": "instant",
-    "utilake.time": "EFFECTIVEDATE",
-    "utilake.visibility": "PUBLIC"
+    "phasor.declared": "true",
+    "phasor.format": "4",
+    "phasor.headers": "{\"1\":\"FieldName\",\"2\":\"FieldInterestId\",\"3\":\"CompanyId\",\"4\":\"CompanyName\",\"5\":\"GroupMembers\",\"6\":\"PercentageShare\",\"7\":\"EffectiveDate\"}",
+    "phasor.key": "[\"FIELDINTERESTID\",\"COMPANYID\"]",
+    "phasor.load": "snapshot",
+    "phasor.market": "gas",
+    "phasor.model": "[\"GAS_FIELD\",\"GAS_FIELD_DETAIL\",\"GAS_FIELDINTEREST\"]",
+    "phasor.model-types": "{\"1\":\"VARCHAR2(100)\",\"2\":\"NUMBER(20,0)\",\"7\":\"DATE\"}",
+    "phasor.offset": "+10:00",
+    "phasor.reports": "[[\"GBB\",\"GAS_FIELD_INTEREST\"]]",
+    "phasor.table": "GBB_GAS_FIELD_INTEREST",
+    "phasor.temporal.entity": "[\"FIELDINTERESTID\",\"COMPANYID\"]",
+    "phasor.temporal.order": "[]",
+    "phasor.temporal.origin": "hand",
+    "phasor.temporal.valid.column": "EFFECTIVEDATE",
+    "phasor.temporal.valid.kind": "instant",
+    "phasor.time": "EFFECTIVEDATE",
+    "phasor.visibility": "PUBLIC"
   },
   "refs": {
     "main": {
@@ -111,27 +111,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GBB_GAS_FIELD_INTEREST/metadata/snap-5962574913222473977-1-9cdb13ed-d696-826d-82d1-2ab121b03e11.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/gas/GBB_GAS_FIELD_INTEREST/metadata/snap-5962574913222473977-1-156f18f7-00fe-8c44-9fb1-ff7549a34947.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 5962574913222473977,
       "summary": {
         "operation": "append",
-        "utilake.files": "1",
-        "utilake.from.file": "GasBBGasFieldInterest.csv",
-        "utilake.from.release": "2026-10",
-        "utilake.from.sha256": "d5415103cd7d9a95d14e8148c0635edff94e90f4dcf387494ceaa5c8b195a5e2",
-        "utilake.from.time": "2023-03-15T00:00:00+10:00",
-        "utilake.kinds": "[\"gbb\"]",
-        "utilake.report-subtype": "GAS_FIELD_INTEREST",
-        "utilake.report-type": "GBB",
-        "utilake.rows": "3163",
-        "utilake.to.file": "GasBBGasFieldInterest.csv",
-        "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "d5415103cd7d9a95d14e8148c0635edff94e90f4dcf387494ceaa5c8b195a5e2",
-        "utilake.to.time": "2026-07-01T00:00:00+10:00",
-        "utilake.total-rows": "3163",
-        "utilake.version": "1"
+        "phasor.files": "1",
+        "phasor.from.file": "GasBBGasFieldInterest.csv",
+        "phasor.from.release": "2026-10",
+        "phasor.from.sha256": "d5415103cd7d9a95d14e8148c0635edff94e90f4dcf387494ceaa5c8b195a5e2",
+        "phasor.from.time": "2023-03-15T00:00:00+10:00",
+        "phasor.kinds": "[\"gbb\"]",
+        "phasor.report-subtype": "GAS_FIELD_INTEREST",
+        "phasor.report-type": "GBB",
+        "phasor.rows": "3163",
+        "phasor.to.file": "GasBBGasFieldInterest.csv",
+        "phasor.to.release": "2026-10",
+        "phasor.to.sha256": "d5415103cd7d9a95d14e8148c0635edff94e90f4dcf387494ceaa5c8b195a5e2",
+        "phasor.to.time": "2026-07-01T00:00:00+10:00",
+        "phasor.total-rows": "3163",
+        "phasor.version": "1"
       },
       "timestamp-ms": 1790776800000
     }
@@ -142,5 +142,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "9cdb13ed-d696-826d-82d1-2ab121b03e11"
+  "table-uuid": "156f18f7-00fe-8c44-9fb1-ff7549a34947"
 }

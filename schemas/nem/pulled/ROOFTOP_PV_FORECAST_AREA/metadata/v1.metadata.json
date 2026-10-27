@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1756648800000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/ROOFTOP_PV_FORECAST_AREA",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/ROOFTOP_PV_FORECAST_AREA",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -18,22 +18,22 @@
     }
   ],
   "properties": {
-    "utilake.declared": "true",
-    "utilake.format": "4",
-    "utilake.key": "[\"VERSION_DATETIME\",\"AREAID\",\"INTERVAL_DATETIME\"]",
-    "utilake.load": "append",
-    "utilake.package": "DEMAND_FORECASTS",
-    "utilake.reports": "[[\"ROOFTOP\",\"FORECAST\"]]",
-    "utilake.table": "ROOFTOP_PV_FORECAST_AREA",
-    "utilake.temporal.cutoff": "VERSION_DATETIME",
-    "utilake.temporal.entity": "[\"AREAID\"]",
-    "utilake.temporal.order": "[\"VERSION_DATETIME\",\"LASTCHANGED\"]",
-    "utilake.temporal.origin": "derived",
-    "utilake.temporal.valid.column": "INTERVAL_DATETIME",
-    "utilake.temporal.valid.kind": "interval_end",
-    "utilake.time": "INTERVAL_DATETIME",
-    "utilake.visibility": "PUBLIC",
-    "utilake.with-columns": "[\"AREAID\"]"
+    "phasor.declared": "true",
+    "phasor.format": "4",
+    "phasor.key": "[\"VERSION_DATETIME\",\"AREAID\",\"INTERVAL_DATETIME\"]",
+    "phasor.load": "append",
+    "phasor.package": "DEMAND_FORECASTS",
+    "phasor.reports": "[[\"ROOFTOP\",\"FORECAST\"]]",
+    "phasor.table": "ROOFTOP_PV_FORECAST_AREA",
+    "phasor.temporal.cutoff": "VERSION_DATETIME",
+    "phasor.temporal.entity": "[\"AREAID\"]",
+    "phasor.temporal.order": "[\"VERSION_DATETIME\",\"LASTCHANGED\"]",
+    "phasor.temporal.origin": "derived",
+    "phasor.temporal.valid.column": "INTERVAL_DATETIME",
+    "phasor.temporal.valid.kind": "interval_end",
+    "phasor.time": "INTERVAL_DATETIME",
+    "phasor.visibility": "PUBLIC",
+    "phasor.with-columns": "[\"AREAID\"]"
   },
   "refs": {
     "main": {
@@ -112,27 +112,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/ROOFTOP_PV_FORECAST_AREA/metadata/snap-4294334466117281397-1-a7abf106-7940-85ad-87a3-8c88604c974a.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/ROOFTOP_PV_FORECAST_AREA/metadata/snap-4294334466117281397-1-02a17b1c-fdc0-8b5a-9f68-85ff360bf73a.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 4294334466117281397,
       "summary": {
         "operation": "append",
-        "utilake.files": "18696",
-        "utilake.from.file": "PUBLIC_ROOFTOP_PV_FORECAST_AREA_20250930.zip",
-        "utilake.from.release": "2025-09",
-        "utilake.from.sha256": "416730d513cc695bf712ff4dae3c3153b730e5223194e201b20415f470c555c5",
-        "utilake.from.time": "2025-09-30T00:30:00+10:00",
-        "utilake.kinds": "[\"reports\"]",
-        "utilake.report-subtype": "FORECAST",
-        "utilake.report-type": "ROOFTOP",
-        "utilake.rows": "55005792",
-        "utilake.to.file": "PUBLIC_ROOFTOP_PV_FORECAST_AREA_20261024113000_0000000544594225.zip",
-        "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "abd48cd572be4d21a7f0b4a1201bf785610e32f47ed281802ea6f3713ec63eeb",
-        "utilake.to.time": "2026-11-01T04:00:00+10:00",
-        "utilake.total-rows": "55005792",
-        "utilake.version": "1"
+        "phasor.files": "18696",
+        "phasor.from.file": "PUBLIC_ROOFTOP_PV_FORECAST_AREA_20250930.zip",
+        "phasor.from.release": "2025-09",
+        "phasor.from.sha256": "416730d513cc695bf712ff4dae3c3153b730e5223194e201b20415f470c555c5",
+        "phasor.from.time": "2025-09-30T00:30:00+10:00",
+        "phasor.kinds": "[\"reports\"]",
+        "phasor.report-subtype": "FORECAST",
+        "phasor.report-type": "ROOFTOP",
+        "phasor.rows": "55005792",
+        "phasor.to.file": "PUBLIC_ROOFTOP_PV_FORECAST_AREA_20261024113000_0000000544594225.zip",
+        "phasor.to.release": "2026-10",
+        "phasor.to.sha256": "abd48cd572be4d21a7f0b4a1201bf785610e32f47ed281802ea6f3713ec63eeb",
+        "phasor.to.time": "2026-11-01T04:00:00+10:00",
+        "phasor.total-rows": "55005792",
+        "phasor.version": "1"
       },
       "timestamp-ms": 1756648800000
     }
@@ -143,5 +143,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "a7abf106-7940-85ad-87a3-8c88604c974a"
+  "table-uuid": "02a17b1c-fdc0-8b5a-9f68-85ff360bf73a"
 }

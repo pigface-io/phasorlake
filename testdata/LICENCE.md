@@ -18,4 +18,4 @@ are copied verbatim from that report.
 © AEMO. Reproduced for software testing under AEMO's copyright permissions
 (https://aemo.com.au/privacy-and-legal-notices/copyright-permissions), which
 allow use of published information provided AEMO is attributed. Nothing here
-is a complete dataset; fetch the real thing with `nemlake fetch`.
+is a complete dataset; fetch the real thing with `phasor fetch`.

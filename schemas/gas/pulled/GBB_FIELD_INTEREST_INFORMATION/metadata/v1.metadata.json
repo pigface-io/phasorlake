@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1790776800000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GBB_FIELD_INTEREST_INFORMATION",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/gas/GBB_FIELD_INTEREST_INFORMATION",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -19,25 +19,25 @@
   ],
   "properties": {
     "comment": "Field Interest annual reporting date",
-    "utilake.declared": "true",
-    "utilake.format": "4",
-    "utilake.headers": "{\"1\":\"FieldInterestId\",\"2\":\"FieldName\",\"3\":\"CompanyId\",\"4\":\"CompanyName\",\"5\":\"Description\",\"6\":\"EffectiveDate\",\"7\":\"PetroleumTenements\",\"8\":\"TenementShare\",\"9\":\"ProcessingFacilities\",\"10\":\"ResourceClassification\",\"11\":\"ResourceSubClassification\",\"12\":\"NatureOfGas\",\"13\":\"AnnualReportingDate\",\"14\":\"BasinId\",\"15\":\"BasinName\",\"16\":\"State\",\"17\":\"OperatingState\",\"18\":\"VersionDateTime\"}",
-    "utilake.key": "[\"FIELDINTERESTID\",\"COMPANYID\",\"BASINID\"]",
-    "utilake.load": "snapshot",
-    "utilake.market": "gas",
-    "utilake.model": "[\"GAS_FIELDINTEREST\",\"GAS_FIELDINTEREST_DETAIL\",\"GAS_FIELDINTEREST_PARTICIPANT\",\"GAS_FIELDINTEREST_SHARE\"]",
-    "utilake.model-types": "{\"1\":\"NUMBER(20,0)\",\"3\":\"NUMBER(10,0)\",\"6\":\"DATE\",\"7\":\"VARCHAR2(300)\",\"8\":\"NUMBER(10,3)\",\"9\":\"VARCHAR2(300)\",\"10\":\"VARCHAR2(100)\",\"11\":\"VARCHAR2(100)\",\"12\":\"VARCHAR2(100)\",\"13\":\"VARCHAR2(30)\",\"18\":\"DATE\"}",
-    "utilake.offset": "+10:00",
-    "utilake.reports": "[[\"GBB\",\"FIELD_INTEREST_INFORMATION\"]]",
-    "utilake.table": "GBB_FIELD_INTEREST_INFORMATION",
-    "utilake.temporal.cutoff": "VERSIONDATETIME",
-    "utilake.temporal.entity": "[\"FIELDINTERESTID\",\"COMPANYID\",\"BASINID\"]",
-    "utilake.temporal.order": "[\"VERSIONDATETIME\"]",
-    "utilake.temporal.origin": "hand",
-    "utilake.temporal.valid.column": "EFFECTIVEDATE",
-    "utilake.temporal.valid.kind": "instant",
-    "utilake.time": "EFFECTIVEDATE",
-    "utilake.visibility": "PUBLIC"
+    "phasor.declared": "true",
+    "phasor.format": "4",
+    "phasor.headers": "{\"1\":\"FieldInterestId\",\"2\":\"FieldName\",\"3\":\"CompanyId\",\"4\":\"CompanyName\",\"5\":\"Description\",\"6\":\"EffectiveDate\",\"7\":\"PetroleumTenements\",\"8\":\"TenementShare\",\"9\":\"ProcessingFacilities\",\"10\":\"ResourceClassification\",\"11\":\"ResourceSubClassification\",\"12\":\"NatureOfGas\",\"13\":\"AnnualReportingDate\",\"14\":\"BasinId\",\"15\":\"BasinName\",\"16\":\"State\",\"17\":\"OperatingState\",\"18\":\"VersionDateTime\"}",
+    "phasor.key": "[\"FIELDINTERESTID\",\"COMPANYID\",\"BASINID\"]",
+    "phasor.load": "snapshot",
+    "phasor.market": "gas",
+    "phasor.model": "[\"GAS_FIELDINTEREST\",\"GAS_FIELDINTEREST_DETAIL\",\"GAS_FIELDINTEREST_PARTICIPANT\",\"GAS_FIELDINTEREST_SHARE\"]",
+    "phasor.model-types": "{\"1\":\"NUMBER(20,0)\",\"3\":\"NUMBER(10,0)\",\"6\":\"DATE\",\"7\":\"VARCHAR2(300)\",\"8\":\"NUMBER(10,3)\",\"9\":\"VARCHAR2(300)\",\"10\":\"VARCHAR2(100)\",\"11\":\"VARCHAR2(100)\",\"12\":\"VARCHAR2(100)\",\"13\":\"VARCHAR2(30)\",\"18\":\"DATE\"}",
+    "phasor.offset": "+10:00",
+    "phasor.reports": "[[\"GBB\",\"FIELD_INTEREST_INFORMATION\"]]",
+    "phasor.table": "GBB_FIELD_INTEREST_INFORMATION",
+    "phasor.temporal.cutoff": "VERSIONDATETIME",
+    "phasor.temporal.entity": "[\"FIELDINTERESTID\",\"COMPANYID\",\"BASINID\"]",
+    "phasor.temporal.order": "[\"VERSIONDATETIME\"]",
+    "phasor.temporal.origin": "hand",
+    "phasor.temporal.valid.column": "EFFECTIVEDATE",
+    "phasor.temporal.valid.kind": "instant",
+    "phasor.time": "EFFECTIVEDATE",
+    "phasor.visibility": "PUBLIC"
   },
   "refs": {
     "main": {
@@ -187,27 +187,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GBB_FIELD_INTEREST_INFORMATION/metadata/snap-2125242951664688030-1-59ad4940-3747-8a08-bcf6-3a2cbf0753d9.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/gas/GBB_FIELD_INTEREST_INFORMATION/metadata/snap-2125242951664688030-1-db6e8f05-e999-8e56-9b94-fbb8b32e721c.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 2125242951664688030,
       "summary": {
         "operation": "append",
-        "utilake.files": "3",
-        "utilake.from.file": "GasBBFieldInterestInformation.csv",
-        "utilake.from.release": "2026-10",
-        "utilake.from.sha256": "36e9ff8cb2a65d929cc264f0b1202e89095acf521c31a8fb715a13bdd641b0f0",
-        "utilake.from.time": "2023-03-15T00:00:00+10:00",
-        "utilake.kinds": "[\"gbb\"]",
-        "utilake.report-subtype": "FIELD_INTEREST_INFORMATION",
-        "utilake.report-type": "GBB",
-        "utilake.rows": "3461",
-        "utilake.to.file": "GasBBFieldInterestInformation.csv@20261021T230300+1000",
-        "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "ef309656b367b2e7f2e0ebc46803d5d86421fb6374af04964823e7e90247816d",
-        "utilake.to.time": "2026-08-21T00:00:00+10:00",
-        "utilake.total-rows": "3461",
-        "utilake.version": "1"
+        "phasor.files": "3",
+        "phasor.from.file": "GasBBFieldInterestInformation.csv",
+        "phasor.from.release": "2026-10",
+        "phasor.from.sha256": "36e9ff8cb2a65d929cc264f0b1202e89095acf521c31a8fb715a13bdd641b0f0",
+        "phasor.from.time": "2023-03-15T00:00:00+10:00",
+        "phasor.kinds": "[\"gbb\"]",
+        "phasor.report-subtype": "FIELD_INTEREST_INFORMATION",
+        "phasor.report-type": "GBB",
+        "phasor.rows": "3461",
+        "phasor.to.file": "GasBBFieldInterestInformation.csv@20261021T230300+1000",
+        "phasor.to.release": "2026-10",
+        "phasor.to.sha256": "ef309656b367b2e7f2e0ebc46803d5d86421fb6374af04964823e7e90247816d",
+        "phasor.to.time": "2026-08-21T00:00:00+10:00",
+        "phasor.total-rows": "3461",
+        "phasor.version": "1"
       },
       "timestamp-ms": 1790776800000
     }
@@ -218,5 +218,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "59ad4940-3747-8a08-bcf6-3a2cbf0753d9"
+  "table-uuid": "db6e8f05-e999-8e56-9b94-fbb8b32e721c"
 }

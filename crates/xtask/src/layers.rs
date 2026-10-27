@@ -1,5 +1,5 @@
 //! `layers.json` declares, for each crate of the workspace, the crates of
-//! the family (`utilake-*`) it may depend on outside its tests. The gate
+//! the family (`phasor-*`) it may depend on outside its tests. The gate
 //! fails on an edge the file does not list, so a crate cannot start leaning
 //! on another without the layering saying so, and on a listed edge that is
 //! gone, so the file never claims more than the code does.
@@ -61,7 +61,7 @@ fn actual(root: &Path) -> Result<Graph> {
             .iter()
             .filter(|d| d["kind"].as_str() != Some("dev"))
             .filter_map(|d| d["name"].as_str())
-            .filter(|d| d.starts_with("utilake-"))
+            .filter(|d| d.starts_with("phasor-"))
             .map(str::to_owned)
             .collect();
         graph.insert(name, deps);

@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1785506400000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/DWGM_INT898_NEWSTREETLISTING",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/gas/DWGM_INT898_NEWSTREETLISTING",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -18,22 +18,22 @@
     }
   ],
   "properties": {
-    "utilake.declared": "true",
-    "utilake.format": "4",
-    "utilake.headers": "{\"1\":\"distributor\",\"2\":\"street_name\",\"3\":\"street_id\",\"4\":\"street_suffix\",\"5\":\"suburb_or_place_or_locality\",\"6\":\"state_or_territory\",\"7\":\"site_address_postcode\",\"8\":\"current_date\"}",
-    "utilake.key": "[\"STREET_ID\"]",
-    "utilake.load": "snapshot",
-    "utilake.market": "gas",
-    "utilake.offset": "+10:00",
-    "utilake.reports": "[[\"DWGM\",\"INT898_NEWSTREETLISTING_1\"]]",
-    "utilake.table": "DWGM_INT898_NEWSTREETLISTING",
-    "utilake.temporal.cutoff": "CURRENT_DATE",
-    "utilake.temporal.entity": "[\"STREET_ID\"]",
-    "utilake.temporal.order": "[\"CURRENT_DATE\"]",
-    "utilake.temporal.origin": "hand",
-    "utilake.temporal.valid.kind": "timeless",
-    "utilake.time": "CURRENT_DATE",
-    "utilake.visibility": "PUBLIC"
+    "phasor.declared": "true",
+    "phasor.format": "4",
+    "phasor.headers": "{\"1\":\"distributor\",\"2\":\"street_name\",\"3\":\"street_id\",\"4\":\"street_suffix\",\"5\":\"suburb_or_place_or_locality\",\"6\":\"state_or_territory\",\"7\":\"site_address_postcode\",\"8\":\"current_date\"}",
+    "phasor.key": "[\"STREET_ID\"]",
+    "phasor.load": "snapshot",
+    "phasor.market": "gas",
+    "phasor.offset": "+10:00",
+    "phasor.reports": "[[\"DWGM\",\"INT898_NEWSTREETLISTING_1\"]]",
+    "phasor.table": "DWGM_INT898_NEWSTREETLISTING",
+    "phasor.temporal.cutoff": "CURRENT_DATE",
+    "phasor.temporal.entity": "[\"STREET_ID\"]",
+    "phasor.temporal.order": "[\"CURRENT_DATE\"]",
+    "phasor.temporal.origin": "hand",
+    "phasor.temporal.valid.kind": "timeless",
+    "phasor.time": "CURRENT_DATE",
+    "phasor.visibility": "PUBLIC"
   },
   "refs": {
     "main": {
@@ -108,27 +108,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/DWGM_INT898_NEWSTREETLISTING/metadata/snap-18202672370010405-1-45e45d3f-eae7-8a7c-895d-89aea0ef3fab.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/gas/DWGM_INT898_NEWSTREETLISTING/metadata/snap-18202672370010405-1-eded491c-a8d9-82fe-acaf-96bede34e786.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 18202672370010405,
       "summary": {
         "operation": "append",
-        "utilake.files": "37",
-        "utilake.from.file": "PublicRpts31.zip",
-        "utilake.from.release": "2026-08",
-        "utilake.from.sha256": "735fad42989ef107a70ecdfc43f290c13afc957673461c78e4538d9ffcc9b0fe",
-        "utilake.from.time": "2026-08-31T17:00:01+10:00",
-        "utilake.kinds": "[\"dwgm\"]",
-        "utilake.report-subtype": "INT898_NEWSTREETLISTING_1",
-        "utilake.report-type": "DWGM",
-        "utilake.rows": "55778",
-        "utilake.to.file": "int898_v1_newstreetlisting_1.csv@20261024T113600+1000",
-        "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "34b1cd4c755a75e2a424a815fd2f770b1d5c59296160b99c205ff5d9dbf5ac08",
-        "utilake.to.time": "2026-10-23T17:00:01+10:00",
-        "utilake.total-rows": "55778",
-        "utilake.version": "1"
+        "phasor.files": "37",
+        "phasor.from.file": "PublicRpts31.zip",
+        "phasor.from.release": "2026-08",
+        "phasor.from.sha256": "735fad42989ef107a70ecdfc43f290c13afc957673461c78e4538d9ffcc9b0fe",
+        "phasor.from.time": "2026-08-31T17:00:01+10:00",
+        "phasor.kinds": "[\"dwgm\"]",
+        "phasor.report-subtype": "INT898_NEWSTREETLISTING_1",
+        "phasor.report-type": "DWGM",
+        "phasor.rows": "55778",
+        "phasor.to.file": "int898_v1_newstreetlisting_1.csv@20261024T113600+1000",
+        "phasor.to.release": "2026-10",
+        "phasor.to.sha256": "34b1cd4c755a75e2a424a815fd2f770b1d5c59296160b99c205ff5d9dbf5ac08",
+        "phasor.to.time": "2026-10-23T17:00:01+10:00",
+        "phasor.total-rows": "55778",
+        "phasor.version": "1"
       },
       "timestamp-ms": 1785506400000
     }
@@ -139,5 +139,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "45e45d3f-eae7-8a7c-895d-89aea0ef3fab"
+  "table-uuid": "eded491c-a8d9-82fe-acaf-96bede34e786"
 }

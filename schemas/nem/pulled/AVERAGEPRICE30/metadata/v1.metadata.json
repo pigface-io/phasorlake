@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1722434400000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/AVERAGEPRICE30",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/AVERAGEPRICE30",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -19,22 +19,22 @@
   ],
   "properties": {
     "comment": "Reflects the 30-minute average price (the pre-5MS trading price).",
-    "utilake.declared": "true",
-    "utilake.format": "4",
-    "utilake.key": "[\"PERIODDATE\",\"REGIONID\"]",
-    "utilake.load": "append",
-    "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"VARCHAR(10)\",\"3\":\"NUMERIC(3,0)\",\"4\":\"NUMERIC(15,5)\",\"5\":\"VARCHAR(20)\",\"6\":\"TIMESTAMP(0)\"}",
-    "utilake.package": "TRADING_DATA",
-    "utilake.reports": "[[\"TRADING\",\"AVERAGEPRICE30\"]]",
-    "utilake.table": "AVERAGEPRICE30",
-    "utilake.temporal.cutoff": "LASTCHANGED",
-    "utilake.temporal.entity": "[\"REGIONID\"]",
-    "utilake.temporal.order": "[\"LASTCHANGED\"]",
-    "utilake.temporal.origin": "derived",
-    "utilake.temporal.valid.column": "PERIODDATE",
-    "utilake.temporal.valid.kind": "instant",
-    "utilake.time": "LASTCHANGED",
-    "utilake.visibility": "PUBLIC"
+    "phasor.declared": "true",
+    "phasor.format": "4",
+    "phasor.key": "[\"PERIODDATE\",\"REGIONID\"]",
+    "phasor.load": "append",
+    "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"VARCHAR(10)\",\"3\":\"NUMERIC(3,0)\",\"4\":\"NUMERIC(15,5)\",\"5\":\"VARCHAR(20)\",\"6\":\"TIMESTAMP(0)\"}",
+    "phasor.package": "TRADING_DATA",
+    "phasor.reports": "[[\"TRADING\",\"AVERAGEPRICE30\"]]",
+    "phasor.table": "AVERAGEPRICE30",
+    "phasor.temporal.cutoff": "LASTCHANGED",
+    "phasor.temporal.entity": "[\"REGIONID\"]",
+    "phasor.temporal.order": "[\"LASTCHANGED\"]",
+    "phasor.temporal.origin": "derived",
+    "phasor.temporal.valid.column": "PERIODDATE",
+    "phasor.temporal.valid.kind": "instant",
+    "phasor.time": "LASTCHANGED",
+    "phasor.visibility": "PUBLIC"
   },
   "refs": {
     "main": {
@@ -106,27 +106,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/AVERAGEPRICE30/metadata/snap-7142436367424802778-1-b8714f30-1ec6-860b-91d5-e3e0c8d582a8.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/AVERAGEPRICE30/metadata/snap-7142436367424802778-1-9d106659-79f2-8d00-bba9-cf2983f8c9ae.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 7142436367424802778,
       "summary": {
         "operation": "append",
-        "utilake.files": "26",
-        "utilake.from.file": "PUBLIC_ARCHIVE#AVERAGEPRICE30#FILE01#202408010000.zip",
-        "utilake.from.release": "2024-08",
-        "utilake.from.sha256": "74dfba20a643f8cae9efcd8e76cd0d2b2495cf902bf79cef30c45e5d90ea1239",
-        "utilake.from.time": "2024-08-01T00:25:03+10:00",
-        "utilake.kinds": "[\"archive\"]",
-        "utilake.report-subtype": "AVERAGEPRICE30",
-        "utilake.report-type": "TRADING",
-        "utilake.rows": "189840",
-        "utilake.to.file": "PUBLIC_ARCHIVE#AVERAGEPRICE30#FILE01#202609010000.zip",
-        "utilake.to.release": "2026-09",
-        "utilake.to.sha256": "ef9154b505f06b71776abfd13cdec49856ec178700af0eb8e639375bc07e84a6",
-        "utilake.to.time": "2026-09-30T23:55:06+10:00",
-        "utilake.total-rows": "189840",
-        "utilake.version": "1"
+        "phasor.files": "26",
+        "phasor.from.file": "PUBLIC_ARCHIVE#AVERAGEPRICE30#FILE01#202408010000.zip",
+        "phasor.from.release": "2024-08",
+        "phasor.from.sha256": "74dfba20a643f8cae9efcd8e76cd0d2b2495cf902bf79cef30c45e5d90ea1239",
+        "phasor.from.time": "2024-08-01T00:25:03+10:00",
+        "phasor.kinds": "[\"archive\"]",
+        "phasor.report-subtype": "AVERAGEPRICE30",
+        "phasor.report-type": "TRADING",
+        "phasor.rows": "189840",
+        "phasor.to.file": "PUBLIC_ARCHIVE#AVERAGEPRICE30#FILE01#202609010000.zip",
+        "phasor.to.release": "2026-09",
+        "phasor.to.sha256": "ef9154b505f06b71776abfd13cdec49856ec178700af0eb8e639375bc07e84a6",
+        "phasor.to.time": "2026-09-30T23:55:06+10:00",
+        "phasor.total-rows": "189840",
+        "phasor.version": "1"
       },
       "timestamp-ms": 1722434400000
     }
@@ -137,5 +137,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "b8714f30-1ec6-860b-91d5-e3e0c8d582a8"
+  "table-uuid": "9d106659-79f2-8d00-bba9-cf2983f8c9ae"
 }

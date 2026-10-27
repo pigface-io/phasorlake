@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1525096800000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MTPASA_REGIONSUMMARY",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/MTPASA_REGIONSUMMARY",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -19,22 +19,22 @@
   ],
   "properties": {
     "comment": "Region Results summary over aggregation periods.",
-    "utilake.declared": "true",
-    "utilake.format": "4",
-    "utilake.key": "[\"RUN_DATETIME\",\"RUN_NO\",\"RUNTYPE\",\"DEMAND_POE_TYPE\",\"AGGREGATION_PERIOD\",\"PERIOD_ENDING\",\"REGIONID\"]",
-    "utilake.load": "append",
-    "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(4)\",\"3\":\"VARCHAR(20)\",\"4\":\"VARCHAR(20)\",\"5\":\"VARCHAR(20)\",\"6\":\"TIMESTAMP(0)\",\"7\":\"VARCHAR(20)\",\"8\":\"NUMERIC(12,2)\",\"9\":\"NUMERIC(12,2)\",\"10\":\"NUMERIC(12,2)\",\"11\":\"NUMERIC(12,2)\",\"12\":\"NUMERIC(12,2)\",\"13\":\"NUMERIC(12,2)\",\"14\":\"NUMERIC(12,2)\",\"15\":\"NUMERIC(12,2)\",\"16\":\"NUMERIC(12,2)\",\"17\":\"NUMERIC(12,2)\",\"18\":\"NUMERIC(12,2)\",\"19\":\"NUMERIC(12,2)\",\"20\":\"NUMERIC(12,2)\",\"21\":\"NUMERIC(12,2)\",\"22\":\"NUMERIC(12,2)\",\"23\":\"NUMERIC(12,2)\",\"24\":\"NUMERIC(12,2)\",\"25\":\"NUMERIC(12,2)\",\"26\":\"NUMERIC(12,2)\",\"27\":\"NUMERIC(16,6)\",\"28\":\"NUMERIC(16,6)\",\"29\":\"NUMERIC(12,2)\",\"30\":\"TIMESTAMP(0)\"}",
-    "utilake.package": "MTPASA",
-    "utilake.reports": "[[\"MTPASA\",\"REGIONSUMMARY\"]]",
-    "utilake.table": "MTPASA_REGIONSUMMARY",
-    "utilake.temporal.cutoff": "RUN_DATETIME",
-    "utilake.temporal.entity": "[\"RUNTYPE\",\"DEMAND_POE_TYPE\",\"AGGREGATION_PERIOD\",\"REGIONID\"]",
-    "utilake.temporal.order": "[\"RUN_DATETIME\",\"RUN_NO\",\"LASTCHANGED\"]",
-    "utilake.temporal.origin": "derived",
-    "utilake.temporal.valid.column": "PERIOD_ENDING",
-    "utilake.temporal.valid.kind": "interval_end",
-    "utilake.time": "RUN_DATETIME",
-    "utilake.visibility": "PUBLIC"
+    "phasor.declared": "true",
+    "phasor.format": "4",
+    "phasor.key": "[\"RUN_DATETIME\",\"RUN_NO\",\"RUNTYPE\",\"DEMAND_POE_TYPE\",\"AGGREGATION_PERIOD\",\"PERIOD_ENDING\",\"REGIONID\"]",
+    "phasor.load": "append",
+    "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(4)\",\"3\":\"VARCHAR(20)\",\"4\":\"VARCHAR(20)\",\"5\":\"VARCHAR(20)\",\"6\":\"TIMESTAMP(0)\",\"7\":\"VARCHAR(20)\",\"8\":\"NUMERIC(12,2)\",\"9\":\"NUMERIC(12,2)\",\"10\":\"NUMERIC(12,2)\",\"11\":\"NUMERIC(12,2)\",\"12\":\"NUMERIC(12,2)\",\"13\":\"NUMERIC(12,2)\",\"14\":\"NUMERIC(12,2)\",\"15\":\"NUMERIC(12,2)\",\"16\":\"NUMERIC(12,2)\",\"17\":\"NUMERIC(12,2)\",\"18\":\"NUMERIC(12,2)\",\"19\":\"NUMERIC(12,2)\",\"20\":\"NUMERIC(12,2)\",\"21\":\"NUMERIC(12,2)\",\"22\":\"NUMERIC(12,2)\",\"23\":\"NUMERIC(12,2)\",\"24\":\"NUMERIC(12,2)\",\"25\":\"NUMERIC(12,2)\",\"26\":\"NUMERIC(12,2)\",\"27\":\"NUMERIC(16,6)\",\"28\":\"NUMERIC(16,6)\",\"29\":\"NUMERIC(12,2)\",\"30\":\"TIMESTAMP(0)\"}",
+    "phasor.package": "MTPASA",
+    "phasor.reports": "[[\"MTPASA\",\"REGIONSUMMARY\"]]",
+    "phasor.table": "MTPASA_REGIONSUMMARY",
+    "phasor.temporal.cutoff": "RUN_DATETIME",
+    "phasor.temporal.entity": "[\"RUNTYPE\",\"DEMAND_POE_TYPE\",\"AGGREGATION_PERIOD\",\"REGIONID\"]",
+    "phasor.temporal.order": "[\"RUN_DATETIME\",\"RUN_NO\",\"LASTCHANGED\"]",
+    "phasor.temporal.origin": "derived",
+    "phasor.temporal.valid.column": "PERIOD_ENDING",
+    "phasor.temporal.valid.kind": "interval_end",
+    "phasor.time": "RUN_DATETIME",
+    "phasor.visibility": "PUBLIC"
   },
   "refs": {
     "main": {
@@ -279,27 +279,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MTPASA_REGIONSUMMARY/metadata/snap-8487769704512891504-1-84e78db7-9405-8699-a083-78b7803777ba.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/MTPASA_REGIONSUMMARY/metadata/snap-8487769704512891504-1-49d375a7-c16a-837e-a659-9efa48c52403.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 8487769704512891504,
       "summary": {
         "operation": "append",
-        "utilake.files": "163",
-        "utilake.from.file": "PUBLIC_DVD_MTPASA_REGIONSUMMARY_201805010000.zip",
-        "utilake.from.release": "2018-05",
-        "utilake.from.sha256": "50ef37b846d480516d53413a509720d8f5d85dee8d8a42231bb89b900dcc8c81",
-        "utilake.from.time": "2018-05-14T10:59:49+10:00",
-        "utilake.kinds": "[\"archive\",\"dvd\",\"reports\"]",
-        "utilake.report-subtype": "REGIONSUMMARY",
-        "utilake.report-type": "MTPASA",
-        "utilake.rows": "139960",
-        "utilake.to.file": "PUBLIC_MTPASA_202610182230_0000000543880583.zip",
-        "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "e3e92a13affdf30dceb54812acd0cc8e79daafb91abda0ef5b0c05881fea2548",
-        "utilake.to.time": "2026-10-18T22:30:00+10:00",
-        "utilake.total-rows": "139960",
-        "utilake.version": "1"
+        "phasor.files": "163",
+        "phasor.from.file": "PUBLIC_DVD_MTPASA_REGIONSUMMARY_201805010000.zip",
+        "phasor.from.release": "2018-05",
+        "phasor.from.sha256": "50ef37b846d480516d53413a509720d8f5d85dee8d8a42231bb89b900dcc8c81",
+        "phasor.from.time": "2018-05-14T10:59:49+10:00",
+        "phasor.kinds": "[\"archive\",\"dvd\",\"reports\"]",
+        "phasor.report-subtype": "REGIONSUMMARY",
+        "phasor.report-type": "MTPASA",
+        "phasor.rows": "139960",
+        "phasor.to.file": "PUBLIC_MTPASA_202610182230_0000000543880583.zip",
+        "phasor.to.release": "2026-10",
+        "phasor.to.sha256": "e3e92a13affdf30dceb54812acd0cc8e79daafb91abda0ef5b0c05881fea2548",
+        "phasor.to.time": "2026-10-18T22:30:00+10:00",
+        "phasor.total-rows": "139960",
+        "phasor.version": "1"
       },
       "timestamp-ms": 1525096800000
     }
@@ -310,5 +310,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "84e78db7-9405-8699-a083-78b7803777ba"
+  "table-uuid": "49d375a7-c16a-837e-a659-9efa48c52403"
 }

@@ -2,7 +2,7 @@
 # pyiceberg (scan, and time travel to every snapshot), DuckDB's iceberg_scan,
 # and fastavro over every manifest and manifest list.
 #
-#   UTILAKE_KEEP_TABLE=$dir cargo llvm-cov -p utilake-iceberg-store ...
+#   PHASOR_KEEP_TABLE=$dir cargo llvm-cov -p phasor-iceberg-store ...
 #   uv run --with 'pyiceberg[pyarrow]' --with duckdb --with fastavro \
 #     python scripts/iceberg-readers.py $dir/dispatchprice
 #

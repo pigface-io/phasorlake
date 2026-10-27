@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1246370400000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DISPATCHOFFERTRK",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/DISPATCHOFFERTRK",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -19,22 +19,22 @@
   ],
   "properties": {
     "comment": "DISPATCHOFFERTRK is the energy and ancillary service bid tracking table for the Dispatch process. The table identifies which bids from BIDDAYOFFER and BIDOFFERPERIOD were applied for a given unit and bid type for each dispatch interval.",
-    "utilake.declared": "true",
-    "utilake.format": "4",
-    "utilake.key": "[\"SETTLEMENTDATE\",\"DUID\",\"BIDTYPE\"]",
-    "utilake.load": "append",
-    "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"VARCHAR(10)\",\"3\":\"VARCHAR(10)\",\"4\":\"TIMESTAMP(0)\",\"5\":\"TIMESTAMP(3)\",\"6\":\"TIMESTAMP(0)\"}",
-    "utilake.package": "DISPATCH",
-    "utilake.reports": "[[\"DISPATCH\",\"OFFERTRK\"]]",
-    "utilake.table": "DISPATCHOFFERTRK",
-    "utilake.temporal.cutoff": "LASTCHANGED",
-    "utilake.temporal.entity": "[\"DUID\",\"BIDTYPE\"]",
-    "utilake.temporal.order": "[\"LASTCHANGED\"]",
-    "utilake.temporal.origin": "derived",
-    "utilake.temporal.valid.column": "SETTLEMENTDATE",
-    "utilake.temporal.valid.kind": "interval_end",
-    "utilake.time": "SETTLEMENTDATE",
-    "utilake.visibility": "PUBLIC"
+    "phasor.declared": "true",
+    "phasor.format": "4",
+    "phasor.key": "[\"SETTLEMENTDATE\",\"DUID\",\"BIDTYPE\"]",
+    "phasor.load": "append",
+    "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"VARCHAR(10)\",\"3\":\"VARCHAR(10)\",\"4\":\"TIMESTAMP(0)\",\"5\":\"TIMESTAMP(3)\",\"6\":\"TIMESTAMP(0)\"}",
+    "phasor.package": "DISPATCH",
+    "phasor.reports": "[[\"DISPATCH\",\"OFFERTRK\"]]",
+    "phasor.table": "DISPATCHOFFERTRK",
+    "phasor.temporal.cutoff": "LASTCHANGED",
+    "phasor.temporal.entity": "[\"DUID\",\"BIDTYPE\"]",
+    "phasor.temporal.order": "[\"LASTCHANGED\"]",
+    "phasor.temporal.origin": "derived",
+    "phasor.temporal.valid.column": "SETTLEMENTDATE",
+    "phasor.temporal.valid.kind": "interval_end",
+    "phasor.time": "SETTLEMENTDATE",
+    "phasor.visibility": "PUBLIC"
   },
   "refs": {
     "main": {
@@ -107,27 +107,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DISPATCHOFFERTRK/metadata/snap-7672897165452581489-1-1f75395d-4bbe-892d-a449-aa5467875512.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/DISPATCHOFFERTRK/metadata/snap-7672897165452581489-1-1114499d-fbfa-8051-811d-e4627b13f980.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 7672897165452581489,
       "summary": {
         "operation": "append",
-        "utilake.files": "625",
-        "utilake.from.file": "PUBLIC_DVD_DISPATCHOFFERTRK_200907010000.zip",
-        "utilake.from.release": "2009-07",
-        "utilake.from.sha256": "44539eb2dbd1be88df4d0e25d3424acce148a40d2632a20dc0d5556981bbd261",
-        "utilake.from.time": "2009-07-01T00:05:00+10:00",
-        "utilake.kinds": "[\"archive\",\"dvd\",\"reports\"]",
-        "utilake.report-subtype": "OFFERTRK",
-        "utilake.report-type": "DISPATCH",
-        "utilake.rows": "2386785354",
-        "utilake.to.file": "PUBLIC_NEXT_DAY_DISPATCH_20261023_0000000544540781.zip",
-        "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "f66b2132a7e3b96913e68ebe2de5d5291af49970bd2811b26d99a0e0132dfe78",
-        "utilake.to.time": "2026-10-24T04:00:00+10:00",
-        "utilake.total-rows": "2386785354",
-        "utilake.version": "1"
+        "phasor.files": "625",
+        "phasor.from.file": "PUBLIC_DVD_DISPATCHOFFERTRK_200907010000.zip",
+        "phasor.from.release": "2009-07",
+        "phasor.from.sha256": "44539eb2dbd1be88df4d0e25d3424acce148a40d2632a20dc0d5556981bbd261",
+        "phasor.from.time": "2009-07-01T00:05:00+10:00",
+        "phasor.kinds": "[\"archive\",\"dvd\",\"reports\"]",
+        "phasor.report-subtype": "OFFERTRK",
+        "phasor.report-type": "DISPATCH",
+        "phasor.rows": "2386785354",
+        "phasor.to.file": "PUBLIC_NEXT_DAY_DISPATCH_20261023_0000000544540781.zip",
+        "phasor.to.release": "2026-10",
+        "phasor.to.sha256": "f66b2132a7e3b96913e68ebe2de5d5291af49970bd2811b26d99a0e0132dfe78",
+        "phasor.to.time": "2026-10-24T04:00:00+10:00",
+        "phasor.total-rows": "2386785354",
+        "phasor.version": "1"
       },
       "timestamp-ms": 1246370400000
     }
@@ -138,5 +138,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "1f75395d-4bbe-892d-a449-aa5467875512"
+  "table-uuid": "1114499d-fbfa-8051-811d-e4627b13f980"
 }

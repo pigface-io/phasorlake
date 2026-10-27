@@ -35,7 +35,7 @@ def pairs(market):
         if not v:
             continue
         props = json.load(open(os.path.join(md, v[-1]))).get("properties", {})
-        for rt, st in json.loads(props.get("utilake.reports", "[]")):
+        for rt, st in json.loads(props.get("phasor.reports", "[]")):
             m[(rt.upper(), st.upper())] = t
     return m
 

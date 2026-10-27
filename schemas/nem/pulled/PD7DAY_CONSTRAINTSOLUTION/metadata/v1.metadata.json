@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1722434400000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PD7DAY_CONSTRAINTSOLUTION",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/PD7DAY_CONSTRAINTSOLUTION",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -19,20 +19,20 @@
   ],
   "properties": {
     "comment": "PD7DAY constraint solution",
-    "utilake.declared": "true",
-    "utilake.format": "4",
-    "utilake.key": "[]",
-    "utilake.load": "append",
-    "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(2,0)\",\"3\":\"TIMESTAMP(0)\",\"4\":\"VARCHAR(20)\",\"5\":\"NUMERIC(15,5)\",\"6\":\"NUMERIC(15,5)\",\"7\":\"NUMERIC(15,5)\",\"8\":\"NUMERIC(15,5)\",\"9\":\"TIMESTAMP(0)\"}",
-    "utilake.reports": "[[\"PD7DAY\",\"CONSTRAINTSOLUTION\"]]",
-    "utilake.table": "PD7DAY_CONSTRAINTSOLUTION",
-    "utilake.temporal.cutoff": "LASTCHANGED",
-    "utilake.temporal.entity": "[\"INTERVENTION\"]",
-    "utilake.temporal.order": "[\"RUN_DATETIME\",\"LASTCHANGED\"]",
-    "utilake.temporal.origin": "derived",
-    "utilake.temporal.valid.kind": "timeless",
-    "utilake.time": "INTERVAL_DATETIME",
-    "utilake.visibility": "PUBLIC"
+    "phasor.declared": "true",
+    "phasor.format": "4",
+    "phasor.key": "[]",
+    "phasor.load": "append",
+    "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(2,0)\",\"3\":\"TIMESTAMP(0)\",\"4\":\"VARCHAR(20)\",\"5\":\"NUMERIC(15,5)\",\"6\":\"NUMERIC(15,5)\",\"7\":\"NUMERIC(15,5)\",\"8\":\"NUMERIC(15,5)\",\"9\":\"TIMESTAMP(0)\"}",
+    "phasor.reports": "[[\"PD7DAY\",\"CONSTRAINTSOLUTION\"]]",
+    "phasor.table": "PD7DAY_CONSTRAINTSOLUTION",
+    "phasor.temporal.cutoff": "LASTCHANGED",
+    "phasor.temporal.entity": "[\"INTERVENTION\"]",
+    "phasor.temporal.order": "[\"RUN_DATETIME\",\"LASTCHANGED\"]",
+    "phasor.temporal.origin": "derived",
+    "phasor.temporal.valid.kind": "timeless",
+    "phasor.time": "INTERVAL_DATETIME",
+    "phasor.visibility": "PUBLIC"
   },
   "refs": {
     "main": {
@@ -122,27 +122,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PD7DAY_CONSTRAINTSOLUTION/metadata/snap-7652961595135748516-1-42958a99-ba3c-89dc-9bf3-a814bffa98f3.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/PD7DAY_CONSTRAINTSOLUTION/metadata/snap-7652961595135748516-1-71655cb0-1ce4-8d4e-ac3b-af1dba7cab79.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 7652961595135748516,
       "summary": {
         "operation": "append",
-        "utilake.files": "378",
-        "utilake.from.file": "PUBLIC_ARCHIVE#PD7DAY_CONSTRAINTSOLUTION#FILE01#202408010000.zip",
-        "utilake.from.release": "2024-08",
-        "utilake.from.sha256": "e46ba33bc3c46dce12ae695b7788a54f1f98090155a9f90e4e36a7fe6553b244",
-        "utilake.from.time": "2024-04-24T07:30:00+10:00",
-        "utilake.kinds": "[\"archive\",\"reports\"]",
-        "utilake.report-subtype": "CONSTRAINTSOLUTION",
-        "utilake.report-type": "PD7DAY",
-        "utilake.rows": "8114810377",
-        "utilake.to.file": "PUBLIC_PD7DAY_20261024070952_0000000544561635.zip",
-        "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "7b120e400efda9681a730aa04bab48d866aaf4c9c553c51d51968b4ab43f9358",
-        "utilake.to.time": "2026-10-31T04:00:00+10:00",
-        "utilake.total-rows": "8114810377",
-        "utilake.version": "1"
+        "phasor.files": "378",
+        "phasor.from.file": "PUBLIC_ARCHIVE#PD7DAY_CONSTRAINTSOLUTION#FILE01#202408010000.zip",
+        "phasor.from.release": "2024-08",
+        "phasor.from.sha256": "e46ba33bc3c46dce12ae695b7788a54f1f98090155a9f90e4e36a7fe6553b244",
+        "phasor.from.time": "2024-04-24T07:30:00+10:00",
+        "phasor.kinds": "[\"archive\",\"reports\"]",
+        "phasor.report-subtype": "CONSTRAINTSOLUTION",
+        "phasor.report-type": "PD7DAY",
+        "phasor.rows": "8114810377",
+        "phasor.to.file": "PUBLIC_PD7DAY_20261024070952_0000000544561635.zip",
+        "phasor.to.release": "2026-10",
+        "phasor.to.sha256": "7b120e400efda9681a730aa04bab48d866aaf4c9c553c51d51968b4ab43f9358",
+        "phasor.to.time": "2026-10-31T04:00:00+10:00",
+        "phasor.total-rows": "8114810377",
+        "phasor.version": "1"
       },
       "timestamp-ms": 1722434400000
     }
@@ -153,5 +153,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "42958a99-ba3c-89dc-9bf3-a814bffa98f3"
+  "table-uuid": "71655cb0-1ce4-8d4e-ac3b-af1dba7cab79"
 }

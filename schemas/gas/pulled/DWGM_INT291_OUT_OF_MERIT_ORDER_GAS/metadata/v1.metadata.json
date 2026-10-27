@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1788184800000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/DWGM_INT291_OUT_OF_MERIT_ORDER_GAS",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/gas/DWGM_INT291_OUT_OF_MERIT_ORDER_GAS",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -18,23 +18,23 @@
     }
   ],
   "properties": {
-    "utilake.declared": "true",
-    "utilake.format": "4",
-    "utilake.headers": "{\"1\":\"gas_date\",\"2\":\"statement_version_id\",\"3\":\"ancillary_amt_gst_ex\",\"4\":\"scheduled_out_of_merit_gj\",\"5\":\"current_date\"}",
-    "utilake.key": "[]",
-    "utilake.load": "append",
-    "utilake.market": "gas",
-    "utilake.offset": "+10:00",
-    "utilake.reports": "[[\"DWGM\",\"INT291_OUT_OF_MERIT_ORDER_GAS_1\"]]",
-    "utilake.table": "DWGM_INT291_OUT_OF_MERIT_ORDER_GAS",
-    "utilake.temporal.cutoff": "CURRENT_DATE",
-    "utilake.temporal.entity": "[\"STATEMENT_VERSION_ID\"]",
-    "utilake.temporal.order": "[\"CURRENT_DATE\"]",
-    "utilake.temporal.origin": "hand",
-    "utilake.temporal.valid.column": "GAS_DATE",
-    "utilake.temporal.valid.kind": "instant",
-    "utilake.time": "GAS_DATE",
-    "utilake.visibility": "PUBLIC"
+    "phasor.declared": "true",
+    "phasor.format": "4",
+    "phasor.headers": "{\"1\":\"gas_date\",\"2\":\"statement_version_id\",\"3\":\"ancillary_amt_gst_ex\",\"4\":\"scheduled_out_of_merit_gj\",\"5\":\"current_date\"}",
+    "phasor.key": "[]",
+    "phasor.load": "append",
+    "phasor.market": "gas",
+    "phasor.offset": "+10:00",
+    "phasor.reports": "[[\"DWGM\",\"INT291_OUT_OF_MERIT_ORDER_GAS_1\"]]",
+    "phasor.table": "DWGM_INT291_OUT_OF_MERIT_ORDER_GAS",
+    "phasor.temporal.cutoff": "CURRENT_DATE",
+    "phasor.temporal.entity": "[\"STATEMENT_VERSION_ID\"]",
+    "phasor.temporal.order": "[\"CURRENT_DATE\"]",
+    "phasor.temporal.origin": "hand",
+    "phasor.temporal.valid.column": "GAS_DATE",
+    "phasor.temporal.valid.kind": "instant",
+    "phasor.time": "GAS_DATE",
+    "phasor.visibility": "PUBLIC"
   },
   "refs": {
     "main": {
@@ -91,27 +91,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/DWGM_INT291_OUT_OF_MERIT_ORDER_GAS/metadata/snap-3601924065002669206-1-8434b055-84e1-8bd6-9e7c-672c1507f616.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/gas/DWGM_INT291_OUT_OF_MERIT_ORDER_GAS/metadata/snap-3601924065002669206-1-955d46b9-72fa-8006-9bb7-0e0ab8bd3bc5.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 3601924065002669206,
       "summary": {
         "operation": "append",
-        "utilake.files": "5",
-        "utilake.from.file": "PublicRpts21.zip",
-        "utilake.from.release": "2026-09",
-        "utilake.from.sha256": "af810782dbd1bd4baac2e55d7e29f26ac9a0abc27819b40c86f2b6b1a0678793",
-        "utilake.from.time": "2026-03-01T00:00:00+10:00",
-        "utilake.kinds": "[\"dwgm\"]",
-        "utilake.report-subtype": "INT291_OUT_OF_MERIT_ORDER_GAS_1",
-        "utilake.report-type": "DWGM",
-        "utilake.rows": "152",
-        "utilake.to.file": "PublicRpts09.zip",
-        "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "89c080082b6f397490f3a948271d772417b446237cf15a22116661cabba4a07b",
-        "utilake.to.time": "2026-09-30T00:00:00+10:00",
-        "utilake.total-rows": "152",
-        "utilake.version": "4"
+        "phasor.files": "5",
+        "phasor.from.file": "PublicRpts21.zip",
+        "phasor.from.release": "2026-09",
+        "phasor.from.sha256": "af810782dbd1bd4baac2e55d7e29f26ac9a0abc27819b40c86f2b6b1a0678793",
+        "phasor.from.time": "2026-03-01T00:00:00+10:00",
+        "phasor.kinds": "[\"dwgm\"]",
+        "phasor.report-subtype": "INT291_OUT_OF_MERIT_ORDER_GAS_1",
+        "phasor.report-type": "DWGM",
+        "phasor.rows": "152",
+        "phasor.to.file": "PublicRpts09.zip",
+        "phasor.to.release": "2026-10",
+        "phasor.to.sha256": "89c080082b6f397490f3a948271d772417b446237cf15a22116661cabba4a07b",
+        "phasor.to.time": "2026-09-30T00:00:00+10:00",
+        "phasor.total-rows": "152",
+        "phasor.version": "4"
       },
       "timestamp-ms": 1788184800000
     }
@@ -122,5 +122,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "8434b055-84e1-8bd6-9e7c-672c1507f616"
+  "table-uuid": "955d46b9-72fa-8006-9bb7-0e0ab8bd3bc5"
 }

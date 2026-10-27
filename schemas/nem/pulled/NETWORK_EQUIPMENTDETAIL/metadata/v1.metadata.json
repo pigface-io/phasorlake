@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1722434400000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/NETWORK_EQUIPMENTDETAIL",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/NETWORK_EQUIPMENTDETAIL",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -19,23 +19,23 @@
   ],
   "properties": {
     "comment": "NETWORK_EQUIPMENTDETAIL Provides details on equipment that may have outages or ratings. A single piece of equipment may have multiple records if its details change.\nA line will typically have at least two valid records at a time, once for each end of the line.",
-    "utilake.declared": "true",
-    "utilake.format": "4",
-    "utilake.key": "[\"SUBSTATIONID\",\"EQUIPMENTTYPE\",\"EQUIPMENTID\",\"VALIDFROM\"]",
-    "utilake.load": "append",
-    "utilake.model-types": "{\"1\":\"VARCHAR(30)\",\"2\":\"VARCHAR(10)\",\"3\":\"VARCHAR(30)\",\"4\":\"TIMESTAMP(3)\",\"5\":\"TIMESTAMP(3)\",\"6\":\"VARCHAR(20)\",\"7\":\"VARCHAR(100)\",\"8\":\"TIMESTAMP(3)\",\"9\":\"NUMERIC(15,0)\"}",
-    "utilake.package": "NETWORK",
-    "utilake.reports": "[[\"NETWORK\",\"EQUIPMENTDETAIL\"]]",
-    "utilake.table": "NETWORK_EQUIPMENTDETAIL",
-    "utilake.temporal.cutoff": "LASTCHANGED",
-    "utilake.temporal.entity": "[\"SUBSTATIONID\",\"EQUIPMENTTYPE\",\"EQUIPMENTID\"]",
-    "utilake.temporal.order": "[\"LASTCHANGED\"]",
-    "utilake.temporal.origin": "derived",
-    "utilake.temporal.valid.column": "VALIDFROM",
-    "utilake.temporal.valid.kind": "from",
-    "utilake.temporal.valid.until": "VALIDTO",
-    "utilake.time": "LASTCHANGED",
-    "utilake.visibility": "PUBLIC"
+    "phasor.declared": "true",
+    "phasor.format": "4",
+    "phasor.key": "[\"SUBSTATIONID\",\"EQUIPMENTTYPE\",\"EQUIPMENTID\",\"VALIDFROM\"]",
+    "phasor.load": "append",
+    "phasor.model-types": "{\"1\":\"VARCHAR(30)\",\"2\":\"VARCHAR(10)\",\"3\":\"VARCHAR(30)\",\"4\":\"TIMESTAMP(3)\",\"5\":\"TIMESTAMP(3)\",\"6\":\"VARCHAR(20)\",\"7\":\"VARCHAR(100)\",\"8\":\"TIMESTAMP(3)\",\"9\":\"NUMERIC(15,0)\"}",
+    "phasor.package": "NETWORK",
+    "phasor.reports": "[[\"NETWORK\",\"EQUIPMENTDETAIL\"]]",
+    "phasor.table": "NETWORK_EQUIPMENTDETAIL",
+    "phasor.temporal.cutoff": "LASTCHANGED",
+    "phasor.temporal.entity": "[\"SUBSTATIONID\",\"EQUIPMENTTYPE\",\"EQUIPMENTID\"]",
+    "phasor.temporal.order": "[\"LASTCHANGED\"]",
+    "phasor.temporal.origin": "derived",
+    "phasor.temporal.valid.column": "VALIDFROM",
+    "phasor.temporal.valid.kind": "from",
+    "phasor.temporal.valid.until": "VALIDTO",
+    "phasor.time": "LASTCHANGED",
+    "phasor.visibility": "PUBLIC"
   },
   "refs": {
     "main": {
@@ -130,27 +130,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/NETWORK_EQUIPMENTDETAIL/metadata/snap-7828188467408225277-1-6cc2a223-e3df-8788-a5bb-74d4f9ee08a1.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/NETWORK_EQUIPMENTDETAIL/metadata/snap-7828188467408225277-1-428edaad-ff88-8573-9e38-6bdd0ccc141c.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 7828188467408225277,
       "summary": {
         "operation": "append",
-        "utilake.files": "415",
-        "utilake.from.file": "PUBLIC_ARCHIVE#NETWORK_EQUIPMENTDETAIL#FILE01#202408010000.zip",
-        "utilake.from.release": "2024-08",
-        "utilake.from.sha256": "b0cbed0b37c1154a11ba343e160c63fed381d338e3b966c9d1b54ad163417805",
-        "utilake.from.time": "1966-10-01T00:00:10.000+10:00",
-        "utilake.kinds": "[\"archive\",\"reports\"]",
-        "utilake.report-subtype": "EQUIPMENTDETAIL",
-        "utilake.report-type": "NETWORK",
-        "utilake.rows": "8459558",
-        "utilake.to.file": "PUBLIC_NETWORK_20261024100006_0000000544582327.zip",
-        "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "c29c04794134ee5fc75ebbdbcd1fe84e1d111bdb9673bca895da35d7a8dacc7d",
-        "utilake.to.time": "9999-12-31T23:59:10.000+10:00",
-        "utilake.total-rows": "8459558",
-        "utilake.version": "2"
+        "phasor.files": "415",
+        "phasor.from.file": "PUBLIC_ARCHIVE#NETWORK_EQUIPMENTDETAIL#FILE01#202408010000.zip",
+        "phasor.from.release": "2024-08",
+        "phasor.from.sha256": "b0cbed0b37c1154a11ba343e160c63fed381d338e3b966c9d1b54ad163417805",
+        "phasor.from.time": "1966-10-01T00:00:10.000+10:00",
+        "phasor.kinds": "[\"archive\",\"reports\"]",
+        "phasor.report-subtype": "EQUIPMENTDETAIL",
+        "phasor.report-type": "NETWORK",
+        "phasor.rows": "8459558",
+        "phasor.to.file": "PUBLIC_NETWORK_20261024100006_0000000544582327.zip",
+        "phasor.to.release": "2026-10",
+        "phasor.to.sha256": "c29c04794134ee5fc75ebbdbcd1fe84e1d111bdb9673bca895da35d7a8dacc7d",
+        "phasor.to.time": "9999-12-31T23:59:10.000+10:00",
+        "phasor.total-rows": "8459558",
+        "phasor.version": "2"
       },
       "timestamp-ms": 1722434400000
     }
@@ -161,5 +161,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "6cc2a223-e3df-8788-a5bb-74d4f9ee08a1"
+  "table-uuid": "428edaad-ff88-8573-9e38-6bdd0ccc141c"
 }

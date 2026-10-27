@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1759240800000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GSH_FACILITIES",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/gas/GSH_FACILITIES",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -19,23 +19,23 @@
   ],
   "properties": {
     "comment": "Facilities currently registered, for capacity trading and day ahead auction.",
-    "utilake.declared": "true",
-    "utilake.format": "4",
-    "utilake.key": "[\"EFFECTIVEDATE\",\"FACILITY_ID\",\"VERSION_DATETIME\"]",
-    "utilake.load": "snapshot",
-    "utilake.market": "gas",
-    "utilake.model-types": "{\"1\":\"NUMBER(8,0)\",\"2\":\"VARCHAR2(100)\",\"3\":\"VARCHAR2(400)\",\"4\":\"VARCHAR2(20)\",\"5\":\"VARCHAR2(20)\",\"6\":\"VARCHAR2(100)\",\"7\":\"DATE\",\"8\":\"DATE\",\"9\":\"DATE\"}",
-    "utilake.offset": "+10:00",
-    "utilake.reports": "[[\"GSH\",\"FACILITIES\"]]",
-    "utilake.table": "GSH_FACILITIES",
-    "utilake.temporal.cutoff": "LASTCHANGED",
-    "utilake.temporal.entity": "[\"FACILITY_ID\"]",
-    "utilake.temporal.order": "[\"VERSION_DATETIME\",\"LASTCHANGED\"]",
-    "utilake.temporal.origin": "hand",
-    "utilake.temporal.valid.column": "EFFECTIVEDATE",
-    "utilake.temporal.valid.kind": "instant",
-    "utilake.time": "EFFECTIVEDATE",
-    "utilake.visibility": "PUBLIC"
+    "phasor.declared": "true",
+    "phasor.format": "4",
+    "phasor.key": "[\"EFFECTIVEDATE\",\"FACILITY_ID\",\"VERSION_DATETIME\"]",
+    "phasor.load": "snapshot",
+    "phasor.market": "gas",
+    "phasor.model-types": "{\"1\":\"NUMBER(8,0)\",\"2\":\"VARCHAR2(100)\",\"3\":\"VARCHAR2(400)\",\"4\":\"VARCHAR2(20)\",\"5\":\"VARCHAR2(20)\",\"6\":\"VARCHAR2(100)\",\"7\":\"DATE\",\"8\":\"DATE\",\"9\":\"DATE\"}",
+    "phasor.offset": "+10:00",
+    "phasor.reports": "[[\"GSH\",\"FACILITIES\"]]",
+    "phasor.table": "GSH_FACILITIES",
+    "phasor.temporal.cutoff": "LASTCHANGED",
+    "phasor.temporal.entity": "[\"FACILITY_ID\"]",
+    "phasor.temporal.order": "[\"VERSION_DATETIME\",\"LASTCHANGED\"]",
+    "phasor.temporal.origin": "hand",
+    "phasor.temporal.valid.column": "EFFECTIVEDATE",
+    "phasor.temporal.valid.kind": "instant",
+    "phasor.time": "EFFECTIVEDATE",
+    "phasor.visibility": "PUBLIC"
   },
   "refs": {
     "main": {
@@ -129,27 +129,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GSH_FACILITIES/metadata/snap-3956238330660176624-1-d85b4ad2-bd4b-8850-b5c2-233dc858f171.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/gas/GSH_FACILITIES/metadata/snap-3956238330660176624-1-a4cc3131-8d1f-816b-a430-7b82d47efa3f.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 3956238330660176624,
       "summary": {
         "operation": "append",
-        "utilake.files": "16",
-        "utilake.from.file": "PUBLIC_REGISTEREDFACILITIES_20251001.zip",
-        "utilake.from.release": "2025-10",
-        "utilake.from.sha256": "27c6c3d5d4bbcf40125ae23835ed2ce4b44d488c3d848aadd5aa54f61e5a1389",
-        "utilake.from.time": "2018-11-01T00:00:00+10:00",
-        "utilake.kinds": "[\"gsh\"]",
-        "utilake.report-subtype": "FACILITIES",
-        "utilake.report-type": "GSH",
-        "utilake.rows": "375",
-        "utilake.to.file": "PUBLIC_REGISTEREDFACILITIES_20261001_0000000540478993.zip",
-        "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "3e167a890a0442562bfb509899e0cab18aad0f3947dd3a383db2fd442143fd4b",
-        "utilake.to.time": "2026-09-14T00:00:00+10:00",
-        "utilake.total-rows": "375",
-        "utilake.version": "1"
+        "phasor.files": "16",
+        "phasor.from.file": "PUBLIC_REGISTEREDFACILITIES_20251001.zip",
+        "phasor.from.release": "2025-10",
+        "phasor.from.sha256": "27c6c3d5d4bbcf40125ae23835ed2ce4b44d488c3d848aadd5aa54f61e5a1389",
+        "phasor.from.time": "2018-11-01T00:00:00+10:00",
+        "phasor.kinds": "[\"gsh\"]",
+        "phasor.report-subtype": "FACILITIES",
+        "phasor.report-type": "GSH",
+        "phasor.rows": "375",
+        "phasor.to.file": "PUBLIC_REGISTEREDFACILITIES_20261001_0000000540478993.zip",
+        "phasor.to.release": "2026-10",
+        "phasor.to.sha256": "3e167a890a0442562bfb509899e0cab18aad0f3947dd3a383db2fd442143fd4b",
+        "phasor.to.time": "2026-09-14T00:00:00+10:00",
+        "phasor.total-rows": "375",
+        "phasor.version": "1"
       },
       "timestamp-ms": 1759240800000
     }
@@ -160,5 +160,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "d85b4ad2-bd4b-8850-b5c2-233dc858f171"
+  "table-uuid": "a4cc3131-8d1f-816b-a430-7b82d47efa3f"
 }

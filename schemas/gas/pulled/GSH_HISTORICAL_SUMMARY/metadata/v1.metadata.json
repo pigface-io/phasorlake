@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1759240800000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GSH_HISTORICAL_SUMMARY",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/gas/GSH_HISTORICAL_SUMMARY",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -19,23 +19,23 @@
   ],
   "properties": {
     "comment": "The report provides a summary of all trades delivered in the current gas day and the last thirty gas days per product location. It provides information on the volume weighted average price, and the total traded quantities.",
-    "utilake.declared": "true",
-    "utilake.format": "4",
-    "utilake.key": "[\"GAS_DATE\",\"PRODUCT_LOCATION\"]",
-    "utilake.load": "append",
-    "utilake.market": "gas",
-    "utilake.model-types": "{\"1\":\"DATE\",\"2\":\"VARCHAR2(80)\",\"3\":\"NUMBER(18,8)\",\"4\":\"NUMBER(18,8)\",\"5\":\"NUMBER(18,8)\",\"6\":\"DATE\"}",
-    "utilake.offset": "+10:00",
-    "utilake.reports": "[[\"GSH\",\"HISTORICAL_SUMMARY\"]]",
-    "utilake.table": "GSH_HISTORICAL_SUMMARY",
-    "utilake.temporal.cutoff": "LASTCHANGED",
-    "utilake.temporal.entity": "[\"PRODUCT_LOCATION\"]",
-    "utilake.temporal.order": "[\"LASTCHANGED\"]",
-    "utilake.temporal.origin": "hand",
-    "utilake.temporal.valid.column": "GAS_DATE",
-    "utilake.temporal.valid.kind": "instant",
-    "utilake.time": "GAS_DATE",
-    "utilake.visibility": "PUBLIC"
+    "phasor.declared": "true",
+    "phasor.format": "4",
+    "phasor.key": "[\"GAS_DATE\",\"PRODUCT_LOCATION\"]",
+    "phasor.load": "append",
+    "phasor.market": "gas",
+    "phasor.model-types": "{\"1\":\"DATE\",\"2\":\"VARCHAR2(80)\",\"3\":\"NUMBER(18,8)\",\"4\":\"NUMBER(18,8)\",\"5\":\"NUMBER(18,8)\",\"6\":\"DATE\"}",
+    "phasor.offset": "+10:00",
+    "phasor.reports": "[[\"GSH\",\"HISTORICAL_SUMMARY\"]]",
+    "phasor.table": "GSH_HISTORICAL_SUMMARY",
+    "phasor.temporal.cutoff": "LASTCHANGED",
+    "phasor.temporal.entity": "[\"PRODUCT_LOCATION\"]",
+    "phasor.temporal.order": "[\"LASTCHANGED\"]",
+    "phasor.temporal.origin": "hand",
+    "phasor.temporal.valid.column": "GAS_DATE",
+    "phasor.temporal.valid.kind": "instant",
+    "phasor.time": "GAS_DATE",
+    "phasor.visibility": "PUBLIC"
   },
   "refs": {
     "main": {
@@ -107,27 +107,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GSH_HISTORICAL_SUMMARY/metadata/snap-1416225620744963278-1-9c43626d-a1ec-8026-be3e-a9598e8d58fd.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/gas/GSH_HISTORICAL_SUMMARY/metadata/snap-1416225620744963278-1-f1532c3f-9377-8d96-8704-23061a49b0b1.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 1416225620744963278,
       "summary": {
         "operation": "append",
-        "utilake.files": "388",
-        "utilake.from.file": "PUBLIC_HISTORICALTRANSACTIONSUMMARY_20251001.zip",
-        "utilake.from.release": "2025-10",
-        "utilake.from.sha256": "4c30fb186c7c767a557fe07b13738e46c2ceb407118422e5bad4e933add9a2a8",
-        "utilake.from.time": "2025-09-02T00:00:00+10:00",
-        "utilake.kinds": "[\"gsh\"]",
-        "utilake.report-subtype": "HISTORICAL_SUMMARY",
-        "utilake.report-type": "GSH",
-        "utilake.rows": "139680",
-        "utilake.to.file": "PUBLIC_HISTORICALTRANSACTIONSUMMARY_20261023_0000000544475248.zip",
-        "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "2002a03f927e3b4417b1d60d36d6dddd8081ee617fd25089503c565d8d2297a0",
-        "utilake.to.time": "2026-10-23T00:00:00+10:00",
-        "utilake.total-rows": "139680",
-        "utilake.version": "1"
+        "phasor.files": "388",
+        "phasor.from.file": "PUBLIC_HISTORICALTRANSACTIONSUMMARY_20251001.zip",
+        "phasor.from.release": "2025-10",
+        "phasor.from.sha256": "4c30fb186c7c767a557fe07b13738e46c2ceb407118422e5bad4e933add9a2a8",
+        "phasor.from.time": "2025-09-02T00:00:00+10:00",
+        "phasor.kinds": "[\"gsh\"]",
+        "phasor.report-subtype": "HISTORICAL_SUMMARY",
+        "phasor.report-type": "GSH",
+        "phasor.rows": "139680",
+        "phasor.to.file": "PUBLIC_HISTORICALTRANSACTIONSUMMARY_20261023_0000000544475248.zip",
+        "phasor.to.release": "2026-10",
+        "phasor.to.sha256": "2002a03f927e3b4417b1d60d36d6dddd8081ee617fd25089503c565d8d2297a0",
+        "phasor.to.time": "2026-10-23T00:00:00+10:00",
+        "phasor.total-rows": "139680",
+        "phasor.version": "1"
       },
       "timestamp-ms": 1759240800000
     }
@@ -138,5 +138,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "9c43626d-a1ec-8026-be3e-a9598e8d58fd"
+  "table-uuid": "f1532c3f-9377-8d96-8704-23061a49b0b1"
 }

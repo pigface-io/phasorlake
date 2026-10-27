@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1790776800000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/DWGM_INT353_CCAUCTION_QTY_WON",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/gas/DWGM_INT353_CCAUCTION_QTY_WON",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -18,23 +18,23 @@
     }
   ],
   "properties": {
-    "utilake.declared": "true",
-    "utilake.format": "4",
-    "utilake.headers": "{\"1\":\"auction_id\",\"2\":\"auction_date\",\"3\":\"zone_id\",\"4\":\"zone_name\",\"5\":\"zone_type\",\"6\":\"start_date\",\"7\":\"end_date\",\"8\":\"cc_period\",\"9\":\"clearing_price\",\"10\":\"quantities_won_gj\",\"11\":\"unallocated_qty\",\"12\":\"current_date\"}",
-    "utilake.key": "[]",
-    "utilake.load": "append",
-    "utilake.market": "gas",
-    "utilake.offset": "+10:00",
-    "utilake.reports": "[[\"DWGM\",\"INT353_CCAUCTION_QTY_WON_1\"]]",
-    "utilake.table": "DWGM_INT353_CCAUCTION_QTY_WON",
-    "utilake.temporal.cutoff": "CURRENT_DATE",
-    "utilake.temporal.entity": "[\"AUCTION_ID\",\"ZONE_ID\"]",
-    "utilake.temporal.order": "[\"CURRENT_DATE\"]",
-    "utilake.temporal.origin": "hand",
-    "utilake.temporal.valid.column": "START_DATE",
-    "utilake.temporal.valid.kind": "instant",
-    "utilake.time": "START_DATE",
-    "utilake.visibility": "PUBLIC"
+    "phasor.declared": "true",
+    "phasor.format": "4",
+    "phasor.headers": "{\"1\":\"auction_id\",\"2\":\"auction_date\",\"3\":\"zone_id\",\"4\":\"zone_name\",\"5\":\"zone_type\",\"6\":\"start_date\",\"7\":\"end_date\",\"8\":\"cc_period\",\"9\":\"clearing_price\",\"10\":\"quantities_won_gj\",\"11\":\"unallocated_qty\",\"12\":\"current_date\"}",
+    "phasor.key": "[]",
+    "phasor.load": "append",
+    "phasor.market": "gas",
+    "phasor.offset": "+10:00",
+    "phasor.reports": "[[\"DWGM\",\"INT353_CCAUCTION_QTY_WON_1\"]]",
+    "phasor.table": "DWGM_INT353_CCAUCTION_QTY_WON",
+    "phasor.temporal.cutoff": "CURRENT_DATE",
+    "phasor.temporal.entity": "[\"AUCTION_ID\",\"ZONE_ID\"]",
+    "phasor.temporal.order": "[\"CURRENT_DATE\"]",
+    "phasor.temporal.origin": "hand",
+    "phasor.temporal.valid.column": "START_DATE",
+    "phasor.temporal.valid.kind": "instant",
+    "phasor.time": "START_DATE",
+    "phasor.visibility": "PUBLIC"
   },
   "refs": {
     "main": {
@@ -133,27 +133,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/DWGM_INT353_CCAUCTION_QTY_WON/metadata/snap-8978631988844686187-1-aa81a672-f53b-8dbe-93c6-5660c0a79754.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/gas/DWGM_INT353_CCAUCTION_QTY_WON/metadata/snap-8978631988844686187-1-6e4a43f7-18aa-8627-ae71-c070517e9d93.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 8978631988844686187,
       "summary": {
         "operation": "append",
-        "utilake.files": "1",
-        "utilake.from.file": "int353_v4_ccauction_qty_won_1.csv",
-        "utilake.from.release": "2026-10",
-        "utilake.from.sha256": "1ae30ed8b5779011293393d2f7a1476fcced7fa27687d53051493f7c8739e65e",
-        "utilake.from.time": "2023-01-01T00:00:00+10:00",
-        "utilake.kinds": "[\"dwgm\"]",
-        "utilake.report-subtype": "INT353_CCAUCTION_QTY_WON_1",
-        "utilake.report-type": "DWGM",
-        "utilake.rows": "178",
-        "utilake.to.file": "int353_v4_ccauction_qty_won_1.csv",
-        "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "1ae30ed8b5779011293393d2f7a1476fcced7fa27687d53051493f7c8739e65e",
-        "utilake.to.time": "2025-06-01T00:00:00+10:00",
-        "utilake.total-rows": "178",
-        "utilake.version": "4"
+        "phasor.files": "1",
+        "phasor.from.file": "int353_v4_ccauction_qty_won_1.csv",
+        "phasor.from.release": "2026-10",
+        "phasor.from.sha256": "1ae30ed8b5779011293393d2f7a1476fcced7fa27687d53051493f7c8739e65e",
+        "phasor.from.time": "2023-01-01T00:00:00+10:00",
+        "phasor.kinds": "[\"dwgm\"]",
+        "phasor.report-subtype": "INT353_CCAUCTION_QTY_WON_1",
+        "phasor.report-type": "DWGM",
+        "phasor.rows": "178",
+        "phasor.to.file": "int353_v4_ccauction_qty_won_1.csv",
+        "phasor.to.release": "2026-10",
+        "phasor.to.sha256": "1ae30ed8b5779011293393d2f7a1476fcced7fa27687d53051493f7c8739e65e",
+        "phasor.to.time": "2025-06-01T00:00:00+10:00",
+        "phasor.total-rows": "178",
+        "phasor.version": "4"
       },
       "timestamp-ms": 1790776800000
     }
@@ -164,5 +164,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "aa81a672-f53b-8dbe-93c6-5660c0a79754"
+  "table-uuid": "6e4a43f7-18aa-8627-ae71-c070517e9d93"
 }

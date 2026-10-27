@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1246370400000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DISPATCHBNC_CASESOLUTION",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/DISPATCHBNC_CASESOLUTION",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -18,9 +18,9 @@
     }
   ],
   "properties": {
-    "utilake.declared": "false",
-    "utilake.format": "4",
-    "utilake.table": "DISPATCHBNC_CASESOLUTION"
+    "phasor.declared": "false",
+    "phasor.format": "4",
+    "phasor.table": "DISPATCHBNC_CASESOLUTION"
   },
   "refs": {
     "main": {
@@ -185,27 +185,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DISPATCHBNC_CASESOLUTION/metadata/snap-6066360786391651250-1-5f444e30-7616-8afd-8845-9c12cab03764.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/DISPATCHBNC_CASESOLUTION/metadata/snap-6066360786391651250-1-59776b41-18d0-81d8-a44a-2b647192468a.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 6066360786391651250,
       "summary": {
         "operation": "append",
-        "utilake.files": "3",
-        "utilake.from.file": "PUBLIC_DVD_DISPATCHCASESOLUTION_BNC_200907010000.zip",
-        "utilake.from.release": "2009-07",
-        "utilake.from.sha256": "44539eb2dbd1be88df4d0e25d3424acce148a40d2632a20dc0d5556981bbd261",
-        "utilake.from.time": "2009-07-01T07:35:00+10:00",
-        "utilake.kinds": "[\"dvd\"]",
-        "utilake.report-subtype": "CASESOLUTION",
-        "utilake.report-type": "DISPATCHBNC",
-        "utilake.rows": "8932",
-        "utilake.to.file": "PUBLIC_DVD_DISPATCHCASESOLUTION_BNC_200909010000.zip",
-        "utilake.to.release": "2009-09",
-        "utilake.to.sha256": "9cf326f7fabd7b91220c5950a2de3fdb28d9c7b97f1a4045f8075ad7b3abaaf5",
-        "utilake.to.time": "2009-09-30T10:55:00+10:00",
-        "utilake.total-rows": "8932",
-        "utilake.version": "1"
+        "phasor.files": "3",
+        "phasor.from.file": "PUBLIC_DVD_DISPATCHCASESOLUTION_BNC_200907010000.zip",
+        "phasor.from.release": "2009-07",
+        "phasor.from.sha256": "44539eb2dbd1be88df4d0e25d3424acce148a40d2632a20dc0d5556981bbd261",
+        "phasor.from.time": "2009-07-01T07:35:00+10:00",
+        "phasor.kinds": "[\"dvd\"]",
+        "phasor.report-subtype": "CASESOLUTION",
+        "phasor.report-type": "DISPATCHBNC",
+        "phasor.rows": "8932",
+        "phasor.to.file": "PUBLIC_DVD_DISPATCHCASESOLUTION_BNC_200909010000.zip",
+        "phasor.to.release": "2009-09",
+        "phasor.to.sha256": "9cf326f7fabd7b91220c5950a2de3fdb28d9c7b97f1a4045f8075ad7b3abaaf5",
+        "phasor.to.time": "2009-09-30T10:55:00+10:00",
+        "phasor.total-rows": "8932",
+        "phasor.version": "1"
       },
       "timestamp-ms": 1246370400000
     }
@@ -216,5 +216,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "5f444e30-7616-8afd-8845-9c12cab03764"
+  "table-uuid": "59776b41-18d0-81d8-a44a-2b647192468a"
 }

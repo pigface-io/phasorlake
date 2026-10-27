@@ -1,0 +1,45 @@
+[package]
+name = "phasor-cli"
+description = "The phasor command: flags, the kits it is assembled with, rendering and exit codes."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+[lints]
+workspace = true
+
+[[bin]]
+name = "phasor"
+path = "src/main.rs"
+
+[dependencies]
+jiff.workspace = true
+phasor-core.workspace = true
+phasor-iceberg.workspace = true
+phasor-nem.workspace = true
+phasor-wem.workspace = true
+phasor-gas.workspace = true
+phasor-kit.workspace = true
+phasor-zip.workspace = true
+phasor-registry.workspace = true
+phasor-mms-conform.workspace = true
+phasor-acquire.workspace = true
+phasor-writer.workspace = true
+phasor-pipeline.workspace = true
+anyhow.workspace = true
+clap.workspace = true
+indicatif.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+url.workspace = true
+tokio = { workspace = true, features = ["rt-multi-thread", "sync", "macros", "signal"] }
+tokio-util.workspace = true
+tracing.workspace = true
+tracing-subscriber.workspace = true
+
+[dev-dependencies]
+tempfile.workspace = true
+zip.workspace = true

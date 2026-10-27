@@ -1,0 +1,51 @@
+[package]
+name = "phasor-registry"
+description = "Every market's tables: their columns and histories, the resolution of a block to the plan its rows are read by, and the tables as a kit's catalog."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+publish.workspace = true
+build = "build.rs"
+
+[lints]
+workspace = true
+
+[dependencies]
+phasor-plain-decode.workspace = true
+phasor-kit.workspace = true
+phasor-provenance.workspace = true
+phasor-core.workspace = true
+phasor-iceberg.workspace = true
+phasor-mms-decode.workspace = true
+arrow-schema.workspace = true
+hashbrown.workspace = true
+postcard.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+toml.workspace = true
+xxhash-rust.workspace = true
+
+# build.rs compiles `src/file_model` itself to validate and pack `schemas/`.
+[build-dependencies]
+phasor-core.workspace = true
+phasor-plain-decode.workspace = true
+phasor-provenance.workspace = true
+phasor-iceberg.workspace = true
+postcard.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+toml.workspace = true
+
+[dev-dependencies]
+criterion.workspace = true
+insta.workspace = true
+serde_json.workspace = true
+tempfile.workspace = true
+
+[[bench]]
+name = "resolve"
+harness = false

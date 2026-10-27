@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1722434400000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DISPATCH_INTERCONNECTION",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/DISPATCH_INTERCONNECTION",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -19,22 +19,22 @@
   ],
   "properties": {
     "comment": "Inter-regional flow information common to or aggregated for regulated (i.e. not MNSP) Interconnectors spanning the From-Region and To-Region - NB only the physical run is calculated'",
-    "utilake.declared": "true",
-    "utilake.format": "4",
-    "utilake.key": "[\"SETTLEMENTDATE\",\"RUNNO\",\"INTERVENTION\",\"FROM_REGIONID\",\"TO_REGIONID\"]",
-    "utilake.load": "append",
-    "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(3,0)\",\"3\":\"NUMERIC(2,0)\",\"4\":\"VARCHAR(20)\",\"5\":\"VARCHAR(20)\",\"6\":\"NUMERIC(22,0)\",\"7\":\"NUMERIC(15,5)\",\"8\":\"NUMERIC(16,6)\",\"9\":\"NUMERIC(16,6)\",\"10\":\"NUMERIC(16,6)\",\"11\":\"NUMERIC(16,6)\",\"12\":\"TIMESTAMP(0)\"}",
-    "utilake.package": "DISPATCH",
-    "utilake.reports": "[[\"DISPATCH\",\"INTERCONNECTION\"]]",
-    "utilake.table": "DISPATCH_INTERCONNECTION",
-    "utilake.temporal.cutoff": "LASTCHANGED",
-    "utilake.temporal.entity": "[\"INTERVENTION\",\"FROM_REGIONID\",\"TO_REGIONID\"]",
-    "utilake.temporal.order": "[\"RUNNO\",\"LASTCHANGED\"]",
-    "utilake.temporal.origin": "derived",
-    "utilake.temporal.valid.column": "SETTLEMENTDATE",
-    "utilake.temporal.valid.kind": "interval_end",
-    "utilake.time": "SETTLEMENTDATE",
-    "utilake.visibility": "PUBLIC"
+    "phasor.declared": "true",
+    "phasor.format": "4",
+    "phasor.key": "[\"SETTLEMENTDATE\",\"RUNNO\",\"INTERVENTION\",\"FROM_REGIONID\",\"TO_REGIONID\"]",
+    "phasor.load": "append",
+    "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(3,0)\",\"3\":\"NUMERIC(2,0)\",\"4\":\"VARCHAR(20)\",\"5\":\"VARCHAR(20)\",\"6\":\"NUMERIC(22,0)\",\"7\":\"NUMERIC(15,5)\",\"8\":\"NUMERIC(16,6)\",\"9\":\"NUMERIC(16,6)\",\"10\":\"NUMERIC(16,6)\",\"11\":\"NUMERIC(16,6)\",\"12\":\"TIMESTAMP(0)\"}",
+    "phasor.package": "DISPATCH",
+    "phasor.reports": "[[\"DISPATCH\",\"INTERCONNECTION\"]]",
+    "phasor.table": "DISPATCH_INTERCONNECTION",
+    "phasor.temporal.cutoff": "LASTCHANGED",
+    "phasor.temporal.entity": "[\"INTERVENTION\",\"FROM_REGIONID\",\"TO_REGIONID\"]",
+    "phasor.temporal.order": "[\"RUNNO\",\"LASTCHANGED\"]",
+    "phasor.temporal.origin": "derived",
+    "phasor.temporal.valid.column": "SETTLEMENTDATE",
+    "phasor.temporal.valid.kind": "interval_end",
+    "phasor.time": "SETTLEMENTDATE",
+    "phasor.visibility": "PUBLIC"
   },
   "refs": {
     "main": {
@@ -151,27 +151,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DISPATCH_INTERCONNECTION/metadata/snap-7381050024942945501-1-640dce6b-9687-846e-9c2b-ad42c6d24963.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/DISPATCH_INTERCONNECTION/metadata/snap-7381050024942945501-1-266d84ee-54dd-8212-828c-00e1a8980cb8.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 7381050024942945501,
       "summary": {
         "operation": "append",
-        "utilake.files": "121269",
-        "utilake.from.file": "PUBLIC_ARCHIVE#DISPATCH_INTERCONNECTION#FILE01#202408010000.zip",
-        "utilake.from.release": "2024-08",
-        "utilake.from.sha256": "21386a4ff8c679c2f2622acd719043cce3d01bee5e464b08e3ed33ad4e119c2d",
-        "utilake.from.time": "2024-08-01T00:05:00+10:00",
-        "utilake.kinds": "[\"archive\",\"reports\"]",
-        "utilake.report-subtype": "INTERCONNECTION",
-        "utilake.report-type": "DISPATCH",
-        "utilake.rows": "1114078",
-        "utilake.to.file": "PUBLIC_DISPATCHIS_202610241145_0000000544595545.zip",
-        "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "b23cfa8a2f5c84a4535aa22e8d0f81b1bce96dcb5ff7b6b3292cab8c0495b919",
-        "utilake.to.time": "2026-10-24T11:45:00+10:00",
-        "utilake.total-rows": "1114078",
-        "utilake.version": "1"
+        "phasor.files": "121269",
+        "phasor.from.file": "PUBLIC_ARCHIVE#DISPATCH_INTERCONNECTION#FILE01#202408010000.zip",
+        "phasor.from.release": "2024-08",
+        "phasor.from.sha256": "21386a4ff8c679c2f2622acd719043cce3d01bee5e464b08e3ed33ad4e119c2d",
+        "phasor.from.time": "2024-08-01T00:05:00+10:00",
+        "phasor.kinds": "[\"archive\",\"reports\"]",
+        "phasor.report-subtype": "INTERCONNECTION",
+        "phasor.report-type": "DISPATCH",
+        "phasor.rows": "1114078",
+        "phasor.to.file": "PUBLIC_DISPATCHIS_202610241145_0000000544595545.zip",
+        "phasor.to.release": "2026-10",
+        "phasor.to.sha256": "b23cfa8a2f5c84a4535aa22e8d0f81b1bce96dcb5ff7b6b3292cab8c0495b919",
+        "phasor.to.time": "2026-10-24T11:45:00+10:00",
+        "phasor.total-rows": "1114078",
+        "phasor.version": "1"
       },
       "timestamp-ms": 1722434400000
     }
@@ -182,5 +182,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "640dce6b-9687-846e-9c2b-ad42c6d24963"
+  "table-uuid": "266d84ee-54dd-8212-828c-00e1a8980cb8"
 }

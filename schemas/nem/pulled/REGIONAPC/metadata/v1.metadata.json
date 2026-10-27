@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1246370400000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/REGIONAPC",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/REGIONAPC",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -19,21 +19,21 @@
   ],
   "properties": {
     "comment": "REGIONAPC defines Administered Price profiles (Energy and FCAS) for a region.",
-    "utilake.declared": "true",
-    "utilake.format": "4",
-    "utilake.key": "[\"REGIONID\",\"EFFECTIVEDATE\",\"VERSIONNO\"]",
-    "utilake.load": "snapshot",
-    "utilake.model-types": "{\"1\":\"VARCHAR(10)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"NUMERIC(3,0)\",\"4\":\"TIMESTAMP(0)\",\"5\":\"VARCHAR(10)\",\"6\":\"TIMESTAMP(0)\"}",
-    "utilake.package": "FORCE_MAJEURE",
-    "utilake.reports": "[[\"AP\",\"REGIONAPC\"]]",
-    "utilake.table": "REGIONAPC",
-    "utilake.temporal.cutoff": "LASTCHANGED",
-    "utilake.temporal.entity": "[\"REGIONID\"]",
-    "utilake.temporal.order": "[\"VERSIONNO\",\"LASTCHANGED\"]",
-    "utilake.temporal.origin": "derived",
-    "utilake.temporal.valid.column": "EFFECTIVEDATE",
-    "utilake.temporal.valid.kind": "from",
-    "utilake.visibility": "PUBLIC"
+    "phasor.declared": "true",
+    "phasor.format": "4",
+    "phasor.key": "[\"REGIONID\",\"EFFECTIVEDATE\",\"VERSIONNO\"]",
+    "phasor.load": "snapshot",
+    "phasor.model-types": "{\"1\":\"VARCHAR(10)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"NUMERIC(3,0)\",\"4\":\"TIMESTAMP(0)\",\"5\":\"VARCHAR(10)\",\"6\":\"TIMESTAMP(0)\"}",
+    "phasor.package": "FORCE_MAJEURE",
+    "phasor.reports": "[[\"AP\",\"REGIONAPC\"]]",
+    "phasor.table": "REGIONAPC",
+    "phasor.temporal.cutoff": "LASTCHANGED",
+    "phasor.temporal.entity": "[\"REGIONID\"]",
+    "phasor.temporal.order": "[\"VERSIONNO\",\"LASTCHANGED\"]",
+    "phasor.temporal.origin": "derived",
+    "phasor.temporal.valid.column": "EFFECTIVEDATE",
+    "phasor.temporal.valid.kind": "from",
+    "phasor.visibility": "PUBLIC"
   },
   "refs": {
     "main": {
@@ -106,27 +106,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/REGIONAPC/metadata/snap-5221253392903209360-1-806d05f9-4032-85ee-afaa-bb3518480cf4.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/REGIONAPC/metadata/snap-5221253392903209360-1-c6dc75af-753b-8223-802f-099e6f552ec5.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 5221253392903209360,
       "summary": {
         "operation": "append",
-        "utilake.files": "207",
-        "utilake.from.file": "PUBLIC_DVD_REGIONAPC_200907010000.zip",
-        "utilake.from.release": "2009-07",
-        "utilake.from.sha256": "44539eb2dbd1be88df4d0e25d3424acce148a40d2632a20dc0d5556981bbd261",
-        "utilake.from.time": "1998-11-27T00:00:00+10:00",
-        "utilake.kinds": "[\"archive\",\"dvd\"]",
-        "utilake.report-subtype": "REGIONAPC",
-        "utilake.report-type": "AP",
-        "utilake.rows": "12360",
-        "utilake.to.file": "PUBLIC_ARCHIVE#REGIONAPC#FILE01#202609010000.zip",
-        "utilake.to.release": "2026-09",
-        "utilake.to.sha256": "9c1eebae59c8abafd094216a1f273848fa42e0e38b9d99a1591c1b776cc6e2d3",
-        "utilake.to.time": "2022-12-01T00:00:00+10:00",
-        "utilake.total-rows": "12360",
-        "utilake.version": "1"
+        "phasor.files": "207",
+        "phasor.from.file": "PUBLIC_DVD_REGIONAPC_200907010000.zip",
+        "phasor.from.release": "2009-07",
+        "phasor.from.sha256": "44539eb2dbd1be88df4d0e25d3424acce148a40d2632a20dc0d5556981bbd261",
+        "phasor.from.time": "1998-11-27T00:00:00+10:00",
+        "phasor.kinds": "[\"archive\",\"dvd\"]",
+        "phasor.report-subtype": "REGIONAPC",
+        "phasor.report-type": "AP",
+        "phasor.rows": "12360",
+        "phasor.to.file": "PUBLIC_ARCHIVE#REGIONAPC#FILE01#202609010000.zip",
+        "phasor.to.release": "2026-09",
+        "phasor.to.sha256": "9c1eebae59c8abafd094216a1f273848fa42e0e38b9d99a1591c1b776cc6e2d3",
+        "phasor.to.time": "2022-12-01T00:00:00+10:00",
+        "phasor.total-rows": "12360",
+        "phasor.version": "1"
       },
       "timestamp-ms": 1246370400000
     }
@@ -137,5 +137,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "806d05f9-4032-85ee-afaa-bb3518480cf4"
+  "table-uuid": "c6dc75af-753b-8223-802f-099e6f552ec5"
 }

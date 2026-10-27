@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1759240800000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/SRAFINANCIALS_RECONCILIATION_SUMMARY",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/SRAFINANCIALS_RECONCILIATION_SUMMARY",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -18,9 +18,9 @@
     }
   ],
   "properties": {
-    "utilake.declared": "false",
-    "utilake.format": "4",
-    "utilake.table": "SRAFINANCIALS_RECONCILIATION_SUMMARY"
+    "phasor.declared": "false",
+    "phasor.format": "4",
+    "phasor.table": "SRAFINANCIALS_RECONCILIATION_SUMMARY"
   },
   "refs": {
     "main": {
@@ -101,25 +101,25 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/SRAFINANCIALS_RECONCILIATION_SUMMARY/metadata/snap-7566035474591229241-1-5442e419-3736-89cb-9e9f-9ed407bf985d.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/SRAFINANCIALS_RECONCILIATION_SUMMARY/metadata/snap-7566035474591229241-1-f65df1ea-9dcc-85ce-bf0f-cce6c0b7bdd3.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 7566035474591229241,
       "summary": {
         "operation": "append",
-        "utilake.files": "9",
-        "utilake.from.file": "PUBLIC_SRAFINANCIALS_RECONCILIATION_2025_4_20251020100535.zip",
-        "utilake.from.release": "2025-10",
-        "utilake.from.sha256": "a543aa9a853f5c47d8deb2336e1695e3ca90c80dc999f25ca9dbca26c154c093",
-        "utilake.kinds": "[\"reports\"]",
-        "utilake.report-subtype": "RECONCILIATION_SUMMARY",
-        "utilake.report-type": "SRAFINANCIALS",
-        "utilake.rows": "9",
-        "utilake.to.file": "PUBLIC_SRAFINANCIALS_RECONCILIATION_2026_4_20261020131825.zip",
-        "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "43fe4274e06542fd5280ecfa003f7ff981cb0e32444112b51837ef9d5a481236",
-        "utilake.total-rows": "9",
-        "utilake.version": "1"
+        "phasor.files": "9",
+        "phasor.from.file": "PUBLIC_SRAFINANCIALS_RECONCILIATION_2025_4_20251020100535.zip",
+        "phasor.from.release": "2025-10",
+        "phasor.from.sha256": "a543aa9a853f5c47d8deb2336e1695e3ca90c80dc999f25ca9dbca26c154c093",
+        "phasor.kinds": "[\"reports\"]",
+        "phasor.report-subtype": "RECONCILIATION_SUMMARY",
+        "phasor.report-type": "SRAFINANCIALS",
+        "phasor.rows": "9",
+        "phasor.to.file": "PUBLIC_SRAFINANCIALS_RECONCILIATION_2026_4_20261020131825.zip",
+        "phasor.to.release": "2026-10",
+        "phasor.to.sha256": "43fe4274e06542fd5280ecfa003f7ff981cb0e32444112b51837ef9d5a481236",
+        "phasor.total-rows": "9",
+        "phasor.version": "1"
       },
       "timestamp-ms": 1759240800000
     }
@@ -130,5 +130,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "5442e419-3736-89cb-9e9f-9ed407bf985d"
+  "table-uuid": "f65df1ea-9dcc-85ce-bf0f-cce6c0b7bdd3"
 }

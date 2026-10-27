@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1735653600000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/OPERATIONAL_DEM_LESS_SNSG_ACTUAL",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/OPERATIONAL_DEM_LESS_SNSG_ACTUAL",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -18,9 +18,9 @@
     }
   ],
   "properties": {
-    "utilake.declared": "false",
-    "utilake.format": "4",
-    "utilake.table": "OPERATIONAL_DEM_LESS_SNSG_ACTUAL"
+    "phasor.declared": "false",
+    "phasor.format": "4",
+    "phasor.table": "OPERATIONAL_DEM_LESS_SNSG_ACTUAL"
   },
   "refs": {
     "main": {
@@ -83,27 +83,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/OPERATIONAL_DEM_LESS_SNSG_ACTUAL/metadata/snap-1631004381654029274-1-f51ce2af-2d27-8a1f-8138-1dd4d10d1c89.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/OPERATIONAL_DEM_LESS_SNSG_ACTUAL/metadata/snap-1631004381654029274-1-39346ae0-27cd-8c6f-9625-c44efd4dc668.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 1631004381654029274,
       "summary": {
         "operation": "append",
-        "utilake.files": "31014",
-        "utilake.from.file": "PUBLIC_ACTUAL_OPERATIONAL_DEM_LESS_SNSG_UPDATE_202501310900_20250131115609.zip",
-        "utilake.from.release": "2025-01",
-        "utilake.from.sha256": "9d2263ca2f47a1164ddce36ff6a668de12b473ecea1d79283f4c1fad8c05abcb",
-        "utilake.from.time": "2025-01-31T09:30:00+10:00",
-        "utilake.kinds": "[\"reports\"]",
-        "utilake.report-subtype": "ACTUAL",
-        "utilake.report-type": "OPERATIONAL_DEM_LESS_SNSG",
-        "utilake.rows": "308760",
-        "utilake.to.file": "PUBLIC_ACTUAL_OPERATIONAL_DEM_LESS_SNSG_HH_202610241130_20261024113013.zip",
-        "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "f27c4834509adf0b56ab769a46cc16a24cca5d10819260d3cffb13242150d9d1",
-        "utilake.to.time": "2026-10-24T11:30:00+10:00",
-        "utilake.total-rows": "308760",
-        "utilake.version": "1"
+        "phasor.files": "31014",
+        "phasor.from.file": "PUBLIC_ACTUAL_OPERATIONAL_DEM_LESS_SNSG_UPDATE_202501310900_20250131115609.zip",
+        "phasor.from.release": "2025-01",
+        "phasor.from.sha256": "9d2263ca2f47a1164ddce36ff6a668de12b473ecea1d79283f4c1fad8c05abcb",
+        "phasor.from.time": "2025-01-31T09:30:00+10:00",
+        "phasor.kinds": "[\"reports\"]",
+        "phasor.report-subtype": "ACTUAL",
+        "phasor.report-type": "OPERATIONAL_DEM_LESS_SNSG",
+        "phasor.rows": "308760",
+        "phasor.to.file": "PUBLIC_ACTUAL_OPERATIONAL_DEM_LESS_SNSG_HH_202610241130_20261024113013.zip",
+        "phasor.to.release": "2026-10",
+        "phasor.to.sha256": "f27c4834509adf0b56ab769a46cc16a24cca5d10819260d3cffb13242150d9d1",
+        "phasor.to.time": "2026-10-24T11:30:00+10:00",
+        "phasor.total-rows": "308760",
+        "phasor.version": "1"
       },
       "timestamp-ms": 1735653600000
     }
@@ -114,5 +114,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "f51ce2af-2d27-8a1f-8138-1dd4d10d1c89"
+  "table-uuid": "39346ae0-27cd-8c6f-9625-c44efd4dc668"
 }

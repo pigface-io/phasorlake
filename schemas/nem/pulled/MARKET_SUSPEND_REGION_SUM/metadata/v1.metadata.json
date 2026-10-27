@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1722434400000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MARKET_SUSPEND_REGION_SUM",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/MARKET_SUSPEND_REGION_SUM",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -19,21 +19,21 @@
   ],
   "properties": {
     "comment": "Summary of Market Suspension timings",
-    "utilake.declared": "true",
-    "utilake.format": "4",
-    "utilake.key": "[\"SUSPENSION_ID\",\"REGIONID\"]",
-    "utilake.load": "append",
-    "utilake.model-types": "{\"1\":\"VARCHAR(20)\",\"2\":\"VARCHAR(20)\",\"3\":\"TIMESTAMP(0)\",\"4\":\"TIMESTAMP(0)\",\"5\":\"TIMESTAMP(0)\",\"6\":\"TIMESTAMP(0)\"}",
-    "utilake.package": "FORCE_MAJEURE",
-    "utilake.reports": "[[\"FORCE_MAJEURE\",\"MARKET_SUSPEND_REGION_SUM\"]]",
-    "utilake.table": "MARKET_SUSPEND_REGION_SUM",
-    "utilake.temporal.cutoff": "LASTCHANGED",
-    "utilake.temporal.entity": "[\"SUSPENSION_ID\",\"REGIONID\"]",
-    "utilake.temporal.order": "[\"LASTCHANGED\"]",
-    "utilake.temporal.origin": "derived",
-    "utilake.temporal.valid.kind": "timeless",
-    "utilake.time": "LASTCHANGED",
-    "utilake.visibility": "PUBLIC"
+    "phasor.declared": "true",
+    "phasor.format": "4",
+    "phasor.key": "[\"SUSPENSION_ID\",\"REGIONID\"]",
+    "phasor.load": "append",
+    "phasor.model-types": "{\"1\":\"VARCHAR(20)\",\"2\":\"VARCHAR(20)\",\"3\":\"TIMESTAMP(0)\",\"4\":\"TIMESTAMP(0)\",\"5\":\"TIMESTAMP(0)\",\"6\":\"TIMESTAMP(0)\"}",
+    "phasor.package": "FORCE_MAJEURE",
+    "phasor.reports": "[[\"FORCE_MAJEURE\",\"MARKET_SUSPEND_REGION_SUM\"]]",
+    "phasor.table": "MARKET_SUSPEND_REGION_SUM",
+    "phasor.temporal.cutoff": "LASTCHANGED",
+    "phasor.temporal.entity": "[\"SUSPENSION_ID\",\"REGIONID\"]",
+    "phasor.temporal.order": "[\"LASTCHANGED\"]",
+    "phasor.temporal.origin": "derived",
+    "phasor.temporal.valid.kind": "timeless",
+    "phasor.time": "LASTCHANGED",
+    "phasor.visibility": "PUBLIC"
   },
   "refs": {
     "main": {
@@ -105,27 +105,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MARKET_SUSPEND_REGION_SUM/metadata/snap-4223335588524159648-1-8ee9f067-912f-85c5-b8b5-c5da057643e0.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/MARKET_SUSPEND_REGION_SUM/metadata/snap-4223335588524159648-1-b9ef6b60-25e1-820a-9c13-33139033c3ea.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 4223335588524159648,
       "summary": {
         "operation": "append",
-        "utilake.files": "26",
-        "utilake.from.file": "PUBLIC_ARCHIVE#MARKET_SUSPEND_REGION_SUM#FILE01#202408010000.zip",
-        "utilake.from.release": "2024-08",
-        "utilake.from.sha256": "e82d5d848f5be64c00a222ee0925968a500838fe10897151a4b0f5eb24ea9d71",
-        "utilake.from.time": "2022-02-18T15:38:41+10:00",
-        "utilake.kinds": "[\"archive\"]",
-        "utilake.report-subtype": "MARKET_SUSPEND_REGION_SUM",
-        "utilake.report-type": "FORCE_MAJEURE",
-        "utilake.rows": "371",
-        "utilake.to.file": "PUBLIC_ARCHIVE#MARKET_SUSPEND_REGION_SUM#FILE01#202609010000.zip",
-        "utilake.to.release": "2026-09",
-        "utilake.to.sha256": "26618c31185432458660014da1e614814ac56d6f6fa1b58c6ca58c1c43d02d43",
-        "utilake.to.time": "2026-03-23T17:54:23+10:00",
-        "utilake.total-rows": "371",
-        "utilake.version": "1"
+        "phasor.files": "26",
+        "phasor.from.file": "PUBLIC_ARCHIVE#MARKET_SUSPEND_REGION_SUM#FILE01#202408010000.zip",
+        "phasor.from.release": "2024-08",
+        "phasor.from.sha256": "e82d5d848f5be64c00a222ee0925968a500838fe10897151a4b0f5eb24ea9d71",
+        "phasor.from.time": "2022-02-18T15:38:41+10:00",
+        "phasor.kinds": "[\"archive\"]",
+        "phasor.report-subtype": "MARKET_SUSPEND_REGION_SUM",
+        "phasor.report-type": "FORCE_MAJEURE",
+        "phasor.rows": "371",
+        "phasor.to.file": "PUBLIC_ARCHIVE#MARKET_SUSPEND_REGION_SUM#FILE01#202609010000.zip",
+        "phasor.to.release": "2026-09",
+        "phasor.to.sha256": "26618c31185432458660014da1e614814ac56d6f6fa1b58c6ca58c1c43d02d43",
+        "phasor.to.time": "2026-03-23T17:54:23+10:00",
+        "phasor.total-rows": "371",
+        "phasor.version": "1"
       },
       "timestamp-ms": 1722434400000
     }
@@ -136,5 +136,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "8ee9f067-912f-85c5-b8b5-c5da057643e0"
+  "table-uuid": "b9ef6b60-25e1-820a-9c13-33139033c3ea"
 }

@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1572530400000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GBB_PIPELINE_CONNECTION_FLOW_HISTORY",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/gas/GBB_PIPELINE_CONNECTION_FLOW_HISTORY",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -19,24 +19,24 @@
   ],
   "properties": {
     "comment": "Provides on each gas day D, the BB facility operator’s daily gas flow data for injections and withdrawals at each connection point for gas day D-1.",
-    "utilake.declared": "true",
-    "utilake.format": "4",
-    "utilake.headers": "{\"1\":\"GasDate\",\"2\":\"FacilityName\",\"3\":\"FacilityId\",\"4\":\"ConnectionPointName\",\"5\":\"ConnectionPointId\",\"6\":\"ActualQuantity\",\"7\":\"FlowDirection\",\"8\":\"State\",\"9\":\"LocationName\",\"10\":\"LocationId\",\"11\":\"Quality\"}",
-    "utilake.key": "[]",
-    "utilake.load": "append",
-    "utilake.market": "gas",
-    "utilake.model": "[\"GAS_DAILY_FLOW_ACTUAL\",\"GAS_FACILITY\",\"GAS_LOCATION\"]",
-    "utilake.model-types": "{\"1\":\"DATE\",\"2\":\"VARCHAR2(100)\",\"3\":\"NUMBER(10,0)\",\"5\":\"NUMBER(10,0)\",\"6\":\"NUMBER(18,3)\",\"7\":\"VARCHAR2(20)\",\"9\":\"VARCHAR2(100)\",\"10\":\"NUMBER(10,0)\",\"11\":\"VARCHAR2(5)\"}",
-    "utilake.offset": "+10:00",
-    "utilake.reports": "[[\"GBB\",\"PIPELINE_CONNECTION_FLOW_HISTORY\"]]",
-    "utilake.table": "GBB_PIPELINE_CONNECTION_FLOW_HISTORY",
-    "utilake.temporal.entity": "[\"FACILITYID\",\"CONNECTIONPOINTID\",\"LOCATIONID\"]",
-    "utilake.temporal.order": "[]",
-    "utilake.temporal.origin": "hand",
-    "utilake.temporal.valid.column": "GASDATE",
-    "utilake.temporal.valid.kind": "instant",
-    "utilake.time": "GASDATE",
-    "utilake.visibility": "PUBLIC"
+    "phasor.declared": "true",
+    "phasor.format": "4",
+    "phasor.headers": "{\"1\":\"GasDate\",\"2\":\"FacilityName\",\"3\":\"FacilityId\",\"4\":\"ConnectionPointName\",\"5\":\"ConnectionPointId\",\"6\":\"ActualQuantity\",\"7\":\"FlowDirection\",\"8\":\"State\",\"9\":\"LocationName\",\"10\":\"LocationId\",\"11\":\"Quality\"}",
+    "phasor.key": "[]",
+    "phasor.load": "append",
+    "phasor.market": "gas",
+    "phasor.model": "[\"GAS_DAILY_FLOW_ACTUAL\",\"GAS_FACILITY\",\"GAS_LOCATION\"]",
+    "phasor.model-types": "{\"1\":\"DATE\",\"2\":\"VARCHAR2(100)\",\"3\":\"NUMBER(10,0)\",\"5\":\"NUMBER(10,0)\",\"6\":\"NUMBER(18,3)\",\"7\":\"VARCHAR2(20)\",\"9\":\"VARCHAR2(100)\",\"10\":\"NUMBER(10,0)\",\"11\":\"VARCHAR2(5)\"}",
+    "phasor.offset": "+10:00",
+    "phasor.reports": "[[\"GBB\",\"PIPELINE_CONNECTION_FLOW_HISTORY\"]]",
+    "phasor.table": "GBB_PIPELINE_CONNECTION_FLOW_HISTORY",
+    "phasor.temporal.entity": "[\"FACILITYID\",\"CONNECTIONPOINTID\",\"LOCATIONID\"]",
+    "phasor.temporal.order": "[]",
+    "phasor.temporal.origin": "hand",
+    "phasor.temporal.valid.column": "GASDATE",
+    "phasor.temporal.valid.kind": "instant",
+    "phasor.time": "GASDATE",
+    "phasor.visibility": "PUBLIC"
   },
   "refs": {
     "main": {
@@ -138,27 +138,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GBB_PIPELINE_CONNECTION_FLOW_HISTORY/metadata/snap-8481031711397701895-1-c6d4d3fa-416c-86e3-b43b-0e9bce66c6b5.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/gas/GBB_PIPELINE_CONNECTION_FLOW_HISTORY/metadata/snap-8481031711397701895-1-b68d95d2-9af4-8e13-914b-a68294f58349.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 8481031711397701895,
       "summary": {
         "operation": "append",
-        "utilake.files": "1",
-        "utilake.from.file": "PipelineConnectionFlow_History.csv",
-        "utilake.from.release": "2019-11",
-        "utilake.from.sha256": "430cd7af776bc3d3a912ad0657121040ff1cc0de06fdffaaf5ffa508ccd355a9",
-        "utilake.from.time": "2018-09-29T00:00:00+10:00",
-        "utilake.kinds": "[\"gbb\"]",
-        "utilake.report-subtype": "PIPELINE_CONNECTION_FLOW_HISTORY",
-        "utilake.report-type": "GBB",
-        "utilake.rows": "216897",
-        "utilake.to.file": "PipelineConnectionFlow_History.csv",
-        "utilake.to.release": "2019-11",
-        "utilake.to.sha256": "430cd7af776bc3d3a912ad0657121040ff1cc0de06fdffaaf5ffa508ccd355a9",
-        "utilake.to.time": "2019-11-18T00:00:00+10:00",
-        "utilake.total-rows": "216897",
-        "utilake.version": "1"
+        "phasor.files": "1",
+        "phasor.from.file": "PipelineConnectionFlow_History.csv",
+        "phasor.from.release": "2019-11",
+        "phasor.from.sha256": "430cd7af776bc3d3a912ad0657121040ff1cc0de06fdffaaf5ffa508ccd355a9",
+        "phasor.from.time": "2018-09-29T00:00:00+10:00",
+        "phasor.kinds": "[\"gbb\"]",
+        "phasor.report-subtype": "PIPELINE_CONNECTION_FLOW_HISTORY",
+        "phasor.report-type": "GBB",
+        "phasor.rows": "216897",
+        "phasor.to.file": "PipelineConnectionFlow_History.csv",
+        "phasor.to.release": "2019-11",
+        "phasor.to.sha256": "430cd7af776bc3d3a912ad0657121040ff1cc0de06fdffaaf5ffa508ccd355a9",
+        "phasor.to.time": "2019-11-18T00:00:00+10:00",
+        "phasor.total-rows": "216897",
+        "phasor.version": "1"
       },
       "timestamp-ms": 1572530400000
     }
@@ -169,5 +169,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "c6d4d3fa-416c-86e3-b43b-0e9bce66c6b5"
+  "table-uuid": "b68d95d2-9af4-8e13-914b-a68294f58349"
 }

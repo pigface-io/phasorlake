@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1614520800000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/OFFER_MNSP_BIDOFFERPERIOD",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/OFFER_MNSP_BIDOFFERPERIOD",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -18,9 +18,9 @@
     }
   ],
   "properties": {
-    "utilake.declared": "false",
-    "utilake.format": "4",
-    "utilake.table": "OFFER_MNSP_BIDOFFERPERIOD"
+    "phasor.declared": "false",
+    "phasor.format": "4",
+    "phasor.table": "OFFER_MNSP_BIDOFFERPERIOD"
   },
   "refs": {
     "main": {
@@ -155,27 +155,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/OFFER_MNSP_BIDOFFERPERIOD/metadata/snap-2676871440203508172-1-79f4af98-1bdb-89de-a87f-3cda03241de1.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/OFFER_MNSP_BIDOFFERPERIOD/metadata/snap-2676871440203508172-1-02d93a60-2c7b-8737-832d-38659d3b4450.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 2676871440203508172,
       "summary": {
         "operation": "append",
-        "utilake.files": "1",
-        "utilake.from.file": "PUBLIC_DVD_MNSP_PEROFFER_202103010000.zip",
-        "utilake.from.release": "2021-03",
-        "utilake.from.sha256": "9cc0f5240e13cdaac7ec863651d9c824a7548111c9c6f405621cb266b258eb19",
-        "utilake.from.time": "2021-03-01T00:00:00+10:00",
-        "utilake.kinds": "[\"dvd\"]",
-        "utilake.report-subtype": "MNSP_BIDOFFERPERIOD",
-        "utilake.report-type": "OFFER",
-        "utilake.rows": "1172160",
-        "utilake.to.file": "PUBLIC_DVD_MNSP_PEROFFER_202103010000.zip",
-        "utilake.to.release": "2021-03",
-        "utilake.to.sha256": "9cc0f5240e13cdaac7ec863651d9c824a7548111c9c6f405621cb266b258eb19",
-        "utilake.to.time": "2021-03-31T00:00:00+10:00",
-        "utilake.total-rows": "1172160",
-        "utilake.version": "1"
+        "phasor.files": "1",
+        "phasor.from.file": "PUBLIC_DVD_MNSP_PEROFFER_202103010000.zip",
+        "phasor.from.release": "2021-03",
+        "phasor.from.sha256": "9cc0f5240e13cdaac7ec863651d9c824a7548111c9c6f405621cb266b258eb19",
+        "phasor.from.time": "2021-03-01T00:00:00+10:00",
+        "phasor.kinds": "[\"dvd\"]",
+        "phasor.report-subtype": "MNSP_BIDOFFERPERIOD",
+        "phasor.report-type": "OFFER",
+        "phasor.rows": "1172160",
+        "phasor.to.file": "PUBLIC_DVD_MNSP_PEROFFER_202103010000.zip",
+        "phasor.to.release": "2021-03",
+        "phasor.to.sha256": "9cc0f5240e13cdaac7ec863651d9c824a7548111c9c6f405621cb266b258eb19",
+        "phasor.to.time": "2021-03-31T00:00:00+10:00",
+        "phasor.total-rows": "1172160",
+        "phasor.version": "1"
       },
       "timestamp-ms": 1614520800000
     }
@@ -186,5 +186,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "79f4af98-1bdb-89de-a87f-3cda03241de1"
+  "table-uuid": "02d93a60-2c7b-8737-832d-38659d3b4450"
 }

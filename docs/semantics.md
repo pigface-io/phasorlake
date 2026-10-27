@@ -26,8 +26,8 @@ as known at some time.
 ## The roles
 
 Every declared table carries roles in its Iceberg metadata
-(`utilake.temporal.*`), derived from AEMO's primary key and the table's
-columns (`crates/utilake-registry/src/file_model/temporal.rs`):
+(`phasor.temporal.*`), derived from AEMO's primary key and the table's
+columns (`crates/phasor-registry/src/file_model/temporal.rs`):
 
 | role | meaning | example (DISPATCHPRICE) |
 |---|---|---|
@@ -41,7 +41,7 @@ columns (`crates/utilake-registry/src/file_model/temporal.rs`):
 rows beside the normal run's, and merging them would lose one.
 
 The roles are one rule, shared with the publisher
-(`utilake_iceberg::derive`), run over the key and the columns; a table
+(`phasor_iceberg::derive`), run over the key and the columns; a table
 whose declaration carries a `[temporal]` block has roles a person set
 (`origin = hand`). The `day` kind is such a choice: the census shows a
 valid column seen only at midnight, and the fold says so.
@@ -144,12 +144,12 @@ Rows of one source are contiguous, so each of the four columns is one run
 per source per row group and costs almost nothing.
 
 Because the rows carry them, any reader gets the same answers without
-utilake: DuckDB, Polars, a copy or compaction of the files.
+phasor: DuckDB, Polars, a copy or compaction of the files.
 `docs/reading.md` gives the queries, including an as-of read known by the
 server's word and one known by the earliest of the three.
 
-Each file's footer counts its rows of each source (`utilake.sources`),
-and the manifest keeps what each entry gave (`ingest_entries`); `utilake
+Each file's footer counts its rows of each source (`phasor.sources`),
+and the manifest keeps what each entry gave (`ingest_entries`); `phasor
 verify` holds the two to each other. A file without the four columns was
-written before lake format 3 (`PLAN_FORMAT` 7), and `utilake ingest`
+written before lake format 3 (`PLAN_FORMAT` 7), and `phasor ingest`
 writes it again.

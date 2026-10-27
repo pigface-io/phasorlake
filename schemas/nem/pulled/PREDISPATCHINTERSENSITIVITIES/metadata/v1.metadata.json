@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1246370400000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PREDISPATCHINTERSENSITIVITIES",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/PREDISPATCHINTERSENSITIVITIES",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -19,21 +19,21 @@
   ],
   "properties": {
     "comment": "PREDISPATCHINTERSENSITIVITIES sets out the sensitivity flows for each interconnector by period.",
-    "utilake.declared": "true",
-    "utilake.format": "4",
-    "utilake.key": "[\"INTERCONNECTORID\",\"DATETIME\"]",
-    "utilake.load": "append",
-    "utilake.model-types": "{\"1\":\"VARCHAR(20)\",\"2\":\"NUMERIC(3,0)\",\"3\":\"VARCHAR(10)\",\"4\":\"VARCHAR(20)\",\"5\":\"NUMERIC(2,0)\",\"6\":\"TIMESTAMP(0)\",\"7\":\"NUMERIC(1,0)\",\"8\":\"NUMERIC(15,5)\",\"9\":\"NUMERIC(15,5)\",\"10\":\"NUMERIC(15,5)\",\"11\":\"NUMERIC(15,5)\",\"12\":\"NUMERIC(15,5)\",\"13\":\"NUMERIC(15,5)\",\"14\":\"NUMERIC(15,5)\",\"15\":\"NUMERIC(15,5)\",\"16\":\"NUMERIC(15,5)\",\"17\":\"NUMERIC(15,5)\",\"18\":\"NUMERIC(15,5)\",\"19\":\"NUMERIC(15,5)\",\"20\":\"NUMERIC(15,5)\",\"21\":\"NUMERIC(15,5)\",\"22\":\"NUMERIC(15,5)\",\"23\":\"NUMERIC(15,5)\",\"24\":\"NUMERIC(15,5)\",\"25\":\"NUMERIC(15,5)\",\"26\":\"NUMERIC(15,5)\",\"27\":\"NUMERIC(15,5)\",\"28\":\"NUMERIC(15,5)\",\"29\":\"NUMERIC(15,5)\",\"30\":\"NUMERIC(15,5)\",\"31\":\"NUMERIC(15,5)\",\"32\":\"NUMERIC(15,5)\",\"33\":\"NUMERIC(15,5)\",\"34\":\"NUMERIC(15,5)\",\"35\":\"NUMERIC(15,5)\",\"36\":\"NUMERIC(15,5)\",\"37\":\"NUMERIC(15,5)\",\"38\":\"NUMERIC(15,5)\",\"39\":\"NUMERIC(15,5)\",\"40\":\"NUMERIC(15,5)\",\"41\":\"NUMERIC(15,5)\",\"42\":\"NUMERIC(15,5)\",\"43\":\"NUMERIC(15,5)\",\"44\":\"NUMERIC(15,5)\",\"45\":\"NUMERIC(15,5)\",\"46\":\"NUMERIC(15,5)\",\"47\":\"NUMERIC(15,5)\",\"48\":\"NUMERIC(15,5)\",\"49\":\"NUMERIC(15,5)\",\"50\":\"NUMERIC(15,5)\",\"51\":\"TIMESTAMP(0)\"}",
-    "utilake.reports": "[[\"PREDISPATCH\",\"INTERCONNECTR_SENS\"]]",
-    "utilake.table": "PREDISPATCHINTERSENSITIVITIES",
-    "utilake.temporal.cutoff": "LASTCHANGED",
-    "utilake.temporal.entity": "[\"INTERCONNECTORID\",\"INTERVENTION\"]",
-    "utilake.temporal.order": "[\"PREDISPATCHSEQNO\",\"RUNNO\",\"LASTCHANGED\"]",
-    "utilake.temporal.origin": "derived",
-    "utilake.temporal.valid.column": "DATETIME",
-    "utilake.temporal.valid.kind": "interval_end",
-    "utilake.time": "DATETIME",
-    "utilake.visibility": "PUBLIC"
+    "phasor.declared": "true",
+    "phasor.format": "4",
+    "phasor.key": "[\"INTERCONNECTORID\",\"DATETIME\"]",
+    "phasor.load": "append",
+    "phasor.model-types": "{\"1\":\"VARCHAR(20)\",\"2\":\"NUMERIC(3,0)\",\"3\":\"VARCHAR(10)\",\"4\":\"VARCHAR(20)\",\"5\":\"NUMERIC(2,0)\",\"6\":\"TIMESTAMP(0)\",\"7\":\"NUMERIC(1,0)\",\"8\":\"NUMERIC(15,5)\",\"9\":\"NUMERIC(15,5)\",\"10\":\"NUMERIC(15,5)\",\"11\":\"NUMERIC(15,5)\",\"12\":\"NUMERIC(15,5)\",\"13\":\"NUMERIC(15,5)\",\"14\":\"NUMERIC(15,5)\",\"15\":\"NUMERIC(15,5)\",\"16\":\"NUMERIC(15,5)\",\"17\":\"NUMERIC(15,5)\",\"18\":\"NUMERIC(15,5)\",\"19\":\"NUMERIC(15,5)\",\"20\":\"NUMERIC(15,5)\",\"21\":\"NUMERIC(15,5)\",\"22\":\"NUMERIC(15,5)\",\"23\":\"NUMERIC(15,5)\",\"24\":\"NUMERIC(15,5)\",\"25\":\"NUMERIC(15,5)\",\"26\":\"NUMERIC(15,5)\",\"27\":\"NUMERIC(15,5)\",\"28\":\"NUMERIC(15,5)\",\"29\":\"NUMERIC(15,5)\",\"30\":\"NUMERIC(15,5)\",\"31\":\"NUMERIC(15,5)\",\"32\":\"NUMERIC(15,5)\",\"33\":\"NUMERIC(15,5)\",\"34\":\"NUMERIC(15,5)\",\"35\":\"NUMERIC(15,5)\",\"36\":\"NUMERIC(15,5)\",\"37\":\"NUMERIC(15,5)\",\"38\":\"NUMERIC(15,5)\",\"39\":\"NUMERIC(15,5)\",\"40\":\"NUMERIC(15,5)\",\"41\":\"NUMERIC(15,5)\",\"42\":\"NUMERIC(15,5)\",\"43\":\"NUMERIC(15,5)\",\"44\":\"NUMERIC(15,5)\",\"45\":\"NUMERIC(15,5)\",\"46\":\"NUMERIC(15,5)\",\"47\":\"NUMERIC(15,5)\",\"48\":\"NUMERIC(15,5)\",\"49\":\"NUMERIC(15,5)\",\"50\":\"NUMERIC(15,5)\",\"51\":\"TIMESTAMP(0)\"}",
+    "phasor.reports": "[[\"PREDISPATCH\",\"INTERCONNECTR_SENS\"]]",
+    "phasor.table": "PREDISPATCHINTERSENSITIVITIES",
+    "phasor.temporal.cutoff": "LASTCHANGED",
+    "phasor.temporal.entity": "[\"INTERCONNECTORID\",\"INTERVENTION\"]",
+    "phasor.temporal.order": "[\"PREDISPATCHSEQNO\",\"RUNNO\",\"LASTCHANGED\"]",
+    "phasor.temporal.origin": "derived",
+    "phasor.temporal.valid.column": "DATETIME",
+    "phasor.temporal.valid.kind": "interval_end",
+    "phasor.time": "DATETIME",
+    "phasor.visibility": "PUBLIC"
   },
   "refs": {
     "main": {
@@ -420,27 +420,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PREDISPATCHINTERSENSITIVITIES/metadata/snap-957959602401873367-1-3135c435-946a-89b1-9d1b-b2659e170225.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/PREDISPATCHINTERSENSITIVITIES/metadata/snap-957959602401873367-1-a16be815-d11a-8972-974c-d324bf9b4036.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 957959602401873367,
       "summary": {
         "operation": "append",
-        "utilake.files": "18829",
-        "utilake.from.file": "PUBLIC_DVD_PREDISPATCHINTERCONNECTR_SENS_D_200907010000.zip",
-        "utilake.from.release": "2009-07",
-        "utilake.from.sha256": "44539eb2dbd1be88df4d0e25d3424acce148a40d2632a20dc0d5556981bbd261",
-        "utilake.from.time": "2009-07-01T00:30:00+10:00",
-        "utilake.kinds": "[\"dvd\",\"reports\"]",
-        "utilake.report-subtype": "INTERCONNECTR_SENS",
-        "utilake.report-type": "PREDISPATCH",
-        "utilake.rows": "7861234",
-        "utilake.to.file": "PUBLIC_PREDISPATCH_SENSITIVITIES_20261024113423_0000000544594813.zip",
-        "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "7e70f874f03bd010270631d3bc235085bb030156f733ebbe31f5ff859993af2b",
-        "utilake.to.time": "2026-10-25T04:00:00+10:00",
-        "utilake.total-rows": "7861234",
-        "utilake.version": "1"
+        "phasor.files": "18829",
+        "phasor.from.file": "PUBLIC_DVD_PREDISPATCHINTERCONNECTR_SENS_D_200907010000.zip",
+        "phasor.from.release": "2009-07",
+        "phasor.from.sha256": "44539eb2dbd1be88df4d0e25d3424acce148a40d2632a20dc0d5556981bbd261",
+        "phasor.from.time": "2009-07-01T00:30:00+10:00",
+        "phasor.kinds": "[\"dvd\",\"reports\"]",
+        "phasor.report-subtype": "INTERCONNECTR_SENS",
+        "phasor.report-type": "PREDISPATCH",
+        "phasor.rows": "7861234",
+        "phasor.to.file": "PUBLIC_PREDISPATCH_SENSITIVITIES_20261024113423_0000000544594813.zip",
+        "phasor.to.release": "2026-10",
+        "phasor.to.sha256": "7e70f874f03bd010270631d3bc235085bb030156f733ebbe31f5ff859993af2b",
+        "phasor.to.time": "2026-10-25T04:00:00+10:00",
+        "phasor.total-rows": "7861234",
+        "phasor.version": "1"
       },
       "timestamp-ms": 1246370400000
     }
@@ -451,5 +451,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "3135c435-946a-89b1-9d1b-b2659e170225"
+  "table-uuid": "a16be815-d11a-8972-974c-d324bf9b4036"
 }

@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1246370400000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/STATIONOPERATINGSTATUS",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/STATIONOPERATINGSTATUS",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -19,21 +19,21 @@
   ],
   "properties": {
     "comment": "STATIONOPERATINGSTATUS sets out the operating status of each station.",
-    "utilake.declared": "true",
-    "utilake.format": "4",
-    "utilake.key": "[\"EFFECTIVEDATE\",\"STATIONID\",\"VERSIONNO\"]",
-    "utilake.load": "snapshot",
-    "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"VARCHAR(10)\",\"3\":\"NUMERIC(3,0)\",\"4\":\"VARCHAR(20)\",\"5\":\"VARCHAR(15)\",\"6\":\"TIMESTAMP(0)\",\"7\":\"TIMESTAMP(0)\"}",
-    "utilake.package": "PARTICIPANT_REGISTRATION",
-    "utilake.reports": "[[\"PARTICIPANT_REGISTRATION\",\"STATIONOPERATINGSTATUS\"]]",
-    "utilake.table": "STATIONOPERATINGSTATUS",
-    "utilake.temporal.cutoff": "LASTCHANGED",
-    "utilake.temporal.entity": "[\"STATIONID\"]",
-    "utilake.temporal.order": "[\"VERSIONNO\",\"LASTCHANGED\"]",
-    "utilake.temporal.origin": "derived",
-    "utilake.temporal.valid.column": "EFFECTIVEDATE",
-    "utilake.temporal.valid.kind": "from",
-    "utilake.visibility": "PUBLIC"
+    "phasor.declared": "true",
+    "phasor.format": "4",
+    "phasor.key": "[\"EFFECTIVEDATE\",\"STATIONID\",\"VERSIONNO\"]",
+    "phasor.load": "snapshot",
+    "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"VARCHAR(10)\",\"3\":\"NUMERIC(3,0)\",\"4\":\"VARCHAR(20)\",\"5\":\"VARCHAR(15)\",\"6\":\"TIMESTAMP(0)\",\"7\":\"TIMESTAMP(0)\"}",
+    "phasor.package": "PARTICIPANT_REGISTRATION",
+    "phasor.reports": "[[\"PARTICIPANT_REGISTRATION\",\"STATIONOPERATINGSTATUS\"]]",
+    "phasor.table": "STATIONOPERATINGSTATUS",
+    "phasor.temporal.cutoff": "LASTCHANGED",
+    "phasor.temporal.entity": "[\"STATIONID\"]",
+    "phasor.temporal.order": "[\"VERSIONNO\",\"LASTCHANGED\"]",
+    "phasor.temporal.origin": "derived",
+    "phasor.temporal.valid.column": "EFFECTIVEDATE",
+    "phasor.temporal.valid.kind": "from",
+    "phasor.visibility": "PUBLIC"
   },
   "refs": {
     "main": {
@@ -113,27 +113,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/STATIONOPERATINGSTATUS/metadata/snap-6230296812430164719-1-1cadceb8-aba8-80ae-839c-31c157cde73b.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/STATIONOPERATINGSTATUS/metadata/snap-6230296812430164719-1-be2c1f61-85dd-8953-8281-7bd6fa67e73d.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 6230296812430164719,
       "summary": {
         "operation": "append",
-        "utilake.files": "207",
-        "utilake.from.file": "PUBLIC_DVD_STATIONOPERATINGSTATUS_200907010000.zip",
-        "utilake.from.release": "2009-07",
-        "utilake.from.sha256": "44539eb2dbd1be88df4d0e25d3424acce148a40d2632a20dc0d5556981bbd261",
-        "utilake.from.time": "1998-10-25T00:00:00+10:00",
-        "utilake.kinds": "[\"archive\",\"dvd\"]",
-        "utilake.report-subtype": "STATIONOPERATINGSTATUS",
-        "utilake.report-type": "PARTICIPANT_REGISTRATION",
-        "utilake.rows": "236629",
-        "utilake.to.file": "PUBLIC_ARCHIVE#STATIONOPERATINGSTATUS#FILE01#202609010000.zip",
-        "utilake.to.release": "2026-09",
-        "utilake.to.sha256": "9de16721af1a348a6cb1caa3cc845bcf3c83164886705979a452bab266c9e4ef",
-        "utilake.to.time": "2026-10-09T00:00:00+10:00",
-        "utilake.total-rows": "236629",
-        "utilake.version": "1"
+        "phasor.files": "207",
+        "phasor.from.file": "PUBLIC_DVD_STATIONOPERATINGSTATUS_200907010000.zip",
+        "phasor.from.release": "2009-07",
+        "phasor.from.sha256": "44539eb2dbd1be88df4d0e25d3424acce148a40d2632a20dc0d5556981bbd261",
+        "phasor.from.time": "1998-10-25T00:00:00+10:00",
+        "phasor.kinds": "[\"archive\",\"dvd\"]",
+        "phasor.report-subtype": "STATIONOPERATINGSTATUS",
+        "phasor.report-type": "PARTICIPANT_REGISTRATION",
+        "phasor.rows": "236629",
+        "phasor.to.file": "PUBLIC_ARCHIVE#STATIONOPERATINGSTATUS#FILE01#202609010000.zip",
+        "phasor.to.release": "2026-09",
+        "phasor.to.sha256": "9de16721af1a348a6cb1caa3cc845bcf3c83164886705979a452bab266c9e4ef",
+        "phasor.to.time": "2026-10-09T00:00:00+10:00",
+        "phasor.total-rows": "236629",
+        "phasor.version": "1"
       },
       "timestamp-ms": 1246370400000
     }
@@ -144,5 +144,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "1cadceb8-aba8-80ae-839c-31c157cde73b"
+  "table-uuid": "be2c1f61-85dd-8953-8281-7bd6fa67e73d"
 }

@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1256997600000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MARKET_PRICE_THRESHOLDS",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/MARKET_PRICE_THRESHOLDS",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -19,21 +19,21 @@
   ],
   "properties": {
     "comment": "MARKET_PRICE_THRESHOLDS sets out the market cap , floor and administered price thresholds applying to the electricity market",
-    "utilake.declared": "true",
-    "utilake.format": "4",
-    "utilake.key": "[\"EFFECTIVEDATE\",\"VERSIONNO\"]",
-    "utilake.load": "snapshot",
-    "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(4,0)\",\"3\":\"NUMERIC(15,5)\",\"4\":\"NUMERIC(15,5)\",\"5\":\"NUMERIC(15,5)\",\"6\":\"TIMESTAMP(0)\",\"7\":\"VARCHAR(15)\",\"8\":\"TIMESTAMP(0)\"}",
-    "utilake.package": "MARKET_CONFIG",
-    "utilake.reports": "[[\"MARKET_CONFIG\",\"MARKET_PRICE_THRESHOLDS\"]]",
-    "utilake.table": "MARKET_PRICE_THRESHOLDS",
-    "utilake.temporal.cutoff": "LASTCHANGED",
-    "utilake.temporal.entity": "[]",
-    "utilake.temporal.order": "[\"VERSIONNO\",\"LASTCHANGED\"]",
-    "utilake.temporal.origin": "derived",
-    "utilake.temporal.valid.column": "EFFECTIVEDATE",
-    "utilake.temporal.valid.kind": "from",
-    "utilake.visibility": "PUBLIC"
+    "phasor.declared": "true",
+    "phasor.format": "4",
+    "phasor.key": "[\"EFFECTIVEDATE\",\"VERSIONNO\"]",
+    "phasor.load": "snapshot",
+    "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(4,0)\",\"3\":\"NUMERIC(15,5)\",\"4\":\"NUMERIC(15,5)\",\"5\":\"NUMERIC(15,5)\",\"6\":\"TIMESTAMP(0)\",\"7\":\"VARCHAR(15)\",\"8\":\"TIMESTAMP(0)\"}",
+    "phasor.package": "MARKET_CONFIG",
+    "phasor.reports": "[[\"MARKET_CONFIG\",\"MARKET_PRICE_THRESHOLDS\"]]",
+    "phasor.table": "MARKET_PRICE_THRESHOLDS",
+    "phasor.temporal.cutoff": "LASTCHANGED",
+    "phasor.temporal.entity": "[]",
+    "phasor.temporal.order": "[\"VERSIONNO\",\"LASTCHANGED\"]",
+    "phasor.temporal.origin": "derived",
+    "phasor.temporal.valid.column": "EFFECTIVEDATE",
+    "phasor.temporal.valid.kind": "from",
+    "phasor.visibility": "PUBLIC"
   },
   "refs": {
     "main": {
@@ -119,27 +119,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MARKET_PRICE_THRESHOLDS/metadata/snap-44002907277495660-1-a01a43ce-3b31-8582-a8d0-14a3920577c2.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/MARKET_PRICE_THRESHOLDS/metadata/snap-44002907277495660-1-b6dc85ae-fa58-8421-9f1f-3f7e2a238394.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 44002907277495660,
       "summary": {
         "operation": "append",
-        "utilake.files": "203",
-        "utilake.from.file": "PUBLIC_DVD_MARKET_PRICE_THRESHOLDS_200911010000.zip",
-        "utilake.from.release": "2009-11",
-        "utilake.from.sha256": "8f91e576b2516bb624e724efdcad603438a749cf2ba6b611377dd3862bbbf0fb",
-        "utilake.from.time": "1997-11-04T00:00:00+10:00",
-        "utilake.kinds": "[\"archive\",\"dvd\"]",
-        "utilake.report-subtype": "MARKET_PRICE_THRESHOLDS",
-        "utilake.report-type": "MARKET_CONFIG",
-        "utilake.rows": "1985",
-        "utilake.to.file": "PUBLIC_ARCHIVE#MARKET_PRICE_THRESHOLDS#FILE01#202609010000.zip",
-        "utilake.to.release": "2026-09",
-        "utilake.to.sha256": "d849ceba61fe2be80971e351d2ddad1f0c08529f10321b7178548ca91bb425ec",
-        "utilake.to.time": "2026-07-01T00:00:00+10:00",
-        "utilake.total-rows": "1985",
-        "utilake.version": "1"
+        "phasor.files": "203",
+        "phasor.from.file": "PUBLIC_DVD_MARKET_PRICE_THRESHOLDS_200911010000.zip",
+        "phasor.from.release": "2009-11",
+        "phasor.from.sha256": "8f91e576b2516bb624e724efdcad603438a749cf2ba6b611377dd3862bbbf0fb",
+        "phasor.from.time": "1997-11-04T00:00:00+10:00",
+        "phasor.kinds": "[\"archive\",\"dvd\"]",
+        "phasor.report-subtype": "MARKET_PRICE_THRESHOLDS",
+        "phasor.report-type": "MARKET_CONFIG",
+        "phasor.rows": "1985",
+        "phasor.to.file": "PUBLIC_ARCHIVE#MARKET_PRICE_THRESHOLDS#FILE01#202609010000.zip",
+        "phasor.to.release": "2026-09",
+        "phasor.to.sha256": "d849ceba61fe2be80971e351d2ddad1f0c08529f10321b7178548ca91bb425ec",
+        "phasor.to.time": "2026-07-01T00:00:00+10:00",
+        "phasor.total-rows": "1985",
+        "phasor.version": "1"
       },
       "timestamp-ms": 1256997600000
     }
@@ -150,5 +150,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "a01a43ce-3b31-8582-a8d0-14a3920577c2"
+  "table-uuid": "b6dc85ae-fa58-8421-9f1f-3f7e2a238394"
 }

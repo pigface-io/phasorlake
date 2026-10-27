@@ -1,4 +1,4 @@
-# utilake
+# phasor
 
 Rust workspace: AEMO market data into a local Parquet lake. Run tools only
 through `just` (`just --list`). Rules a hook or CI enforces, and a map of

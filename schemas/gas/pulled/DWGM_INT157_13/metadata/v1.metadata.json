@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1777557600000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/DWGM_INT157_13",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/gas/DWGM_INT157_13",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -18,20 +18,20 @@
     }
   ],
   "properties": {
-    "utilake.declared": "true",
-    "utilake.format": "4",
-    "utilake.headers": "{\"1\":\"int157\"}",
-    "utilake.key": "[]",
-    "utilake.load": "append",
-    "utilake.market": "gas",
-    "utilake.offset": "+10:00",
-    "utilake.reports": "[[\"DWGM\",\"INT157_13\"]]",
-    "utilake.table": "DWGM_INT157_13",
-    "utilake.temporal.entity": "[]",
-    "utilake.temporal.order": "[]",
-    "utilake.temporal.origin": "hand",
-    "utilake.temporal.valid.kind": "timeless",
-    "utilake.visibility": "PUBLIC"
+    "phasor.declared": "true",
+    "phasor.format": "4",
+    "phasor.headers": "{\"1\":\"int157\"}",
+    "phasor.key": "[]",
+    "phasor.load": "append",
+    "phasor.market": "gas",
+    "phasor.offset": "+10:00",
+    "phasor.reports": "[[\"DWGM\",\"INT157_13\"]]",
+    "phasor.table": "DWGM_INT157_13",
+    "phasor.temporal.entity": "[]",
+    "phasor.temporal.order": "[]",
+    "phasor.temporal.origin": "hand",
+    "phasor.temporal.valid.kind": "timeless",
+    "phasor.visibility": "PUBLIC"
   },
   "refs": {
     "main": {
@@ -64,25 +64,25 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/DWGM_INT157_13/metadata/snap-2576567031203778253-1-008a1cd8-3574-8d14-ab80-de02e92c11a1.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/gas/DWGM_INT157_13/metadata/snap-2576567031203778253-1-a447c10b-b41c-83e2-b53a-b4ff4013b3c3.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 2576567031203778253,
       "summary": {
         "operation": "append",
-        "utilake.files": "1",
-        "utilake.from.file": "int157_13.csv",
-        "utilake.from.release": "2026-05",
-        "utilake.from.sha256": "794f67574a1ec184923576af272a91fb5eb2babfbda295ee045a8ce6bd53d318",
-        "utilake.kinds": "[\"dwgm\"]",
-        "utilake.report-subtype": "INT157_13",
-        "utilake.report-type": "DWGM",
-        "utilake.rows": "36",
-        "utilake.to.file": "int157_13.csv",
-        "utilake.to.release": "2026-05",
-        "utilake.to.sha256": "794f67574a1ec184923576af272a91fb5eb2babfbda295ee045a8ce6bd53d318",
-        "utilake.total-rows": "36",
-        "utilake.version": "1"
+        "phasor.files": "1",
+        "phasor.from.file": "int157_13.csv",
+        "phasor.from.release": "2026-05",
+        "phasor.from.sha256": "794f67574a1ec184923576af272a91fb5eb2babfbda295ee045a8ce6bd53d318",
+        "phasor.kinds": "[\"dwgm\"]",
+        "phasor.report-subtype": "INT157_13",
+        "phasor.report-type": "DWGM",
+        "phasor.rows": "36",
+        "phasor.to.file": "int157_13.csv",
+        "phasor.to.release": "2026-05",
+        "phasor.to.sha256": "794f67574a1ec184923576af272a91fb5eb2babfbda295ee045a8ce6bd53d318",
+        "phasor.total-rows": "36",
+        "phasor.version": "1"
       },
       "timestamp-ms": 1777557600000
     }
@@ -93,5 +93,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "008a1cd8-3574-8d14-ab80-de02e92c11a1"
+  "table-uuid": "a447c10b-b41c-83e2-b53a-b4ff4013b3c3"
 }

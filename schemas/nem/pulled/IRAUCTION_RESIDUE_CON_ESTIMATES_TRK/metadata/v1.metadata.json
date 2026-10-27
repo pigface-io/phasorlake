@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1251727200000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/IRAUCTION_RESIDUE_CON_ESTIMATES_TRK",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/IRAUCTION_RESIDUE_CON_ESTIMATES_TRK",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -18,9 +18,9 @@
     }
   ],
   "properties": {
-    "utilake.declared": "false",
-    "utilake.format": "4",
-    "utilake.table": "IRAUCTION_RESIDUE_CON_ESTIMATES_TRK"
+    "phasor.declared": "false",
+    "phasor.format": "4",
+    "phasor.table": "IRAUCTION_RESIDUE_CON_ESTIMATES_TRK"
   },
   "refs": {
     "main": {
@@ -83,27 +83,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/IRAUCTION_RESIDUE_CON_ESTIMATES_TRK/metadata/snap-86404498694401553-1-b70368ba-0b18-8e62-bd76-78ada53ad1b6.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/IRAUCTION_RESIDUE_CON_ESTIMATES_TRK/metadata/snap-86404498694401553-1-8beb32ae-f420-8fe5-8890-176667b295ac.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 86404498694401553,
       "summary": {
         "operation": "append",
-        "utilake.files": "4",
-        "utilake.from.file": "PUBLIC_DVD_RESIDUE_CON_ESTIMATES_TRK_200909010000.zip",
-        "utilake.from.release": "2009-09",
-        "utilake.from.sha256": "9cf326f7fabd7b91220c5950a2de3fdb28d9c7b97f1a4045f8075ad7b3abaaf5",
-        "utilake.from.time": "2009-09-02T15:18:19+10:00",
-        "utilake.kinds": "[\"dvd\"]",
-        "utilake.report-subtype": "RESIDUE_CON_ESTIMATES_TRK",
-        "utilake.report-type": "IRAUCTION",
-        "utilake.rows": "24",
-        "utilake.to.file": "PUBLIC_DVD_RESIDUE_CON_ESTIMATES_TRK_201006010000.zip",
-        "utilake.to.release": "2010-06",
-        "utilake.to.sha256": "a6b6fe1da573ef98e93af04e81c9e9961f718e863e9792329004446acadb73b1",
-        "utilake.to.time": "2010-06-01T11:55:14+10:00",
-        "utilake.total-rows": "24",
-        "utilake.version": "1"
+        "phasor.files": "4",
+        "phasor.from.file": "PUBLIC_DVD_RESIDUE_CON_ESTIMATES_TRK_200909010000.zip",
+        "phasor.from.release": "2009-09",
+        "phasor.from.sha256": "9cf326f7fabd7b91220c5950a2de3fdb28d9c7b97f1a4045f8075ad7b3abaaf5",
+        "phasor.from.time": "2009-09-02T15:18:19+10:00",
+        "phasor.kinds": "[\"dvd\"]",
+        "phasor.report-subtype": "RESIDUE_CON_ESTIMATES_TRK",
+        "phasor.report-type": "IRAUCTION",
+        "phasor.rows": "24",
+        "phasor.to.file": "PUBLIC_DVD_RESIDUE_CON_ESTIMATES_TRK_201006010000.zip",
+        "phasor.to.release": "2010-06",
+        "phasor.to.sha256": "a6b6fe1da573ef98e93af04e81c9e9961f718e863e9792329004446acadb73b1",
+        "phasor.to.time": "2010-06-01T11:55:14+10:00",
+        "phasor.total-rows": "24",
+        "phasor.version": "1"
       },
       "timestamp-ms": 1251727200000
     }
@@ -114,5 +114,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "b70368ba-0b18-8e62-bd76-78ada53ad1b6"
+  "table-uuid": "8beb32ae-f420-8fe5-8890-176667b295ac"
 }

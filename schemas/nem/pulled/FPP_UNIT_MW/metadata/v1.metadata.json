@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 2,
   "last-updated-ms": 1777557600001,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/FPP_UNIT_MW",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/FPP_UNIT_MW",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -19,10 +19,10 @@
   ],
   "properties": {
     "comment": "This report delivers the curated 4 second measurement MW data for each FPP unit",
-    "utilake.declared": "false",
-    "utilake.format": "4",
-    "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"VARCHAR(20)\",\"4\":\"NUMERIC(5)\",\"5\":\"NUMERIC(18,8)\",\"6\":\"NUMERIC(5)\",\"7\":\"NUMERIC(18,5)\",\"8\":\"NUMERIC(18,5)\",\"9\":\"VARCHAR(20)\",\"10\":\"TIMESTAMP(0)\"}",
-    "utilake.table": "FPP_UNIT_MW"
+    "phasor.declared": "false",
+    "phasor.format": "4",
+    "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"VARCHAR(20)\",\"4\":\"NUMERIC(5)\",\"5\":\"NUMERIC(18,8)\",\"6\":\"NUMERIC(5)\",\"7\":\"NUMERIC(18,5)\",\"8\":\"NUMERIC(18,5)\",\"9\":\"VARCHAR(20)\",\"10\":\"TIMESTAMP(0)\"}",
+    "phasor.table": "FPP_UNIT_MW"
   },
   "refs": {
     "main": {
@@ -193,55 +193,55 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/FPP_UNIT_MW/metadata/snap-6956031886931787527-1-33c51bbc-ba10-8d7c-89ac-112800d03072.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/FPP_UNIT_MW/metadata/snap-6956031886931787527-1-27f39204-b092-8fef-9741-564c26454f51.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 6956031886931787527,
       "summary": {
         "operation": "append",
-        "utilake.files": "475",
-        "utilake.from.file": "PUBLIC_ARCHIVE#FPP_UNIT_MW#FILE01#202412010000.zip",
-        "utilake.from.release": "2024-12",
-        "utilake.from.sha256": "25794837d1142f76699834325b7c455b9bde9bef629bfe4776b0f78a28e39f61",
-        "utilake.from.time": "2025-01-07T00:05:00+10:00",
-        "utilake.kinds": "[\"archive\",\"reports\"]",
-        "utilake.report-subtype": "UNIT_MW",
-        "utilake.report-type": "FPP",
-        "utilake.rows": "2381518275",
-        "utilake.to.file": "PUBLIC_NEXT_DAY_FPPMW_2_20260508.zip",
-        "utilake.to.release": "2026-05",
-        "utilake.to.sha256": "a1924147c7ba759d57e06c1b02523207aa7194e9d7242cc463bb9ae1cc381fc2",
-        "utilake.to.time": "2026-05-14T04:00:00+10:00",
-        "utilake.total-rows": "2381518275",
-        "utilake.version": "1"
+        "phasor.files": "475",
+        "phasor.from.file": "PUBLIC_ARCHIVE#FPP_UNIT_MW#FILE01#202412010000.zip",
+        "phasor.from.release": "2024-12",
+        "phasor.from.sha256": "25794837d1142f76699834325b7c455b9bde9bef629bfe4776b0f78a28e39f61",
+        "phasor.from.time": "2025-01-07T00:05:00+10:00",
+        "phasor.kinds": "[\"archive\",\"reports\"]",
+        "phasor.report-subtype": "UNIT_MW",
+        "phasor.report-type": "FPP",
+        "phasor.rows": "2381518275",
+        "phasor.to.file": "PUBLIC_NEXT_DAY_FPPMW_2_20260508.zip",
+        "phasor.to.release": "2026-05",
+        "phasor.to.sha256": "a1924147c7ba759d57e06c1b02523207aa7194e9d7242cc463bb9ae1cc381fc2",
+        "phasor.to.time": "2026-05-14T04:00:00+10:00",
+        "phasor.total-rows": "2381518275",
+        "phasor.version": "1"
       },
       "timestamp-ms": 1732975200000
     },
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/FPP_UNIT_MW/metadata/snap-6288826481642971286-2-33c51bbc-ba10-8d7c-89ac-112800d03072.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/FPP_UNIT_MW/metadata/snap-6288826481642971286-2-27f39204-b092-8fef-9741-564c26454f51.avro",
       "parent-snapshot-id": 6956031886931787527,
       "schema-id": 1,
       "sequence-number": 2,
       "snapshot-id": 6288826481642971286,
       "summary": {
         "operation": "append",
-        "utilake.files": "324",
-        "utilake.from.file": "PUBLIC_NEXT_DAY_FPPMW_20260510.zip",
-        "utilake.from.release": "2026-05",
-        "utilake.from.sha256": "76c7241874988a15246af0f336c31f9699ddfc2a60a2644db2728f85f67819ae",
-        "utilake.from.time": "2026-05-14T04:05:00+10:00",
-        "utilake.kinds": "[\"reports\"]",
-        "utilake.report-subtype": "UNIT_MW",
-        "utilake.report-type": "FPP",
-        "utilake.rows": "1682641125",
-        "utilake.to.file": "PUBLIC_NEXT_DAY_FPPMW_2_20261024070052_0000000544560440.zip",
-        "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "fb69636cca7b8a5cb0a77a45400fc8b8adab0aa085026014389a5ed0bc6b3385",
-        "utilake.to.time": "2026-10-24T04:00:00+10:00",
-        "utilake.total-rows": "4064159400",
-        "utilake.version": "1"
+        "phasor.files": "324",
+        "phasor.from.file": "PUBLIC_NEXT_DAY_FPPMW_20260510.zip",
+        "phasor.from.release": "2026-05",
+        "phasor.from.sha256": "76c7241874988a15246af0f336c31f9699ddfc2a60a2644db2728f85f67819ae",
+        "phasor.from.time": "2026-05-14T04:05:00+10:00",
+        "phasor.kinds": "[\"reports\"]",
+        "phasor.report-subtype": "UNIT_MW",
+        "phasor.report-type": "FPP",
+        "phasor.rows": "1682641125",
+        "phasor.to.file": "PUBLIC_NEXT_DAY_FPPMW_2_20261024070052_0000000544560440.zip",
+        "phasor.to.release": "2026-10",
+        "phasor.to.sha256": "fb69636cca7b8a5cb0a77a45400fc8b8adab0aa085026014389a5ed0bc6b3385",
+        "phasor.to.time": "2026-10-24T04:00:00+10:00",
+        "phasor.total-rows": "4064159400",
+        "phasor.version": "1"
       },
       "timestamp-ms": 1777557600001
     }
@@ -252,5 +252,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "33c51bbc-ba10-8d7c-89ac-112800d03072"
+  "table-uuid": "27f39204-b092-8fef-9741-564c26454f51"
 }

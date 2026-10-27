@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1246370400000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MTPASA_INTERCONNECTORSOLUTION",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/MTPASA_INTERCONNECTORSOLUTION",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -19,10 +19,10 @@
   ],
   "properties": {
     "comment": "MTPASA_INTERCONNECTORSOLUTION is obsolete from 2017 End of Year DM4.27 Release. \nThe MTPASA_INTERCONNECTORSOLUTION table shows the results of the capacity evaluation for Interconnectors, including the calculated limits for the ldcblock within the day.\nChange Notice 379 announced the replacement of the MT PASA data model so all MTPASAxxx tables become obsolete, replaced by MTPASA_xxx tables (see Change Notices 400, 400a and 400b).",
-    "utilake.declared": "false",
-    "utilake.format": "4",
-    "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(3,0)\",\"3\":\"TIMESTAMP(0)\",\"4\":\"TIMESTAMP(0)\",\"5\":\"NUMERIC(3,0)\",\"6\":\"VARCHAR(10)\",\"7\":\"NUMERIC(12,2)\",\"8\":\"NUMERIC(12,2)\",\"9\":\"NUMERIC(12,2)\",\"10\":\"NUMERIC(12,2)\",\"11\":\"NUMERIC(12,2)\",\"12\":\"TIMESTAMP(0)\",\"13\":\"VARCHAR(20)\",\"14\":\"VARCHAR(20)\",\"15\":\"VARCHAR(20)\"}",
-    "utilake.table": "MTPASA_INTERCONNECTORSOLUTION"
+    "phasor.declared": "false",
+    "phasor.format": "4",
+    "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(3,0)\",\"3\":\"TIMESTAMP(0)\",\"4\":\"TIMESTAMP(0)\",\"5\":\"NUMERIC(3,0)\",\"6\":\"VARCHAR(10)\",\"7\":\"NUMERIC(12,2)\",\"8\":\"NUMERIC(12,2)\",\"9\":\"NUMERIC(12,2)\",\"10\":\"NUMERIC(12,2)\",\"11\":\"NUMERIC(12,2)\",\"12\":\"TIMESTAMP(0)\",\"13\":\"VARCHAR(20)\",\"14\":\"VARCHAR(20)\",\"15\":\"VARCHAR(20)\"}",
+    "phasor.table": "MTPASA_INTERCONNECTORSOLUTION"
   },
   "refs": {
     "main": {
@@ -154,27 +154,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MTPASA_INTERCONNECTORSOLUTION/metadata/snap-1697330553706654948-1-1b3380df-8ccb-8f01-bedc-fd47f6dc1bb5.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/MTPASA_INTERCONNECTORSOLUTION/metadata/snap-1697330553706654948-1-5079fea8-bfcf-84a6-8b62-d6ea5fb2dff4.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 1697330553706654948,
       "summary": {
         "operation": "append",
-        "utilake.files": "107",
-        "utilake.from.file": "PUBLIC_DVD_MTPASA_INTERCONNECTORSOLUTION_200907010000.zip",
-        "utilake.from.release": "2009-07",
-        "utilake.from.sha256": "44539eb2dbd1be88df4d0e25d3424acce148a40d2632a20dc0d5556981bbd261",
-        "utilake.from.time": "2009-07-12T00:00:00+10:00",
-        "utilake.kinds": "[\"dvd\"]",
-        "utilake.report-subtype": "INTERCONNECTORSOLUTION",
-        "utilake.report-type": "MTPASA",
-        "utilake.rows": "8258670",
-        "utilake.to.file": "PUBLIC_DVD_MTPASA_INTERCONNECTORSOLUTION_201805010000.zip",
-        "utilake.to.release": "2018-05",
-        "utilake.to.sha256": "1fa0300564aaecab7810ac015c20dda17c67c3874ecbe38778c7a7710e17219a",
-        "utilake.to.time": "2020-05-23T00:00:00+10:00",
-        "utilake.total-rows": "8258670",
-        "utilake.version": "1"
+        "phasor.files": "107",
+        "phasor.from.file": "PUBLIC_DVD_MTPASA_INTERCONNECTORSOLUTION_200907010000.zip",
+        "phasor.from.release": "2009-07",
+        "phasor.from.sha256": "44539eb2dbd1be88df4d0e25d3424acce148a40d2632a20dc0d5556981bbd261",
+        "phasor.from.time": "2009-07-12T00:00:00+10:00",
+        "phasor.kinds": "[\"dvd\"]",
+        "phasor.report-subtype": "INTERCONNECTORSOLUTION",
+        "phasor.report-type": "MTPASA",
+        "phasor.rows": "8258670",
+        "phasor.to.file": "PUBLIC_DVD_MTPASA_INTERCONNECTORSOLUTION_201805010000.zip",
+        "phasor.to.release": "2018-05",
+        "phasor.to.sha256": "1fa0300564aaecab7810ac015c20dda17c67c3874ecbe38778c7a7710e17219a",
+        "phasor.to.time": "2020-05-23T00:00:00+10:00",
+        "phasor.total-rows": "8258670",
+        "phasor.version": "1"
       },
       "timestamp-ms": 1246370400000
     }
@@ -185,5 +185,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "1b3380df-8ccb-8f01-bedc-fd47f6dc1bb5"
+  "table-uuid": "5079fea8-bfcf-84a6-8b62-d6ea5fb2dff4"
 }

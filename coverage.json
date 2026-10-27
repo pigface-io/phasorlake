@@ -1,26 +1,26 @@
 {
   "exclude": [
     "crates/xtask/",
-    "crates/utilake-bench/",
-    "crates/utilake-cli/src/main.rs",
-    "crates/utilake-e2e/"
+    "crates/phasor-bench/",
+    "crates/phasor-cli/src/main.rs",
+    "crates/phasor-e2e/"
   ],
   "floors": {
-    "crates/utilake-core/src": 96,
-    "crates/utilake-iceberg-store/src": 100,
-    "crates/utilake-registry/src": 97,
-    "crates/utilake-registry/src/file_model": 100,
-    "crates/utilake-mms-decode/src": 90,
-    "crates/utilake-mms-conform/src": 90,
-    "crates/utilake-acquire/src": 100,
-    "crates/utilake-kit/src": 98,
-    "crates/utilake-nem/src": 96,
-    "crates/utilake-wem/src": 96,
-    "crates/utilake-gas/src": 100,
-    "crates/utilake-writer/src": 94,
-    "crates/utilake-pipeline/src": 83,
-    "crates/utilake-cli/src": 78,
-    "crates/utilake-mirror/src": 100,
-    "crates/utilake-net/src": 100
+    "crates/phasor-core/src": 96,
+    "crates/phasor-iceberg-store/src": 100,
+    "crates/phasor-registry/src": 97,
+    "crates/phasor-registry/src/file_model": 100,
+    "crates/phasor-mms-decode/src": 90,
+    "crates/phasor-mms-conform/src": 90,
+    "crates/phasor-acquire/src": 100,
+    "crates/phasor-kit/src": 98,
+    "crates/phasor-nem/src": 96,
+    "crates/phasor-wem/src": 96,
+    "crates/phasor-gas/src": 100,
+    "crates/phasor-writer/src": 94,
+    "crates/phasor-pipeline/src": 83,
+    "crates/phasor-cli/src": 78,
+    "crates/phasor-mirror/src": 100,
+    "crates/phasor-net/src": 100
   }
 }

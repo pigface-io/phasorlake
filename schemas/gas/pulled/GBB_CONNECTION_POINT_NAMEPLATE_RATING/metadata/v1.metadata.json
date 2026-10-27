@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1790776800000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GBB_CONNECTION_POINT_NAMEPLATE_RATING",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/gas/GBB_CONNECTION_POINT_NAMEPLATE_RATING",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -19,25 +19,25 @@
   ],
   "properties": {
     "comment": "Provide details of the gate station capacity on a particular day.",
-    "utilake.declared": "true",
-    "utilake.format": "4",
-    "utilake.headers": "{\"1\":\"ConnectionPointId\",\"2\":\"ConnectionPointName\",\"3\":\"EffectiveDate\",\"4\":\"CapacityQuantity\",\"5\":\"Description\",\"6\":\"FacilityName\",\"7\":\"FacilityId\",\"8\":\"FacilityType\",\"9\":\"OperatorId\",\"10\":\"OperatorName\",\"11\":\"OwnerId\",\"12\":\"OwnerName\",\"13\":\"LastUpdated\"}",
-    "utilake.key": "[]",
-    "utilake.load": "append",
-    "utilake.market": "gas",
-    "utilake.model": "[\"GAS_CONNECTIONPOINT_CAPACITY\",\"GAS_FACILITY\"]",
-    "utilake.model-types": "{\"1\":\"NUMBER(10,0)\",\"3\":\"DATE\",\"4\":\"NUMBER(18,3)\",\"5\":\"VARCHAR2(255)\",\"6\":\"VARCHAR2(100)\",\"7\":\"NUMBER(10,0)\",\"8\":\"VARCHAR2(40)\"}",
-    "utilake.offset": "+10:00",
-    "utilake.reports": "[[\"GBB\",\"CONNECTION_POINT_NAMEPLATE_RATING_FUTURE\"]]",
-    "utilake.table": "GBB_CONNECTION_POINT_NAMEPLATE_RATING",
-    "utilake.temporal.cutoff": "LASTUPDATED",
-    "utilake.temporal.entity": "[\"CONNECTIONPOINTID\",\"FACILITYID\",\"OPERATORID\",\"OWNERID\"]",
-    "utilake.temporal.order": "[\"LASTUPDATED\"]",
-    "utilake.temporal.origin": "hand",
-    "utilake.temporal.valid.column": "EFFECTIVEDATE",
-    "utilake.temporal.valid.kind": "instant",
-    "utilake.time": "EFFECTIVEDATE",
-    "utilake.visibility": "PUBLIC"
+    "phasor.declared": "true",
+    "phasor.format": "4",
+    "phasor.headers": "{\"1\":\"ConnectionPointId\",\"2\":\"ConnectionPointName\",\"3\":\"EffectiveDate\",\"4\":\"CapacityQuantity\",\"5\":\"Description\",\"6\":\"FacilityName\",\"7\":\"FacilityId\",\"8\":\"FacilityType\",\"9\":\"OperatorId\",\"10\":\"OperatorName\",\"11\":\"OwnerId\",\"12\":\"OwnerName\",\"13\":\"LastUpdated\"}",
+    "phasor.key": "[]",
+    "phasor.load": "append",
+    "phasor.market": "gas",
+    "phasor.model": "[\"GAS_CONNECTIONPOINT_CAPACITY\",\"GAS_FACILITY\"]",
+    "phasor.model-types": "{\"1\":\"NUMBER(10,0)\",\"3\":\"DATE\",\"4\":\"NUMBER(18,3)\",\"5\":\"VARCHAR2(255)\",\"6\":\"VARCHAR2(100)\",\"7\":\"NUMBER(10,0)\",\"8\":\"VARCHAR2(40)\"}",
+    "phasor.offset": "+10:00",
+    "phasor.reports": "[[\"GBB\",\"CONNECTION_POINT_NAMEPLATE_RATING_FUTURE\"]]",
+    "phasor.table": "GBB_CONNECTION_POINT_NAMEPLATE_RATING",
+    "phasor.temporal.cutoff": "LASTUPDATED",
+    "phasor.temporal.entity": "[\"CONNECTIONPOINTID\",\"FACILITYID\",\"OPERATORID\",\"OWNERID\"]",
+    "phasor.temporal.order": "[\"LASTUPDATED\"]",
+    "phasor.temporal.origin": "hand",
+    "phasor.temporal.valid.column": "EFFECTIVEDATE",
+    "phasor.temporal.valid.kind": "instant",
+    "phasor.time": "EFFECTIVEDATE",
+    "phasor.visibility": "PUBLIC"
   },
   "refs": {
     "main": {
@@ -149,27 +149,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GBB_CONNECTION_POINT_NAMEPLATE_RATING/metadata/snap-3637937349011997105-1-2ed8369b-ff00-8ca6-aa29-68219b3bd0b9.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/gas/GBB_CONNECTION_POINT_NAMEPLATE_RATING/metadata/snap-3637937349011997105-1-e17c076b-04e8-8c7f-885e-2d3ce26785f9.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 3637937349011997105,
       "summary": {
         "operation": "append",
-        "utilake.files": "4",
-        "utilake.from.file": "GasBBConnectionPointNameplateRatingFuture.CSV",
-        "utilake.from.release": "2026-10",
-        "utilake.from.sha256": "b98e5729177035d35e422a1a268e3ec7537c03483eaab0cb327036be73800f51",
-        "utilake.from.time": "2019-02-01T00:00:00+10:00",
-        "utilake.kinds": "[\"gbb\"]",
-        "utilake.report-subtype": "CONNECTION_POINT_NAMEPLATE_RATING_FUTURE",
-        "utilake.report-type": "GBB",
-        "utilake.rows": "1017",
-        "utilake.to.file": "GasBBConnectionPointNameplateRatingFuture.CSV@20261024T045100+1000",
-        "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "8c2723323943212988fb2d4ca68c1a4c023dca184ddf5aba04f83a88154d4ac3",
-        "utilake.to.time": "2026-11-01T00:00:00+10:00",
-        "utilake.total-rows": "1017",
-        "utilake.version": "1"
+        "phasor.files": "4",
+        "phasor.from.file": "GasBBConnectionPointNameplateRatingFuture.CSV",
+        "phasor.from.release": "2026-10",
+        "phasor.from.sha256": "b98e5729177035d35e422a1a268e3ec7537c03483eaab0cb327036be73800f51",
+        "phasor.from.time": "2019-02-01T00:00:00+10:00",
+        "phasor.kinds": "[\"gbb\"]",
+        "phasor.report-subtype": "CONNECTION_POINT_NAMEPLATE_RATING_FUTURE",
+        "phasor.report-type": "GBB",
+        "phasor.rows": "1017",
+        "phasor.to.file": "GasBBConnectionPointNameplateRatingFuture.CSV@20261024T045100+1000",
+        "phasor.to.release": "2026-10",
+        "phasor.to.sha256": "8c2723323943212988fb2d4ca68c1a4c023dca184ddf5aba04f83a88154d4ac3",
+        "phasor.to.time": "2026-11-01T00:00:00+10:00",
+        "phasor.total-rows": "1017",
+        "phasor.version": "1"
       },
       "timestamp-ms": 1790776800000
     }
@@ -180,5 +180,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "2ed8369b-ff00-8ca6-aa29-68219b3bd0b9"
+  "table-uuid": "e17c076b-04e8-8c7f-885e-2d3ce26785f9"
 }

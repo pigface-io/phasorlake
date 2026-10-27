@@ -1,0 +1,46 @@
+[package]
+name = "phasor-bench"
+description = "End-to-end benchmark harness measuring wall time, peak heap and allocations."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+[lints]
+workspace = true
+
+[[bin]]
+name = "phasor-bench"
+path = "src/main.rs"
+
+[dependencies]
+phasor-core.workspace = true
+phasor-nem.workspace = true
+phasor-mms-conform.workspace = true
+phasor-kit.workspace = true
+phasor-acquire.workspace = true
+phasor-pipeline.workspace = true
+phasor-registry.workspace = true
+phasor-writer.workspace = true
+peak_alloc.workspace = true
+serde_json.workspace = true
+tempfile.workspace = true
+tokio = { workspace = true, features = ["rt-multi-thread", "sync", "macros"] }
+tokio-util.workspace = true
+zip.workspace = true
+zonetrace = { workspace = true, optional = true }
+# Named only to turn on their zones.
+phasor-mms-decode = { workspace = true, optional = true }
+phasor-zip = { workspace = true, optional = true }
+
+[features]
+# Prints where the ingest's time went, in zones.
+zones = [
+    "dep:zonetrace",
+    "phasor-pipeline/zones",
+    "phasor-mms-conform/zones",
+    "phasor-mms-decode/zones",
+    "phasor-zip/zones",
+]

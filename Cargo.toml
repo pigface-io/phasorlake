@@ -1,4 +1,4 @@
-# utilake: AEMO market data into a local Parquet lake.
+# phasor: AEMO market data into a local Parquet lake.
 #
 # Each crate has one job, said in its description; the dependencies between
 # them are the ones layers.json declares (`just layers`), drawn in
@@ -7,38 +7,38 @@
 [workspace]
 resolver = "3"
 members = [
-    "crates/utilake-core",
-    "crates/utilake-registry",
-    "crates/utilake-mms-conform",
-    "crates/utilake-acquire",
-    "crates/utilake-kit",
-    "crates/utilake-nem",
-    "crates/utilake-wem",
-    "crates/utilake-gas",
-    "crates/utilake-writer",
-    "crates/utilake-pipeline",
-    "crates/utilake-cli",
-    "crates/utilake-mirror",
-    "crates/utilake-net",
-    "crates/utilake-iceberg-store",
-    "crates/utilake-bench",
-    "crates/utilake-e2e",
+    "crates/phasor-core",
+    "crates/phasor-registry",
+    "crates/phasor-mms-conform",
+    "crates/phasor-acquire",
+    "crates/phasor-kit",
+    "crates/phasor-nem",
+    "crates/phasor-wem",
+    "crates/phasor-gas",
+    "crates/phasor-writer",
+    "crates/phasor-pipeline",
+    "crates/phasor-cli",
+    "crates/phasor-mirror",
+    "crates/phasor-net",
+    "crates/phasor-iceberg-store",
+    "crates/phasor-bench",
+    "crates/phasor-e2e",
     "crates/xtask",
 ]
 default-members = [
-    "crates/utilake-core",
-    "crates/utilake-iceberg-store",
-    "crates/utilake-registry",
-    "crates/utilake-mms-conform",
-    "crates/utilake-net",
-    "crates/utilake-acquire",
-    "crates/utilake-kit",
-    "crates/utilake-nem",
-    "crates/utilake-wem",
-    "crates/utilake-gas",
-    "crates/utilake-writer",
-    "crates/utilake-pipeline",
-    "crates/utilake-cli",
+    "crates/phasor-core",
+    "crates/phasor-iceberg-store",
+    "crates/phasor-registry",
+    "crates/phasor-mms-conform",
+    "crates/phasor-net",
+    "crates/phasor-acquire",
+    "crates/phasor-kit",
+    "crates/phasor-nem",
+    "crates/phasor-wem",
+    "crates/phasor-gas",
+    "crates/phasor-writer",
+    "crates/phasor-pipeline",
+    "crates/phasor-cli",
 ]
 
 [workspace.package]
@@ -46,7 +46,7 @@ version = "0.1.0"
 edition = "2024"
 rust-version = "1.97"
 license = "Apache-2.0"
-repository = "https://github.com/pigface-io/utilake"
+repository = "https://github.com/pigface-io/phasorlake"
 publish = false
 
 [workspace.lints.rust]
@@ -74,32 +74,32 @@ explicit_iter_loop = "deny"
 uninlined_format_args = "deny"
 
 [workspace.dependencies]
-utilake-core = { path = "crates/utilake-core" }
+phasor-core = { path = "crates/phasor-core" }
 # The Iceberg contract every repository shares: types, schemas, histories,
 # the interval planner and the table writer, at the rev its schemas pin.
-utilake-iceberg = { git = "ssh://git@github.com/g0itb4/utilake-schemas.git", rev = "ab7ad3197652ad2620b8c674c873d36dca2239c9" }
+phasor-iceberg = { git = "ssh://git@github.com/pigface-io/phasorlake-schemas.git", rev = "93dbff1b61541c64064fdf6e6a07cbdcdddd7edd" }
 # The diagnostic every error is reported as, and what every decoder shares,
 # from the same repository.
-utilake-diag = { git = "ssh://git@github.com/g0itb4/utilake-schemas.git", rev = "ab7ad3197652ad2620b8c674c873d36dca2239c9" }
-utilake-decode = { git = "ssh://git@github.com/g0itb4/utilake-schemas.git", rev = "ab7ad3197652ad2620b8c674c873d36dca2239c9" }
+phasor-diag = { git = "ssh://git@github.com/pigface-io/phasorlake-schemas.git", rev = "93dbff1b61541c64064fdf6e6a07cbdcdddd7edd" }
+phasor-decode = { git = "ssh://git@github.com/pigface-io/phasorlake-schemas.git", rev = "93dbff1b61541c64064fdf6e6a07cbdcdddd7edd" }
 # The MMS format layer and the repository gates, from the same repository.
-utilake-mms-decode = { git = "ssh://git@github.com/g0itb4/utilake-schemas.git", rev = "ab7ad3197652ad2620b8c674c873d36dca2239c9" }
-utilake-plain-decode = { git = "ssh://git@github.com/g0itb4/utilake-schemas.git", rev = "ab7ad3197652ad2620b8c674c873d36dca2239c9" }
-utilake-gates = { git = "ssh://git@github.com/g0itb4/utilake-schemas.git", rev = "ab7ad3197652ad2620b8c674c873d36dca2239c9" }
-utilake-zip = { git = "ssh://git@github.com/g0itb4/utilake-schemas.git", rev = "ab7ad3197652ad2620b8c674c873d36dca2239c9" }
-utilake-provenance = { git = "ssh://git@github.com/g0itb4/utilake-schemas.git", rev = "ab7ad3197652ad2620b8c674c873d36dca2239c9" }
-utilake-iceberg-store = { path = "crates/utilake-iceberg-store" }
-utilake-registry = { path = "crates/utilake-registry" }
-utilake-mms-conform = { path = "crates/utilake-mms-conform" }
-utilake-acquire = { path = "crates/utilake-acquire" }
-utilake-kit = { path = "crates/utilake-kit" }
-utilake-nem = { path = "crates/utilake-nem" }
-utilake-wem = { path = "crates/utilake-wem" }
-utilake-gas = { path = "crates/utilake-gas" }
-utilake-writer = { path = "crates/utilake-writer" }
-utilake-pipeline = { path = "crates/utilake-pipeline" }
-utilake-mirror = { path = "crates/utilake-mirror" }
-utilake-net = { path = "crates/utilake-net", default-features = false }
+phasor-mms-decode = { git = "ssh://git@github.com/pigface-io/phasorlake-schemas.git", rev = "93dbff1b61541c64064fdf6e6a07cbdcdddd7edd" }
+phasor-plain-decode = { git = "ssh://git@github.com/pigface-io/phasorlake-schemas.git", rev = "93dbff1b61541c64064fdf6e6a07cbdcdddd7edd" }
+phasor-gates = { git = "ssh://git@github.com/pigface-io/phasorlake-schemas.git", rev = "93dbff1b61541c64064fdf6e6a07cbdcdddd7edd" }
+phasor-zip = { git = "ssh://git@github.com/pigface-io/phasorlake-schemas.git", rev = "93dbff1b61541c64064fdf6e6a07cbdcdddd7edd" }
+phasor-provenance = { git = "ssh://git@github.com/pigface-io/phasorlake-schemas.git", rev = "93dbff1b61541c64064fdf6e6a07cbdcdddd7edd" }
+phasor-iceberg-store = { path = "crates/phasor-iceberg-store" }
+phasor-registry = { path = "crates/phasor-registry" }
+phasor-mms-conform = { path = "crates/phasor-mms-conform" }
+phasor-acquire = { path = "crates/phasor-acquire" }
+phasor-kit = { path = "crates/phasor-kit" }
+phasor-nem = { path = "crates/phasor-nem" }
+phasor-wem = { path = "crates/phasor-wem" }
+phasor-gas = { path = "crates/phasor-gas" }
+phasor-writer = { path = "crates/phasor-writer" }
+phasor-pipeline = { path = "crates/phasor-pipeline" }
+phasor-mirror = { path = "crates/phasor-mirror" }
+phasor-net = { path = "crates/phasor-net", default-features = false }
 
 # hot path
 memchr = "2.8"

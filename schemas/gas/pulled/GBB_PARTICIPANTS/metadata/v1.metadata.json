@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1790776800000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GBB_PARTICIPANTS",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/gas/GBB_PARTICIPANTS",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -19,24 +19,24 @@
   ],
   "properties": {
     "comment": "The list of all registered organisations i.e the BB Participants of the Bulletin Board",
-    "utilake.declared": "true",
-    "utilake.format": "4",
-    "utilake.headers": "{\"1\":\"CompanyId\",\"2\":\"CompanyName\",\"3\":\"OrganisationTypeName\",\"5\":\"CompanyPhone\",\"6\":\"Locale\",\"7\":\"AddressType\",\"8\":\"Address\",\"9\":\"State\",\"10\":\"Postcode\",\"11\":\"CompanyFax\",\"12\":\"LastUpdated\"}",
-    "utilake.key": "[\"COMPANYID\"]",
-    "utilake.load": "snapshot",
-    "utilake.market": "gas",
-    "utilake.model": "[\"GAS_PARTICIPANT\",\"GAS_PARTICIPANT_DETAIL\"]",
-    "utilake.model-types": "{\"1\":\"Number(10,0)\",\"2\":\"Varchar2 (50)\",\"3\":\"VARCHAR2(40)\",\"4\":\"Varchar2 (30)\",\"5\":\"Varchar2 (30)\",\"6\":\"Varchar2 (40)\",\"7\":\"Varchar2 (40)\",\"8\":\"Varchar2 (120)\",\"10\":\"VARCHAR2(4)\",\"11\":\"Varchar2 (30)\"}",
-    "utilake.offset": "+10:00",
-    "utilake.reports": "[[\"GBB\",\"PARTICIPANTS\"]]",
-    "utilake.table": "GBB_PARTICIPANTS",
-    "utilake.temporal.cutoff": "LASTUPDATED",
-    "utilake.temporal.entity": "[\"COMPANYID\"]",
-    "utilake.temporal.order": "[\"LASTUPDATED\"]",
-    "utilake.temporal.origin": "hand",
-    "utilake.temporal.valid.kind": "timeless",
-    "utilake.time": "LASTUPDATED",
-    "utilake.visibility": "PUBLIC"
+    "phasor.declared": "true",
+    "phasor.format": "4",
+    "phasor.headers": "{\"1\":\"CompanyId\",\"2\":\"CompanyName\",\"3\":\"OrganisationTypeName\",\"5\":\"CompanyPhone\",\"6\":\"Locale\",\"7\":\"AddressType\",\"8\":\"Address\",\"9\":\"State\",\"10\":\"Postcode\",\"11\":\"CompanyFax\",\"12\":\"LastUpdated\"}",
+    "phasor.key": "[\"COMPANYID\"]",
+    "phasor.load": "snapshot",
+    "phasor.market": "gas",
+    "phasor.model": "[\"GAS_PARTICIPANT\",\"GAS_PARTICIPANT_DETAIL\"]",
+    "phasor.model-types": "{\"1\":\"Number(10,0)\",\"2\":\"Varchar2 (50)\",\"3\":\"VARCHAR2(40)\",\"4\":\"Varchar2 (30)\",\"5\":\"Varchar2 (30)\",\"6\":\"Varchar2 (40)\",\"7\":\"Varchar2 (40)\",\"8\":\"Varchar2 (120)\",\"10\":\"VARCHAR2(4)\",\"11\":\"Varchar2 (30)\"}",
+    "phasor.offset": "+10:00",
+    "phasor.reports": "[[\"GBB\",\"PARTICIPANTS\"]]",
+    "phasor.table": "GBB_PARTICIPANTS",
+    "phasor.temporal.cutoff": "LASTUPDATED",
+    "phasor.temporal.entity": "[\"COMPANYID\"]",
+    "phasor.temporal.order": "[\"LASTUPDATED\"]",
+    "phasor.temporal.origin": "hand",
+    "phasor.temporal.valid.kind": "timeless",
+    "phasor.time": "LASTUPDATED",
+    "phasor.visibility": "PUBLIC"
   },
   "refs": {
     "main": {
@@ -147,27 +147,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GBB_PARTICIPANTS/metadata/snap-2382185689541277968-1-936b5652-e28d-8c97-ba37-9a26b9901426.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/gas/GBB_PARTICIPANTS/metadata/snap-2382185689541277968-1-4a584261-ad73-8195-ba55-3ff6cc116d6e.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 2382185689541277968,
       "summary": {
         "operation": "append",
-        "utilake.files": "1",
-        "utilake.from.file": "GasBBParticipants.CSV",
-        "utilake.from.release": "2026-10",
-        "utilake.from.sha256": "38c824118ca57f685085e09579ce80e6a0f5ddd154a34f495a54813b392b4636",
-        "utilake.from.time": "2018-05-01T00:00:00+10:00",
-        "utilake.kinds": "[\"gbb\"]",
-        "utilake.report-subtype": "PARTICIPANTS",
-        "utilake.report-type": "GBB",
-        "utilake.rows": "259",
-        "utilake.to.file": "GasBBParticipants.CSV",
-        "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "38c824118ca57f685085e09579ce80e6a0f5ddd154a34f495a54813b392b4636",
-        "utilake.to.time": "2026-10-05T19:30:00+10:00",
-        "utilake.total-rows": "259",
-        "utilake.version": "1"
+        "phasor.files": "1",
+        "phasor.from.file": "GasBBParticipants.CSV",
+        "phasor.from.release": "2026-10",
+        "phasor.from.sha256": "38c824118ca57f685085e09579ce80e6a0f5ddd154a34f495a54813b392b4636",
+        "phasor.from.time": "2018-05-01T00:00:00+10:00",
+        "phasor.kinds": "[\"gbb\"]",
+        "phasor.report-subtype": "PARTICIPANTS",
+        "phasor.report-type": "GBB",
+        "phasor.rows": "259",
+        "phasor.to.file": "GasBBParticipants.CSV",
+        "phasor.to.release": "2026-10",
+        "phasor.to.sha256": "38c824118ca57f685085e09579ce80e6a0f5ddd154a34f495a54813b392b4636",
+        "phasor.to.time": "2026-10-05T19:30:00+10:00",
+        "phasor.total-rows": "259",
+        "phasor.version": "1"
       },
       "timestamp-ms": 1790776800000
     }
@@ -178,5 +178,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "936b5652-e28d-8c97-ba37-9a26b9901426"
+  "table-uuid": "4a584261-ad73-8195-ba55-3ff6cc116d6e"
 }

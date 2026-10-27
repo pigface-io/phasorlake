@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1722434400000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MARKET_SUSPEND_SCHEDULE_TRK",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/MARKET_SUSPEND_SCHEDULE_TRK",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -19,22 +19,22 @@
   ],
   "properties": {
     "comment": "Parent table for pricing regimes used in suspensions",
-    "utilake.declared": "true",
-    "utilake.format": "4",
-    "utilake.key": "[\"EFFECTIVEDATE\"]",
-    "utilake.load": "append",
-    "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"TIMESTAMP(0)\",\"4\":\"VARCHAR(1000)\",\"5\":\"TIMESTAMP(0)\",\"6\":\"TIMESTAMP(0)\"}",
-    "utilake.package": "FORCE_MAJEURE",
-    "utilake.reports": "[[\"FORCE_MAJEURE\",\"MARKET_SUSPEND_SCHEDULE_TRK\"]]",
-    "utilake.table": "MARKET_SUSPEND_SCHEDULE_TRK",
-    "utilake.temporal.cutoff": "LASTCHANGED",
-    "utilake.temporal.entity": "[]",
-    "utilake.temporal.order": "[\"LASTCHANGED\"]",
-    "utilake.temporal.origin": "derived",
-    "utilake.temporal.valid.column": "EFFECTIVEDATE",
-    "utilake.temporal.valid.kind": "from",
-    "utilake.time": "EFFECTIVEDATE",
-    "utilake.visibility": "PUBLIC"
+    "phasor.declared": "true",
+    "phasor.format": "4",
+    "phasor.key": "[\"EFFECTIVEDATE\"]",
+    "phasor.load": "append",
+    "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"TIMESTAMP(0)\",\"4\":\"VARCHAR(1000)\",\"5\":\"TIMESTAMP(0)\",\"6\":\"TIMESTAMP(0)\"}",
+    "phasor.package": "FORCE_MAJEURE",
+    "phasor.reports": "[[\"FORCE_MAJEURE\",\"MARKET_SUSPEND_SCHEDULE_TRK\"]]",
+    "phasor.table": "MARKET_SUSPEND_SCHEDULE_TRK",
+    "phasor.temporal.cutoff": "LASTCHANGED",
+    "phasor.temporal.entity": "[]",
+    "phasor.temporal.order": "[\"LASTCHANGED\"]",
+    "phasor.temporal.origin": "derived",
+    "phasor.temporal.valid.column": "EFFECTIVEDATE",
+    "phasor.temporal.valid.kind": "from",
+    "phasor.time": "EFFECTIVEDATE",
+    "phasor.visibility": "PUBLIC"
   },
   "refs": {
     "main": {
@@ -105,27 +105,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MARKET_SUSPEND_SCHEDULE_TRK/metadata/snap-8591604717509167800-1-d1db90cd-aad9-83f3-a773-7ba93592c10d.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/MARKET_SUSPEND_SCHEDULE_TRK/metadata/snap-8591604717509167800-1-a4c976b2-d80b-80ae-93bf-23d7a9381fe3.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 8591604717509167800,
       "summary": {
         "operation": "append",
-        "utilake.files": "35",
-        "utilake.from.file": "PUBLIC_ARCHIVE#MARKET_SUSPEND_SCHEDULE_TRK#FILE01#202408010000.zip",
-        "utilake.from.release": "2024-08",
-        "utilake.from.sha256": "1981d5ad0a92894e8625adf87e0e2016509468ca7d1376d9923ed29173fb83ff",
-        "utilake.from.time": "2017-12-25T00:00:00+10:00",
-        "utilake.kinds": "[\"archive\",\"reports\"]",
-        "utilake.report-subtype": "MARKET_SUSPEND_SCHEDULE_TRK",
-        "utilake.report-type": "FORCE_MAJEURE",
-        "utilake.rows": "10596",
-        "utilake.to.file": "PUBLIC_MARKET_SUSPENSION_SCHEDULE_20261017235510_0000000543435592.zip",
-        "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "67535369ceb02a016a931256fe716e7fc621927e07b687f01278cd6054f42e9e",
-        "utilake.to.time": "2026-11-02T00:00:00+10:00",
-        "utilake.total-rows": "10596",
-        "utilake.version": "1"
+        "phasor.files": "35",
+        "phasor.from.file": "PUBLIC_ARCHIVE#MARKET_SUSPEND_SCHEDULE_TRK#FILE01#202408010000.zip",
+        "phasor.from.release": "2024-08",
+        "phasor.from.sha256": "1981d5ad0a92894e8625adf87e0e2016509468ca7d1376d9923ed29173fb83ff",
+        "phasor.from.time": "2017-12-25T00:00:00+10:00",
+        "phasor.kinds": "[\"archive\",\"reports\"]",
+        "phasor.report-subtype": "MARKET_SUSPEND_SCHEDULE_TRK",
+        "phasor.report-type": "FORCE_MAJEURE",
+        "phasor.rows": "10596",
+        "phasor.to.file": "PUBLIC_MARKET_SUSPENSION_SCHEDULE_20261017235510_0000000543435592.zip",
+        "phasor.to.release": "2026-10",
+        "phasor.to.sha256": "67535369ceb02a016a931256fe716e7fc621927e07b687f01278cd6054f42e9e",
+        "phasor.to.time": "2026-11-02T00:00:00+10:00",
+        "phasor.total-rows": "10596",
+        "phasor.version": "1"
       },
       "timestamp-ms": 1722434400000
     }
@@ -136,5 +136,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "d1db90cd-aad9-83f3-a773-7ba93592c10d"
+  "table-uuid": "a4c976b2-d80b-80ae-93bf-23d7a9381fe3"
 }

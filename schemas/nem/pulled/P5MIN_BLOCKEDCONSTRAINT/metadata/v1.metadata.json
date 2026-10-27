@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1725112800000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/P5MIN_BLOCKEDCONSTRAINT",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/P5MIN_BLOCKEDCONSTRAINT",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -19,21 +19,21 @@
   ],
   "properties": {
     "comment": "P5MIN Blocked Constraints lists any constraints that were blocked in a P5MIN run. If no constraints are blocked, there will be no rows for that 5 minute predispatch run.",
-    "utilake.declared": "true",
-    "utilake.format": "4",
-    "utilake.key": "[\"RUN_DATETIME\",\"CONSTRAINTID\"]",
-    "utilake.load": "append",
-    "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"VARCHAR(20)\"}",
-    "utilake.package": "P5MIN",
-    "utilake.reports": "[[\"P5MIN\",\"BLOCKED_CONSTRAINTS\"]]",
-    "utilake.table": "P5MIN_BLOCKEDCONSTRAINT",
-    "utilake.temporal.entity": "[\"CONSTRAINTID\"]",
-    "utilake.temporal.order": "[]",
-    "utilake.temporal.origin": "derived",
-    "utilake.temporal.valid.column": "RUN_DATETIME",
-    "utilake.temporal.valid.kind": "instant",
-    "utilake.time": "RUN_DATETIME",
-    "utilake.visibility": "PUBLIC"
+    "phasor.declared": "true",
+    "phasor.format": "4",
+    "phasor.key": "[\"RUN_DATETIME\",\"CONSTRAINTID\"]",
+    "phasor.load": "append",
+    "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"VARCHAR(20)\"}",
+    "phasor.package": "P5MIN",
+    "phasor.reports": "[[\"P5MIN\",\"BLOCKED_CONSTRAINTS\"]]",
+    "phasor.table": "P5MIN_BLOCKEDCONSTRAINT",
+    "phasor.temporal.entity": "[\"CONSTRAINTID\"]",
+    "phasor.temporal.order": "[]",
+    "phasor.temporal.origin": "derived",
+    "phasor.temporal.valid.column": "RUN_DATETIME",
+    "phasor.temporal.valid.kind": "instant",
+    "phasor.time": "RUN_DATETIME",
+    "phasor.visibility": "PUBLIC"
   },
   "refs": {
     "main": {
@@ -77,27 +77,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/P5MIN_BLOCKEDCONSTRAINT/metadata/snap-4513850191796978916-1-f5b7a3a4-a5fc-8fff-a267-6d91e605df69.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/P5MIN_BLOCKEDCONSTRAINT/metadata/snap-4513850191796978916-1-c87554b8-6e8e-8e27-b6b3-5ddf6354e519.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 4513850191796978916,
       "summary": {
         "operation": "append",
-        "utilake.files": "4934",
-        "utilake.from.file": "PUBLIC_ARCHIVE#P5MIN_BLOCKEDCONSTRAINT#FILE01#202409010000.zip",
-        "utilake.from.release": "2024-09",
-        "utilake.from.sha256": "8fa6ca84543488604282024134a62174266d9ba62fca16c0d84a31a22776e5c0",
-        "utilake.from.time": "2024-09-24T12:45:00+10:00",
-        "utilake.kinds": "[\"archive\",\"reports\"]",
-        "utilake.report-subtype": "BLOCKED_CONSTRAINTS",
-        "utilake.report-type": "P5MIN",
-        "utilake.rows": "13830",
-        "utilake.to.file": "PUBLIC_P5MIN_20261013.zip",
-        "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "130b396c1f7e17bcfc4b0a359688d7690778fae21add13725c3509ae4e07c911",
-        "utilake.to.time": "2026-10-13T09:30:00+10:00",
-        "utilake.total-rows": "13830",
-        "utilake.version": "1"
+        "phasor.files": "4934",
+        "phasor.from.file": "PUBLIC_ARCHIVE#P5MIN_BLOCKEDCONSTRAINT#FILE01#202409010000.zip",
+        "phasor.from.release": "2024-09",
+        "phasor.from.sha256": "8fa6ca84543488604282024134a62174266d9ba62fca16c0d84a31a22776e5c0",
+        "phasor.from.time": "2024-09-24T12:45:00+10:00",
+        "phasor.kinds": "[\"archive\",\"reports\"]",
+        "phasor.report-subtype": "BLOCKED_CONSTRAINTS",
+        "phasor.report-type": "P5MIN",
+        "phasor.rows": "13830",
+        "phasor.to.file": "PUBLIC_P5MIN_20261013.zip",
+        "phasor.to.release": "2026-10",
+        "phasor.to.sha256": "130b396c1f7e17bcfc4b0a359688d7690778fae21add13725c3509ae4e07c911",
+        "phasor.to.time": "2026-10-13T09:30:00+10:00",
+        "phasor.total-rows": "13830",
+        "phasor.version": "1"
       },
       "timestamp-ms": 1725112800000
     }
@@ -108,5 +108,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "f5b7a3a4-a5fc-8fff-a267-6d91e605df69"
+  "table-uuid": "c87554b8-6e8e-8e27-b6b3-5ddf6354e519"
 }

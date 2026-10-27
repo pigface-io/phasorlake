@@ -13,7 +13,7 @@ them and `just layers` holds the code to it: an edge it does not list fails,
 and so does a listed edge that is gone. Dependencies point down only:
 
 ```
-utilake-schemas (pinned by rev): mms-decode, plain-decode, provenance, zip, iceberg, gates
+phasor-schemas (pinned by rev): mms-decode, plain-decode, provenance, zip, iceberg, gates
 
 core            the vocabulary: periods, numbers, names, diagnostics, home, config
 net             HTTP: transports, paced and retried requests, the refusal breaker,
@@ -33,7 +33,7 @@ cli, mirror     the binaries
 bench, e2e      tooling and whole-stack tests; nothing depends on them
 ```
 
-The pipeline names no format and no market (`cargo tree -p utilake-pipeline`
+The pipeline names no format and no market (`cargo tree -p phasor-pipeline`
 shows no `mms`, `nem`, `wem` or `gas`); a market crate depends on the format
 it reads; the decoder never depends on the registry; kit pulls in no reqwest
 and no tokio. Async lives at the edges (the fetcher, the manifest's handle):
@@ -47,8 +47,8 @@ source file per worker, and the two worlds meet once per file.
 | unit and integration | every crate, `cargo test` | `just test`, pre-commit |
 | coverage | `cargo llvm-cov` over the workspace | `just cover` against `coverage.json`, pre-push |
 | pulled schemas | `schemas/nem/pulled/` against its manifest and the rev in `Cargo.lock` | `just schemas-check`, pre-commit |
-| benchmarks | criterion plus `utilake-bench` | `just bench-fast` pre-push, `just bench` in CI, against `bench/budgets.json` |
-| network | `crates/utilake-nem/tests/net.rs` | `just net-test`, weekly in CI |
+| benchmarks | criterion plus `phasor-bench` | `just bench-fast` pre-push, `just bench` in CI, against `bench/budgets.json` |
+| network | `crates/phasor-nem/tests/net.rs` | `just net-test`, weekly in CI |
 
 ## Floors and budgets
 
@@ -58,11 +58,11 @@ latest measurement when that is better, never the other way. `just budget-check`
 fails when either moved the wrong way against `origin/main`, unless a commit in
 the range explains it with a `coverage-floor:` or `bench-budget:` line.
 
-The NEM tables are not edited here. They are the histories utilake-schemas
+The NEM tables are not edited here. They are the histories phasor-schemas
 publishes, and what a history may change from one commit to the next is
 held there (its `compat` check). Here they move only together with the
 crate that reads them: `just schemas-pull REV` copies the tables at a
-commit into `schemas/nem/pulled/`, the `utilake-iceberg` rev in
+commit into `schemas/nem/pulled/`, the `phasor-iceberg` rev in
 `Cargo.toml` moves to the same commit, and `just schemas-check` fails until
 both agree and every file is its manifest's. A commit that changes what
 the lake holds explains it with a `schema-break:` line.
@@ -89,6 +89,6 @@ Commits with an imperative subject and carry no tool attribution.
 
 ## Licence
 
-utilake is licensed under the Apache License 2.0 (`LICENSE`). A contribution
+phasor is licensed under the Apache License 2.0 (`LICENSE`). A contribution
 you submit for inclusion is under that licence, as its section 5 says, with
 no other terms.

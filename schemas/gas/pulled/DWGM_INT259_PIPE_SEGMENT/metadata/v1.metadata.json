@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1790776800000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/DWGM_INT259_PIPE_SEGMENT",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/gas/DWGM_INT259_PIPE_SEGMENT",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -18,23 +18,23 @@
     }
   ],
   "properties": {
-    "utilake.declared": "true",
-    "utilake.format": "4",
-    "utilake.headers": "{\"1\":\"pipe_segment_id\",\"2\":\"pipe_segment_name\",\"3\":\"linepack_zone_id\",\"4\":\"commencement_date\",\"5\":\"termination_date\",\"6\":\"node_destination_id\",\"7\":\"node_origin_id\",\"8\":\"diameter\",\"9\":\"diameter_paired\",\"10\":\"length\",\"11\":\"max_pressure\",\"12\":\"min_pressure\",\"13\":\"max_pressure_delta\",\"14\":\"pressure_at_regulator_outlet\",\"15\":\"regulator_at_origin\",\"16\":\"reverse_flow\",\"17\":\"compressor\",\"18\":\"mean_pipe_altitude\",\"19\":\"last_mod_date\",\"20\":\"current_date\"}",
-    "utilake.key": "[\"PIPE_SEGMENT_ID\",\"LINEPACK_ZONE_ID\",\"NODE_DESTINATION_ID\",\"NODE_ORIGIN_ID\"]",
-    "utilake.load": "snapshot",
-    "utilake.market": "gas",
-    "utilake.offset": "+10:00",
-    "utilake.reports": "[[\"DWGM\",\"INT259_PIPE_SEGMENT_1\"]]",
-    "utilake.table": "DWGM_INT259_PIPE_SEGMENT",
-    "utilake.temporal.cutoff": "CURRENT_DATE",
-    "utilake.temporal.entity": "[\"PIPE_SEGMENT_ID\",\"LINEPACK_ZONE_ID\",\"NODE_DESTINATION_ID\",\"NODE_ORIGIN_ID\"]",
-    "utilake.temporal.order": "[\"CURRENT_DATE\"]",
-    "utilake.temporal.origin": "hand",
-    "utilake.temporal.valid.column": "COMMENCEMENT_DATE",
-    "utilake.temporal.valid.kind": "instant",
-    "utilake.time": "COMMENCEMENT_DATE",
-    "utilake.visibility": "PUBLIC"
+    "phasor.declared": "true",
+    "phasor.format": "4",
+    "phasor.headers": "{\"1\":\"pipe_segment_id\",\"2\":\"pipe_segment_name\",\"3\":\"linepack_zone_id\",\"4\":\"commencement_date\",\"5\":\"termination_date\",\"6\":\"node_destination_id\",\"7\":\"node_origin_id\",\"8\":\"diameter\",\"9\":\"diameter_paired\",\"10\":\"length\",\"11\":\"max_pressure\",\"12\":\"min_pressure\",\"13\":\"max_pressure_delta\",\"14\":\"pressure_at_regulator_outlet\",\"15\":\"regulator_at_origin\",\"16\":\"reverse_flow\",\"17\":\"compressor\",\"18\":\"mean_pipe_altitude\",\"19\":\"last_mod_date\",\"20\":\"current_date\"}",
+    "phasor.key": "[\"PIPE_SEGMENT_ID\",\"LINEPACK_ZONE_ID\",\"NODE_DESTINATION_ID\",\"NODE_ORIGIN_ID\"]",
+    "phasor.load": "snapshot",
+    "phasor.market": "gas",
+    "phasor.offset": "+10:00",
+    "phasor.reports": "[[\"DWGM\",\"INT259_PIPE_SEGMENT_1\"]]",
+    "phasor.table": "DWGM_INT259_PIPE_SEGMENT",
+    "phasor.temporal.cutoff": "CURRENT_DATE",
+    "phasor.temporal.entity": "[\"PIPE_SEGMENT_ID\",\"LINEPACK_ZONE_ID\",\"NODE_DESTINATION_ID\",\"NODE_ORIGIN_ID\"]",
+    "phasor.temporal.order": "[\"CURRENT_DATE\"]",
+    "phasor.temporal.origin": "hand",
+    "phasor.temporal.valid.column": "COMMENCEMENT_DATE",
+    "phasor.temporal.valid.kind": "instant",
+    "phasor.time": "COMMENCEMENT_DATE",
+    "phasor.visibility": "PUBLIC"
   },
   "refs": {
     "main": {
@@ -186,27 +186,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/DWGM_INT259_PIPE_SEGMENT/metadata/snap-3567994622777019824-1-a0dad6f2-ff3d-889a-86ec-5148c033116c.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/gas/DWGM_INT259_PIPE_SEGMENT/metadata/snap-3567994622777019824-1-31785e0f-14de-871e-852d-9e014a90b79d.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 3567994622777019824,
       "summary": {
         "operation": "append",
-        "utilake.files": "1",
-        "utilake.from.file": "int259_v4_pipe_segment_1.csv",
-        "utilake.from.release": "2026-10",
-        "utilake.from.sha256": "8a4f66fac084555d084e2fb75aadb9d4d0ff813ad707a741ad227e37d5b4a169",
-        "utilake.from.time": "1998-06-23T00:00:00+10:00",
-        "utilake.kinds": "[\"dwgm\"]",
-        "utilake.report-subtype": "INT259_PIPE_SEGMENT_1",
-        "utilake.report-type": "DWGM",
-        "utilake.rows": "84",
-        "utilake.to.file": "int259_v4_pipe_segment_1.csv",
-        "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "8a4f66fac084555d084e2fb75aadb9d4d0ff813ad707a741ad227e37d5b4a169",
-        "utilake.to.time": "2024-02-07T00:00:00+10:00",
-        "utilake.total-rows": "84",
-        "utilake.version": "4"
+        "phasor.files": "1",
+        "phasor.from.file": "int259_v4_pipe_segment_1.csv",
+        "phasor.from.release": "2026-10",
+        "phasor.from.sha256": "8a4f66fac084555d084e2fb75aadb9d4d0ff813ad707a741ad227e37d5b4a169",
+        "phasor.from.time": "1998-06-23T00:00:00+10:00",
+        "phasor.kinds": "[\"dwgm\"]",
+        "phasor.report-subtype": "INT259_PIPE_SEGMENT_1",
+        "phasor.report-type": "DWGM",
+        "phasor.rows": "84",
+        "phasor.to.file": "int259_v4_pipe_segment_1.csv",
+        "phasor.to.release": "2026-10",
+        "phasor.to.sha256": "8a4f66fac084555d084e2fb75aadb9d4d0ff813ad707a741ad227e37d5b4a169",
+        "phasor.to.time": "2024-02-07T00:00:00+10:00",
+        "phasor.total-rows": "84",
+        "phasor.version": "4"
       },
       "timestamp-ms": 1790776800000
     }
@@ -217,5 +217,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "a0dad6f2-ff3d-889a-86ec-5148c033116c"
+  "table-uuid": "31785e0f-14de-871e-852d-9e014a90b79d"
 }

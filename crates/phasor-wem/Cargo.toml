@@ -1,0 +1,29 @@
+[package]
+name = "phasor-wem"
+description = "The Wholesale Electricity Market kit: the datafiles and the WEMDE documents as sources, with the plain and WEMDE decoders and the registry's catalog."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+phasor-core.workspace = true
+phasor-acquire.workspace = true
+phasor-kit.workspace = true
+phasor-mms-conform.workspace = true
+phasor-registry.workspace = true
+phasor-plain-decode.workspace = true
+async-trait.workspace = true
+serde.workspace = true
+serde_yaml_ng.workspace = true
+toml.workspace = true
+url.workspace = true
+
+[dev-dependencies]
+tempfile.workspace = true
+tokio = { workspace = true, features = ["rt-multi-thread", "macros"] }

@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1722434400000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MTPASA_REGIONAVAILABILITY",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/MTPASA_REGIONAVAILABILITY",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -19,22 +19,22 @@
   ],
   "properties": {
     "comment": "Stores the Region-aggregate offered PASA Availability of scheduled generators for each day over the Medium Term PASA period. The data in this table is an aggregate of input data to the MT PASA process it is not part of the MTPASA solution. The aggregate availability does not reflect any energy limitations in the MT PASA offers.",
-    "utilake.declared": "true",
-    "utilake.format": "4",
-    "utilake.key": "[\"PUBLISH_DATETIME\",\"DAY\",\"REGIONID\"]",
-    "utilake.load": "append",
-    "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"VARCHAR(20)\",\"4\":\"NUMERIC(12,0)\",\"5\":\"TIMESTAMP(0)\",\"6\":\"NUMERIC(12,0)\",\"7\":\"NUMERIC(12,0)\",\"8\":\"NUMERIC(12,2)\",\"9\":\"NUMERIC(12,2)\",\"10\":\"NUMERIC(12,2)\",\"11\":\"NUMERIC(12,2)\",\"12\":\"NUMERIC(12,2)\",\"13\":\"TIMESTAMP(0)\",\"14\":\"NUMERIC(12,2)\",\"15\":\"NUMERIC(12,2)\",\"16\":\"NUMERIC(12,2)\",\"17\":\"NUMERIC(12,2)\",\"18\":\"NUMERIC(12,0)\"}",
-    "utilake.package": "MTPASA",
-    "utilake.reports": "[[\"MTPASA\",\"REGIONAVAILABILITY\"]]",
-    "utilake.table": "MTPASA_REGIONAVAILABILITY",
-    "utilake.temporal.cutoff": "PUBLISH_DATETIME",
-    "utilake.temporal.entity": "[\"REGIONID\"]",
-    "utilake.temporal.order": "[\"PUBLISH_DATETIME\",\"LASTCHANGED\"]",
-    "utilake.temporal.origin": "derived",
-    "utilake.temporal.valid.column": "DAY",
-    "utilake.temporal.valid.kind": "instant",
-    "utilake.time": "DAY",
-    "utilake.visibility": "PUBLIC"
+    "phasor.declared": "true",
+    "phasor.format": "4",
+    "phasor.key": "[\"PUBLISH_DATETIME\",\"DAY\",\"REGIONID\"]",
+    "phasor.load": "append",
+    "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"VARCHAR(20)\",\"4\":\"NUMERIC(12,0)\",\"5\":\"TIMESTAMP(0)\",\"6\":\"NUMERIC(12,0)\",\"7\":\"NUMERIC(12,0)\",\"8\":\"NUMERIC(12,2)\",\"9\":\"NUMERIC(12,2)\",\"10\":\"NUMERIC(12,2)\",\"11\":\"NUMERIC(12,2)\",\"12\":\"NUMERIC(12,2)\",\"13\":\"TIMESTAMP(0)\",\"14\":\"NUMERIC(12,2)\",\"15\":\"NUMERIC(12,2)\",\"16\":\"NUMERIC(12,2)\",\"17\":\"NUMERIC(12,2)\",\"18\":\"NUMERIC(12,0)\"}",
+    "phasor.package": "MTPASA",
+    "phasor.reports": "[[\"MTPASA\",\"REGIONAVAILABILITY\"]]",
+    "phasor.table": "MTPASA_REGIONAVAILABILITY",
+    "phasor.temporal.cutoff": "PUBLISH_DATETIME",
+    "phasor.temporal.entity": "[\"REGIONID\"]",
+    "phasor.temporal.order": "[\"PUBLISH_DATETIME\",\"LASTCHANGED\"]",
+    "phasor.temporal.origin": "derived",
+    "phasor.temporal.valid.column": "DAY",
+    "phasor.temporal.valid.kind": "instant",
+    "phasor.time": "DAY",
+    "phasor.visibility": "PUBLIC"
   },
   "refs": {
     "main": {
@@ -191,27 +191,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MTPASA_REGIONAVAILABILITY/metadata/snap-1519027398961236070-1-766db2b8-4964-8cce-85f5-1ae4b2c34aae.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/MTPASA_REGIONAVAILABILITY/metadata/snap-1519027398961236070-1-b46b6928-36ce-8088-ac80-5b2688b608b2.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 1519027398961236070,
       "summary": {
         "operation": "append",
-        "utilake.files": "1502",
-        "utilake.from.file": "PUBLIC_ARCHIVE#MTPASA_REGIONAVAILABILITY#FILE01#202408010000.zip",
-        "utilake.from.release": "2024-08",
-        "utilake.from.sha256": "7097556f54c92dca874b06a9712c73c0ab00e02b45638c81f8c98c323ab8cecf",
-        "utilake.from.time": "2024-08-04T00:00:00+10:00",
-        "utilake.kinds": "[\"archive\",\"reports\"]",
-        "utilake.report-subtype": "REGIONAVAILABILITY",
-        "utilake.report-type": "MTPASA",
-        "utilake.rows": "23195720",
-        "utilake.to.file": "PUBLIC_MTPASAREGIONAVAILABILITY_202610240900_0000000544577016.zip",
-        "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "33f1dd9e2dbdb69f03526bcb6f6f9f8d95d0732c58d44dad8f220c8cbbe352c4",
-        "utilake.to.time": "2029-10-21T00:00:00+10:00",
-        "utilake.total-rows": "23195720",
-        "utilake.version": "4"
+        "phasor.files": "1502",
+        "phasor.from.file": "PUBLIC_ARCHIVE#MTPASA_REGIONAVAILABILITY#FILE01#202408010000.zip",
+        "phasor.from.release": "2024-08",
+        "phasor.from.sha256": "7097556f54c92dca874b06a9712c73c0ab00e02b45638c81f8c98c323ab8cecf",
+        "phasor.from.time": "2024-08-04T00:00:00+10:00",
+        "phasor.kinds": "[\"archive\",\"reports\"]",
+        "phasor.report-subtype": "REGIONAVAILABILITY",
+        "phasor.report-type": "MTPASA",
+        "phasor.rows": "23195720",
+        "phasor.to.file": "PUBLIC_MTPASAREGIONAVAILABILITY_202610240900_0000000544577016.zip",
+        "phasor.to.release": "2026-10",
+        "phasor.to.sha256": "33f1dd9e2dbdb69f03526bcb6f6f9f8d95d0732c58d44dad8f220c8cbbe352c4",
+        "phasor.to.time": "2029-10-21T00:00:00+10:00",
+        "phasor.total-rows": "23195720",
+        "phasor.version": "4"
       },
       "timestamp-ms": 1722434400000
     }
@@ -222,5 +222,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "766db2b8-4964-8cce-85f5-1ae4b2c34aae"
+  "table-uuid": "b46b6928-36ce-8088-ac80-5b2688b608b2"
 }

@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1790776800000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/DWGM_INT261_AGG_AMDQ_TRANSFERRED",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/gas/DWGM_INT261_AGG_AMDQ_TRANSFERRED",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -18,20 +18,20 @@
     }
   ],
   "properties": {
-    "utilake.declared": "true",
-    "utilake.format": "4",
-    "utilake.headers": "{\"1\":\"gas_date\",\"2\":\"aggregated_amdq_transferred\",\"3\":\"current_date\"}",
-    "utilake.key": "[]",
-    "utilake.load": "append",
-    "utilake.market": "gas",
-    "utilake.offset": "+10:00",
-    "utilake.reports": "[[\"DWGM\",\"INT261_AGG_AMDQ_TRANSFERRED_1\"]]",
-    "utilake.table": "DWGM_INT261_AGG_AMDQ_TRANSFERRED",
-    "utilake.temporal.entity": "[]",
-    "utilake.temporal.order": "[\"CURRENT_DATE\"]",
-    "utilake.temporal.origin": "hand",
-    "utilake.temporal.valid.kind": "timeless",
-    "utilake.visibility": "PUBLIC"
+    "phasor.declared": "true",
+    "phasor.format": "4",
+    "phasor.headers": "{\"1\":\"gas_date\",\"2\":\"aggregated_amdq_transferred\",\"3\":\"current_date\"}",
+    "phasor.key": "[]",
+    "phasor.load": "append",
+    "phasor.market": "gas",
+    "phasor.offset": "+10:00",
+    "phasor.reports": "[[\"DWGM\",\"INT261_AGG_AMDQ_TRANSFERRED_1\"]]",
+    "phasor.table": "DWGM_INT261_AGG_AMDQ_TRANSFERRED",
+    "phasor.temporal.entity": "[]",
+    "phasor.temporal.order": "[\"CURRENT_DATE\"]",
+    "phasor.temporal.origin": "hand",
+    "phasor.temporal.valid.kind": "timeless",
+    "phasor.visibility": "PUBLIC"
   },
   "refs": {
     "main": {
@@ -76,25 +76,25 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/DWGM_INT261_AGG_AMDQ_TRANSFERRED/metadata/snap-4145432749254241851-1-129ce4a1-5e33-88dd-8b82-1e4555ddd72f.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/gas/DWGM_INT261_AGG_AMDQ_TRANSFERRED/metadata/snap-4145432749254241851-1-356d90bf-dd23-8ea5-bd77-76eab5100956.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 4145432749254241851,
       "summary": {
         "operation": "append",
-        "utilake.files": "1",
-        "utilake.from.file": "int261_v4_agg_amdq_transferred_1.csv",
-        "utilake.from.release": "2026-10",
-        "utilake.from.sha256": "ffcb143d06824896afea46afa4a7be936a4ca7f402279bc1fab411d68b6691c0",
-        "utilake.kinds": "[\"dwgm\"]",
-        "utilake.report-subtype": "INT261_AGG_AMDQ_TRANSFERRED_1",
-        "utilake.report-type": "DWGM",
-        "utilake.rows": "0",
-        "utilake.to.file": "int261_v4_agg_amdq_transferred_1.csv",
-        "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "ffcb143d06824896afea46afa4a7be936a4ca7f402279bc1fab411d68b6691c0",
-        "utilake.total-rows": "0",
-        "utilake.version": "4"
+        "phasor.files": "1",
+        "phasor.from.file": "int261_v4_agg_amdq_transferred_1.csv",
+        "phasor.from.release": "2026-10",
+        "phasor.from.sha256": "ffcb143d06824896afea46afa4a7be936a4ca7f402279bc1fab411d68b6691c0",
+        "phasor.kinds": "[\"dwgm\"]",
+        "phasor.report-subtype": "INT261_AGG_AMDQ_TRANSFERRED_1",
+        "phasor.report-type": "DWGM",
+        "phasor.rows": "0",
+        "phasor.to.file": "int261_v4_agg_amdq_transferred_1.csv",
+        "phasor.to.release": "2026-10",
+        "phasor.to.sha256": "ffcb143d06824896afea46afa4a7be936a4ca7f402279bc1fab411d68b6691c0",
+        "phasor.total-rows": "0",
+        "phasor.version": "4"
       },
       "timestamp-ms": 1790776800000
     }
@@ -105,5 +105,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "129ce4a1-5e33-88dd-8b82-1e4555ddd72f"
+  "table-uuid": "356d90bf-dd23-8ea5-bd77-76eab5100956"
 }

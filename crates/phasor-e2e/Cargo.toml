@@ -1,0 +1,39 @@
+[package]
+name = "phasor-e2e"
+description = "Whole-stack tests: every market's kit through the pipeline into the lake, and the lake read back as the docs say. Tests only; nothing depends on it."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+publish = false
+
+[lints]
+workspace = true
+
+[dev-dependencies]
+phasor-acquire.workspace = true
+phasor-core.workspace = true
+phasor-gas.workspace = true
+phasor-kit.workspace = true
+phasor-mms-conform.workspace = true
+phasor-mms-decode.workspace = true
+phasor-nem.workspace = true
+phasor-pipeline.workspace = true
+phasor-provenance.workspace = true
+phasor-registry.workspace = true
+phasor-wem.workspace = true
+phasor-writer.workspace = true
+phasor-zip.workspace = true
+arrow-array.workspace = true
+arrow-schema.workspace = true
+arrow-select.workspace = true
+async-trait.workspace = true
+futures.workspace = true
+parquet.workspace = true
+serde_json.workspace = true
+tempfile.workspace = true
+tokio = { workspace = true, features = ["rt-multi-thread", "sync", "macros", "time"] }
+tokio-util.workspace = true
+url.workspace = true
+zip.workspace = true

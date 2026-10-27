@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1790776800000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/DWGM_INT343_CCAUCTION_AUCTION_QTY",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/gas/DWGM_INT343_CCAUCTION_AUCTION_QTY",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -18,23 +18,23 @@
     }
   ],
   "properties": {
-    "utilake.declared": "true",
-    "utilake.format": "4",
-    "utilake.headers": "{\"1\":\"auction_id\",\"2\":\"zone_id\",\"3\":\"zone_name\",\"4\":\"zone_type\",\"5\":\"capacity_period\",\"6\":\"auction_date\",\"7\":\"available_capacity_gj\",\"8\":\"current_date\"}",
-    "utilake.key": "[]",
-    "utilake.load": "append",
-    "utilake.market": "gas",
-    "utilake.offset": "+10:00",
-    "utilake.reports": "[[\"DWGM\",\"INT343_CCAUCTION_AUCTION_QTY_1\"]]",
-    "utilake.table": "DWGM_INT343_CCAUCTION_AUCTION_QTY",
-    "utilake.temporal.cutoff": "CURRENT_DATE",
-    "utilake.temporal.entity": "[\"AUCTION_ID\",\"ZONE_ID\"]",
-    "utilake.temporal.order": "[\"CURRENT_DATE\"]",
-    "utilake.temporal.origin": "hand",
-    "utilake.temporal.valid.column": "AUCTION_DATE",
-    "utilake.temporal.valid.kind": "instant",
-    "utilake.time": "AUCTION_DATE",
-    "utilake.visibility": "PUBLIC"
+    "phasor.declared": "true",
+    "phasor.format": "4",
+    "phasor.headers": "{\"1\":\"auction_id\",\"2\":\"zone_id\",\"3\":\"zone_name\",\"4\":\"zone_type\",\"5\":\"capacity_period\",\"6\":\"auction_date\",\"7\":\"available_capacity_gj\",\"8\":\"current_date\"}",
+    "phasor.key": "[]",
+    "phasor.load": "append",
+    "phasor.market": "gas",
+    "phasor.offset": "+10:00",
+    "phasor.reports": "[[\"DWGM\",\"INT343_CCAUCTION_AUCTION_QTY_1\"]]",
+    "phasor.table": "DWGM_INT343_CCAUCTION_AUCTION_QTY",
+    "phasor.temporal.cutoff": "CURRENT_DATE",
+    "phasor.temporal.entity": "[\"AUCTION_ID\",\"ZONE_ID\"]",
+    "phasor.temporal.order": "[\"CURRENT_DATE\"]",
+    "phasor.temporal.origin": "hand",
+    "phasor.temporal.valid.column": "AUCTION_DATE",
+    "phasor.temporal.valid.kind": "instant",
+    "phasor.time": "AUCTION_DATE",
+    "phasor.visibility": "PUBLIC"
   },
   "refs": {
     "main": {
@@ -109,27 +109,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/DWGM_INT343_CCAUCTION_AUCTION_QTY/metadata/snap-8878949196695823537-1-eec44cb1-2c44-818b-9255-4971fd78c829.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/gas/DWGM_INT343_CCAUCTION_AUCTION_QTY/metadata/snap-8878949196695823537-1-d4728d5a-dcf8-80d9-9286-03c33e79278a.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 8878949196695823537,
       "summary": {
         "operation": "append",
-        "utilake.files": "2",
-        "utilake.from.file": "PublicRpts02.zip",
-        "utilake.from.release": "2026-10",
-        "utilake.from.sha256": "9a6a7289e60eeb2bb0e7ed7c113d340b61a1981d9ba79cbcd446d98c56aba4e3",
-        "utilake.from.time": "2026-11-25T00:00:00+10:00",
-        "utilake.kinds": "[\"dwgm\"]",
-        "utilake.report-subtype": "INT343_CCAUCTION_AUCTION_QTY_1",
-        "utilake.report-type": "DWGM",
-        "utilake.rows": "252",
-        "utilake.to.file": "int343_v4_ccauction_auction_qty_1.csv",
-        "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "952ed126caa006c8b2f74600c0fd50aadb1cba394580aa2b0a323dc25a3e24a6",
-        "utilake.to.time": "2026-11-25T00:00:00+10:00",
-        "utilake.total-rows": "252",
-        "utilake.version": "4"
+        "phasor.files": "2",
+        "phasor.from.file": "PublicRpts02.zip",
+        "phasor.from.release": "2026-10",
+        "phasor.from.sha256": "9a6a7289e60eeb2bb0e7ed7c113d340b61a1981d9ba79cbcd446d98c56aba4e3",
+        "phasor.from.time": "2026-11-25T00:00:00+10:00",
+        "phasor.kinds": "[\"dwgm\"]",
+        "phasor.report-subtype": "INT343_CCAUCTION_AUCTION_QTY_1",
+        "phasor.report-type": "DWGM",
+        "phasor.rows": "252",
+        "phasor.to.file": "int343_v4_ccauction_auction_qty_1.csv",
+        "phasor.to.release": "2026-10",
+        "phasor.to.sha256": "952ed126caa006c8b2f74600c0fd50aadb1cba394580aa2b0a323dc25a3e24a6",
+        "phasor.to.time": "2026-11-25T00:00:00+10:00",
+        "phasor.total-rows": "252",
+        "phasor.version": "4"
       },
       "timestamp-ms": 1790776800000
     }
@@ -140,5 +140,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "eec44cb1-2c44-818b-9255-4971fd78c829"
+  "table-uuid": "d4728d5a-dcf8-80d9-9286-03c33e79278a"
 }

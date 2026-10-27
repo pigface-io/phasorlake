@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1525096800000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MTPASA_REGIONITERATION",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/MTPASA_REGIONITERATION",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -19,22 +19,22 @@
   ],
   "properties": {
     "comment": "Region results for Unserved Energy (USE)",
-    "utilake.declared": "true",
-    "utilake.format": "4",
-    "utilake.key": "[\"RUN_DATETIME\",\"RUN_NO\",\"RUNTYPE\",\"DEMAND_POE_TYPE\",\"AGGREGATION_PERIOD\",\"PERIOD_ENDING\",\"REGIONID\",\"USE_ITERATION_ID\"]",
-    "utilake.load": "append",
-    "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(4)\",\"3\":\"VARCHAR(20)\",\"4\":\"VARCHAR(20)\",\"5\":\"VARCHAR(20)\",\"6\":\"TIMESTAMP(0)\",\"7\":\"VARCHAR(20)\",\"8\":\"NUMERIC(5)\",\"9\":\"NUMERIC(12,2)\",\"10\":\"NUMERIC(12,2)\",\"11\":\"TIMESTAMP(0)\"}",
-    "utilake.package": "MTPASA",
-    "utilake.reports": "[[\"MTPASA\",\"REGIONITERATION\"]]",
-    "utilake.table": "MTPASA_REGIONITERATION",
-    "utilake.temporal.cutoff": "RUN_DATETIME",
-    "utilake.temporal.entity": "[\"RUNTYPE\",\"DEMAND_POE_TYPE\",\"AGGREGATION_PERIOD\",\"REGIONID\",\"USE_ITERATION_ID\"]",
-    "utilake.temporal.order": "[\"RUN_DATETIME\",\"RUN_NO\",\"LASTCHANGED\"]",
-    "utilake.temporal.origin": "derived",
-    "utilake.temporal.valid.column": "PERIOD_ENDING",
-    "utilake.temporal.valid.kind": "interval_end",
-    "utilake.time": "RUN_DATETIME",
-    "utilake.visibility": "PUBLIC"
+    "phasor.declared": "true",
+    "phasor.format": "4",
+    "phasor.key": "[\"RUN_DATETIME\",\"RUN_NO\",\"RUNTYPE\",\"DEMAND_POE_TYPE\",\"AGGREGATION_PERIOD\",\"PERIOD_ENDING\",\"REGIONID\",\"USE_ITERATION_ID\"]",
+    "phasor.load": "append",
+    "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(4)\",\"3\":\"VARCHAR(20)\",\"4\":\"VARCHAR(20)\",\"5\":\"VARCHAR(20)\",\"6\":\"TIMESTAMP(0)\",\"7\":\"VARCHAR(20)\",\"8\":\"NUMERIC(5)\",\"9\":\"NUMERIC(12,2)\",\"10\":\"NUMERIC(12,2)\",\"11\":\"TIMESTAMP(0)\"}",
+    "phasor.package": "MTPASA",
+    "phasor.reports": "[[\"MTPASA\",\"REGIONITERATION\"]]",
+    "phasor.table": "MTPASA_REGIONITERATION",
+    "phasor.temporal.cutoff": "RUN_DATETIME",
+    "phasor.temporal.entity": "[\"RUNTYPE\",\"DEMAND_POE_TYPE\",\"AGGREGATION_PERIOD\",\"REGIONID\",\"USE_ITERATION_ID\"]",
+    "phasor.temporal.order": "[\"RUN_DATETIME\",\"RUN_NO\",\"LASTCHANGED\"]",
+    "phasor.temporal.origin": "derived",
+    "phasor.temporal.valid.column": "PERIOD_ENDING",
+    "phasor.temporal.valid.kind": "interval_end",
+    "phasor.time": "RUN_DATETIME",
+    "phasor.visibility": "PUBLIC"
   },
   "refs": {
     "main": {
@@ -147,27 +147,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MTPASA_REGIONITERATION/metadata/snap-3319440494690570546-1-82b872f1-aeb4-8440-a68b-1e85dac0d5d0.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/MTPASA_REGIONITERATION/metadata/snap-3319440494690570546-1-74ec26bb-3058-8f9a-9e61-2f477928a792.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 3319440494690570546,
       "summary": {
         "operation": "append",
-        "utilake.files": "163",
-        "utilake.from.file": "PUBLIC_DVD_MTPASA_REGIONITERATION_201805010000.zip",
-        "utilake.from.release": "2018-05",
-        "utilake.from.sha256": "626fe49bdafdb85534bcbe8f315e5fbde9e8fb08cd999c6d9d232e35be546838",
-        "utilake.from.time": "2018-05-14T10:59:49+10:00",
-        "utilake.kinds": "[\"archive\",\"dvd\",\"reports\"]",
-        "utilake.report-subtype": "REGIONITERATION",
-        "utilake.report-type": "MTPASA",
-        "utilake.rows": "1404056",
-        "utilake.to.file": "PUBLIC_MTPASA_202610182230_0000000543880583.zip",
-        "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "e3e92a13affdf30dceb54812acd0cc8e79daafb91abda0ef5b0c05881fea2548",
-        "utilake.to.time": "2026-10-18T22:30:00+10:00",
-        "utilake.total-rows": "1404056",
-        "utilake.version": "1"
+        "phasor.files": "163",
+        "phasor.from.file": "PUBLIC_DVD_MTPASA_REGIONITERATION_201805010000.zip",
+        "phasor.from.release": "2018-05",
+        "phasor.from.sha256": "626fe49bdafdb85534bcbe8f315e5fbde9e8fb08cd999c6d9d232e35be546838",
+        "phasor.from.time": "2018-05-14T10:59:49+10:00",
+        "phasor.kinds": "[\"archive\",\"dvd\",\"reports\"]",
+        "phasor.report-subtype": "REGIONITERATION",
+        "phasor.report-type": "MTPASA",
+        "phasor.rows": "1404056",
+        "phasor.to.file": "PUBLIC_MTPASA_202610182230_0000000543880583.zip",
+        "phasor.to.release": "2026-10",
+        "phasor.to.sha256": "e3e92a13affdf30dceb54812acd0cc8e79daafb91abda0ef5b0c05881fea2548",
+        "phasor.to.time": "2026-10-18T22:30:00+10:00",
+        "phasor.total-rows": "1404056",
+        "phasor.version": "1"
       },
       "timestamp-ms": 1525096800000
     }
@@ -178,5 +178,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "82b872f1-aeb4-8440-a68b-1e85dac0d5d0"
+  "table-uuid": "74ec26bb-3058-8f9a-9e61-2f477928a792"
 }

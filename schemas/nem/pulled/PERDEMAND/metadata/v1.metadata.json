@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1246370400000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PERDEMAND",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/PERDEMAND",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -19,22 +19,22 @@
   ],
   "properties": {
     "comment": "PERDEMAND sets out the regional demands and MR schedule data for each half-hour period. PERDEMAND is a child table to RESDEMANDTRK.",
-    "utilake.declared": "true",
-    "utilake.format": "4",
-    "utilake.key": "[\"SETTLEMENTDATE\",\"REGIONID\",\"OFFERDATE\",\"PERIODID\",\"VERSIONNO\"]",
-    "utilake.load": "append",
-    "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"VARCHAR(10)\",\"4\":\"TIMESTAMP(0)\",\"5\":\"NUMERIC(3,0)\",\"6\":\"NUMERIC(3,0)\",\"7\":\"NUMERIC(10,0)\",\"8\":\"NUMERIC(10,0)\",\"9\":\"NUMERIC(10,0)\",\"10\":\"TIMESTAMP(0)\",\"11\":\"NUMERIC(6,0)\"}",
-    "utilake.package": "DEMAND_FORECASTS",
-    "utilake.reports": "[[\"DEMAND\",\"PERIOD\"]]",
-    "utilake.table": "PERDEMAND",
-    "utilake.temporal.cutoff": "OFFERDATE",
-    "utilake.temporal.entity": "[\"REGIONID\",\"PERIODID\"]",
-    "utilake.temporal.order": "[\"OFFERDATE\",\"VERSIONNO\",\"LASTCHANGED\"]",
-    "utilake.temporal.origin": "hand",
-    "utilake.temporal.valid.column": "SETTLEMENTDATE",
-    "utilake.temporal.valid.kind": "day",
-    "utilake.time": "SETTLEMENTDATE",
-    "utilake.visibility": "PUBLIC"
+    "phasor.declared": "true",
+    "phasor.format": "4",
+    "phasor.key": "[\"SETTLEMENTDATE\",\"REGIONID\",\"OFFERDATE\",\"PERIODID\",\"VERSIONNO\"]",
+    "phasor.load": "append",
+    "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"VARCHAR(10)\",\"4\":\"TIMESTAMP(0)\",\"5\":\"NUMERIC(3,0)\",\"6\":\"NUMERIC(3,0)\",\"7\":\"NUMERIC(10,0)\",\"8\":\"NUMERIC(10,0)\",\"9\":\"NUMERIC(10,0)\",\"10\":\"TIMESTAMP(0)\",\"11\":\"NUMERIC(6,0)\"}",
+    "phasor.package": "DEMAND_FORECASTS",
+    "phasor.reports": "[[\"DEMAND\",\"PERIOD\"]]",
+    "phasor.table": "PERDEMAND",
+    "phasor.temporal.cutoff": "OFFERDATE",
+    "phasor.temporal.entity": "[\"REGIONID\",\"PERIODID\"]",
+    "phasor.temporal.order": "[\"OFFERDATE\",\"VERSIONNO\",\"LASTCHANGED\"]",
+    "phasor.temporal.origin": "hand",
+    "phasor.temporal.valid.column": "SETTLEMENTDATE",
+    "phasor.temporal.valid.kind": "day",
+    "phasor.time": "SETTLEMENTDATE",
+    "phasor.visibility": "PUBLIC"
   },
   "refs": {
     "main": {
@@ -144,27 +144,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PERDEMAND/metadata/snap-2613801505847496880-1-99cc3651-983d-8481-ba7a-f37aa79fc397.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/PERDEMAND/metadata/snap-2613801505847496880-1-2db6125a-de03-8271-8885-ad024397badf.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 2613801505847496880,
       "summary": {
         "operation": "append",
-        "utilake.files": "207",
-        "utilake.from.file": "PUBLIC_DVD_PERDEMAND_200907010000.zip",
-        "utilake.from.release": "2009-07",
-        "utilake.from.sha256": "44539eb2dbd1be88df4d0e25d3424acce148a40d2632a20dc0d5556981bbd261",
-        "utilake.from.time": "2009-07-01T00:00:00+10:00",
-        "utilake.kinds": "[\"archive\",\"dvd\"]",
-        "utilake.report-subtype": "PERIOD",
-        "utilake.report-type": "DEMAND",
-        "utilake.rows": "557453760",
-        "utilake.to.file": "PUBLIC_ARCHIVE#PERDEMAND#FILE01#202609010000.zip",
-        "utilake.to.release": "2026-09",
-        "utilake.to.sha256": "c925c7b5a0100ba10c35ccec29c5dadc696d84e94833dba6e7c904aec82e6949",
-        "utilake.to.time": "2026-09-30T00:00:00+10:00",
-        "utilake.total-rows": "557453760",
-        "utilake.version": "1"
+        "phasor.files": "207",
+        "phasor.from.file": "PUBLIC_DVD_PERDEMAND_200907010000.zip",
+        "phasor.from.release": "2009-07",
+        "phasor.from.sha256": "44539eb2dbd1be88df4d0e25d3424acce148a40d2632a20dc0d5556981bbd261",
+        "phasor.from.time": "2009-07-01T00:00:00+10:00",
+        "phasor.kinds": "[\"archive\",\"dvd\"]",
+        "phasor.report-subtype": "PERIOD",
+        "phasor.report-type": "DEMAND",
+        "phasor.rows": "557453760",
+        "phasor.to.file": "PUBLIC_ARCHIVE#PERDEMAND#FILE01#202609010000.zip",
+        "phasor.to.release": "2026-09",
+        "phasor.to.sha256": "c925c7b5a0100ba10c35ccec29c5dadc696d84e94833dba6e7c904aec82e6949",
+        "phasor.to.time": "2026-09-30T00:00:00+10:00",
+        "phasor.total-rows": "557453760",
+        "phasor.version": "1"
       },
       "timestamp-ms": 1246370400000
     }
@@ -175,5 +175,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "99cc3651-983d-8481-ba7a-f37aa79fc397"
+  "table-uuid": "2db6125a-de03-8271-8885-ad024397badf"
 }

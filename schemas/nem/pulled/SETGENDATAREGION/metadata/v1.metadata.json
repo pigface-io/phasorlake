@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1246370400000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/SETGENDATAREGION",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/SETGENDATAREGION",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -19,22 +19,22 @@
   ],
   "properties": {
     "comment": "SETGENDATAREGION sets out summary settlement data for generation within the specified region. The table is populated for participants using Data Model 5.2. For participants using Data Model 5.3 or higher, SET_ENERGY_REGION_SUMMARY replace SETGENDATAREGION.",
-    "utilake.declared": "true",
-    "utilake.format": "4",
-    "utilake.key": "[\"SETTLEMENTDATE\",\"VERSIONNO\",\"PERIODID\",\"REGIONID\"]",
-    "utilake.load": "append",
-    "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(22,10)\",\"3\":\"NUMERIC(22,10)\",\"4\":\"VARCHAR(10)\",\"5\":\"NUMERIC(22,0)\",\"6\":\"NUMERIC(22,0)\",\"7\":\"NUMERIC(22,0)\",\"8\":\"NUMERIC(22,0)\",\"9\":\"NUMERIC(27,5)\",\"10\":\"NUMERIC(27,5)\",\"11\":\"NUMERIC(27,5)\",\"12\":\"NUMERIC(27,6)\",\"13\":\"NUMERIC(27,6)\",\"14\":\"TIMESTAMP(0)\"}",
-    "utilake.package": "SETTLEMENT_DATA",
-    "utilake.reports": "[[\"SETTLEMENTS\",\"GENDATAREGION\"]]",
-    "utilake.table": "SETGENDATAREGION",
-    "utilake.temporal.cutoff": "LASTCHANGED",
-    "utilake.temporal.entity": "[\"PERIODID\",\"REGIONID\"]",
-    "utilake.temporal.order": "[\"VERSIONNO\",\"LASTCHANGED\"]",
-    "utilake.temporal.origin": "hand",
-    "utilake.temporal.valid.column": "SETTLEMENTDATE",
-    "utilake.temporal.valid.kind": "day",
-    "utilake.time": "SETTLEMENTDATE",
-    "utilake.visibility": "PUBLIC"
+    "phasor.declared": "true",
+    "phasor.format": "4",
+    "phasor.key": "[\"SETTLEMENTDATE\",\"VERSIONNO\",\"PERIODID\",\"REGIONID\"]",
+    "phasor.load": "append",
+    "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(22,10)\",\"3\":\"NUMERIC(22,10)\",\"4\":\"VARCHAR(10)\",\"5\":\"NUMERIC(22,0)\",\"6\":\"NUMERIC(22,0)\",\"7\":\"NUMERIC(22,0)\",\"8\":\"NUMERIC(22,0)\",\"9\":\"NUMERIC(27,5)\",\"10\":\"NUMERIC(27,5)\",\"11\":\"NUMERIC(27,5)\",\"12\":\"NUMERIC(27,6)\",\"13\":\"NUMERIC(27,6)\",\"14\":\"TIMESTAMP(0)\"}",
+    "phasor.package": "SETTLEMENT_DATA",
+    "phasor.reports": "[[\"SETTLEMENTS\",\"GENDATAREGION\"]]",
+    "phasor.table": "SETGENDATAREGION",
+    "phasor.temporal.cutoff": "LASTCHANGED",
+    "phasor.temporal.entity": "[\"PERIODID\",\"REGIONID\"]",
+    "phasor.temporal.order": "[\"VERSIONNO\",\"LASTCHANGED\"]",
+    "phasor.temporal.origin": "hand",
+    "phasor.temporal.valid.column": "SETTLEMENTDATE",
+    "phasor.temporal.valid.kind": "day",
+    "phasor.time": "SETTLEMENTDATE",
+    "phasor.visibility": "PUBLIC"
   },
   "refs": {
     "main": {
@@ -164,27 +164,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/SETGENDATAREGION/metadata/snap-8147252472032901949-1-28641738-10c2-8ec7-b455-e6078360039b.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/SETGENDATAREGION/metadata/snap-8147252472032901949-1-e5799e78-a560-8acb-8d9f-7031f5a25dad.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 8147252472032901949,
       "summary": {
         "operation": "append",
-        "utilake.files": "4450",
-        "utilake.from.file": "PUBLIC_DVD_SETGENDATAREGION_200907010000.zip",
-        "utilake.from.release": "2009-07",
-        "utilake.from.sha256": "44539eb2dbd1be88df4d0e25d3424acce148a40d2632a20dc0d5556981bbd261",
-        "utilake.from.time": "2008-11-30T00:00:00+10:00",
-        "utilake.kinds": "[\"archive\",\"dvd\",\"reports\"]",
-        "utilake.report-subtype": "GENDATAREGION",
-        "utilake.report-type": "SETTLEMENTS",
-        "utilake.rows": "20518560",
-        "utilake.to.file": "PUBLIC_SETTLEMENTS_20241227085036_0000000444862173.zip",
-        "utilake.to.release": "2024-12",
-        "utilake.to.sha256": "1f2d8af553fb9d38d23122ca9509fab3a4b68338fb4bfd778376270a3855d99f",
-        "utilake.to.time": "2024-06-01T00:00:00+10:00",
-        "utilake.total-rows": "20518560",
-        "utilake.version": "5"
+        "phasor.files": "4450",
+        "phasor.from.file": "PUBLIC_DVD_SETGENDATAREGION_200907010000.zip",
+        "phasor.from.release": "2009-07",
+        "phasor.from.sha256": "44539eb2dbd1be88df4d0e25d3424acce148a40d2632a20dc0d5556981bbd261",
+        "phasor.from.time": "2008-11-30T00:00:00+10:00",
+        "phasor.kinds": "[\"archive\",\"dvd\",\"reports\"]",
+        "phasor.report-subtype": "GENDATAREGION",
+        "phasor.report-type": "SETTLEMENTS",
+        "phasor.rows": "20518560",
+        "phasor.to.file": "PUBLIC_SETTLEMENTS_20241227085036_0000000444862173.zip",
+        "phasor.to.release": "2024-12",
+        "phasor.to.sha256": "1f2d8af553fb9d38d23122ca9509fab3a4b68338fb4bfd778376270a3855d99f",
+        "phasor.to.time": "2024-06-01T00:00:00+10:00",
+        "phasor.total-rows": "20518560",
+        "phasor.version": "5"
       },
       "timestamp-ms": 1246370400000
     }
@@ -195,5 +195,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "28641738-10c2-8ec7-b455-e6078360039b"
+  "table-uuid": "e5799e78-a560-8acb-8d9f-7031f5a25dad"
 }

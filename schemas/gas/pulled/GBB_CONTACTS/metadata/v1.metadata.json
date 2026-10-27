@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1790776800000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GBB_CONTACTS",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/gas/GBB_CONTACTS",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -19,24 +19,24 @@
   ],
   "properties": {
     "comment": "The registered user list of responsible contact persons for each BB Participant organisation as identified at registration or otherwise",
-    "utilake.declared": "true",
-    "utilake.format": "4",
-    "utilake.headers": "{\"1\":\"PersonId\",\"2\":\"PersonName\",\"3\":\"CompanyId\",\"4\":\"CompanyName\",\"5\":\"Position\",\"6\":\"Email\",\"7\":\"LastUpdated\"}",
-    "utilake.key": "[\"PERSONID\",\"COMPANYID\"]",
-    "utilake.load": "snapshot",
-    "utilake.market": "gas",
-    "utilake.model": "[\"GAS_CONTACT\",\"GAS_CONTACT_DETAIL\",\"GAS_PARTICIPANT_CONTACT\"]",
-    "utilake.model-types": "{\"1\":\"Number(10,0)\",\"3\":\"Number(10,0)\",\"5\":\"varchar2(40)\",\"6\":\"Varchar2 (255)\"}",
-    "utilake.offset": "+10:00",
-    "utilake.reports": "[[\"GBB\",\"CONTACTS\"]]",
-    "utilake.table": "GBB_CONTACTS",
-    "utilake.temporal.cutoff": "LASTUPDATED",
-    "utilake.temporal.entity": "[\"PERSONID\",\"COMPANYID\"]",
-    "utilake.temporal.order": "[\"LASTUPDATED\"]",
-    "utilake.temporal.origin": "hand",
-    "utilake.temporal.valid.kind": "timeless",
-    "utilake.time": "LASTUPDATED",
-    "utilake.visibility": "PUBLIC"
+    "phasor.declared": "true",
+    "phasor.format": "4",
+    "phasor.headers": "{\"1\":\"PersonId\",\"2\":\"PersonName\",\"3\":\"CompanyId\",\"4\":\"CompanyName\",\"5\":\"Position\",\"6\":\"Email\",\"7\":\"LastUpdated\"}",
+    "phasor.key": "[\"PERSONID\",\"COMPANYID\"]",
+    "phasor.load": "snapshot",
+    "phasor.market": "gas",
+    "phasor.model": "[\"GAS_CONTACT\",\"GAS_CONTACT_DETAIL\",\"GAS_PARTICIPANT_CONTACT\"]",
+    "phasor.model-types": "{\"1\":\"Number(10,0)\",\"3\":\"Number(10,0)\",\"5\":\"varchar2(40)\",\"6\":\"Varchar2 (255)\"}",
+    "phasor.offset": "+10:00",
+    "phasor.reports": "[[\"GBB\",\"CONTACTS\"]]",
+    "phasor.table": "GBB_CONTACTS",
+    "phasor.temporal.cutoff": "LASTUPDATED",
+    "phasor.temporal.entity": "[\"PERSONID\",\"COMPANYID\"]",
+    "phasor.temporal.order": "[\"LASTUPDATED\"]",
+    "phasor.temporal.origin": "hand",
+    "phasor.temporal.valid.kind": "timeless",
+    "phasor.time": "LASTUPDATED",
+    "phasor.visibility": "PUBLIC"
   },
   "refs": {
     "main": {
@@ -112,27 +112,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GBB_CONTACTS/metadata/snap-5605942208238616121-1-fc7102db-534d-81ec-8cdd-cc6e787da9a5.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/gas/GBB_CONTACTS/metadata/snap-5605942208238616121-1-94d35de6-5472-8665-a57d-3519a56b3ead.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 5605942208238616121,
       "summary": {
         "operation": "append",
-        "utilake.files": "1",
-        "utilake.from.file": "GasBBContacts.CSV",
-        "utilake.from.release": "2026-10",
-        "utilake.from.sha256": "d54d5d945f55a4873ea56bcd3b7022a6777966e8d960832c7543cc612c38d126",
-        "utilake.from.time": "2012-07-10T15:13:32+10:00",
-        "utilake.kinds": "[\"gbb\"]",
-        "utilake.report-subtype": "CONTACTS",
-        "utilake.report-type": "GBB",
-        "utilake.rows": "289",
-        "utilake.to.file": "GasBBContacts.CSV",
-        "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "d54d5d945f55a4873ea56bcd3b7022a6777966e8d960832c7543cc612c38d126",
-        "utilake.to.time": "2026-09-01T19:30:00+10:00",
-        "utilake.total-rows": "289",
-        "utilake.version": "1"
+        "phasor.files": "1",
+        "phasor.from.file": "GasBBContacts.CSV",
+        "phasor.from.release": "2026-10",
+        "phasor.from.sha256": "d54d5d945f55a4873ea56bcd3b7022a6777966e8d960832c7543cc612c38d126",
+        "phasor.from.time": "2012-07-10T15:13:32+10:00",
+        "phasor.kinds": "[\"gbb\"]",
+        "phasor.report-subtype": "CONTACTS",
+        "phasor.report-type": "GBB",
+        "phasor.rows": "289",
+        "phasor.to.file": "GasBBContacts.CSV",
+        "phasor.to.release": "2026-10",
+        "phasor.to.sha256": "d54d5d945f55a4873ea56bcd3b7022a6777966e8d960832c7543cc612c38d126",
+        "phasor.to.time": "2026-09-01T19:30:00+10:00",
+        "phasor.total-rows": "289",
+        "phasor.version": "1"
       },
       "timestamp-ms": 1790776800000
     }
@@ -143,5 +143,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "fc7102db-534d-81ec-8cdd-cc6e787da9a5"
+  "table-uuid": "94d35de6-5472-8665-a57d-3519a56b3ead"
 }

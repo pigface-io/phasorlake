@@ -15,9 +15,9 @@ default_stages = ["pre-commit"]
 repo = "builtin"
 hooks = [
     # Files kept byte for byte: AEMO's fixtures, the tables pulled from
-    # utilake-schemas (whose manifest holds their hashes), and references.
-    { id = "trailing-whitespace", exclude = '^(testdata/|crates/utilake-mirror/testdata/|schemas/[a-z]+/pulled/|reference/)' },
-    { id = "end-of-file-fixer", exclude = '^(testdata/|crates/utilake-mirror/testdata/|schemas/[a-z]+/pulled/|reference/)' },
+    # phasor-schemas (whose manifest holds their hashes), and references.
+    { id = "trailing-whitespace", exclude = '^(testdata/|crates/phasor-mirror/testdata/|schemas/[a-z]+/pulled/|reference/)' },
+    { id = "end-of-file-fixer", exclude = '^(testdata/|crates/phasor-mirror/testdata/|schemas/[a-z]+/pulled/|reference/)' },
     { id = "check-yaml" },
     { id = "check-toml" },
     { id = "check-json" },
@@ -56,6 +56,14 @@ name = "test: every unit and integration test"
 language = "system"
 entry = "just test"
 files = '^(crates/|Cargo\.(toml|lock)$|testdata/|schemas/)'
+pass_filenames = false
+
+[[repos.hooks]]
+id = "old-name"
+name = "lint: no file or path names the project's old name"
+language = "system"
+entry = "just old-name"
+always_run = true
 pass_filenames = false
 
 [[repos.hooks]]
@@ -128,7 +136,7 @@ name = "bench: the fast set, held to bench/budgets.json"
 language = "system"
 entry = "just bench-fast"
 stages = ["pre-push"]
-files = '^(crates/utilake-(core|kit|mms-decode|mms-conform|registry|writer)/|bench/budgets\.json$)'
+files = '^(crates/phasor-(core|kit|mms-decode|mms-conform|registry|writer)/|bench/budgets\.json$)'
 pass_filenames = false
 
 [[repos.hooks]]

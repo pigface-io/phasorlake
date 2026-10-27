@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1722434400000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PMS_GROUP",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/PMS_GROUP",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -19,20 +19,20 @@
   ],
   "properties": {
     "comment": "Entity table for group",
-    "utilake.declared": "true",
-    "utilake.format": "4",
-    "utilake.key": "[]",
-    "utilake.load": "append",
-    "utilake.model-types": "{\"1\":\"NUMERIC(20,0)\",\"2\":\"TIMESTAMP(3)\",\"3\":\"TIMESTAMP(3)\"}",
-    "utilake.reports": "[[\"PARTICIPANT_REGISTRATION\",\"PMS_GROUP\"]]",
-    "utilake.table": "PMS_GROUP",
-    "utilake.temporal.cutoff": "LASTCHANGED",
-    "utilake.temporal.entity": "[]",
-    "utilake.temporal.order": "[\"LASTCHANGED\"]",
-    "utilake.temporal.origin": "derived",
-    "utilake.temporal.valid.kind": "timeless",
-    "utilake.time": "LASTCHANGED",
-    "utilake.visibility": "PUBLIC"
+    "phasor.declared": "true",
+    "phasor.format": "4",
+    "phasor.key": "[]",
+    "phasor.load": "append",
+    "phasor.model-types": "{\"1\":\"NUMERIC(20,0)\",\"2\":\"TIMESTAMP(3)\",\"3\":\"TIMESTAMP(3)\"}",
+    "phasor.reports": "[[\"PARTICIPANT_REGISTRATION\",\"PMS_GROUP\"]]",
+    "phasor.table": "PMS_GROUP",
+    "phasor.temporal.cutoff": "LASTCHANGED",
+    "phasor.temporal.entity": "[]",
+    "phasor.temporal.order": "[\"LASTCHANGED\"]",
+    "phasor.temporal.origin": "derived",
+    "phasor.temporal.valid.kind": "timeless",
+    "phasor.time": "LASTCHANGED",
+    "phasor.visibility": "PUBLIC"
   },
   "refs": {
     "main": {
@@ -80,27 +80,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PMS_GROUP/metadata/snap-6469819238852458784-1-ea1d88c0-89f7-8e95-9e58-a7bd1f4f31f7.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/PMS_GROUP/metadata/snap-6469819238852458784-1-7ac807eb-101b-8c5e-9bdc-e94b13e1e80e.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 6469819238852458784,
       "summary": {
         "operation": "append",
-        "utilake.files": "26",
-        "utilake.from.file": "PUBLIC_ARCHIVE#PMS_GROUP#FILE01#202408010000.zip",
-        "utilake.from.release": "2024-08",
-        "utilake.from.sha256": "7ce3cdb89b4a2898061fb891d72b37aab4ab826c5105a126ffb5ab362048398c",
-        "utilake.from.time": "2021-09-21T13:38:51.717+10:00",
-        "utilake.kinds": "[\"archive\"]",
-        "utilake.report-subtype": "PMS_GROUP",
-        "utilake.report-type": "PARTICIPANT_REGISTRATION",
-        "utilake.rows": "5769",
-        "utilake.to.file": "PUBLIC_ARCHIVE#PMS_GROUP#FILE01#202609010000.zip",
-        "utilake.to.release": "2026-09",
-        "utilake.to.sha256": "715e9c1b2ca43bf4e7ccca698debe047679ffdb52112f02ffcdf8ba2ac65bb86",
-        "utilake.to.time": "2026-09-24T11:11:31.713+10:00",
-        "utilake.total-rows": "5769",
-        "utilake.version": "1"
+        "phasor.files": "26",
+        "phasor.from.file": "PUBLIC_ARCHIVE#PMS_GROUP#FILE01#202408010000.zip",
+        "phasor.from.release": "2024-08",
+        "phasor.from.sha256": "7ce3cdb89b4a2898061fb891d72b37aab4ab826c5105a126ffb5ab362048398c",
+        "phasor.from.time": "2021-09-21T13:38:51.717+10:00",
+        "phasor.kinds": "[\"archive\"]",
+        "phasor.report-subtype": "PMS_GROUP",
+        "phasor.report-type": "PARTICIPANT_REGISTRATION",
+        "phasor.rows": "5769",
+        "phasor.to.file": "PUBLIC_ARCHIVE#PMS_GROUP#FILE01#202609010000.zip",
+        "phasor.to.release": "2026-09",
+        "phasor.to.sha256": "715e9c1b2ca43bf4e7ccca698debe047679ffdb52112f02ffcdf8ba2ac65bb86",
+        "phasor.to.time": "2026-09-24T11:11:31.713+10:00",
+        "phasor.total-rows": "5769",
+        "phasor.version": "1"
       },
       "timestamp-ms": 1722434400000
     }
@@ -111,5 +111,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "ea1d88c0-89f7-8e95-9e58-a7bd1f4f31f7"
+  "table-uuid": "7ac807eb-101b-8c5e-9bdc-e94b13e1e80e"
 }

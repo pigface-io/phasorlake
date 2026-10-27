@@ -1,6 +1,6 @@
 # Reading the lake
 
-utilake writes the lake and does not read it. Every row of every file is
+phasor writes the lake and does not read it. Every row of every file is
 kept: every revision, every copy of a fact from every source that
 published it, each with where it came from and every time that source was
 stamped with (`docs/semantics.md`). "The latest", "every revision" and "as
@@ -10,7 +10,7 @@ with your own engine. This page gives each question as one query.
 Every block marked as an example below is run by the tests against a
 small fixture lake through the DuckDB CLI, and its rows are checked, so
 the queries on this page are the ones that work. Run them from the
-utilake home (`{home}`, default `~/.utilake`), where `lake/` is.
+phasor home (`{home}`, default `~/.phasor`), where `lake/` is.
 
 ## Where to read from
 
@@ -23,15 +23,15 @@ metadata in `metadata/`, kept current by every ingest. Two ways in:
   reader. Its current schema is every field the table has ever had, by
   field id, under each field's newest name, so every column of every file
   reads, whatever schema the file came in under. The table's properties
-  carry its roles (`utilake.temporal.*`), key, the columns a table takes
-  when it shares a report pair (`utilake.with-columns`), any breaks
-  (`utilake.breaks`) and the data model's words; each snapshot is a run
+  carry its roles (`phasor.temporal.*`), key, the columns a table takes
+  when it shares a report pair (`phasor.with-columns`), any breaks
+  (`phasor.breaks`) and the data model's words; each snapshot is a run
   of AEMO files under one schema, for a read of the table as it was.
 - **The Parquet files**: `read_parquet('lake/nem/dudetail/data/**/*.parquet',
   hive_partitioning = true, union_by_name = true)`. Every lake file holds
   the table's every field too, so this reads the same columns, by name: a
   file written before a column was renamed holds it under the old name
-  until `utilake ingest` writes it again.
+  until `phasor ingest` writes it again.
 
 The examples below read the Parquet files unless they say otherwise; each
 reads the same through `iceberg_scan`.
@@ -39,7 +39,7 @@ reads the same through `iceberg_scan`.
 ## A table's roles
 
 The queries are the same for every table but for its columns.
-`utilake list TABLE` (or `--json`) names them:
+`phasor list TABLE` (or `--json`) names them:
 
 | role | what it is | DISPATCHPRICE |
 |---|---|---|
@@ -312,9 +312,9 @@ ORDER BY SETTLEMENTDATE
 ## A lake that moved
 
 A home copied or moved whole (a new disk, a backup restored) reads as it
-did. Its manifest names every file relative to the home, so `utilake
+did. Its manifest names every file relative to the home, so `phasor
 verify` and every later ingest find them where they are now. The Iceberg
-metadata still names the old place until `utilake iceberg` writes it for
+metadata still names the old place until `phasor iceberg` writes it for
 the new one; until then, DuckDB finds each file by its path under the
 table's `data/` directory:
 
@@ -332,8 +332,8 @@ ORDER BY SETTLEMENTDATE
 ```
 
 A column whose values turned to text would be a new field under the
-same name (listed in `utilake.breaks`); no table has one yet, and
-utilake refuses to read such a table until it can tell the two apart.
+same name (listed in `phasor.breaks`); no table has one yet, and
+phasor refuses to read such a table until it can tell the two apart.
 
 ## Market time
 
@@ -354,7 +354,7 @@ SET TimeZone = 'Australia/Brisbane';
 - Which intervention run to use: both are kept; filter on `INTERVENTION`.
 - Aliases (a battery's charge and discharge units, a renamed DUID) and
   shifts in time.
-- Writing a result down: the lake is the only Parquet utilake writes. A
+- Writing a result down: the lake is the only Parquet phasor writes. A
   saved result goes stale when the lake gains a revision, so derived
   datasets belong to a layer of their own that records which lake
   snapshot each was built from.

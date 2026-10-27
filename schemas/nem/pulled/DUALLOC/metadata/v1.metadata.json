@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1601474400000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DUALLOC",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/DUALLOC",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -19,21 +19,21 @@
   ],
   "properties": {
     "comment": "DUALLOC cross references dispatch unit identifier to genset ID for each participant.",
-    "utilake.declared": "true",
-    "utilake.format": "4",
-    "utilake.key": "[\"EFFECTIVEDATE\",\"VERSIONNO\",\"DUID\",\"GENSETID\"]",
-    "utilake.load": "snapshot",
-    "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(3,0)\",\"3\":\"VARCHAR(10)\",\"4\":\"VARCHAR(20)\",\"5\":\"TIMESTAMP(0)\"}",
-    "utilake.package": "PARTICIPANT_REGISTRATION",
-    "utilake.reports": "[[\"PARTICIPANT_REGISTRATION\",\"DUALLOC\"]]",
-    "utilake.table": "DUALLOC",
-    "utilake.temporal.cutoff": "LASTCHANGED",
-    "utilake.temporal.entity": "[\"DUID\",\"GENSETID\"]",
-    "utilake.temporal.order": "[\"VERSIONNO\",\"LASTCHANGED\"]",
-    "utilake.temporal.origin": "derived",
-    "utilake.temporal.valid.column": "EFFECTIVEDATE",
-    "utilake.temporal.valid.kind": "from",
-    "utilake.visibility": "PUBLIC"
+    "phasor.declared": "true",
+    "phasor.format": "4",
+    "phasor.key": "[\"EFFECTIVEDATE\",\"VERSIONNO\",\"DUID\",\"GENSETID\"]",
+    "phasor.load": "snapshot",
+    "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(3,0)\",\"3\":\"VARCHAR(10)\",\"4\":\"VARCHAR(20)\",\"5\":\"TIMESTAMP(0)\"}",
+    "phasor.package": "PARTICIPANT_REGISTRATION",
+    "phasor.reports": "[[\"PARTICIPANT_REGISTRATION\",\"DUALLOC\"]]",
+    "phasor.table": "DUALLOC",
+    "phasor.temporal.cutoff": "LASTCHANGED",
+    "phasor.temporal.entity": "[\"DUID\",\"GENSETID\"]",
+    "phasor.temporal.order": "[\"VERSIONNO\",\"LASTCHANGED\"]",
+    "phasor.temporal.origin": "derived",
+    "phasor.temporal.valid.column": "EFFECTIVEDATE",
+    "phasor.temporal.valid.kind": "from",
+    "phasor.visibility": "PUBLIC"
   },
   "refs": {
     "main": {
@@ -100,27 +100,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DUALLOC/metadata/snap-6855610346186710464-1-dfa21d8b-5865-815d-bee7-3166a4eae774.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/DUALLOC/metadata/snap-6855610346186710464-1-90021bf5-ed14-8a88-9777-54149a8587a7.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 6855610346186710464,
       "summary": {
         "operation": "append",
-        "utilake.files": "72",
-        "utilake.from.file": "PUBLIC_DVD_DUALLOC_202010010000.zip",
-        "utilake.from.release": "2020-10",
-        "utilake.from.sha256": "e3ce13d9fdb1d7c34e6ac7414e371c99886df61dc075fea33d4c7303da6bffd3",
-        "utilake.from.time": "1998-10-25T00:00:00+10:00",
-        "utilake.kinds": "[\"archive\",\"dvd\"]",
-        "utilake.report-subtype": "DUALLOC",
-        "utilake.report-type": "PARTICIPANT_REGISTRATION",
-        "utilake.rows": "211082",
-        "utilake.to.file": "PUBLIC_ARCHIVE#DUALLOC#FILE01#202609010000.zip",
-        "utilake.to.release": "2026-09",
-        "utilake.to.sha256": "9d30284248792bd514230768a39c5ed83ecb76f4b2599eb6219138f9e625a6de",
-        "utilake.to.time": "2026-10-06T00:00:00+10:00",
-        "utilake.total-rows": "211082",
-        "utilake.version": "1"
+        "phasor.files": "72",
+        "phasor.from.file": "PUBLIC_DVD_DUALLOC_202010010000.zip",
+        "phasor.from.release": "2020-10",
+        "phasor.from.sha256": "e3ce13d9fdb1d7c34e6ac7414e371c99886df61dc075fea33d4c7303da6bffd3",
+        "phasor.from.time": "1998-10-25T00:00:00+10:00",
+        "phasor.kinds": "[\"archive\",\"dvd\"]",
+        "phasor.report-subtype": "DUALLOC",
+        "phasor.report-type": "PARTICIPANT_REGISTRATION",
+        "phasor.rows": "211082",
+        "phasor.to.file": "PUBLIC_ARCHIVE#DUALLOC#FILE01#202609010000.zip",
+        "phasor.to.release": "2026-09",
+        "phasor.to.sha256": "9d30284248792bd514230768a39c5ed83ecb76f4b2599eb6219138f9e625a6de",
+        "phasor.to.time": "2026-10-06T00:00:00+10:00",
+        "phasor.total-rows": "211082",
+        "phasor.version": "1"
       },
       "timestamp-ms": 1601474400000
     }
@@ -131,5 +131,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "dfa21d8b-5865-815d-bee7-3166a4eae774"
+  "table-uuid": "90021bf5-ed14-8a88-9777-54149a8587a7"
 }

@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1790776800000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/DWGM_INT260_COMPRESSOR_CHAR",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/gas/DWGM_INT260_COMPRESSOR_CHAR",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -18,23 +18,23 @@
     }
   ],
   "properties": {
-    "utilake.declared": "true",
-    "utilake.format": "4",
-    "utilake.headers": "{\"1\":\"compressor_id\",\"2\":\"compressor_name\",\"3\":\"pipe_segment_id\",\"4\":\"min_pressure_delta\",\"5\":\"most_efficient_pressure_delta\",\"6\":\"max_pressure_delta\",\"7\":\"max_compressor_power\",\"8\":\"min_compressor_power\",\"9\":\"compressor_efficiency\",\"10\":\"compressor_efficiency_at_min\",\"11\":\"efficiency_coefficient\",\"12\":\"super_compressability_factor\",\"13\":\"compressor_station_id\",\"14\":\"station_name\",\"15\":\"last_mod_date\",\"16\":\"current_date\"}",
-    "utilake.key": "[\"COMPRESSOR_ID\",\"PIPE_SEGMENT_ID\",\"COMPRESSOR_STATION_ID\"]",
-    "utilake.load": "snapshot",
-    "utilake.market": "gas",
-    "utilake.offset": "+10:00",
-    "utilake.reports": "[[\"DWGM\",\"INT260_COMPRESSOR_CHAR_1\"]]",
-    "utilake.table": "DWGM_INT260_COMPRESSOR_CHAR",
-    "utilake.temporal.cutoff": "CURRENT_DATE",
-    "utilake.temporal.entity": "[\"COMPRESSOR_ID\",\"PIPE_SEGMENT_ID\",\"COMPRESSOR_STATION_ID\"]",
-    "utilake.temporal.order": "[\"CURRENT_DATE\"]",
-    "utilake.temporal.origin": "hand",
-    "utilake.temporal.valid.column": "LAST_MOD_DATE",
-    "utilake.temporal.valid.kind": "instant",
-    "utilake.time": "LAST_MOD_DATE",
-    "utilake.visibility": "PUBLIC"
+    "phasor.declared": "true",
+    "phasor.format": "4",
+    "phasor.headers": "{\"1\":\"compressor_id\",\"2\":\"compressor_name\",\"3\":\"pipe_segment_id\",\"4\":\"min_pressure_delta\",\"5\":\"most_efficient_pressure_delta\",\"6\":\"max_pressure_delta\",\"7\":\"max_compressor_power\",\"8\":\"min_compressor_power\",\"9\":\"compressor_efficiency\",\"10\":\"compressor_efficiency_at_min\",\"11\":\"efficiency_coefficient\",\"12\":\"super_compressability_factor\",\"13\":\"compressor_station_id\",\"14\":\"station_name\",\"15\":\"last_mod_date\",\"16\":\"current_date\"}",
+    "phasor.key": "[\"COMPRESSOR_ID\",\"PIPE_SEGMENT_ID\",\"COMPRESSOR_STATION_ID\"]",
+    "phasor.load": "snapshot",
+    "phasor.market": "gas",
+    "phasor.offset": "+10:00",
+    "phasor.reports": "[[\"DWGM\",\"INT260_COMPRESSOR_CHAR_1\"]]",
+    "phasor.table": "DWGM_INT260_COMPRESSOR_CHAR",
+    "phasor.temporal.cutoff": "CURRENT_DATE",
+    "phasor.temporal.entity": "[\"COMPRESSOR_ID\",\"PIPE_SEGMENT_ID\",\"COMPRESSOR_STATION_ID\"]",
+    "phasor.temporal.order": "[\"CURRENT_DATE\"]",
+    "phasor.temporal.origin": "hand",
+    "phasor.temporal.valid.column": "LAST_MOD_DATE",
+    "phasor.temporal.valid.kind": "instant",
+    "phasor.time": "LAST_MOD_DATE",
+    "phasor.visibility": "PUBLIC"
   },
   "refs": {
     "main": {
@@ -161,27 +161,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/DWGM_INT260_COMPRESSOR_CHAR/metadata/snap-7220265954185764256-1-7b54d537-cca0-8217-b6bd-a17e61a8b9be.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/gas/DWGM_INT260_COMPRESSOR_CHAR/metadata/snap-7220265954185764256-1-8b166faf-2452-8c01-8e0e-de1c99d0d5a5.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 7220265954185764256,
       "summary": {
         "operation": "append",
-        "utilake.files": "1",
-        "utilake.from.file": "int260_v4_compressor_char_1.csv",
-        "utilake.from.release": "2026-10",
-        "utilake.from.sha256": "8b127651352a8f2f8544175a91a4610753a66fac691823eea46d985ba443dadf",
-        "utilake.from.time": "2018-01-10T10:03:19+10:00",
-        "utilake.kinds": "[\"dwgm\"]",
-        "utilake.report-subtype": "INT260_COMPRESSOR_CHAR_1",
-        "utilake.report-type": "DWGM",
-        "utilake.rows": "33",
-        "utilake.to.file": "int260_v4_compressor_char_1.csv",
-        "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "8b127651352a8f2f8544175a91a4610753a66fac691823eea46d985ba443dadf",
-        "utilake.to.time": "2024-02-07T10:21:56+10:00",
-        "utilake.total-rows": "33",
-        "utilake.version": "4"
+        "phasor.files": "1",
+        "phasor.from.file": "int260_v4_compressor_char_1.csv",
+        "phasor.from.release": "2026-10",
+        "phasor.from.sha256": "8b127651352a8f2f8544175a91a4610753a66fac691823eea46d985ba443dadf",
+        "phasor.from.time": "2018-01-10T10:03:19+10:00",
+        "phasor.kinds": "[\"dwgm\"]",
+        "phasor.report-subtype": "INT260_COMPRESSOR_CHAR_1",
+        "phasor.report-type": "DWGM",
+        "phasor.rows": "33",
+        "phasor.to.file": "int260_v4_compressor_char_1.csv",
+        "phasor.to.release": "2026-10",
+        "phasor.to.sha256": "8b127651352a8f2f8544175a91a4610753a66fac691823eea46d985ba443dadf",
+        "phasor.to.time": "2024-02-07T10:21:56+10:00",
+        "phasor.total-rows": "33",
+        "phasor.version": "4"
       },
       "timestamp-ms": 1790776800000
     }
@@ -192,5 +192,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "7b54d537-cca0-8217-b6bd-a17e61a8b9be"
+  "table-uuid": "8b166faf-2452-8c01-8e0e-de1c99d0d5a5"
 }

@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1288533600000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MCC_CASESOLUTION",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/MCC_CASESOLUTION",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -19,21 +19,21 @@
   ],
   "properties": {
     "comment": "Top level table for each MCC dispatch rerun process. Note there will be one record for each dispatch interval",
-    "utilake.declared": "true",
-    "utilake.format": "4",
-    "utilake.key": "[\"RUN_DATETIME\"]",
-    "utilake.load": "append",
-    "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\"}",
-    "utilake.package": "MCC_DISPATCH",
-    "utilake.reports": "[[\"MCC\",\"CASESOLUTION\"]]",
-    "utilake.table": "MCC_CASESOLUTION",
-    "utilake.temporal.entity": "[]",
-    "utilake.temporal.order": "[]",
-    "utilake.temporal.origin": "derived",
-    "utilake.temporal.valid.column": "RUN_DATETIME",
-    "utilake.temporal.valid.kind": "instant",
-    "utilake.time": "RUN_DATETIME",
-    "utilake.visibility": "PUBLIC"
+    "phasor.declared": "true",
+    "phasor.format": "4",
+    "phasor.key": "[\"RUN_DATETIME\"]",
+    "phasor.load": "append",
+    "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\"}",
+    "phasor.package": "MCC_DISPATCH",
+    "phasor.reports": "[[\"MCC\",\"CASESOLUTION\"]]",
+    "phasor.table": "MCC_CASESOLUTION",
+    "phasor.temporal.entity": "[]",
+    "phasor.temporal.order": "[]",
+    "phasor.temporal.origin": "derived",
+    "phasor.temporal.valid.column": "RUN_DATETIME",
+    "phasor.temporal.valid.kind": "instant",
+    "phasor.time": "RUN_DATETIME",
+    "phasor.visibility": "PUBLIC"
   },
   "refs": {
     "main": {
@@ -69,27 +69,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MCC_CASESOLUTION/metadata/snap-8463397182509172172-1-fe5ca00f-9153-842a-bd04-d266e1aceb4a.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/MCC_CASESOLUTION/metadata/snap-8463397182509172172-1-8dae8fce-040e-883a-bec1-ac4723cd37cb.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 8463397182509172172,
       "summary": {
         "operation": "append",
-        "utilake.files": "110295",
-        "utilake.from.file": "PUBLIC_DVD_MCC_CASESOLUTION_200807010000.zip",
-        "utilake.from.release": "2010-11",
-        "utilake.from.sha256": "5fb4a7ea3bc9c8ea4c926565c0ae2f91f6439a7810ad33752a1e3caf0f5d79c7",
-        "utilake.from.time": "2008-07-01T00:05:00+10:00",
-        "utilake.kinds": "[\"archive\",\"dvd\",\"reports\"]",
-        "utilake.report-subtype": "CASESOLUTION",
-        "utilake.report-type": "MCC",
-        "utilake.rows": "2151966",
-        "utilake.to.file": "PUBLIC_MCCDISPATCH_202610241140_0000000544594926.zip",
-        "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "c21589b57c1c35e25eb017035b3c0659fe2b147853f8808dfa6a1152a6489d6f",
-        "utilake.to.time": "2026-10-24T11:40:00+10:00",
-        "utilake.total-rows": "2151966",
-        "utilake.version": "1"
+        "phasor.files": "110295",
+        "phasor.from.file": "PUBLIC_DVD_MCC_CASESOLUTION_200807010000.zip",
+        "phasor.from.release": "2010-11",
+        "phasor.from.sha256": "5fb4a7ea3bc9c8ea4c926565c0ae2f91f6439a7810ad33752a1e3caf0f5d79c7",
+        "phasor.from.time": "2008-07-01T00:05:00+10:00",
+        "phasor.kinds": "[\"archive\",\"dvd\",\"reports\"]",
+        "phasor.report-subtype": "CASESOLUTION",
+        "phasor.report-type": "MCC",
+        "phasor.rows": "2151966",
+        "phasor.to.file": "PUBLIC_MCCDISPATCH_202610241140_0000000544594926.zip",
+        "phasor.to.release": "2026-10",
+        "phasor.to.sha256": "c21589b57c1c35e25eb017035b3c0659fe2b147853f8808dfa6a1152a6489d6f",
+        "phasor.to.time": "2026-10-24T11:40:00+10:00",
+        "phasor.total-rows": "2151966",
+        "phasor.version": "1"
       },
       "timestamp-ms": 1288533600000
     }
@@ -100,5 +100,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "fe5ca00f-9153-842a-bd04-d266e1aceb4a"
+  "table-uuid": "8dae8fce-040e-883a-bec1-ac4723cd37cb"
 }

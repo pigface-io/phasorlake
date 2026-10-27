@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1246370400000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/METER_DATA_GEN_DUID",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/METER_DATA_GEN_DUID",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -18,9 +18,9 @@
     }
   ],
   "properties": {
-    "utilake.declared": "false",
-    "utilake.format": "4",
-    "utilake.table": "METER_DATA_GEN_DUID"
+    "phasor.declared": "false",
+    "phasor.format": "4",
+    "phasor.table": "METER_DATA_GEN_DUID"
   },
   "refs": {
     "main": {
@@ -71,27 +71,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/METER_DATA_GEN_DUID/metadata/snap-8256866356151363972-1-901aec6f-4656-8f13-aa5b-27dd5578e8bb.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/METER_DATA_GEN_DUID/metadata/snap-8256866356151363972-1-6ed49847-d4a9-8347-910a-5d06bed841fc.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 8256866356151363972,
       "summary": {
         "operation": "append",
-        "utilake.files": "436",
-        "utilake.from.file": "PUBLIC_DVD_METERDATA_GEN_DUID_200907010000.zip",
-        "utilake.from.release": "2009-07",
-        "utilake.from.sha256": "44539eb2dbd1be88df4d0e25d3424acce148a40d2632a20dc0d5556981bbd261",
-        "utilake.from.time": "2009-07-01T00:05:00+10:00",
-        "utilake.kinds": "[\"dvd\",\"reports\"]",
-        "utilake.report-subtype": "GEN_DUID",
-        "utilake.report-type": "METER_DATA",
-        "utilake.rows": "7945925",
-        "utilake.to.file": "PUBLIC_NEXT_DAY_ACTUAL_GEN_20261023_0000000544540777.zip",
-        "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "67f114147bcbcd938a41db74d3e9653e991f375cf07deb2f0334d7d776d0e5fc",
-        "utilake.to.time": "2026-10-24T04:00:00+10:00",
-        "utilake.total-rows": "7945925",
-        "utilake.version": "1"
+        "phasor.files": "436",
+        "phasor.from.file": "PUBLIC_DVD_METERDATA_GEN_DUID_200907010000.zip",
+        "phasor.from.release": "2009-07",
+        "phasor.from.sha256": "44539eb2dbd1be88df4d0e25d3424acce148a40d2632a20dc0d5556981bbd261",
+        "phasor.from.time": "2009-07-01T00:05:00+10:00",
+        "phasor.kinds": "[\"dvd\",\"reports\"]",
+        "phasor.report-subtype": "GEN_DUID",
+        "phasor.report-type": "METER_DATA",
+        "phasor.rows": "7945925",
+        "phasor.to.file": "PUBLIC_NEXT_DAY_ACTUAL_GEN_20261023_0000000544540777.zip",
+        "phasor.to.release": "2026-10",
+        "phasor.to.sha256": "67f114147bcbcd938a41db74d3e9653e991f375cf07deb2f0334d7d776d0e5fc",
+        "phasor.to.time": "2026-10-24T04:00:00+10:00",
+        "phasor.total-rows": "7945925",
+        "phasor.version": "1"
       },
       "timestamp-ms": 1246370400000
     }
@@ -102,5 +102,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "901aec6f-4656-8f13-aa5b-27dd5578e8bb"
+  "table-uuid": "6ed49847-d4a9-8347-910a-5d06bed841fc"
 }

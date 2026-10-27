@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1722434400000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/NETWORK_STATICRATING",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/NETWORK_STATICRATING",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -19,23 +19,23 @@
   ],
   "properties": {
     "comment": "NETWORK_STATICRATING lists the static rating values that will apply for a Rating Application ID.\nThis data does not provide information for when the rating actually applies in the NEM. This is dependent on the Rating Application definition.\nFor information on the Rating Applications please refer to the information published on the AEMO website under the topic \"Transmission Equipment Ratings\". The Rating Applications are referred to as Alternate Value Application Ratings.\nRatings that normally use dynamic values will also have static rating values defined. These are used as a fallback if the dynamic rating fails.",
-    "utilake.declared": "true",
-    "utilake.format": "4",
-    "utilake.key": "[\"SUBSTATIONID\",\"EQUIPMENTTYPE\",\"EQUIPMENTID\",\"RATINGLEVEL\",\"APPLICATIONID\",\"VALIDFROM\"]",
-    "utilake.load": "append",
-    "utilake.model-types": "{\"1\":\"VARCHAR(30)\",\"2\":\"VARCHAR(10)\",\"3\":\"VARCHAR(30)\",\"4\":\"VARCHAR(10)\",\"5\":\"VARCHAR(20)\",\"6\":\"TIMESTAMP(0)\",\"7\":\"TIMESTAMP(0)\",\"8\":\"NUMERIC(16,6)\",\"9\":\"TIMESTAMP(0)\"}",
-    "utilake.package": "NETWORK",
-    "utilake.reports": "[[\"NETWORK\",\"STATICRATING\"]]",
-    "utilake.table": "NETWORK_STATICRATING",
-    "utilake.temporal.cutoff": "LASTCHANGED",
-    "utilake.temporal.entity": "[\"SUBSTATIONID\",\"EQUIPMENTTYPE\",\"EQUIPMENTID\",\"RATINGLEVEL\",\"APPLICATIONID\"]",
-    "utilake.temporal.order": "[\"LASTCHANGED\"]",
-    "utilake.temporal.origin": "derived",
-    "utilake.temporal.valid.column": "VALIDFROM",
-    "utilake.temporal.valid.kind": "from",
-    "utilake.temporal.valid.until": "VALIDTO",
-    "utilake.time": "LASTCHANGED",
-    "utilake.visibility": "PUBLIC"
+    "phasor.declared": "true",
+    "phasor.format": "4",
+    "phasor.key": "[\"SUBSTATIONID\",\"EQUIPMENTTYPE\",\"EQUIPMENTID\",\"RATINGLEVEL\",\"APPLICATIONID\",\"VALIDFROM\"]",
+    "phasor.load": "append",
+    "phasor.model-types": "{\"1\":\"VARCHAR(30)\",\"2\":\"VARCHAR(10)\",\"3\":\"VARCHAR(30)\",\"4\":\"VARCHAR(10)\",\"5\":\"VARCHAR(20)\",\"6\":\"TIMESTAMP(0)\",\"7\":\"TIMESTAMP(0)\",\"8\":\"NUMERIC(16,6)\",\"9\":\"TIMESTAMP(0)\"}",
+    "phasor.package": "NETWORK",
+    "phasor.reports": "[[\"NETWORK\",\"STATICRATING\"]]",
+    "phasor.table": "NETWORK_STATICRATING",
+    "phasor.temporal.cutoff": "LASTCHANGED",
+    "phasor.temporal.entity": "[\"SUBSTATIONID\",\"EQUIPMENTTYPE\",\"EQUIPMENTID\",\"RATINGLEVEL\",\"APPLICATIONID\"]",
+    "phasor.temporal.order": "[\"LASTCHANGED\"]",
+    "phasor.temporal.origin": "derived",
+    "phasor.temporal.valid.column": "VALIDFROM",
+    "phasor.temporal.valid.kind": "from",
+    "phasor.temporal.valid.until": "VALIDTO",
+    "phasor.time": "LASTCHANGED",
+    "phasor.visibility": "PUBLIC"
   },
   "refs": {
     "main": {
@@ -132,27 +132,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/NETWORK_STATICRATING/metadata/snap-8795676458128021001-1-f237acaf-55ee-8439-8a52-d30ed98bcbe3.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/NETWORK_STATICRATING/metadata/snap-8795676458128021001-1-ed5d38ce-ace9-85c1-a6d1-da9fb6d23af6.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 8795676458128021001,
       "summary": {
         "operation": "append",
-        "utilake.files": "415",
-        "utilake.from.file": "PUBLIC_ARCHIVE#NETWORK_STATICRATING#FILE01#202408010000.zip",
-        "utilake.from.release": "2024-08",
-        "utilake.from.sha256": "48eb68e2e3609a92a137bc128a3bcd8127950def9d91251e2d1974d355a43f8c",
-        "utilake.from.time": "2007-08-08T11:25:00+10:00",
-        "utilake.kinds": "[\"archive\",\"reports\"]",
-        "utilake.report-subtype": "STATICRATING",
-        "utilake.report-type": "NETWORK",
-        "utilake.rows": "11938512",
-        "utilake.to.file": "PUBLIC_NETWORK_20261024100005_0000000544582331.zip",
-        "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "7e73ede6593def0122b160db252f1988aa15ccb7d281429c3168ed22791bbfba",
-        "utilake.to.time": "2026-10-21T15:25:00+10:00",
-        "utilake.total-rows": "11938512",
-        "utilake.version": "1"
+        "phasor.files": "415",
+        "phasor.from.file": "PUBLIC_ARCHIVE#NETWORK_STATICRATING#FILE01#202408010000.zip",
+        "phasor.from.release": "2024-08",
+        "phasor.from.sha256": "48eb68e2e3609a92a137bc128a3bcd8127950def9d91251e2d1974d355a43f8c",
+        "phasor.from.time": "2007-08-08T11:25:00+10:00",
+        "phasor.kinds": "[\"archive\",\"reports\"]",
+        "phasor.report-subtype": "STATICRATING",
+        "phasor.report-type": "NETWORK",
+        "phasor.rows": "11938512",
+        "phasor.to.file": "PUBLIC_NETWORK_20261024100005_0000000544582331.zip",
+        "phasor.to.release": "2026-10",
+        "phasor.to.sha256": "7e73ede6593def0122b160db252f1988aa15ccb7d281429c3168ed22791bbfba",
+        "phasor.to.time": "2026-10-21T15:25:00+10:00",
+        "phasor.total-rows": "11938512",
+        "phasor.version": "1"
       },
       "timestamp-ms": 1722434400000
     }
@@ -163,5 +163,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "f237acaf-55ee-8439-8a52-d30ed98bcbe3"
+  "table-uuid": "ed5d38ce-ace9-85c1-a6d1-da9fb6d23af6"
 }

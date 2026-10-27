@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1246370400000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/GST_BAS_CLASS",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/GST_BAS_CLASS",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -19,20 +19,20 @@
   ],
   "properties": {
     "comment": "GST_BAS_CLASS contains a static list of BAS (Business Activity Statement) classifications supported by the MMS.",
-    "utilake.declared": "true",
-    "utilake.format": "4",
-    "utilake.key": "[\"BAS_CLASS\"]",
-    "utilake.load": "snapshot",
-    "utilake.model-types": "{\"1\":\"VARCHAR(30)\",\"2\":\"VARCHAR(100)\",\"3\":\"TIMESTAMP(0)\"}",
-    "utilake.package": "BILLING_CONFIG",
-    "utilake.reports": "[[\"BILLING_CONFIG\",\"GST_BAS_CLASS\"]]",
-    "utilake.table": "GST_BAS_CLASS",
-    "utilake.temporal.cutoff": "LASTCHANGED",
-    "utilake.temporal.entity": "[\"BAS_CLASS\"]",
-    "utilake.temporal.order": "[\"LASTCHANGED\"]",
-    "utilake.temporal.origin": "derived",
-    "utilake.temporal.valid.kind": "timeless",
-    "utilake.visibility": "PUBLIC"
+    "phasor.declared": "true",
+    "phasor.format": "4",
+    "phasor.key": "[\"BAS_CLASS\"]",
+    "phasor.load": "snapshot",
+    "phasor.model-types": "{\"1\":\"VARCHAR(30)\",\"2\":\"VARCHAR(100)\",\"3\":\"TIMESTAMP(0)\"}",
+    "phasor.package": "BILLING_CONFIG",
+    "phasor.reports": "[[\"BILLING_CONFIG\",\"GST_BAS_CLASS\"]]",
+    "phasor.table": "GST_BAS_CLASS",
+    "phasor.temporal.cutoff": "LASTCHANGED",
+    "phasor.temporal.entity": "[\"BAS_CLASS\"]",
+    "phasor.temporal.order": "[\"LASTCHANGED\"]",
+    "phasor.temporal.origin": "derived",
+    "phasor.temporal.valid.kind": "timeless",
+    "phasor.visibility": "PUBLIC"
   },
   "refs": {
     "main": {
@@ -82,27 +82,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/GST_BAS_CLASS/metadata/snap-9022911351604499998-1-8d542b60-2d37-8bd9-b029-d58ca82133f2.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/GST_BAS_CLASS/metadata/snap-9022911351604499998-1-448b0219-78e3-839a-924a-62acf97ac0f5.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 9022911351604499998,
       "summary": {
         "operation": "append",
-        "utilake.files": "207",
-        "utilake.from.file": "PUBLIC_DVD_GST_BAS_CLASS_200907010000.zip",
-        "utilake.from.release": "2009-07",
-        "utilake.from.sha256": "44539eb2dbd1be88df4d0e25d3424acce148a40d2632a20dc0d5556981bbd261",
-        "utilake.from.time": "2000-07-05T15:03:20+10:00",
-        "utilake.kinds": "[\"archive\",\"dvd\"]",
-        "utilake.report-subtype": "GST_BAS_CLASS",
-        "utilake.report-type": "BILLING_CONFIG",
-        "utilake.rows": "1242",
-        "utilake.to.file": "PUBLIC_ARCHIVE#GST_BAS_CLASS#FILE01#202609010000.zip",
-        "utilake.to.release": "2026-09",
-        "utilake.to.sha256": "a0daf02a1658f0b2d1b63457226f22a21faedf7daec0cea52bda4ab1bb9290ee",
-        "utilake.to.time": "2000-10-11T11:34:21+10:00",
-        "utilake.total-rows": "1242",
-        "utilake.version": "1"
+        "phasor.files": "207",
+        "phasor.from.file": "PUBLIC_DVD_GST_BAS_CLASS_200907010000.zip",
+        "phasor.from.release": "2009-07",
+        "phasor.from.sha256": "44539eb2dbd1be88df4d0e25d3424acce148a40d2632a20dc0d5556981bbd261",
+        "phasor.from.time": "2000-07-05T15:03:20+10:00",
+        "phasor.kinds": "[\"archive\",\"dvd\"]",
+        "phasor.report-subtype": "GST_BAS_CLASS",
+        "phasor.report-type": "BILLING_CONFIG",
+        "phasor.rows": "1242",
+        "phasor.to.file": "PUBLIC_ARCHIVE#GST_BAS_CLASS#FILE01#202609010000.zip",
+        "phasor.to.release": "2026-09",
+        "phasor.to.sha256": "a0daf02a1658f0b2d1b63457226f22a21faedf7daec0cea52bda4ab1bb9290ee",
+        "phasor.to.time": "2000-10-11T11:34:21+10:00",
+        "phasor.total-rows": "1242",
+        "phasor.version": "1"
       },
       "timestamp-ms": 1246370400000
     }
@@ -113,5 +113,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "8d542b60-2d37-8bd9-b029-d58ca82133f2"
+  "table-uuid": "448b0219-78e3-839a-924a-62acf97ac0f5"
 }

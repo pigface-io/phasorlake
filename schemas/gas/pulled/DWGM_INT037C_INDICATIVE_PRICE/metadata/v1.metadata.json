@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1785506400000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/DWGM_INT037C_INDICATIVE_PRICE",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/gas/DWGM_INT037C_INDICATIVE_PRICE",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -18,23 +18,23 @@
     }
   ],
   "properties": {
-    "utilake.declared": "true",
-    "utilake.format": "4",
-    "utilake.headers": "{\"1\":\"demand_type_name\",\"2\":\"price_value_gst_ex\",\"3\":\"transmission_group_id\",\"4\":\"schedule_type_id\",\"5\":\"transmission_id\",\"6\":\"gas_date\",\"7\":\"approval_datetime\",\"8\":\"current_date\"}",
-    "utilake.key": "[]",
-    "utilake.load": "append",
-    "utilake.market": "gas",
-    "utilake.offset": "+10:00",
-    "utilake.reports": "[[\"DWGM\",\"INT037C_INDICATIVE_PRICE_1\"]]",
-    "utilake.table": "DWGM_INT037C_INDICATIVE_PRICE",
-    "utilake.temporal.cutoff": "CURRENT_DATE",
-    "utilake.temporal.entity": "[\"TRANSMISSION_GROUP_ID\",\"SCHEDULE_TYPE_ID\",\"TRANSMISSION_ID\"]",
-    "utilake.temporal.order": "[\"CURRENT_DATE\"]",
-    "utilake.temporal.origin": "hand",
-    "utilake.temporal.valid.column": "GAS_DATE",
-    "utilake.temporal.valid.kind": "instant",
-    "utilake.time": "GAS_DATE",
-    "utilake.visibility": "PUBLIC"
+    "phasor.declared": "true",
+    "phasor.format": "4",
+    "phasor.headers": "{\"1\":\"demand_type_name\",\"2\":\"price_value_gst_ex\",\"3\":\"transmission_group_id\",\"4\":\"schedule_type_id\",\"5\":\"transmission_id\",\"6\":\"gas_date\",\"7\":\"approval_datetime\",\"8\":\"current_date\"}",
+    "phasor.key": "[]",
+    "phasor.load": "append",
+    "phasor.market": "gas",
+    "phasor.offset": "+10:00",
+    "phasor.reports": "[[\"DWGM\",\"INT037C_INDICATIVE_PRICE_1\"]]",
+    "phasor.table": "DWGM_INT037C_INDICATIVE_PRICE",
+    "phasor.temporal.cutoff": "CURRENT_DATE",
+    "phasor.temporal.entity": "[\"TRANSMISSION_GROUP_ID\",\"SCHEDULE_TYPE_ID\",\"TRANSMISSION_ID\"]",
+    "phasor.temporal.order": "[\"CURRENT_DATE\"]",
+    "phasor.temporal.origin": "hand",
+    "phasor.temporal.valid.column": "GAS_DATE",
+    "phasor.temporal.valid.kind": "instant",
+    "phasor.time": "GAS_DATE",
+    "phasor.visibility": "PUBLIC"
   },
   "refs": {
     "main": {
@@ -109,27 +109,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/DWGM_INT037C_INDICATIVE_PRICE/metadata/snap-937976910826436015-1-0ea3fef0-eab2-83c5-8ce0-6c60b9c6b4a1.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/gas/DWGM_INT037C_INDICATIVE_PRICE/metadata/snap-937976910826436015-1-7574001c-0827-8854-9a75-526cba340dba.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 937976910826436015,
       "summary": {
         "operation": "append",
-        "utilake.files": "347",
-        "utilake.from.file": "PublicRpts31.zip",
-        "utilake.from.release": "2026-08",
-        "utilake.from.sha256": "735fad42989ef107a70ecdfc43f290c13afc957673461c78e4538d9ffcc9b0fe",
-        "utilake.from.time": "2026-08-30T00:00:00+10:00",
-        "utilake.kinds": "[\"dwgm\"]",
-        "utilake.report-subtype": "INT037C_INDICATIVE_PRICE_1",
-        "utilake.report-type": "DWGM",
-        "utilake.rows": "370",
-        "utilake.to.file": "int037c_v4_indicative_price_1.csv@20261024T113400+1000",
-        "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "879872ea09ed26ab400476d9928b545bcbd942930a7350d95229ba925c82573a",
-        "utilake.to.time": "2026-10-26T00:00:00+10:00",
-        "utilake.total-rows": "370",
-        "utilake.version": "4"
+        "phasor.files": "347",
+        "phasor.from.file": "PublicRpts31.zip",
+        "phasor.from.release": "2026-08",
+        "phasor.from.sha256": "735fad42989ef107a70ecdfc43f290c13afc957673461c78e4538d9ffcc9b0fe",
+        "phasor.from.time": "2026-08-30T00:00:00+10:00",
+        "phasor.kinds": "[\"dwgm\"]",
+        "phasor.report-subtype": "INT037C_INDICATIVE_PRICE_1",
+        "phasor.report-type": "DWGM",
+        "phasor.rows": "370",
+        "phasor.to.file": "int037c_v4_indicative_price_1.csv@20261024T113400+1000",
+        "phasor.to.release": "2026-10",
+        "phasor.to.sha256": "879872ea09ed26ab400476d9928b545bcbd942930a7350d95229ba925c82573a",
+        "phasor.to.time": "2026-10-26T00:00:00+10:00",
+        "phasor.total-rows": "370",
+        "phasor.version": "4"
       },
       "timestamp-ms": 1785506400000
     }
@@ -140,5 +140,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "0ea3fef0-eab2-83c5-8ce0-6c60b9c6b4a1"
+  "table-uuid": "7574001c-0827-8854-9a75-526cba340dba"
 }

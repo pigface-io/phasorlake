@@ -5,15 +5,15 @@ One model runs through the census, the registry, the lake and the export:
 
 | Term | What it is | Where |
 |---|---|---|
-| **Field** | An Iceberg field: an id never minted twice, a name, one type, whether it is required | `utilake-iceberg` (utilake-schemas) `src/schema.rs` |
+| **Field** | An Iceberg field: an id never minted twice, a name, one type, whether it is required | `phasor-iceberg` (phasor-schemas) `src/schema.rs` |
 | **Schema** | The fields a file of the table holds, in file order, and the key; an id per distinct schema | `iceberg.schemas` of `schemas/nem/pulled/<TABLE>/table.json` |
-| **Block** | One block of one AEMO file: its header, rows, data span and the profile of its values | the census of utilake-schemas (`evidence/census/`) |
+| **Block** | One block of one AEMO file: its header, rows, data span and the profile of its values | the census of phasor-schemas (`evidence/census/`) |
 | **Run** | Consecutive blocks under one schema, AEMO version and report pair | the history's `runs` |
 | **Snapshot** | One run of the lake's files, committed to the table | `{lake}/nem/<table>/metadata/` |
 
 ## The history: from the census to schemas
 
-The fold (utilake-schemas, `crates/utilake-schemas/src/history.rs`) reads
+The fold (phasor-schemas, `crates/phasor-schemas/src/history.rs`) reads
 every census block and writes each table's history.
 
 - **Order.** Blocks go in the order AEMO released them: release month (the
@@ -47,22 +47,22 @@ came in, and whether its data overlaps the run before.
 
 ## Resolution and the lake
 
-utilake-schemas publishes each table as Iceberg table metadata
+phasor-schemas publishes each table as Iceberg table metadata
 (`nem/<TABLE>/metadata/v1.metadata.json`: its schemas, its runs as
 snapshots, its declaration and the data model's words as properties; the
-format is described in that repository's README); utilake keeps a copy at
+format is described in that repository's README); phasor keeps a copy at
 one commit in `schemas/nem/pulled/`, held to the manifest and to the
-`utilake-iceberg` rev of `Cargo.lock` by `just schemas-check`, and the
+`phasor-iceberg` rev of `Cargo.lock` by `just schemas-check`, and the
 registry embeds what it reads from it through
-`utilake_iceberg::from_metadata`. A table's columns are
+`phasor_iceberg::from_metadata`. A table's columns are
 the history's fields by id, typed by their Iceberg types, so a plan writes
 every value under its Iceberg field id (`PARQUET:field_id`). A block
 resolves to the schema `History::resolve` names for its report pair, AEMO
 version, columns in order and source month, and conforms; the fold
 guarantees that every block of the census resolves to its run's fields. A
 block no run fits deviates. Every ingest records its schema id
-(`utilake.schema_version`) and the census's id of its shape
-(`utilake.shape_id`) in the Parquet footer and the manifest.
+(`phasor.schema_version`) and the census's id of its shape
+(`phasor.shape_id`) in the Parquet footer and the manifest.
 
 Timestamps are microseconds in UTC (`Timestamp(µs, +10:00)` in Arrow,
 `TIMESTAMP(MICROS, isAdjustedToUTC)` in Parquet): Iceberg's `timestamptz`,
@@ -80,7 +80,7 @@ which every Iceberg reader reads; DuckDB's refuses `timestamptz_ns`.
 
 ## The Iceberg tables
 
-`utilake iceberg` (`crates/utilake-writer/src/iceberg.rs`) builds each
+`phasor iceberg` (`crates/phasor-writer/src/iceberg.rs`) builds each
 table's metadata from two facts: the history's schemas and the manifest's
 live outputs. A reingest or a refolded history is a rebuild, never an
 edit. Every schema is added in id order, so the table's ids are the
@@ -88,12 +88,12 @@ history's; each run of outputs under one schema and version is one
 snapshot, with its first and last source file, months and version in the
 summary. After the runs the union of the history's schemas becomes
 current: every field by id, under its newest name, which is what every
-lake file holds. The table's properties are the ones utilake-schemas
+lake file holds. The table's properties are the ones phasor-schemas
 publishes (declaration, roles, key, `with-columns`, breaks, the data
-model's words) and `utilake.lake.format`; the union's fields carry the
-data model's description of each column. The store (`crates/utilake-iceberg-store`) is a single writer:
+model's words) and `phasor.lake.format`; the union's fields carry the
+data model's description of each column. The store (`crates/phasor-iceberg-store`) is a single writer:
 versioned metadata files and a `version-hint.text` swapped by rename. The
-bytes come from `utilake_iceberg::table`, written by hand to the spec: the
+bytes come from `phasor_iceberg::table`, written by hand to the spec: the
 metadata as JSON, manifests and manifest lists as Avro object container
 files with the spec's field ids, no compression, and a sync marker hashed
 from the content, so the same facts write the same bytes. The tables are
@@ -110,19 +110,19 @@ both, and every manifest with fastavro.
 
 ## Reading an interval
 
-`utilake_iceberg::plan` picks the files whose data overlaps an interval
+`phasor_iceberg::plan` picks the files whose data overlaps an interval
 and projects each onto one target schema by field id: a field the file has
 is read under its name there (cast where the target's type is a promotion),
 a field it lacks is null of the target's type, a field the target lacks is
-left out. utilake itself does not read the lake: `docs/reading.md` gives
+left out. phasor itself does not read the lake: `docs/reading.md` gives
 the reads as SQL over the Iceberg tables or the Parquet files.
 
 ## The export
 
-`utilake-schemas export` (format 3, in utilake-schemas) writes, per folded
+`phasor-schemas export` (format 3, in phasor-schemas) writes, per folded
 table, its Iceberg table metadata with one empty manifest list per run,
 and, derived from it, one JSON Schema per Iceberg schema
 (`nem/<TABLE>/schema-<id>.json`) and `nem/headers.json`. A lake table
-`utilake iceberg` writes relates to the published one by its uuid and its
+`phasor iceberg` writes relates to the published one by its uuid and its
 schema ids, which are the same; its snapshots carry data files, the
-published one's none. The layout is described in utilake-schemas' README.
+published one's none. The layout is described in phasor-schemas' README.

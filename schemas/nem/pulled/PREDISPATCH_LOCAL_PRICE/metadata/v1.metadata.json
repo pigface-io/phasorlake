@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1475244000000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PREDISPATCH_LOCAL_PRICE",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/PREDISPATCH_LOCAL_PRICE",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -19,22 +19,22 @@
   ],
   "properties": {
     "comment": "Sets out local pricing offsets associated with each DUID connection point for each dispatch period",
-    "utilake.declared": "true",
-    "utilake.format": "4",
-    "utilake.key": "[\"DATETIME\",\"DUID\"]",
-    "utilake.load": "append",
-    "utilake.model-types": "{\"1\":\"VARCHAR(20)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"VARCHAR(20)\",\"4\":\"VARCHAR(20)\",\"5\":\"NUMERIC(10,2)\",\"6\":\"NUMERIC(1,0)\",\"7\":\"TIMESTAMP(0)\"}",
-    "utilake.package": "PRE_DISPATCH",
-    "utilake.reports": "[[\"PREDISPATCH\",\"LOCAL_PRICE\"]]",
-    "utilake.table": "PREDISPATCH_LOCAL_PRICE",
-    "utilake.temporal.cutoff": "LASTCHANGED",
-    "utilake.temporal.entity": "[\"DUID\"]",
-    "utilake.temporal.order": "[\"PREDISPATCHSEQNO\",\"LASTCHANGED\"]",
-    "utilake.temporal.origin": "derived",
-    "utilake.temporal.valid.column": "DATETIME",
-    "utilake.temporal.valid.kind": "interval_end",
-    "utilake.time": "DATETIME",
-    "utilake.visibility": "PUBLIC"
+    "phasor.declared": "true",
+    "phasor.format": "4",
+    "phasor.key": "[\"DATETIME\",\"DUID\"]",
+    "phasor.load": "append",
+    "phasor.model-types": "{\"1\":\"VARCHAR(20)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"VARCHAR(20)\",\"4\":\"VARCHAR(20)\",\"5\":\"NUMERIC(10,2)\",\"6\":\"NUMERIC(1,0)\",\"7\":\"TIMESTAMP(0)\"}",
+    "phasor.package": "PRE_DISPATCH",
+    "phasor.reports": "[[\"PREDISPATCH\",\"LOCAL_PRICE\"]]",
+    "phasor.table": "PREDISPATCH_LOCAL_PRICE",
+    "phasor.temporal.cutoff": "LASTCHANGED",
+    "phasor.temporal.entity": "[\"DUID\"]",
+    "phasor.temporal.order": "[\"PREDISPATCHSEQNO\",\"LASTCHANGED\"]",
+    "phasor.temporal.origin": "derived",
+    "phasor.temporal.valid.column": "DATETIME",
+    "phasor.temporal.valid.kind": "interval_end",
+    "phasor.time": "DATETIME",
+    "phasor.visibility": "PUBLIC"
   },
   "refs": {
     "main": {
@@ -113,27 +113,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PREDISPATCH_LOCAL_PRICE/metadata/snap-4088528969887131438-1-e7916735-9c5b-88d4-8fbd-2499463880da.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/PREDISPATCH_LOCAL_PRICE/metadata/snap-4088528969887131438-1-d90f68cb-528c-8791-aabc-9468b4b60c41.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 4088528969887131438,
       "summary": {
         "operation": "append",
-        "utilake.files": "19638",
-        "utilake.from.file": "PUBLIC_PREDISPATCHIS_201610231430_20161023140222.zip",
-        "utilake.from.release": "2016-10",
-        "utilake.from.sha256": "05c01348f57bfbc45b7ecb203854b00276f91041632e993e4ef41f29d7ccb18e",
-        "utilake.from.time": "2016-10-23T14:30:00+10:00",
-        "utilake.kinds": "[\"archive\",\"reports\"]",
-        "utilake.report-subtype": "LOCAL_PRICE",
-        "utilake.report-type": "PREDISPATCH",
-        "utilake.rows": "53389381",
-        "utilake.to.file": "PUBLIC_PREDISPATCHIS_202610241200_20261024113111.zip",
-        "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "35780d6a8c7796b8a9f1b6481b53d0064f19f55b098fdf28f55ca6b1323af54f",
-        "utilake.to.time": "2026-10-25T04:00:00+10:00",
-        "utilake.total-rows": "53389381",
-        "utilake.version": "1"
+        "phasor.files": "19638",
+        "phasor.from.file": "PUBLIC_PREDISPATCHIS_201610231430_20161023140222.zip",
+        "phasor.from.release": "2016-10",
+        "phasor.from.sha256": "05c01348f57bfbc45b7ecb203854b00276f91041632e993e4ef41f29d7ccb18e",
+        "phasor.from.time": "2016-10-23T14:30:00+10:00",
+        "phasor.kinds": "[\"archive\",\"reports\"]",
+        "phasor.report-subtype": "LOCAL_PRICE",
+        "phasor.report-type": "PREDISPATCH",
+        "phasor.rows": "53389381",
+        "phasor.to.file": "PUBLIC_PREDISPATCHIS_202610241200_20261024113111.zip",
+        "phasor.to.release": "2026-10",
+        "phasor.to.sha256": "35780d6a8c7796b8a9f1b6481b53d0064f19f55b098fdf28f55ca6b1323af54f",
+        "phasor.to.time": "2026-10-25T04:00:00+10:00",
+        "phasor.total-rows": "53389381",
+        "phasor.version": "1"
       },
       "timestamp-ms": 1475244000000
     }
@@ -144,5 +144,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "e7916735-9c5b-88d4-8fbd-2499463880da"
+  "table-uuid": "d90f68cb-528c-8791-aabc-9468b4b60c41"
 }

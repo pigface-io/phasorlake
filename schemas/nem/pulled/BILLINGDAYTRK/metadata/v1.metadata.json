@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1246370400000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/BILLINGDAYTRK",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/BILLINGDAYTRK",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -19,22 +19,22 @@
   ],
   "properties": {
     "comment": "BILLINGDAYTRK is key for matching settlement versions with billing runs. BILLINGDAYTRK displays the billrunnos per billing week, and the settlement version numbers per settlement day comprising the billrunno.",
-    "utilake.declared": "true",
-    "utilake.format": "4",
-    "utilake.key": "[\"CONTRACTYEAR\",\"WEEKNO\",\"BILLRUNNO\",\"SETTLEMENTDATE\"]",
-    "utilake.load": "append",
-    "utilake.model-types": "{\"1\":\"NUMERIC(4,0)\",\"2\":\"NUMERIC(3,0)\",\"3\":\"NUMERIC(3,0)\",\"4\":\"TIMESTAMP(0)\",\"5\":\"NUMERIC(3,0)\",\"6\":\"TIMESTAMP(0)\"}",
-    "utilake.package": "BILLING_RUN",
-    "utilake.reports": "[[\"BILLING\",\"DAYTRK\"]]",
-    "utilake.table": "BILLINGDAYTRK",
-    "utilake.temporal.cutoff": "LASTCHANGED",
-    "utilake.temporal.entity": "[\"CONTRACTYEAR\",\"WEEKNO\"]",
-    "utilake.temporal.order": "[\"BILLRUNNO\",\"RUNNO\",\"LASTCHANGED\"]",
-    "utilake.temporal.origin": "hand",
-    "utilake.temporal.valid.column": "SETTLEMENTDATE",
-    "utilake.temporal.valid.kind": "day",
-    "utilake.time": "SETTLEMENTDATE",
-    "utilake.visibility": "PUBLIC"
+    "phasor.declared": "true",
+    "phasor.format": "4",
+    "phasor.key": "[\"CONTRACTYEAR\",\"WEEKNO\",\"BILLRUNNO\",\"SETTLEMENTDATE\"]",
+    "phasor.load": "append",
+    "phasor.model-types": "{\"1\":\"NUMERIC(4,0)\",\"2\":\"NUMERIC(3,0)\",\"3\":\"NUMERIC(3,0)\",\"4\":\"TIMESTAMP(0)\",\"5\":\"NUMERIC(3,0)\",\"6\":\"TIMESTAMP(0)\"}",
+    "phasor.package": "BILLING_RUN",
+    "phasor.reports": "[[\"BILLING\",\"DAYTRK\"]]",
+    "phasor.table": "BILLINGDAYTRK",
+    "phasor.temporal.cutoff": "LASTCHANGED",
+    "phasor.temporal.entity": "[\"CONTRACTYEAR\",\"WEEKNO\"]",
+    "phasor.temporal.order": "[\"BILLRUNNO\",\"RUNNO\",\"LASTCHANGED\"]",
+    "phasor.temporal.origin": "hand",
+    "phasor.temporal.valid.column": "SETTLEMENTDATE",
+    "phasor.temporal.valid.kind": "day",
+    "phasor.time": "SETTLEMENTDATE",
+    "phasor.visibility": "PUBLIC"
   },
   "refs": {
     "main": {
@@ -108,27 +108,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/BILLINGDAYTRK/metadata/snap-8802045401561922089-1-45a955f7-1c1f-8053-805d-ca59439577d0.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/BILLINGDAYTRK/metadata/snap-8802045401561922089-1-6bf84cb2-d2fd-8ecd-abd9-6ec24a7ddeed.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 8802045401561922089,
       "summary": {
         "operation": "append",
-        "utilake.files": "1309",
-        "utilake.from.file": "PUBLIC_DVD_BILLINGDAYTRK_200907010000.zip",
-        "utilake.from.release": "2009-07",
-        "utilake.from.sha256": "44539eb2dbd1be88df4d0e25d3424acce148a40d2632a20dc0d5556981bbd261",
-        "utilake.from.time": "2008-11-30T00:00:00+10:00",
-        "utilake.kinds": "[\"archive\",\"dvd\",\"reports\"]",
-        "utilake.report-subtype": "DAYTRK",
-        "utilake.report-type": "BILLING",
-        "utilake.rows": "35208",
-        "utilake.to.file": "PUBLIC_ARCHIVE#BILLINGDAYTRK#FILE01#202609010000.zip",
-        "utilake.to.release": "2026-09",
-        "utilake.to.sha256": "bf18bbccfcc24406aa8d39c22c75d9ac178fee444d9a2defddf3dd8d09af1a92",
-        "utilake.to.time": "2026-09-29T00:00:00+10:00",
-        "utilake.total-rows": "35208",
-        "utilake.version": "5"
+        "phasor.files": "1309",
+        "phasor.from.file": "PUBLIC_DVD_BILLINGDAYTRK_200907010000.zip",
+        "phasor.from.release": "2009-07",
+        "phasor.from.sha256": "44539eb2dbd1be88df4d0e25d3424acce148a40d2632a20dc0d5556981bbd261",
+        "phasor.from.time": "2008-11-30T00:00:00+10:00",
+        "phasor.kinds": "[\"archive\",\"dvd\",\"reports\"]",
+        "phasor.report-subtype": "DAYTRK",
+        "phasor.report-type": "BILLING",
+        "phasor.rows": "35208",
+        "phasor.to.file": "PUBLIC_ARCHIVE#BILLINGDAYTRK#FILE01#202609010000.zip",
+        "phasor.to.release": "2026-09",
+        "phasor.to.sha256": "bf18bbccfcc24406aa8d39c22c75d9ac178fee444d9a2defddf3dd8d09af1a92",
+        "phasor.to.time": "2026-09-29T00:00:00+10:00",
+        "phasor.total-rows": "35208",
+        "phasor.version": "5"
       },
       "timestamp-ms": 1246370400000
     }
@@ -139,5 +139,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "45a955f7-1c1f-8053-805d-ca59439577d0"
+  "table-uuid": "6bf84cb2-d2fd-8ecd-abd9-6ec24a7ddeed"
 }

@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1722434400000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PMS_GROUPSERVICE",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/PMS_GROUPSERVICE",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -19,20 +19,20 @@
   ],
   "properties": {
     "comment": "Describe the services a group provides and its relation to a market",
-    "utilake.declared": "true",
-    "utilake.format": "4",
-    "utilake.key": "[]",
-    "utilake.load": "append",
-    "utilake.model-types": "{\"1\":\"NUMERIC(20,0)\",\"2\":\"NUMERIC(20,0)\",\"3\":\"TIMESTAMP(3)\",\"4\":\"TIMESTAMP(3)\",\"5\":\"TIMESTAMP(3)\",\"6\":\"TIMESTAMP(3)\",\"7\":\"VARCHAR(50)\",\"8\":\"VARCHAR(50)\",\"9\":\"VARCHAR(50)\",\"10\":\"VARCHAR(50)\",\"11\":\"NUMERIC(10,3)\",\"12\":\"VARCHAR(500)\",\"13\":\"NUMERIC(10,0)\",\"14\":\"VARCHAR(20)\",\"15\":\"TIMESTAMP(3)\",\"16\":\"TIMESTAMP(3)\"}",
-    "utilake.reports": "[[\"PARTICIPANT_REGISTRATION\",\"PMS_GROUPSERVICE\"]]",
-    "utilake.table": "PMS_GROUPSERVICE",
-    "utilake.temporal.cutoff": "LASTCHANGED",
-    "utilake.temporal.entity": "[]",
-    "utilake.temporal.order": "[\"LASTCHANGED\"]",
-    "utilake.temporal.origin": "derived",
-    "utilake.temporal.valid.kind": "timeless",
-    "utilake.time": "LASTCHANGED",
-    "utilake.visibility": "PUBLIC"
+    "phasor.declared": "true",
+    "phasor.format": "4",
+    "phasor.key": "[]",
+    "phasor.load": "append",
+    "phasor.model-types": "{\"1\":\"NUMERIC(20,0)\",\"2\":\"NUMERIC(20,0)\",\"3\":\"TIMESTAMP(3)\",\"4\":\"TIMESTAMP(3)\",\"5\":\"TIMESTAMP(3)\",\"6\":\"TIMESTAMP(3)\",\"7\":\"VARCHAR(50)\",\"8\":\"VARCHAR(50)\",\"9\":\"VARCHAR(50)\",\"10\":\"VARCHAR(50)\",\"11\":\"NUMERIC(10,3)\",\"12\":\"VARCHAR(500)\",\"13\":\"NUMERIC(10,0)\",\"14\":\"VARCHAR(20)\",\"15\":\"TIMESTAMP(3)\",\"16\":\"TIMESTAMP(3)\"}",
+    "phasor.reports": "[[\"PARTICIPANT_REGISTRATION\",\"PMS_GROUPSERVICE\"]]",
+    "phasor.table": "PMS_GROUPSERVICE",
+    "phasor.temporal.cutoff": "LASTCHANGED",
+    "phasor.temporal.entity": "[]",
+    "phasor.temporal.order": "[\"LASTCHANGED\"]",
+    "phasor.temporal.origin": "derived",
+    "phasor.temporal.valid.kind": "timeless",
+    "phasor.time": "LASTCHANGED",
+    "phasor.visibility": "PUBLIC"
   },
   "refs": {
     "main": {
@@ -171,27 +171,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PMS_GROUPSERVICE/metadata/snap-7359111850727412132-1-24af073e-5ba7-8590-8be3-d58ab2a846df.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/PMS_GROUPSERVICE/metadata/snap-7359111850727412132-1-9ac7430b-724c-8909-99a9-800372cb831e.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 7359111850727412132,
       "summary": {
         "operation": "append",
-        "utilake.files": "26",
-        "utilake.from.file": "PUBLIC_ARCHIVE#PMS_GROUPSERVICE#FILE01#202408010000.zip",
-        "utilake.from.release": "2024-08",
-        "utilake.from.sha256": "63cecb235bf4c375d3bac977ff2b82cac574f7f262eb4b872469353e44ea6f75",
-        "utilake.from.time": "2024-09-07T17:00:00.747+10:00",
-        "utilake.kinds": "[\"archive\"]",
-        "utilake.report-subtype": "PMS_GROUPSERVICE",
-        "utilake.report-type": "PARTICIPANT_REGISTRATION",
-        "utilake.rows": "3128",
-        "utilake.to.file": "PUBLIC_ARCHIVE#PMS_GROUPSERVICE#FILE01#202609010000.zip",
-        "utilake.to.release": "2026-09",
-        "utilake.to.sha256": "08e98075f1200bcaa7851c39567a82d564645f1779ff6462b4abdce422917aec",
-        "utilake.to.time": "2026-10-08T17:00:02.470+10:00",
-        "utilake.total-rows": "3128",
-        "utilake.version": "1"
+        "phasor.files": "26",
+        "phasor.from.file": "PUBLIC_ARCHIVE#PMS_GROUPSERVICE#FILE01#202408010000.zip",
+        "phasor.from.release": "2024-08",
+        "phasor.from.sha256": "63cecb235bf4c375d3bac977ff2b82cac574f7f262eb4b872469353e44ea6f75",
+        "phasor.from.time": "2024-09-07T17:00:00.747+10:00",
+        "phasor.kinds": "[\"archive\"]",
+        "phasor.report-subtype": "PMS_GROUPSERVICE",
+        "phasor.report-type": "PARTICIPANT_REGISTRATION",
+        "phasor.rows": "3128",
+        "phasor.to.file": "PUBLIC_ARCHIVE#PMS_GROUPSERVICE#FILE01#202609010000.zip",
+        "phasor.to.release": "2026-09",
+        "phasor.to.sha256": "08e98075f1200bcaa7851c39567a82d564645f1779ff6462b4abdce422917aec",
+        "phasor.to.time": "2026-10-08T17:00:02.470+10:00",
+        "phasor.total-rows": "3128",
+        "phasor.version": "1"
       },
       "timestamp-ms": 1722434400000
     }
@@ -202,5 +202,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "24af073e-5ba7-8590-8be3-d58ab2a846df"
+  "table-uuid": "9ac7430b-724c-8909-99a9-800372cb831e"
 }

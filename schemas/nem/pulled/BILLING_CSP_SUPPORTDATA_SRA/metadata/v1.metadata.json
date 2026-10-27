@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1785506400000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/BILLING_CSP_SUPPORTDATA_SRA",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/BILLING_CSP_SUPPORTDATA_SRA",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -18,9 +18,9 @@
     }
   ],
   "properties": {
-    "utilake.declared": "false",
-    "utilake.format": "4",
-    "utilake.table": "BILLING_CSP_SUPPORTDATA_SRA"
+    "phasor.declared": "false",
+    "phasor.format": "4",
+    "phasor.table": "BILLING_CSP_SUPPORTDATA_SRA"
   },
   "refs": {
     "main": {
@@ -143,25 +143,25 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/BILLING_CSP_SUPPORTDATA_SRA/metadata/snap-8904083864363433596-1-f0cfd37e-7422-8823-ada0-3dd66f430c0f.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/BILLING_CSP_SUPPORTDATA_SRA/metadata/snap-8904083864363433596-1-61c62fb5-74f8-83f9-9dd1-041b9772b627.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 8904083864363433596,
       "summary": {
         "operation": "append",
-        "utilake.files": "45",
-        "utilake.from.file": "PUBLIC_BILLINGCSP_2026WEEK15REVISE_20260825120126_0000000534371107.zip",
-        "utilake.from.release": "2026-08",
-        "utilake.from.sha256": "f41ed3f26c7ccdc3d8833200d32c5e3127de6480709f1a063ed5c3baf19b4bda",
-        "utilake.kinds": "[\"reports\"]",
-        "utilake.report-subtype": "CSP_SUPPORTDATA_SRA",
-        "utilake.report-type": "BILLING",
-        "utilake.rows": "334",
-        "utilake.to.file": "PUBLIC_BILLINGCSP_2026WEEK42PRELIM_20261021093013_0000000544022368.zip",
-        "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "611f7b8b646a5d4b44658ff2abc7b9cc4b8970d243160a0d82f539d9729161f0",
-        "utilake.total-rows": "334",
-        "utilake.version": "1"
+        "phasor.files": "45",
+        "phasor.from.file": "PUBLIC_BILLINGCSP_2026WEEK15REVISE_20260825120126_0000000534371107.zip",
+        "phasor.from.release": "2026-08",
+        "phasor.from.sha256": "f41ed3f26c7ccdc3d8833200d32c5e3127de6480709f1a063ed5c3baf19b4bda",
+        "phasor.kinds": "[\"reports\"]",
+        "phasor.report-subtype": "CSP_SUPPORTDATA_SRA",
+        "phasor.report-type": "BILLING",
+        "phasor.rows": "334",
+        "phasor.to.file": "PUBLIC_BILLINGCSP_2026WEEK42PRELIM_20261021093013_0000000544022368.zip",
+        "phasor.to.release": "2026-10",
+        "phasor.to.sha256": "611f7b8b646a5d4b44658ff2abc7b9cc4b8970d243160a0d82f539d9729161f0",
+        "phasor.total-rows": "334",
+        "phasor.version": "1"
       },
       "timestamp-ms": 1785506400000
     }
@@ -172,5 +172,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "f0cfd37e-7422-8823-ada0-3dd66f430c0f"
+  "table-uuid": "61c62fb5-74f8-83f9-9dd1-041b9772b627"
 }

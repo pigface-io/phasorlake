@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1732975200000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PD_FCAS_REQ_RUN",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/PD_FCAS_REQ_RUN",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -19,20 +19,20 @@
   ],
   "properties": {
     "comment": "The constraint FCAS processor run details. This enhanced output table format is established for the constraint FCAS processor release required for the Frequency Performance Payments (FPP) release. This enhanced output is hierarchical in nature, with the parent *_FCAS_REQ_RUN table holding the details about the triggering case run and time, and the child *_FCAS_REQ_CONSTRAINT table holding the constraint level details of FCAS costs / prices.",
-    "utilake.declared": "true",
-    "utilake.format": "4",
-    "utilake.key": "[]",
-    "utilake.load": "append",
-    "utilake.model-types": "{\"1\":\"VARCHAR(20)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"NUMERIC(5)\",\"4\":\"TIMESTAMP(0)\"}",
-    "utilake.reports": "[[\"PREDISPATCH\",\"FCAS_REQ_RUN\"]]",
-    "utilake.table": "PD_FCAS_REQ_RUN",
-    "utilake.temporal.cutoff": "LASTCHANGED",
-    "utilake.temporal.entity": "[]",
-    "utilake.temporal.order": "[\"RUN_DATETIME\",\"PREDISPATCHSEQNO\",\"RUNNO\",\"LASTCHANGED\"]",
-    "utilake.temporal.origin": "derived",
-    "utilake.temporal.valid.kind": "timeless",
-    "utilake.time": "RUN_DATETIME",
-    "utilake.visibility": "PUBLIC"
+    "phasor.declared": "true",
+    "phasor.format": "4",
+    "phasor.key": "[]",
+    "phasor.load": "append",
+    "phasor.model-types": "{\"1\":\"VARCHAR(20)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"NUMERIC(5)\",\"4\":\"TIMESTAMP(0)\"}",
+    "phasor.reports": "[[\"PREDISPATCH\",\"FCAS_REQ_RUN\"]]",
+    "phasor.table": "PD_FCAS_REQ_RUN",
+    "phasor.temporal.cutoff": "LASTCHANGED",
+    "phasor.temporal.entity": "[]",
+    "phasor.temporal.order": "[\"RUN_DATETIME\",\"PREDISPATCHSEQNO\",\"RUNNO\",\"LASTCHANGED\"]",
+    "phasor.temporal.origin": "derived",
+    "phasor.temporal.valid.kind": "timeless",
+    "phasor.time": "RUN_DATETIME",
+    "phasor.visibility": "PUBLIC"
   },
   "refs": {
     "main": {
@@ -87,27 +87,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PD_FCAS_REQ_RUN/metadata/snap-4674906727383717817-1-108b7f3f-bf41-8bb2-aac6-94b3f388abe4.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/PD_FCAS_REQ_RUN/metadata/snap-4674906727383717817-1-c8a879ed-c7fe-8166-ac1f-e75818f580ce.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 4674906727383717817,
       "summary": {
         "operation": "append",
-        "utilake.files": "18811",
-        "utilake.from.file": "PUBLIC_ARCHIVE#PD_FCAS_REQ_RUN#FILE01#202412010000.zip",
-        "utilake.from.release": "2024-12",
-        "utilake.from.sha256": "f5e4e955a4fcaa5a5a9887c3ad065b7820b46810cd3b44d9f39a1ad4af06db3a",
-        "utilake.from.time": "2024-12-09T12:00:00+10:00",
-        "utilake.kinds": "[\"archive\",\"reports\"]",
-        "utilake.report-subtype": "FCAS_REQ_RUN",
-        "utilake.report-type": "PREDISPATCH",
-        "utilake.rows": "325253",
-        "utilake.to.file": "PUBLIC_PREDISPATCHFCST_202610241200_0000000544594454.zip",
-        "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "288b06bbd702469c38c3e78d20f9b52b3ace6c2ea873104efa336aced36c92ff",
-        "utilake.to.time": "2026-10-24T12:00:00+10:00",
-        "utilake.total-rows": "325253",
-        "utilake.version": "1"
+        "phasor.files": "18811",
+        "phasor.from.file": "PUBLIC_ARCHIVE#PD_FCAS_REQ_RUN#FILE01#202412010000.zip",
+        "phasor.from.release": "2024-12",
+        "phasor.from.sha256": "f5e4e955a4fcaa5a5a9887c3ad065b7820b46810cd3b44d9f39a1ad4af06db3a",
+        "phasor.from.time": "2024-12-09T12:00:00+10:00",
+        "phasor.kinds": "[\"archive\",\"reports\"]",
+        "phasor.report-subtype": "FCAS_REQ_RUN",
+        "phasor.report-type": "PREDISPATCH",
+        "phasor.rows": "325253",
+        "phasor.to.file": "PUBLIC_PREDISPATCHFCST_202610241200_0000000544594454.zip",
+        "phasor.to.release": "2026-10",
+        "phasor.to.sha256": "288b06bbd702469c38c3e78d20f9b52b3ace6c2ea873104efa336aced36c92ff",
+        "phasor.to.time": "2026-10-24T12:00:00+10:00",
+        "phasor.total-rows": "325253",
+        "phasor.version": "1"
       },
       "timestamp-ms": 1732975200000
     }
@@ -118,5 +118,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "108b7f3f-bf41-8bb2-aac6-94b3f388abe4"
+  "table-uuid": "c8a879ed-c7fe-8166-ac1f-e75818f580ce"
 }

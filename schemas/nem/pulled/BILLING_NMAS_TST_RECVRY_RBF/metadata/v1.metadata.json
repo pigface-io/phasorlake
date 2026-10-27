@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1485871200000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/BILLING_NMAS_TST_RECVRY_RBF",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/BILLING_NMAS_TST_RECVRY_RBF",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -19,21 +19,21 @@
   ],
   "properties": {
     "comment": "BILLING_NMAS_TEST_RECVRY_RBF sets out the NSCAS/SRAS Testing Payment recovery data for the posted billing week.",
-    "utilake.declared": "true",
-    "utilake.format": "4",
-    "utilake.key": "[\"CONTRACTYEAR\",\"WEEKNO\",\"BILLRUNNO\",\"SERVICE\",\"CONTRACTID\",\"REGIONID\"]",
-    "utilake.load": "append",
-    "utilake.model-types": "{\"1\":\"NUMERIC(4,0)\",\"2\":\"NUMERIC(3,0)\",\"3\":\"NUMERIC(3,0)\",\"4\":\"VARCHAR(10)\",\"5\":\"VARCHAR(10)\",\"6\":\"VARCHAR(10)\",\"7\":\"NUMERIC(18,8)\",\"8\":\"NUMERIC(18,8)\",\"9\":\"NUMERIC(18,8)\",\"10\":\"TIMESTAMP(0)\"}",
-    "utilake.package": "BILLING_RUN",
-    "utilake.reports": "[[\"BILLING\",\"NMAS_TST_RECVRY_RBF\"]]",
-    "utilake.table": "BILLING_NMAS_TST_RECVRY_RBF",
-    "utilake.temporal.cutoff": "LASTCHANGED",
-    "utilake.temporal.entity": "[\"CONTRACTYEAR\",\"WEEKNO\",\"SERVICE\",\"CONTRACTID\",\"REGIONID\"]",
-    "utilake.temporal.order": "[\"BILLRUNNO\",\"LASTCHANGED\"]",
-    "utilake.temporal.origin": "derived",
-    "utilake.temporal.valid.kind": "timeless",
-    "utilake.time": "LASTCHANGED",
-    "utilake.visibility": "PUBLIC"
+    "phasor.declared": "true",
+    "phasor.format": "4",
+    "phasor.key": "[\"CONTRACTYEAR\",\"WEEKNO\",\"BILLRUNNO\",\"SERVICE\",\"CONTRACTID\",\"REGIONID\"]",
+    "phasor.load": "append",
+    "phasor.model-types": "{\"1\":\"NUMERIC(4,0)\",\"2\":\"NUMERIC(3,0)\",\"3\":\"NUMERIC(3,0)\",\"4\":\"VARCHAR(10)\",\"5\":\"VARCHAR(10)\",\"6\":\"VARCHAR(10)\",\"7\":\"NUMERIC(18,8)\",\"8\":\"NUMERIC(18,8)\",\"9\":\"NUMERIC(18,8)\",\"10\":\"TIMESTAMP(0)\"}",
+    "phasor.package": "BILLING_RUN",
+    "phasor.reports": "[[\"BILLING\",\"NMAS_TST_RECVRY_RBF\"]]",
+    "phasor.table": "BILLING_NMAS_TST_RECVRY_RBF",
+    "phasor.temporal.cutoff": "LASTCHANGED",
+    "phasor.temporal.entity": "[\"CONTRACTYEAR\",\"WEEKNO\",\"SERVICE\",\"CONTRACTID\",\"REGIONID\"]",
+    "phasor.temporal.order": "[\"BILLRUNNO\",\"LASTCHANGED\"]",
+    "phasor.temporal.origin": "derived",
+    "phasor.temporal.valid.kind": "timeless",
+    "phasor.time": "LASTCHANGED",
+    "phasor.visibility": "PUBLIC"
   },
   "refs": {
     "main": {
@@ -137,27 +137,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/BILLING_NMAS_TST_RECVRY_RBF/metadata/snap-7538046317278936015-1-6d223d67-ac8b-89ce-981d-d3f3406755a9.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/BILLING_NMAS_TST_RECVRY_RBF/metadata/snap-7538046317278936015-1-bb63db72-a28e-830b-aa6a-d639fc84f640.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 7538046317278936015,
       "summary": {
         "operation": "append",
-        "utilake.files": "147",
-        "utilake.from.file": "PUBLIC_BILLING_20170207101322_0000000280742011.zip",
-        "utilake.from.release": "2017-02",
-        "utilake.from.sha256": "f0638979b9c6ec2c353eb4e6b02ea9f68e0392e70f1966892451c68de85d8e40",
-        "utilake.from.time": "2017-01-30T13:20:12+10:00",
-        "utilake.kinds": "[\"archive\",\"reports\"]",
-        "utilake.report-subtype": "NMAS_TST_RECVRY_RBF",
-        "utilake.report-type": "BILLING",
-        "utilake.rows": "2700",
-        "utilake.to.file": "PUBLIC_ARCHIVE#BILLING_NMAS_TST_RECVRY_RBF#FILE01#202609010000.zip",
-        "utilake.to.release": "2026-09",
-        "utilake.to.sha256": "d6a6700b2cc145825f7ceabeb03b672da71baaee7bc7e430c2072b4784b5a163",
-        "utilake.to.time": "2026-09-24T10:01:39+10:00",
-        "utilake.total-rows": "2700",
-        "utilake.version": "1"
+        "phasor.files": "147",
+        "phasor.from.file": "PUBLIC_BILLING_20170207101322_0000000280742011.zip",
+        "phasor.from.release": "2017-02",
+        "phasor.from.sha256": "f0638979b9c6ec2c353eb4e6b02ea9f68e0392e70f1966892451c68de85d8e40",
+        "phasor.from.time": "2017-01-30T13:20:12+10:00",
+        "phasor.kinds": "[\"archive\",\"reports\"]",
+        "phasor.report-subtype": "NMAS_TST_RECVRY_RBF",
+        "phasor.report-type": "BILLING",
+        "phasor.rows": "2700",
+        "phasor.to.file": "PUBLIC_ARCHIVE#BILLING_NMAS_TST_RECVRY_RBF#FILE01#202609010000.zip",
+        "phasor.to.release": "2026-09",
+        "phasor.to.sha256": "d6a6700b2cc145825f7ceabeb03b672da71baaee7bc7e430c2072b4784b5a163",
+        "phasor.to.time": "2026-09-24T10:01:39+10:00",
+        "phasor.total-rows": "2700",
+        "phasor.version": "1"
       },
       "timestamp-ms": 1485871200000
     }
@@ -168,5 +168,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "6d223d67-ac8b-89ce-981d-d3f3406755a9"
+  "table-uuid": "bb63db72-a28e-830b-aa6a-d639fc84f640"
 }

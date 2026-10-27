@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1777557600000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/DWGM_INT312_SETTLEMENTS_ACTIVITY_REPORT_1",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/gas/DWGM_INT312_SETTLEMENTS_ACTIVITY_REPORT_1",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -18,20 +18,20 @@
     }
   ],
   "properties": {
-    "utilake.declared": "true",
-    "utilake.format": "4",
-    "utilake.headers": "{\"1\":\"gas_date\",\"2\":\"gas_hour\",\"3\":\"uafg_28_days_pct\",\"4\":\"prov_system_inj_gj\",\"5\":\"prov_system_wdl_gj\",\"6\":\"prov_net_gj\",\"7\":\"market_price\",\"8\":\"total_gas_sold_gj\",\"9\":\"total_gas_bought_gj\",\"10\":\"uplift\",\"11\":\"su_uplift\",\"12\":\"ex_uplift\",\"13\":\"cx_uplift\",\"14\":\"tp_uplift\",\"15\":\"el_uplift\",\"16\":\"rc_uplift\",\"17\":\"other_uplift\"}",
-    "utilake.key": "[]",
-    "utilake.load": "append",
-    "utilake.market": "gas",
-    "utilake.offset": "+10:00",
-    "utilake.reports": "[[\"DWGM\",\"INT312_SETTLEMENTS_ACTIVITY_REPORT_1\"]]",
-    "utilake.table": "DWGM_INT312_SETTLEMENTS_ACTIVITY_REPORT_1",
-    "utilake.temporal.entity": "[]",
-    "utilake.temporal.order": "[]",
-    "utilake.temporal.origin": "hand",
-    "utilake.temporal.valid.kind": "timeless",
-    "utilake.visibility": "PUBLIC"
+    "phasor.declared": "true",
+    "phasor.format": "4",
+    "phasor.headers": "{\"1\":\"gas_date\",\"2\":\"gas_hour\",\"3\":\"uafg_28_days_pct\",\"4\":\"prov_system_inj_gj\",\"5\":\"prov_system_wdl_gj\",\"6\":\"prov_net_gj\",\"7\":\"market_price\",\"8\":\"total_gas_sold_gj\",\"9\":\"total_gas_bought_gj\",\"10\":\"uplift\",\"11\":\"su_uplift\",\"12\":\"ex_uplift\",\"13\":\"cx_uplift\",\"14\":\"tp_uplift\",\"15\":\"el_uplift\",\"16\":\"rc_uplift\",\"17\":\"other_uplift\"}",
+    "phasor.key": "[]",
+    "phasor.load": "append",
+    "phasor.market": "gas",
+    "phasor.offset": "+10:00",
+    "phasor.reports": "[[\"DWGM\",\"INT312_SETTLEMENTS_ACTIVITY_REPORT_1\"]]",
+    "phasor.table": "DWGM_INT312_SETTLEMENTS_ACTIVITY_REPORT_1",
+    "phasor.temporal.entity": "[]",
+    "phasor.temporal.order": "[]",
+    "phasor.temporal.origin": "hand",
+    "phasor.temporal.valid.kind": "timeless",
+    "phasor.visibility": "PUBLIC"
   },
   "refs": {
     "main": {
@@ -160,25 +160,25 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/DWGM_INT312_SETTLEMENTS_ACTIVITY_REPORT_1/metadata/snap-4112643904371137741-1-0ae21e45-1a7a-8019-a3c3-539f15aa9965.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/gas/DWGM_INT312_SETTLEMENTS_ACTIVITY_REPORT_1/metadata/snap-4112643904371137741-1-cb12cc55-b905-8016-aa8b-ccb6d552d41d.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 4112643904371137741,
       "summary": {
         "operation": "append",
-        "utilake.files": "1",
-        "utilake.from.file": "int312_v1_settlements_activity_report_1.csv",
-        "utilake.from.release": "2026-05",
-        "utilake.from.sha256": "ee4381a8b14f173cdb1b608b46316a9370a2a2997a39cdd381bdbc726e1780bb",
-        "utilake.kinds": "[\"dwgm\"]",
-        "utilake.report-subtype": "INT312_SETTLEMENTS_ACTIVITY_REPORT_1",
-        "utilake.report-type": "DWGM",
-        "utilake.rows": "0",
-        "utilake.to.file": "int312_v1_settlements_activity_report_1.csv",
-        "utilake.to.release": "2026-05",
-        "utilake.to.sha256": "ee4381a8b14f173cdb1b608b46316a9370a2a2997a39cdd381bdbc726e1780bb",
-        "utilake.total-rows": "0",
-        "utilake.version": "1"
+        "phasor.files": "1",
+        "phasor.from.file": "int312_v1_settlements_activity_report_1.csv",
+        "phasor.from.release": "2026-05",
+        "phasor.from.sha256": "ee4381a8b14f173cdb1b608b46316a9370a2a2997a39cdd381bdbc726e1780bb",
+        "phasor.kinds": "[\"dwgm\"]",
+        "phasor.report-subtype": "INT312_SETTLEMENTS_ACTIVITY_REPORT_1",
+        "phasor.report-type": "DWGM",
+        "phasor.rows": "0",
+        "phasor.to.file": "int312_v1_settlements_activity_report_1.csv",
+        "phasor.to.release": "2026-05",
+        "phasor.to.sha256": "ee4381a8b14f173cdb1b608b46316a9370a2a2997a39cdd381bdbc726e1780bb",
+        "phasor.total-rows": "0",
+        "phasor.version": "1"
       },
       "timestamp-ms": 1777557600000
     }
@@ -189,5 +189,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "0ae21e45-1a7a-8019-a3c3-539f15aa9965"
+  "table-uuid": "cb12cc55-b905-8016-aa8b-ccb6d552d41d"
 }

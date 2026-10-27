@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1785506400000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/DWGM_INT263_LNG_MONITOR",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/gas/DWGM_INT263_LNG_MONITOR",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -18,23 +18,23 @@
     }
   ],
   "properties": {
-    "utilake.declared": "true",
-    "utilake.format": "4",
-    "utilake.headers": "{\"1\":\"gas_date\",\"2\":\"allocated_market_stock\",\"3\":\"current_date\"}",
-    "utilake.key": "[]",
-    "utilake.load": "append",
-    "utilake.market": "gas",
-    "utilake.offset": "+10:00",
-    "utilake.reports": "[[\"DWGM\",\"INT263_LNG_MONITOR_1\"]]",
-    "utilake.table": "DWGM_INT263_LNG_MONITOR",
-    "utilake.temporal.cutoff": "CURRENT_DATE",
-    "utilake.temporal.entity": "[]",
-    "utilake.temporal.order": "[\"CURRENT_DATE\"]",
-    "utilake.temporal.origin": "hand",
-    "utilake.temporal.valid.column": "GAS_DATE",
-    "utilake.temporal.valid.kind": "instant",
-    "utilake.time": "GAS_DATE",
-    "utilake.visibility": "PUBLIC"
+    "phasor.declared": "true",
+    "phasor.format": "4",
+    "phasor.headers": "{\"1\":\"gas_date\",\"2\":\"allocated_market_stock\",\"3\":\"current_date\"}",
+    "phasor.key": "[]",
+    "phasor.load": "append",
+    "phasor.market": "gas",
+    "phasor.offset": "+10:00",
+    "phasor.reports": "[[\"DWGM\",\"INT263_LNG_MONITOR_1\"]]",
+    "phasor.table": "DWGM_INT263_LNG_MONITOR",
+    "phasor.temporal.cutoff": "CURRENT_DATE",
+    "phasor.temporal.entity": "[]",
+    "phasor.temporal.order": "[\"CURRENT_DATE\"]",
+    "phasor.temporal.origin": "hand",
+    "phasor.temporal.valid.column": "GAS_DATE",
+    "phasor.temporal.valid.kind": "instant",
+    "phasor.time": "GAS_DATE",
+    "phasor.visibility": "PUBLIC"
   },
   "refs": {
     "main": {
@@ -79,27 +79,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/DWGM_INT263_LNG_MONITOR/metadata/snap-8133873654408544136-1-157ee62d-da05-8d57-aa5c-1cd3be544173.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/gas/DWGM_INT263_LNG_MONITOR/metadata/snap-8133873654408544136-1-6f91cf65-a777-8990-8495-e63790ac0115.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 8133873654408544136,
       "summary": {
         "operation": "append",
-        "utilake.files": "71",
-        "utilake.from.file": "PublicRpts31.zip",
-        "utilake.from.release": "2026-08",
-        "utilake.from.sha256": "735fad42989ef107a70ecdfc43f290c13afc957673461c78e4538d9ffcc9b0fe",
-        "utilake.from.time": "2026-07-02T00:00:00+10:00",
-        "utilake.kinds": "[\"dwgm\"]",
-        "utilake.report-subtype": "INT263_LNG_MONITOR_1",
-        "utilake.report-type": "DWGM",
-        "utilake.rows": "559",
-        "utilake.to.file": "int263_v4_lng_monitor_1.csv@20261024T113600+1000",
-        "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "f6647ec474d59d2bc239926156bce93fb9f4f9ec06e14830ffb8904a8d41ceed",
-        "utilake.to.time": "2026-10-28T00:00:00+10:00",
-        "utilake.total-rows": "559",
-        "utilake.version": "4"
+        "phasor.files": "71",
+        "phasor.from.file": "PublicRpts31.zip",
+        "phasor.from.release": "2026-08",
+        "phasor.from.sha256": "735fad42989ef107a70ecdfc43f290c13afc957673461c78e4538d9ffcc9b0fe",
+        "phasor.from.time": "2026-07-02T00:00:00+10:00",
+        "phasor.kinds": "[\"dwgm\"]",
+        "phasor.report-subtype": "INT263_LNG_MONITOR_1",
+        "phasor.report-type": "DWGM",
+        "phasor.rows": "559",
+        "phasor.to.file": "int263_v4_lng_monitor_1.csv@20261024T113600+1000",
+        "phasor.to.release": "2026-10",
+        "phasor.to.sha256": "f6647ec474d59d2bc239926156bce93fb9f4f9ec06e14830ffb8904a8d41ceed",
+        "phasor.to.time": "2026-10-28T00:00:00+10:00",
+        "phasor.total-rows": "559",
+        "phasor.version": "4"
       },
       "timestamp-ms": 1785506400000
     }
@@ -110,5 +110,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "157ee62d-da05-8d57-aa5c-1cd3be544173"
+  "table-uuid": "6f91cf65-a777-8990-8495-e63790ac0115"
 }

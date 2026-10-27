@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1790776800000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/STTM_INT674_TOTAL_CONTINGENCY_GAS_SCHEDULES",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/gas/STTM_INT674_TOTAL_CONTINGENCY_GAS_SCHEDULES",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -18,23 +18,23 @@
     }
   ],
   "properties": {
-    "utilake.declared": "true",
-    "utilake.format": "4",
-    "utilake.headers": "{\"1\":\"gas_date\",\"2\":\"hub_identifier\",\"3\":\"hub_name\",\"4\":\"facility_identifier\",\"5\":\"facility_name\",\"6\":\"contingency_gas_called_identifier\",\"7\":\"flow_direction\",\"8\":\"contingency_gas_bid_offer_type\",\"9\":\"contingency_gas_bid_offer_called_quantity\",\"10\":\"approval_datetime\",\"11\":\"report_datetime\"}",
-    "utilake.key": "[]",
-    "utilake.load": "append",
-    "utilake.market": "gas",
-    "utilake.offset": "+10:00",
-    "utilake.reports": "[[\"STTM\",\"INT674_TOTAL_CONTINGENCY_GAS_SCHEDULES_RPT_1\"]]",
-    "utilake.table": "STTM_INT674_TOTAL_CONTINGENCY_GAS_SCHEDULES",
-    "utilake.temporal.cutoff": "REPORT_DATETIME",
-    "utilake.temporal.entity": "[\"HUB_IDENTIFIER\",\"FACILITY_IDENTIFIER\",\"CONTINGENCY_GAS_CALLED_IDENTIFIER\"]",
-    "utilake.temporal.order": "[\"APPROVAL_DATETIME\",\"REPORT_DATETIME\"]",
-    "utilake.temporal.origin": "hand",
-    "utilake.temporal.valid.column": "GAS_DATE",
-    "utilake.temporal.valid.kind": "instant",
-    "utilake.time": "GAS_DATE",
-    "utilake.visibility": "PUBLIC"
+    "phasor.declared": "true",
+    "phasor.format": "4",
+    "phasor.headers": "{\"1\":\"gas_date\",\"2\":\"hub_identifier\",\"3\":\"hub_name\",\"4\":\"facility_identifier\",\"5\":\"facility_name\",\"6\":\"contingency_gas_called_identifier\",\"7\":\"flow_direction\",\"8\":\"contingency_gas_bid_offer_type\",\"9\":\"contingency_gas_bid_offer_called_quantity\",\"10\":\"approval_datetime\",\"11\":\"report_datetime\"}",
+    "phasor.key": "[]",
+    "phasor.load": "append",
+    "phasor.market": "gas",
+    "phasor.offset": "+10:00",
+    "phasor.reports": "[[\"STTM\",\"INT674_TOTAL_CONTINGENCY_GAS_SCHEDULES_RPT_1\"]]",
+    "phasor.table": "STTM_INT674_TOTAL_CONTINGENCY_GAS_SCHEDULES",
+    "phasor.temporal.cutoff": "REPORT_DATETIME",
+    "phasor.temporal.entity": "[\"HUB_IDENTIFIER\",\"FACILITY_IDENTIFIER\",\"CONTINGENCY_GAS_CALLED_IDENTIFIER\"]",
+    "phasor.temporal.order": "[\"APPROVAL_DATETIME\",\"REPORT_DATETIME\"]",
+    "phasor.temporal.origin": "hand",
+    "phasor.temporal.valid.column": "GAS_DATE",
+    "phasor.temporal.valid.kind": "instant",
+    "phasor.time": "GAS_DATE",
+    "phasor.visibility": "PUBLIC"
   },
   "refs": {
     "main": {
@@ -127,27 +127,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/STTM_INT674_TOTAL_CONTINGENCY_GAS_SCHEDULES/metadata/snap-7170681812576657665-1-ea5cd742-b042-8926-b257-0b7084e00dd5.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/gas/STTM_INT674_TOTAL_CONTINGENCY_GAS_SCHEDULES/metadata/snap-7170681812576657665-1-deab3c5e-657f-8681-b2bf-ec63607ab5f2.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 7170681812576657665,
       "summary": {
         "operation": "append",
-        "utilake.files": "1",
-        "utilake.from.file": "int674_v1_total_contingency_gas_schedules_rpt_1.csv",
-        "utilake.from.release": "2026-10",
-        "utilake.from.sha256": "883b3b64409d9df2252e7a3407b6c551768e208aa9c224f0c351cfc423f03980",
-        "utilake.from.time": "2010-05-27T00:00:00+10:00",
-        "utilake.kinds": "[\"sttm\"]",
-        "utilake.report-subtype": "INT674_TOTAL_CONTINGENCY_GAS_SCHEDULES_RPT_1",
-        "utilake.report-type": "STTM",
-        "utilake.rows": "2",
-        "utilake.to.file": "int674_v1_total_contingency_gas_schedules_rpt_1.csv",
-        "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "883b3b64409d9df2252e7a3407b6c551768e208aa9c224f0c351cfc423f03980",
-        "utilake.to.time": "2010-05-27T00:00:00+10:00",
-        "utilake.total-rows": "2",
-        "utilake.version": "1"
+        "phasor.files": "1",
+        "phasor.from.file": "int674_v1_total_contingency_gas_schedules_rpt_1.csv",
+        "phasor.from.release": "2026-10",
+        "phasor.from.sha256": "883b3b64409d9df2252e7a3407b6c551768e208aa9c224f0c351cfc423f03980",
+        "phasor.from.time": "2010-05-27T00:00:00+10:00",
+        "phasor.kinds": "[\"sttm\"]",
+        "phasor.report-subtype": "INT674_TOTAL_CONTINGENCY_GAS_SCHEDULES_RPT_1",
+        "phasor.report-type": "STTM",
+        "phasor.rows": "2",
+        "phasor.to.file": "int674_v1_total_contingency_gas_schedules_rpt_1.csv",
+        "phasor.to.release": "2026-10",
+        "phasor.to.sha256": "883b3b64409d9df2252e7a3407b6c551768e208aa9c224f0c351cfc423f03980",
+        "phasor.to.time": "2010-05-27T00:00:00+10:00",
+        "phasor.total-rows": "2",
+        "phasor.version": "1"
       },
       "timestamp-ms": 1790776800000
     }
@@ -158,5 +158,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "ea5cd742-b042-8926-b257-0b7084e00dd5"
+  "table-uuid": "deab3c5e-657f-8681-b2bf-ec63607ab5f2"
 }

@@ -1803,6 +1803,460 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9b4f627cb1b25917193a259e49bdad08f671f8d9708acfd5fe0a8c1455d87220"
 
 [[package]]
+name = "phasor-acquire"
+version = "0.1.0"
+dependencies = [
+ "async-trait",
+ "bytes",
+ "crc32fast",
+ "criterion",
+ "flate2",
+ "futures",
+ "memchr",
+ "phasor-core",
+ "phasor-kit",
+ "phasor-net",
+ "phasor-plain-decode",
+ "phasor-provenance",
+ "phasor-zip",
+ "reqwest",
+ "serde",
+ "serde_json",
+ "sha2",
+ "tempfile",
+ "thiserror",
+ "tokio",
+ "url",
+ "zip",
+]
+
+[[package]]
+name = "phasor-bench"
+version = "0.1.0"
+dependencies = [
+ "peak_alloc",
+ "phasor-acquire",
+ "phasor-core",
+ "phasor-kit",
+ "phasor-mms-conform",
+ "phasor-mms-decode",
+ "phasor-nem",
+ "phasor-pipeline",
+ "phasor-registry",
+ "phasor-writer",
+ "phasor-zip",
+ "serde_json",
+ "tempfile",
+ "tokio",
+ "tokio-util",
+ "zip",
+ "zonetrace",
+]
+
+[[package]]
+name = "phasor-cli"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "clap",
+ "indicatif",
+ "jiff",
+ "phasor-acquire",
+ "phasor-core",
+ "phasor-gas",
+ "phasor-iceberg",
+ "phasor-kit",
+ "phasor-mms-conform",
+ "phasor-nem",
+ "phasor-pipeline",
+ "phasor-registry",
+ "phasor-wem",
+ "phasor-writer",
+ "phasor-zip",
+ "serde",
+ "serde_json",
+ "tempfile",
+ "tokio",
+ "tokio-util",
+ "tracing",
+ "tracing-subscriber",
+ "url",
+ "zip",
+]
+
+[[package]]
+name = "phasor-core"
+version = "0.1.0"
+dependencies = [
+ "fast-float2",
+ "memchr",
+ "phasor-decode",
+ "phasor-diag",
+ "phasor-provenance",
+ "proptest",
+ "serde",
+ "serde_json",
+ "tempfile",
+ "thiserror",
+ "toml",
+ "xxhash-rust",
+]
+
+[[package]]
+name = "phasor-decode"
+version = "0.1.0"
+source = "git+ssh://git@github.com/pigface-io/phasorlake-schemas.git?rev=93dbff1b61541c64064fdf6e6a07cbdcdddd7edd#93dbff1b61541c64064fdf6e6a07cbdcdddd7edd"
+dependencies = [
+ "phasor-diag",
+ "serde",
+ "thiserror",
+ "xxhash-rust",
+]
+
+[[package]]
+name = "phasor-diag"
+version = "0.1.0"
+source = "git+ssh://git@github.com/pigface-io/phasorlake-schemas.git?rev=93dbff1b61541c64064fdf6e6a07cbdcdddd7edd#93dbff1b61541c64064fdf6e6a07cbdcdddd7edd"
+dependencies = [
+ "serde",
+]
+
+[[package]]
+name = "phasor-e2e"
+version = "0.1.0"
+dependencies = [
+ "arrow-array",
+ "arrow-schema",
+ "arrow-select",
+ "async-trait",
+ "futures",
+ "parquet",
+ "phasor-acquire",
+ "phasor-core",
+ "phasor-gas",
+ "phasor-kit",
+ "phasor-mms-conform",
+ "phasor-mms-decode",
+ "phasor-nem",
+ "phasor-pipeline",
+ "phasor-provenance",
+ "phasor-registry",
+ "phasor-wem",
+ "phasor-writer",
+ "phasor-zip",
+ "serde_json",
+ "tempfile",
+ "tokio",
+ "tokio-util",
+ "url",
+ "zip",
+]
+
+[[package]]
+name = "phasor-gas"
+version = "0.1.0"
+dependencies = [
+ "phasor-acquire",
+ "phasor-core",
+ "phasor-kit",
+ "phasor-mms-conform",
+ "phasor-mms-decode",
+ "phasor-plain-decode",
+ "phasor-registry",
+ "phasor-zip",
+ "serde",
+ "tempfile",
+ "tokio",
+ "toml",
+ "url",
+]
+
+[[package]]
+name = "phasor-gates"
+version = "0.1.0"
+source = "git+ssh://git@github.com/pigface-io/phasorlake-schemas.git?rev=93dbff1b61541c64064fdf6e6a07cbdcdddd7edd#93dbff1b61541c64064fdf6e6a07cbdcdddd7edd"
+dependencies = [
+ "anyhow",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
+name = "phasor-iceberg"
+version = "0.1.0"
+source = "git+ssh://git@github.com/pigface-io/phasorlake-schemas.git?rev=93dbff1b61541c64064fdf6e6a07cbdcdddd7edd#93dbff1b61541c64064fdf6e6a07cbdcdddd7edd"
+dependencies = [
+ "phasor-diag",
+ "serde",
+ "serde_json",
+ "sha2",
+ "thiserror",
+]
+
+[[package]]
+name = "phasor-iceberg-store"
+version = "0.1.0"
+dependencies = [
+ "arrow-array",
+ "arrow-schema",
+ "parquet",
+ "phasor-core",
+ "phasor-iceberg",
+ "serde_json",
+ "tempfile",
+ "thiserror",
+]
+
+[[package]]
+name = "phasor-kit"
+version = "0.1.0"
+dependencies = [
+ "arrow-array",
+ "arrow-schema",
+ "async-trait",
+ "phasor-core",
+ "phasor-net",
+ "phasor-plain-decode",
+ "phasor-zip",
+ "serde",
+ "serde_json",
+ "tempfile",
+ "thiserror",
+ "tokio",
+ "url",
+]
+
+[[package]]
+name = "phasor-mirror"
+version = "0.1.0"
+dependencies = [
+ "anyhow",
+ "async-trait",
+ "bytes",
+ "clap",
+ "crc32fast",
+ "criterion",
+ "futures",
+ "memchr",
+ "phasor-core",
+ "phasor-net",
+ "phasor-plain-decode",
+ "phasor-provenance",
+ "phasor-zip",
+ "reqwest",
+ "rustix",
+ "serde",
+ "serde_json",
+ "sha2",
+ "tempfile",
+ "thiserror",
+ "tokio",
+ "toml",
+ "url",
+ "zip",
+]
+
+[[package]]
+name = "phasor-mms-conform"
+version = "0.1.0"
+dependencies = [
+ "arrow-array",
+ "arrow-schema",
+ "criterion",
+ "phasor-core",
+ "phasor-kit",
+ "phasor-mms-decode",
+ "phasor-plain-decode",
+ "phasor-registry",
+ "phasor-zip",
+ "tempfile",
+ "thiserror",
+ "url",
+ "zonetrace",
+]
+
+[[package]]
+name = "phasor-mms-decode"
+version = "0.1.0"
+source = "git+ssh://git@github.com/pigface-io/phasorlake-schemas.git?rev=93dbff1b61541c64064fdf6e6a07cbdcdddd7edd#93dbff1b61541c64064fdf6e6a07cbdcdddd7edd"
+dependencies = [
+ "memchr",
+ "phasor-decode",
+ "phasor-diag",
+ "serde",
+ "thiserror",
+ "xxhash-rust",
+ "zonetrace",
+]
+
+[[package]]
+name = "phasor-nem"
+version = "0.1.0"
+dependencies = [
+ "async-trait",
+ "clap",
+ "phasor-acquire",
+ "phasor-core",
+ "phasor-kit",
+ "phasor-mms-conform",
+ "phasor-mms-decode",
+ "phasor-registry",
+ "serde",
+ "tempfile",
+ "tokio",
+ "toml",
+ "url",
+]
+
+[[package]]
+name = "phasor-net"
+version = "0.1.0"
+dependencies = [
+ "async-trait",
+ "bytes",
+ "crc32fast",
+ "futures",
+ "phasor-core",
+ "phasor-provenance",
+ "reqwest",
+ "rustix",
+ "serde",
+ "serde_json",
+ "sha2",
+ "tempfile",
+ "thiserror",
+ "tokio",
+]
+
+[[package]]
+name = "phasor-pipeline"
+version = "0.1.0"
+dependencies = [
+ "arrow-array",
+ "arrow-schema",
+ "futures",
+ "phasor-acquire",
+ "phasor-core",
+ "phasor-kit",
+ "phasor-provenance",
+ "phasor-writer",
+ "phasor-zip",
+ "serde_json",
+ "tokio",
+ "tokio-util",
+ "url",
+ "zonetrace",
+]
+
+[[package]]
+name = "phasor-plain-decode"
+version = "0.1.0"
+source = "git+ssh://git@github.com/pigface-io/phasorlake-schemas.git?rev=93dbff1b61541c64064fdf6e6a07cbdcdddd7edd#93dbff1b61541c64064fdf6e6a07cbdcdddd7edd"
+dependencies = [
+ "memchr",
+ "phasor-decode",
+ "phasor-diag",
+ "phasor-provenance",
+ "serde_json",
+ "thiserror",
+ "xxhash-rust",
+]
+
+[[package]]
+name = "phasor-provenance"
+version = "0.1.0"
+source = "git+ssh://git@github.com/pigface-io/phasorlake-schemas.git?rev=93dbff1b61541c64064fdf6e6a07cbdcdddd7edd#93dbff1b61541c64064fdf6e6a07cbdcdddd7edd"
+dependencies = [
+ "crc32fast",
+ "phasor-diag",
+ "rustix",
+ "serde",
+ "serde_json",
+ "sha2",
+ "thiserror",
+]
+
+[[package]]
+name = "phasor-registry"
+version = "0.1.0"
+dependencies = [
+ "arrow-schema",
+ "criterion",
+ "hashbrown 0.17.1",
+ "insta",
+ "phasor-core",
+ "phasor-iceberg",
+ "phasor-kit",
+ "phasor-mms-decode",
+ "phasor-plain-decode",
+ "phasor-provenance",
+ "postcard",
+ "serde",
+ "serde_json",
+ "tempfile",
+ "thiserror",
+ "toml",
+ "xxhash-rust",
+]
+
+[[package]]
+name = "phasor-wem"
+version = "0.1.0"
+dependencies = [
+ "async-trait",
+ "phasor-acquire",
+ "phasor-core",
+ "phasor-kit",
+ "phasor-mms-conform",
+ "phasor-plain-decode",
+ "phasor-registry",
+ "serde",
+ "serde_yaml_ng",
+ "tempfile",
+ "tokio",
+ "toml",
+ "url",
+]
+
+[[package]]
+name = "phasor-writer"
+version = "0.1.0"
+dependencies = [
+ "arrow",
+ "arrow-array",
+ "arrow-schema",
+ "arrow-select",
+ "criterion",
+ "parquet",
+ "phasor-core",
+ "phasor-iceberg",
+ "phasor-iceberg-store",
+ "phasor-kit",
+ "rusqlite",
+ "rustix",
+ "serde",
+ "serde_json",
+ "tempfile",
+ "thiserror",
+ "tokio",
+ "zonetrace",
+]
+
+[[package]]
+name = "phasor-zip"
+version = "0.1.0"
+source = "git+ssh://git@github.com/pigface-io/phasorlake-schemas.git?rev=93dbff1b61541c64064fdf6e6a07cbdcdddd7edd#93dbff1b61541c64064fdf6e6a07cbdcdddd7edd"
+dependencies = [
+ "flate2",
+ "phasor-diag",
+ "phasor-provenance",
+ "tempfile",
+ "thiserror",
+ "zip",
+ "zonetrace",
+]
+
+[[package]]
 name = "pin-project-lite"
 version = "0.2.17"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2944,460 +3398,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "06abde3611657adf66d383f00b093d7faecc7fa57071cce2578660c9f1010821"
 
 [[package]]
-name = "utilake-acquire"
-version = "0.1.0"
-dependencies = [
- "async-trait",
- "bytes",
- "crc32fast",
- "criterion",
- "flate2",
- "futures",
- "memchr",
- "reqwest",
- "serde",
- "serde_json",
- "sha2",
- "tempfile",
- "thiserror",
- "tokio",
- "url",
- "utilake-core",
- "utilake-kit",
- "utilake-net",
- "utilake-plain-decode",
- "utilake-provenance",
- "utilake-zip",
- "zip",
-]
-
-[[package]]
-name = "utilake-bench"
-version = "0.1.0"
-dependencies = [
- "peak_alloc",
- "serde_json",
- "tempfile",
- "tokio",
- "tokio-util",
- "utilake-acquire",
- "utilake-core",
- "utilake-kit",
- "utilake-mms-conform",
- "utilake-mms-decode",
- "utilake-nem",
- "utilake-pipeline",
- "utilake-registry",
- "utilake-writer",
- "utilake-zip",
- "zip",
- "zonetrace",
-]
-
-[[package]]
-name = "utilake-cli"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "clap",
- "indicatif",
- "jiff",
- "serde",
- "serde_json",
- "tempfile",
- "tokio",
- "tokio-util",
- "tracing",
- "tracing-subscriber",
- "url",
- "utilake-acquire",
- "utilake-core",
- "utilake-gas",
- "utilake-iceberg",
- "utilake-kit",
- "utilake-mms-conform",
- "utilake-nem",
- "utilake-pipeline",
- "utilake-registry",
- "utilake-wem",
- "utilake-writer",
- "utilake-zip",
- "zip",
-]
-
-[[package]]
-name = "utilake-core"
-version = "0.1.0"
-dependencies = [
- "fast-float2",
- "memchr",
- "proptest",
- "serde",
- "serde_json",
- "tempfile",
- "thiserror",
- "toml",
- "utilake-decode",
- "utilake-diag",
- "utilake-provenance",
- "xxhash-rust",
-]
-
-[[package]]
-name = "utilake-decode"
-version = "0.1.0"
-source = "git+ssh://git@github.com/g0itb4/utilake-schemas.git?rev=ab7ad3197652ad2620b8c674c873d36dca2239c9#ab7ad3197652ad2620b8c674c873d36dca2239c9"
-dependencies = [
- "serde",
- "thiserror",
- "utilake-diag",
- "xxhash-rust",
-]
-
-[[package]]
-name = "utilake-diag"
-version = "0.1.0"
-source = "git+ssh://git@github.com/g0itb4/utilake-schemas.git?rev=ab7ad3197652ad2620b8c674c873d36dca2239c9#ab7ad3197652ad2620b8c674c873d36dca2239c9"
-dependencies = [
- "serde",
-]
-
-[[package]]
-name = "utilake-e2e"
-version = "0.1.0"
-dependencies = [
- "arrow-array",
- "arrow-schema",
- "arrow-select",
- "async-trait",
- "futures",
- "parquet",
- "serde_json",
- "tempfile",
- "tokio",
- "tokio-util",
- "url",
- "utilake-acquire",
- "utilake-core",
- "utilake-gas",
- "utilake-kit",
- "utilake-mms-conform",
- "utilake-mms-decode",
- "utilake-nem",
- "utilake-pipeline",
- "utilake-provenance",
- "utilake-registry",
- "utilake-wem",
- "utilake-writer",
- "utilake-zip",
- "zip",
-]
-
-[[package]]
-name = "utilake-gas"
-version = "0.1.0"
-dependencies = [
- "serde",
- "tempfile",
- "tokio",
- "toml",
- "url",
- "utilake-acquire",
- "utilake-core",
- "utilake-kit",
- "utilake-mms-conform",
- "utilake-mms-decode",
- "utilake-plain-decode",
- "utilake-registry",
- "utilake-zip",
-]
-
-[[package]]
-name = "utilake-gates"
-version = "0.1.0"
-source = "git+ssh://git@github.com/g0itb4/utilake-schemas.git?rev=ab7ad3197652ad2620b8c674c873d36dca2239c9#ab7ad3197652ad2620b8c674c873d36dca2239c9"
-dependencies = [
- "anyhow",
- "serde",
- "serde_json",
-]
-
-[[package]]
-name = "utilake-iceberg"
-version = "0.1.0"
-source = "git+ssh://git@github.com/g0itb4/utilake-schemas.git?rev=ab7ad3197652ad2620b8c674c873d36dca2239c9#ab7ad3197652ad2620b8c674c873d36dca2239c9"
-dependencies = [
- "serde",
- "serde_json",
- "sha2",
- "thiserror",
- "utilake-diag",
-]
-
-[[package]]
-name = "utilake-iceberg-store"
-version = "0.1.0"
-dependencies = [
- "arrow-array",
- "arrow-schema",
- "parquet",
- "serde_json",
- "tempfile",
- "thiserror",
- "utilake-core",
- "utilake-iceberg",
-]
-
-[[package]]
-name = "utilake-kit"
-version = "0.1.0"
-dependencies = [
- "arrow-array",
- "arrow-schema",
- "async-trait",
- "serde",
- "serde_json",
- "tempfile",
- "thiserror",
- "tokio",
- "url",
- "utilake-core",
- "utilake-net",
- "utilake-plain-decode",
- "utilake-zip",
-]
-
-[[package]]
-name = "utilake-mirror"
-version = "0.1.0"
-dependencies = [
- "anyhow",
- "async-trait",
- "bytes",
- "clap",
- "crc32fast",
- "criterion",
- "futures",
- "memchr",
- "reqwest",
- "rustix",
- "serde",
- "serde_json",
- "sha2",
- "tempfile",
- "thiserror",
- "tokio",
- "toml",
- "url",
- "utilake-core",
- "utilake-net",
- "utilake-plain-decode",
- "utilake-provenance",
- "utilake-zip",
- "zip",
-]
-
-[[package]]
-name = "utilake-mms-conform"
-version = "0.1.0"
-dependencies = [
- "arrow-array",
- "arrow-schema",
- "criterion",
- "tempfile",
- "thiserror",
- "url",
- "utilake-core",
- "utilake-kit",
- "utilake-mms-decode",
- "utilake-plain-decode",
- "utilake-registry",
- "utilake-zip",
- "zonetrace",
-]
-
-[[package]]
-name = "utilake-mms-decode"
-version = "0.1.0"
-source = "git+ssh://git@github.com/g0itb4/utilake-schemas.git?rev=ab7ad3197652ad2620b8c674c873d36dca2239c9#ab7ad3197652ad2620b8c674c873d36dca2239c9"
-dependencies = [
- "memchr",
- "serde",
- "thiserror",
- "utilake-decode",
- "utilake-diag",
- "xxhash-rust",
- "zonetrace",
-]
-
-[[package]]
-name = "utilake-nem"
-version = "0.1.0"
-dependencies = [
- "async-trait",
- "clap",
- "serde",
- "tempfile",
- "tokio",
- "toml",
- "url",
- "utilake-acquire",
- "utilake-core",
- "utilake-kit",
- "utilake-mms-conform",
- "utilake-mms-decode",
- "utilake-registry",
-]
-
-[[package]]
-name = "utilake-net"
-version = "0.1.0"
-dependencies = [
- "async-trait",
- "bytes",
- "crc32fast",
- "futures",
- "reqwest",
- "rustix",
- "serde",
- "serde_json",
- "sha2",
- "tempfile",
- "thiserror",
- "tokio",
- "utilake-core",
- "utilake-provenance",
-]
-
-[[package]]
-name = "utilake-pipeline"
-version = "0.1.0"
-dependencies = [
- "arrow-array",
- "arrow-schema",
- "futures",
- "serde_json",
- "tokio",
- "tokio-util",
- "url",
- "utilake-acquire",
- "utilake-core",
- "utilake-kit",
- "utilake-provenance",
- "utilake-writer",
- "utilake-zip",
- "zonetrace",
-]
-
-[[package]]
-name = "utilake-plain-decode"
-version = "0.1.0"
-source = "git+ssh://git@github.com/g0itb4/utilake-schemas.git?rev=ab7ad3197652ad2620b8c674c873d36dca2239c9#ab7ad3197652ad2620b8c674c873d36dca2239c9"
-dependencies = [
- "memchr",
- "serde_json",
- "thiserror",
- "utilake-decode",
- "utilake-diag",
- "utilake-provenance",
- "xxhash-rust",
-]
-
-[[package]]
-name = "utilake-provenance"
-version = "0.1.0"
-source = "git+ssh://git@github.com/g0itb4/utilake-schemas.git?rev=ab7ad3197652ad2620b8c674c873d36dca2239c9#ab7ad3197652ad2620b8c674c873d36dca2239c9"
-dependencies = [
- "crc32fast",
- "rustix",
- "serde",
- "serde_json",
- "sha2",
- "thiserror",
- "utilake-diag",
-]
-
-[[package]]
-name = "utilake-registry"
-version = "0.1.0"
-dependencies = [
- "arrow-schema",
- "criterion",
- "hashbrown 0.17.1",
- "insta",
- "postcard",
- "serde",
- "serde_json",
- "tempfile",
- "thiserror",
- "toml",
- "utilake-core",
- "utilake-iceberg",
- "utilake-kit",
- "utilake-mms-decode",
- "utilake-plain-decode",
- "utilake-provenance",
- "xxhash-rust",
-]
-
-[[package]]
-name = "utilake-wem"
-version = "0.1.0"
-dependencies = [
- "async-trait",
- "serde",
- "serde_yaml_ng",
- "tempfile",
- "tokio",
- "toml",
- "url",
- "utilake-acquire",
- "utilake-core",
- "utilake-kit",
- "utilake-mms-conform",
- "utilake-plain-decode",
- "utilake-registry",
-]
-
-[[package]]
-name = "utilake-writer"
-version = "0.1.0"
-dependencies = [
- "arrow",
- "arrow-array",
- "arrow-schema",
- "arrow-select",
- "criterion",
- "parquet",
- "rusqlite",
- "rustix",
- "serde",
- "serde_json",
- "tempfile",
- "thiserror",
- "tokio",
- "utilake-core",
- "utilake-iceberg",
- "utilake-iceberg-store",
- "utilake-kit",
- "zonetrace",
-]
-
-[[package]]
-name = "utilake-zip"
-version = "0.1.0"
-source = "git+ssh://git@github.com/g0itb4/utilake-schemas.git?rev=ab7ad3197652ad2620b8c674c873d36dca2239c9#ab7ad3197652ad2620b8c674c873d36dca2239c9"
-dependencies = [
- "flate2",
- "tempfile",
- "thiserror",
- "utilake-diag",
- "utilake-provenance",
- "zip",
- "zonetrace",
-]
-
-[[package]]
 name = "valuable"
 version = "0.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3752,15 +3752,15 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "clap",
+ "phasor-core",
+ "phasor-gates",
+ "phasor-iceberg",
+ "phasor-mms-decode",
+ "phasor-registry",
  "serde",
  "serde_json",
  "sha2",
  "tempfile",
- "utilake-core",
- "utilake-gates",
- "utilake-iceberg",
- "utilake-mms-decode",
- "utilake-registry",
 ]
 
 [[package]]

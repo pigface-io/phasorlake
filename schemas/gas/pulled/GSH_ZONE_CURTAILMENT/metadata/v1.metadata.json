@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1772287200000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GSH_ZONE_CURTAILMENT",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/gas/GSH_ZONE_CURTAILMENT",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -19,23 +19,23 @@
   ],
   "properties": {
     "comment": "Contains details of curtailment of nominations against secondary firm rights (CTP trades) for service points (receipt and delivery points).",
-    "utilake.declared": "true",
-    "utilake.format": "4",
-    "utilake.key": "[\"FACILITY_ID\",\"GAS_DATE\",\"SERVICE_POINT_ID\"]",
-    "utilake.load": "append",
-    "utilake.market": "gas",
-    "utilake.model-types": "{\"1\":\"NUMBER(8,0)\",\"2\":\"VARCHAR2(100)\",\"3\":\"NUMBER(8,0)\",\"4\":\"VARCHAR2(100)\",\"5\":\"VARCHAR2(100)\",\"6\":\"VARCHAR2(255)\",\"7\":\"DATE\",\"8\":\"NUMBER(10,0)\",\"9\":\"DATE\"}",
-    "utilake.offset": "+10:00",
-    "utilake.reports": "[[\"GSH\",\"ZONE_CURTAILMENT_INFORMATION\"]]",
-    "utilake.table": "GSH_ZONE_CURTAILMENT",
-    "utilake.temporal.cutoff": "LASTCHANGED",
-    "utilake.temporal.entity": "[\"FACILITY_ID\",\"SERVICE_POINT_ID\"]",
-    "utilake.temporal.order": "[\"LASTCHANGED\"]",
-    "utilake.temporal.origin": "hand",
-    "utilake.temporal.valid.column": "GAS_DATE",
-    "utilake.temporal.valid.kind": "instant",
-    "utilake.time": "GAS_DATE",
-    "utilake.visibility": "PUBLIC"
+    "phasor.declared": "true",
+    "phasor.format": "4",
+    "phasor.key": "[\"FACILITY_ID\",\"GAS_DATE\",\"SERVICE_POINT_ID\"]",
+    "phasor.load": "append",
+    "phasor.market": "gas",
+    "phasor.model-types": "{\"1\":\"NUMBER(8,0)\",\"2\":\"VARCHAR2(100)\",\"3\":\"NUMBER(8,0)\",\"4\":\"VARCHAR2(100)\",\"5\":\"VARCHAR2(100)\",\"6\":\"VARCHAR2(255)\",\"7\":\"DATE\",\"8\":\"NUMBER(10,0)\",\"9\":\"DATE\"}",
+    "phasor.offset": "+10:00",
+    "phasor.reports": "[[\"GSH\",\"ZONE_CURTAILMENT_INFORMATION\"]]",
+    "phasor.table": "GSH_ZONE_CURTAILMENT",
+    "phasor.temporal.cutoff": "LASTCHANGED",
+    "phasor.temporal.entity": "[\"FACILITY_ID\",\"SERVICE_POINT_ID\"]",
+    "phasor.temporal.order": "[\"LASTCHANGED\"]",
+    "phasor.temporal.origin": "hand",
+    "phasor.temporal.valid.column": "GAS_DATE",
+    "phasor.temporal.valid.kind": "instant",
+    "phasor.time": "GAS_DATE",
+    "phasor.visibility": "PUBLIC"
   },
   "refs": {
     "main": {
@@ -129,27 +129,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GSH_ZONE_CURTAILMENT/metadata/snap-7491251441321114129-1-b7c3ecde-6939-8cb7-820b-f5ab7046c2b5.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/gas/GSH_ZONE_CURTAILMENT/metadata/snap-7491251441321114129-1-bbc91139-8161-8329-b8f8-12cb9e000368.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 7491251441321114129,
       "summary": {
         "operation": "append",
-        "utilake.files": "16",
-        "utilake.from.file": "PUBLIC_ZONECURTAILMENTINFORMATION_20260301.zip",
-        "utilake.from.release": "2026-03",
-        "utilake.from.sha256": "6d641e972b5c6e7d8a329d45d750c58b40d78253bd20cbc042db4b1a754bdfe2",
-        "utilake.from.time": "2026-03-16T00:00:00+10:00",
-        "utilake.kinds": "[\"gsh\"]",
-        "utilake.report-subtype": "ZONE_CURTAILMENT_INFORMATION",
-        "utilake.report-type": "GSH",
-        "utilake.rows": "16",
-        "utilake.to.file": "PUBLIC_ZONECURTAILMENTINFORMATION_20261013_0000000542690279.zip",
-        "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "e788d537d254820a4a0664f8ddec5fac90b62a76475799de20b43b17b934aee0",
-        "utilake.to.time": "2026-10-14T00:00:00+10:00",
-        "utilake.total-rows": "16",
-        "utilake.version": "1"
+        "phasor.files": "16",
+        "phasor.from.file": "PUBLIC_ZONECURTAILMENTINFORMATION_20260301.zip",
+        "phasor.from.release": "2026-03",
+        "phasor.from.sha256": "6d641e972b5c6e7d8a329d45d750c58b40d78253bd20cbc042db4b1a754bdfe2",
+        "phasor.from.time": "2026-03-16T00:00:00+10:00",
+        "phasor.kinds": "[\"gsh\"]",
+        "phasor.report-subtype": "ZONE_CURTAILMENT_INFORMATION",
+        "phasor.report-type": "GSH",
+        "phasor.rows": "16",
+        "phasor.to.file": "PUBLIC_ZONECURTAILMENTINFORMATION_20261013_0000000542690279.zip",
+        "phasor.to.release": "2026-10",
+        "phasor.to.sha256": "e788d537d254820a4a0664f8ddec5fac90b62a76475799de20b43b17b934aee0",
+        "phasor.to.time": "2026-10-14T00:00:00+10:00",
+        "phasor.total-rows": "16",
+        "phasor.version": "1"
       },
       "timestamp-ms": 1772287200000
     }
@@ -160,5 +160,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "b7c3ecde-6939-8cb7-820b-f5ab7046c2b5"
+  "table-uuid": "bbc91139-8161-8329-b8f8-12cb9e000368"
 }

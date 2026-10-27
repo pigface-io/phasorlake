@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1246370400000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PREDISPATCHOFFERTRK",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/PREDISPATCHOFFERTRK",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -19,21 +19,21 @@
   ],
   "properties": {
     "comment": "PREDISPATCHOFFERTRK is for the ancillary service bid tracking of predispatch processing. PREDISPATCHOFFERTRK identifies which bids from BIDDAYOFFER and BIDOFFERPERIOD were applied for a given unit and ancillary service for each predispatch run.",
-    "utilake.declared": "true",
-    "utilake.format": "4",
-    "utilake.key": "[\"PREDISPATCHSEQNO\",\"DUID\",\"BIDTYPE\",\"PERIODID\"]",
-    "utilake.load": "append",
-    "utilake.model-types": "{\"1\":\"VARCHAR(20)\",\"2\":\"VARCHAR(10)\",\"3\":\"VARCHAR(20)\",\"4\":\"VARCHAR(20)\",\"5\":\"TIMESTAMP(0)\",\"6\":\"TIMESTAMP(3)\",\"7\":\"TIMESTAMP(0)\",\"8\":\"TIMESTAMP(0)\"}",
-    "utilake.package": "PRE_DISPATCH",
-    "utilake.reports": "[[\"PREDISPATCH\",\"OFFERTRK\"]]",
-    "utilake.table": "PREDISPATCHOFFERTRK",
-    "utilake.temporal.cutoff": "LASTCHANGED",
-    "utilake.temporal.entity": "[\"DUID\",\"BIDTYPE\",\"PERIODID\"]",
-    "utilake.temporal.order": "[\"PREDISPATCHSEQNO\",\"LASTCHANGED\"]",
-    "utilake.temporal.origin": "derived",
-    "utilake.temporal.valid.kind": "timeless",
-    "utilake.time": "DATETIME",
-    "utilake.visibility": "PUBLIC"
+    "phasor.declared": "true",
+    "phasor.format": "4",
+    "phasor.key": "[\"PREDISPATCHSEQNO\",\"DUID\",\"BIDTYPE\",\"PERIODID\"]",
+    "phasor.load": "append",
+    "phasor.model-types": "{\"1\":\"VARCHAR(20)\",\"2\":\"VARCHAR(10)\",\"3\":\"VARCHAR(20)\",\"4\":\"VARCHAR(20)\",\"5\":\"TIMESTAMP(0)\",\"6\":\"TIMESTAMP(3)\",\"7\":\"TIMESTAMP(0)\",\"8\":\"TIMESTAMP(0)\"}",
+    "phasor.package": "PRE_DISPATCH",
+    "phasor.reports": "[[\"PREDISPATCH\",\"OFFERTRK\"]]",
+    "phasor.table": "PREDISPATCHOFFERTRK",
+    "phasor.temporal.cutoff": "LASTCHANGED",
+    "phasor.temporal.entity": "[\"DUID\",\"BIDTYPE\",\"PERIODID\"]",
+    "phasor.temporal.order": "[\"PREDISPATCHSEQNO\",\"LASTCHANGED\"]",
+    "phasor.temporal.origin": "derived",
+    "phasor.temporal.valid.kind": "timeless",
+    "phasor.time": "DATETIME",
+    "phasor.visibility": "PUBLIC"
   },
   "refs": {
     "main": {
@@ -121,27 +121,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PREDISPATCHOFFERTRK/metadata/snap-8015006251405906325-1-02e667d3-3ce3-8cf5-bc58-54a2f06d1918.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/PREDISPATCHOFFERTRK/metadata/snap-8015006251405906325-1-c40bf1cc-d041-8600-b9b9-afdaaae53e0d.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 8015006251405906325,
       "summary": {
         "operation": "append",
-        "utilake.files": "1047",
-        "utilake.from.file": "PUBLIC_DVD_PREDISPATCHOFFERTRK_200907010000.zip",
-        "utilake.from.release": "2009-07",
-        "utilake.from.sha256": "44539eb2dbd1be88df4d0e25d3424acce148a40d2632a20dc0d5556981bbd261",
-        "utilake.from.time": "2009-07-01T04:30:00+10:00",
-        "utilake.kinds": "[\"archive\",\"dvd\",\"reports\"]",
-        "utilake.report-subtype": "OFFERTRK",
-        "utilake.report-type": "PREDISPATCH",
-        "utilake.rows": "720882803",
-        "utilake.to.file": "PUBLIC_NEXT_DAY_PREDISPATCH_D_20261023_0000000544544778.zip",
-        "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "b5ac7eceaafb58da88d8890ab61c28db88d739e0de6ecd639312451d7f7d6b47",
-        "utilake.to.time": "2026-10-24T04:00:00+10:00",
-        "utilake.total-rows": "720882803",
-        "utilake.version": "1"
+        "phasor.files": "1047",
+        "phasor.from.file": "PUBLIC_DVD_PREDISPATCHOFFERTRK_200907010000.zip",
+        "phasor.from.release": "2009-07",
+        "phasor.from.sha256": "44539eb2dbd1be88df4d0e25d3424acce148a40d2632a20dc0d5556981bbd261",
+        "phasor.from.time": "2009-07-01T04:30:00+10:00",
+        "phasor.kinds": "[\"archive\",\"dvd\",\"reports\"]",
+        "phasor.report-subtype": "OFFERTRK",
+        "phasor.report-type": "PREDISPATCH",
+        "phasor.rows": "720882803",
+        "phasor.to.file": "PUBLIC_NEXT_DAY_PREDISPATCH_D_20261023_0000000544544778.zip",
+        "phasor.to.release": "2026-10",
+        "phasor.to.sha256": "b5ac7eceaafb58da88d8890ab61c28db88d739e0de6ecd639312451d7f7d6b47",
+        "phasor.to.time": "2026-10-24T04:00:00+10:00",
+        "phasor.total-rows": "720882803",
+        "phasor.version": "1"
       },
       "timestamp-ms": 1246370400000
     }
@@ -152,5 +152,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "02e667d3-3ce3-8cf5-bc58-54a2f06d1918"
+  "table-uuid": "c40bf1cc-d041-8600-b9b9-afdaaae53e0d"
 }

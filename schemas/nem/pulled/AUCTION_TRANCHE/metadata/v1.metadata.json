@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1251727200000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/AUCTION_TRANCHE",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/AUCTION_TRANCHE",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -19,21 +19,21 @@
   ],
   "properties": {
     "comment": "AUCTION_TRANCHE supports the Settlement Residue Auction, by holding the default definitions for the percentage number of units allocated and dates applicable to each tranche for a specified auction quarter. This information provides the basis for setting up contracts for individual tranches.",
-    "utilake.declared": "true",
-    "utilake.format": "4",
-    "utilake.key": "[\"CONTRACTYEAR\",\"QUARTER\",\"VERSIONNO\",\"TRANCHE\"]",
-    "utilake.load": "append",
-    "utilake.model-types": "{\"1\":\"NUMERIC(4,0)\",\"2\":\"NUMERIC(1,0)\",\"3\":\"NUMERIC(3,0)\",\"4\":\"NUMERIC(2,0)\",\"5\":\"TIMESTAMP(0)\",\"6\":\"TIMESTAMP(0)\",\"7\":\"NUMERIC(18,8)\",\"8\":\"TIMESTAMP(0)\",\"9\":\"VARCHAR(15)\",\"10\":\"TIMESTAMP(0)\"}",
-    "utilake.package": "IRAUCTION",
-    "utilake.reports": "[[\"IRAUCTION_CONFIG\",\"AUCTION_TRANCHE\"]]",
-    "utilake.table": "AUCTION_TRANCHE",
-    "utilake.temporal.cutoff": "LASTCHANGED",
-    "utilake.temporal.entity": "[\"CONTRACTYEAR\",\"QUARTER\",\"TRANCHE\"]",
-    "utilake.temporal.order": "[\"VERSIONNO\",\"LASTCHANGED\"]",
-    "utilake.temporal.origin": "derived",
-    "utilake.temporal.valid.kind": "timeless",
-    "utilake.time": "LASTCHANGED",
-    "utilake.visibility": "PUBLIC"
+    "phasor.declared": "true",
+    "phasor.format": "4",
+    "phasor.key": "[\"CONTRACTYEAR\",\"QUARTER\",\"VERSIONNO\",\"TRANCHE\"]",
+    "phasor.load": "append",
+    "phasor.model-types": "{\"1\":\"NUMERIC(4,0)\",\"2\":\"NUMERIC(1,0)\",\"3\":\"NUMERIC(3,0)\",\"4\":\"NUMERIC(2,0)\",\"5\":\"TIMESTAMP(0)\",\"6\":\"TIMESTAMP(0)\",\"7\":\"NUMERIC(18,8)\",\"8\":\"TIMESTAMP(0)\",\"9\":\"VARCHAR(15)\",\"10\":\"TIMESTAMP(0)\"}",
+    "phasor.package": "IRAUCTION",
+    "phasor.reports": "[[\"IRAUCTION_CONFIG\",\"AUCTION_TRANCHE\"]]",
+    "phasor.table": "AUCTION_TRANCHE",
+    "phasor.temporal.cutoff": "LASTCHANGED",
+    "phasor.temporal.entity": "[\"CONTRACTYEAR\",\"QUARTER\",\"TRANCHE\"]",
+    "phasor.temporal.order": "[\"VERSIONNO\",\"LASTCHANGED\"]",
+    "phasor.temporal.origin": "derived",
+    "phasor.temporal.valid.kind": "timeless",
+    "phasor.time": "LASTCHANGED",
+    "phasor.visibility": "PUBLIC"
   },
   "refs": {
     "main": {
@@ -135,27 +135,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/AUCTION_TRANCHE/metadata/snap-6035700118419673341-1-ea492849-917c-8e38-af78-67d390d758b9.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/AUCTION_TRANCHE/metadata/snap-6035700118419673341-1-9941a36c-50e0-80c3-b769-eaa182078338.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 6035700118419673341,
       "summary": {
         "operation": "append",
-        "utilake.files": "78",
-        "utilake.from.file": "PUBLIC_DVD_AUCTION_TRANCHE_200909010000.zip",
-        "utilake.from.release": "2009-09",
-        "utilake.from.sha256": "9cf326f7fabd7b91220c5950a2de3fdb28d9c7b97f1a4045f8075ad7b3abaaf5",
-        "utilake.from.time": "2009-09-02T14:43:02+10:00",
-        "utilake.kinds": "[\"archive\",\"dvd\"]",
-        "utilake.report-subtype": "AUCTION_TRANCHE",
-        "utilake.report-type": "IRAUCTION_CONFIG",
-        "utilake.rows": "3372",
-        "utilake.to.file": "PUBLIC_ARCHIVE#AUCTION_TRANCHE#FILE01#202609010000.zip",
-        "utilake.to.release": "2026-09",
-        "utilake.to.sha256": "556cd3739697b1d4f08e203557f4246102a7a2b96b0e6468a7fd31317e6f0fbb",
-        "utilake.to.time": "2026-10-01T00:00:00+10:00",
-        "utilake.total-rows": "3372",
-        "utilake.version": "1"
+        "phasor.files": "78",
+        "phasor.from.file": "PUBLIC_DVD_AUCTION_TRANCHE_200909010000.zip",
+        "phasor.from.release": "2009-09",
+        "phasor.from.sha256": "9cf326f7fabd7b91220c5950a2de3fdb28d9c7b97f1a4045f8075ad7b3abaaf5",
+        "phasor.from.time": "2009-09-02T14:43:02+10:00",
+        "phasor.kinds": "[\"archive\",\"dvd\"]",
+        "phasor.report-subtype": "AUCTION_TRANCHE",
+        "phasor.report-type": "IRAUCTION_CONFIG",
+        "phasor.rows": "3372",
+        "phasor.to.file": "PUBLIC_ARCHIVE#AUCTION_TRANCHE#FILE01#202609010000.zip",
+        "phasor.to.release": "2026-09",
+        "phasor.to.sha256": "556cd3739697b1d4f08e203557f4246102a7a2b96b0e6468a7fd31317e6f0fbb",
+        "phasor.to.time": "2026-10-01T00:00:00+10:00",
+        "phasor.total-rows": "3372",
+        "phasor.version": "1"
       },
       "timestamp-ms": 1251727200000
     }
@@ -166,5 +166,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "ea492849-917c-8e38-af78-67d390d758b9"
+  "table-uuid": "9941a36c-50e0-80c3-b769-eaa182078338"
 }

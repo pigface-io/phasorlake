@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1722434400000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/SRA_FINANCIAL_RUNTRK",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/SRA_FINANCIAL_RUNTRK",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -19,21 +19,21 @@
   ],
   "properties": {
     "comment": "Records details of the settlement process for the cancellation and purchase of SRA Auction Units",
-    "utilake.declared": "true",
-    "utilake.format": "4",
-    "utilake.key": "[\"SRA_YEAR\",\"SRA_QUARTER\",\"SRA_RUNNO\"]",
-    "utilake.load": "append",
-    "utilake.model-types": "{\"1\":\"NUMERIC(4)\",\"2\":\"NUMERIC(3)\",\"3\":\"NUMERIC(3)\",\"4\":\"VARCHAR(20)\",\"5\":\"TIMESTAMP(0)\",\"6\":\"TIMESTAMP(0)\",\"7\":\"NUMERIC(3)\",\"8\":\"NUMERIC(3)\",\"9\":\"TIMESTAMP(0)\"}",
-    "utilake.package": "IRAUCTION",
-    "utilake.reports": "[[\"IRAUCTION\",\"SRA_FINANCIAL_RUNTRK\"]]",
-    "utilake.table": "SRA_FINANCIAL_RUNTRK",
-    "utilake.temporal.cutoff": "LASTCHANGED",
-    "utilake.temporal.entity": "[\"SRA_YEAR\",\"SRA_QUARTER\",\"SRA_RUNNO\"]",
-    "utilake.temporal.order": "[\"LASTCHANGED\"]",
-    "utilake.temporal.origin": "derived",
-    "utilake.temporal.valid.kind": "timeless",
-    "utilake.time": "LASTCHANGED",
-    "utilake.visibility": "PUBLIC"
+    "phasor.declared": "true",
+    "phasor.format": "4",
+    "phasor.key": "[\"SRA_YEAR\",\"SRA_QUARTER\",\"SRA_RUNNO\"]",
+    "phasor.load": "append",
+    "phasor.model-types": "{\"1\":\"NUMERIC(4)\",\"2\":\"NUMERIC(3)\",\"3\":\"NUMERIC(3)\",\"4\":\"VARCHAR(20)\",\"5\":\"TIMESTAMP(0)\",\"6\":\"TIMESTAMP(0)\",\"7\":\"NUMERIC(3)\",\"8\":\"NUMERIC(3)\",\"9\":\"TIMESTAMP(0)\"}",
+    "phasor.package": "IRAUCTION",
+    "phasor.reports": "[[\"IRAUCTION\",\"SRA_FINANCIAL_RUNTRK\"]]",
+    "phasor.table": "SRA_FINANCIAL_RUNTRK",
+    "phasor.temporal.cutoff": "LASTCHANGED",
+    "phasor.temporal.entity": "[\"SRA_YEAR\",\"SRA_QUARTER\",\"SRA_RUNNO\"]",
+    "phasor.temporal.order": "[\"LASTCHANGED\"]",
+    "phasor.temporal.origin": "derived",
+    "phasor.temporal.valid.kind": "timeless",
+    "phasor.time": "LASTCHANGED",
+    "phasor.visibility": "PUBLIC"
   },
   "refs": {
     "main": {
@@ -127,27 +127,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/SRA_FINANCIAL_RUNTRK/metadata/snap-8200929729047794560-1-23b842d6-1692-8b8a-bb61-1f96aa8f87ad.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/SRA_FINANCIAL_RUNTRK/metadata/snap-8200929729047794560-1-87fb6cec-9cdc-890f-ab72-5f7a4966939f.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 8200929729047794560,
       "summary": {
         "operation": "append",
-        "utilake.files": "26",
-        "utilake.from.file": "PUBLIC_ARCHIVE#SRA_FINANCIAL_RUNTRK#FILE01#202408010000.zip",
-        "utilake.from.release": "2024-08",
-        "utilake.from.sha256": "d4814720289658b94d33572c0a4bf178a4de46d6cfeafd8f6ff133d82d1c9bc4",
-        "utilake.from.time": "2022-01-19T11:00:01+10:00",
-        "utilake.kinds": "[\"archive\"]",
-        "utilake.report-subtype": "SRA_FINANCIAL_RUNTRK",
-        "utilake.report-type": "IRAUCTION",
-        "utilake.rows": "394",
-        "utilake.to.file": "PUBLIC_ARCHIVE#SRA_FINANCIAL_RUNTRK#FILE01#202609010000.zip",
-        "utilake.to.release": "2026-09",
-        "utilake.to.sha256": "9657ae492bb83d4cf811275aeda7fe45f714d96d410983aebfbf618292b22cbf",
-        "utilake.to.time": "2026-07-16T11:00:03+10:00",
-        "utilake.total-rows": "394",
-        "utilake.version": "1"
+        "phasor.files": "26",
+        "phasor.from.file": "PUBLIC_ARCHIVE#SRA_FINANCIAL_RUNTRK#FILE01#202408010000.zip",
+        "phasor.from.release": "2024-08",
+        "phasor.from.sha256": "d4814720289658b94d33572c0a4bf178a4de46d6cfeafd8f6ff133d82d1c9bc4",
+        "phasor.from.time": "2022-01-19T11:00:01+10:00",
+        "phasor.kinds": "[\"archive\"]",
+        "phasor.report-subtype": "SRA_FINANCIAL_RUNTRK",
+        "phasor.report-type": "IRAUCTION",
+        "phasor.rows": "394",
+        "phasor.to.file": "PUBLIC_ARCHIVE#SRA_FINANCIAL_RUNTRK#FILE01#202609010000.zip",
+        "phasor.to.release": "2026-09",
+        "phasor.to.sha256": "9657ae492bb83d4cf811275aeda7fe45f714d96d410983aebfbf618292b22cbf",
+        "phasor.to.time": "2026-07-16T11:00:03+10:00",
+        "phasor.total-rows": "394",
+        "phasor.version": "1"
       },
       "timestamp-ms": 1722434400000
     }
@@ -158,5 +158,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "23b842d6-1692-8b8a-bb61-1f96aa8f87ad"
+  "table-uuid": "87fb6cec-9cdc-890f-ab72-5f7a4966939f"
 }

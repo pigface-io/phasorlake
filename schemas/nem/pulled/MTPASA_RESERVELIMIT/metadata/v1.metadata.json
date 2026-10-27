@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1272636000000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MTPASA_RESERVELIMIT",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/MTPASA_RESERVELIMIT",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -19,22 +19,22 @@
   ],
   "properties": {
     "comment": "MT PASA input table defining a MT PASA Reserve Requirement within a single set. An MT PASA Reserve Requirement can span more than one region.",
-    "utilake.declared": "true",
-    "utilake.format": "4",
-    "utilake.key": "[\"EFFECTIVEDATE\",\"VERSION_DATETIME\",\"RESERVELIMITID\"]",
-    "utilake.load": "append",
-    "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"VARCHAR(20)\",\"4\":\"VARCHAR(200)\",\"5\":\"NUMERIC(16,6)\",\"6\":\"TIMESTAMP(0)\"}",
-    "utilake.package": "RESERVE_DATA",
-    "utilake.reports": "[[\"MTPASA\",\"RESERVELIMIT\"]]",
-    "utilake.table": "MTPASA_RESERVELIMIT",
-    "utilake.temporal.cutoff": "VERSION_DATETIME",
-    "utilake.temporal.entity": "[\"RESERVELIMITID\"]",
-    "utilake.temporal.order": "[\"VERSION_DATETIME\",\"LASTCHANGED\"]",
-    "utilake.temporal.origin": "derived",
-    "utilake.temporal.valid.column": "EFFECTIVEDATE",
-    "utilake.temporal.valid.kind": "from",
-    "utilake.time": "EFFECTIVEDATE",
-    "utilake.visibility": "PUBLIC"
+    "phasor.declared": "true",
+    "phasor.format": "4",
+    "phasor.key": "[\"EFFECTIVEDATE\",\"VERSION_DATETIME\",\"RESERVELIMITID\"]",
+    "phasor.load": "append",
+    "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"VARCHAR(20)\",\"4\":\"VARCHAR(200)\",\"5\":\"NUMERIC(16,6)\",\"6\":\"TIMESTAMP(0)\"}",
+    "phasor.package": "RESERVE_DATA",
+    "phasor.reports": "[[\"MTPASA\",\"RESERVELIMIT\"]]",
+    "phasor.table": "MTPASA_RESERVELIMIT",
+    "phasor.temporal.cutoff": "VERSION_DATETIME",
+    "phasor.temporal.entity": "[\"RESERVELIMITID\"]",
+    "phasor.temporal.order": "[\"VERSION_DATETIME\",\"LASTCHANGED\"]",
+    "phasor.temporal.origin": "derived",
+    "phasor.temporal.valid.column": "EFFECTIVEDATE",
+    "phasor.temporal.valid.kind": "from",
+    "phasor.time": "EFFECTIVEDATE",
+    "phasor.visibility": "PUBLIC"
   },
   "refs": {
     "main": {
@@ -107,27 +107,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MTPASA_RESERVELIMIT/metadata/snap-1931867309768961038-1-be4a726d-196e-80e1-b0c8-6a8830a43b03.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/MTPASA_RESERVELIMIT/metadata/snap-1931867309768961038-1-1e67a5c3-3c2c-89e3-8030-8ab7cb2b4584.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 1931867309768961038,
       "summary": {
         "operation": "append",
-        "utilake.files": "197",
-        "utilake.from.file": "PUBLIC_DVD_MTPASA_RESERVELIMIT_201005010000.zip",
-        "utilake.from.release": "2010-05",
-        "utilake.from.sha256": "34146e389a0c5fbeeeac6510f42613eb362de7acf71d579bda892b6ec1eeb564",
-        "utilake.from.time": "2010-04-22T00:00:00+10:00",
-        "utilake.kinds": "[\"archive\",\"dvd\"]",
-        "utilake.report-subtype": "RESERVELIMIT",
-        "utilake.report-type": "MTPASA",
-        "utilake.rows": "19879",
-        "utilake.to.file": "PUBLIC_ARCHIVE#MTPASA_RESERVELIMIT#FILE01#202609010000.zip",
-        "utilake.to.release": "2026-09",
-        "utilake.to.sha256": "7a03e5a303fcb183ba38ede428c7a3ed0296731a6c8bb92dd0a0e9cd14d2ed70",
-        "utilake.to.time": "2013-05-29T00:00:00+10:00",
-        "utilake.total-rows": "19879",
-        "utilake.version": "1"
+        "phasor.files": "197",
+        "phasor.from.file": "PUBLIC_DVD_MTPASA_RESERVELIMIT_201005010000.zip",
+        "phasor.from.release": "2010-05",
+        "phasor.from.sha256": "34146e389a0c5fbeeeac6510f42613eb362de7acf71d579bda892b6ec1eeb564",
+        "phasor.from.time": "2010-04-22T00:00:00+10:00",
+        "phasor.kinds": "[\"archive\",\"dvd\"]",
+        "phasor.report-subtype": "RESERVELIMIT",
+        "phasor.report-type": "MTPASA",
+        "phasor.rows": "19879",
+        "phasor.to.file": "PUBLIC_ARCHIVE#MTPASA_RESERVELIMIT#FILE01#202609010000.zip",
+        "phasor.to.release": "2026-09",
+        "phasor.to.sha256": "7a03e5a303fcb183ba38ede428c7a3ed0296731a6c8bb92dd0a0e9cd14d2ed70",
+        "phasor.to.time": "2013-05-29T00:00:00+10:00",
+        "phasor.total-rows": "19879",
+        "phasor.version": "1"
       },
       "timestamp-ms": 1272636000000
     }
@@ -138,5 +138,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "be4a726d-196e-80e1-b0c8-6a8830a43b03"
+  "table-uuid": "1e67a5c3-3c2c-89e3-8030-8ab7cb2b4584"
 }

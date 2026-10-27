@@ -1,0 +1,502 @@
+//! Errors of listing, downloading and caching.
+
+use phasor_core::{Category, Diagnose, Diagnostic};
+
+/// Why a fetch failed.
+#[derive(Debug, thiserror::Error)]
+pub enum FetchError {
+    /// The connection could not be made.
+    #[error("Connecting to {url} failed: {message}")]
+    Connect {
+        /// URL.
+        url: String,
+        /// Cause.
+        message: String,
+    },
+    /// The request or body read timed out.
+    #[error("The request to {url} timed out after {secs} seconds.")]
+    Timeout {
+        /// URL.
+        url: String,
+        /// Timeout.
+        secs: u64,
+    },
+    /// The server answered with a failure status.
+    #[error("GET {url} returned HTTP {status}.")]
+    HttpStatus {
+        /// URL.
+        url: String,
+        /// Status.
+        status: u16,
+        /// First bytes of the body.
+        body_head: Vec<u8>,
+    },
+    /// Fewer or more bytes than Content-Length.
+    #[error(
+        "Download of {url} ended after {received} bytes but Content-Length promised {expected}."
+    )]
+    ContentLength {
+        /// URL.
+        url: String,
+        /// Promised.
+        expected: u64,
+        /// Received.
+        received: u64,
+    },
+    /// Every attempt failed.
+    #[error("Download of {url} failed after {attempts} attempts; the last error was: {last}")]
+    RetriesExhausted {
+        /// URL.
+        url: String,
+        /// Attempts.
+        attempts: u32,
+        /// Last error.
+        last: Box<FetchError>,
+    },
+    /// Offline and not cached.
+    #[error("{url} is not in the cache and --offline forbids downloading it.")]
+    Offline {
+        /// URL.
+        url: String,
+    },
+    /// The body stream failed mid-way.
+    #[error("Reading the body of {url} failed after {received} bytes: {message}")]
+    Body {
+        /// URL.
+        url: String,
+        /// Bytes so far.
+        received: u64,
+        /// Cause.
+        message: String,
+    },
+    /// A directory listing could not be parsed.
+    #[error(
+        "The listing at {url} has no links phasor recognises; the page layout may have changed."
+    )]
+    ListingParse {
+        /// URL.
+        url: String,
+        /// First bytes of the page.
+        sample: Vec<u8>,
+    },
+    /// No file in the listing matches a table.
+    #[error(
+        "The listing at {url} ({entries} entries) has no file for table {table} in {period}; nearest names: {nearest}."
+    )]
+    NoMatch {
+        /// URL.
+        url: String,
+        /// Entries seen.
+        entries: usize,
+        /// Table.
+        table: String,
+        /// Period.
+        period: String,
+        /// Nearest names.
+        nearest: String,
+    },
+    /// The archive has neither a directory nor a zip for a month.
+    #[error(
+        "The archive listing at {url} has no month {period}; it lists {available}. The archive begins in July 2009 and a month appears some weeks after it ends."
+    )]
+    MonthMissing {
+        /// Period.
+        period: String,
+        /// The year listing.
+        url: String,
+        /// The months it does list.
+        available: String,
+    },
+    /// The server refuses this client.
+    #[error(
+        "The server refused {url} with HTTP {status}, first seen at {first_url}. AEMO's web server does this after too many requests in a short time, so nothing more is sent to it in this run. Wait a while before trying again; a larger `request_interval_ms` in the config file slows the requests down."
+    )]
+    Blocked {
+        /// The URL of this request.
+        url: String,
+        /// The status that tripped the block.
+        status: u16,
+        /// The request that was refused first.
+        first_url: String,
+        /// First bytes of that refusal's body.
+        body_head: Vec<u8>,
+    },
+    /// A ranged request was answered with the whole file.
+    #[error(
+        "{url} was asked for a range of its bytes and answered with the whole file; the server does not serve ranges."
+    )]
+    RangeIgnored {
+        /// URL.
+        url: String,
+    },
+    /// An entry fetched alone out of a zip is not what its directory says.
+    #[error("The entry {entry} of {url} is not what the zip's directory says: {message}")]
+    EntryCorrupt {
+        /// The zip.
+        url: String,
+        /// The entry.
+        entry: String,
+        /// What disagreed.
+        message: String,
+    },
+    /// A file of the archive could not be read or written.
+    #[error("The archive path {path} could not be read or written.")]
+    CacheIo {
+        /// Path.
+        path: String,
+        /// Cause.
+        #[source]
+        source: std::io::Error,
+    },
+    /// A sidecar is unreadable.
+    #[error("The cache sidecar {path} is not valid JSON and will be rewritten: {message}")]
+    SidecarCorrupt {
+        /// Path.
+        path: String,
+        /// Cause.
+        message: String,
+    },
+    /// The archived bytes do not match the sidecar.
+    #[error(
+        "The archived file {path} hashes to {observed} but its sidecar records {expected}; the file changed on disk after it was downloaded."
+    )]
+    Sha256Mismatch {
+        /// Path.
+        path: String,
+        /// Recorded.
+        expected: String,
+        /// Computed.
+        observed: String,
+    },
+    /// A manifest or other structured file could not be parsed.
+    #[error("The file {url} is not the expected {what}: {message}")]
+    Parse {
+        /// URL.
+        url: String,
+        /// Expected shape.
+        what: &'static str,
+        /// Cause.
+        message: String,
+    },
+}
+
+impl FetchError {
+    /// Whether another attempt could succeed.
+    pub fn is_retryable(&self) -> bool {
+        match self {
+            Self::Connect { .. }
+            | Self::Timeout { .. }
+            | Self::ContentLength { .. }
+            | Self::Body { .. } => true,
+            Self::HttpStatus { status, .. } => *status == 429 || *status == 408 || *status >= 500,
+            _ => false,
+        }
+    }
+}
+
+impl Diagnose for FetchError {
+    fn diagnostic(&self) -> Diagnostic {
+        let msg = self.to_string();
+        match self {
+            Self::Connect { url, .. } => {
+                Diagnostic::error("net.connect", Category::NET, msg).with_url(url.clone())
+            }
+            Self::Timeout { url, .. } => {
+                Diagnostic::error("net.timeout", Category::NET, msg).with_url(url.clone())
+            }
+            Self::HttpStatus {
+                url,
+                status,
+                body_head,
+            } => Diagnostic::error("net.http_status", Category::NET, msg)
+                .with_url(url.clone())
+                .expected_observed("200", status.to_string())
+                .with_sample(body_head),
+            Self::ContentLength {
+                url,
+                expected,
+                received,
+            } => Diagnostic::error("net.content_length_mismatch", Category::NET, msg)
+                .with_url(url.clone())
+                .expected_observed(expected.to_string(), received.to_string()),
+            Self::RetriesExhausted { url, last, .. } => {
+                let mut d = Diagnostic::error("net.retries_exhausted", Category::NET, msg)
+                    .with_url(url.clone());
+                d.cause.push(last.to_string());
+                d
+            }
+            Self::Offline { url } => {
+                Diagnostic::error("net.offline", Category::NET, msg).with_url(url.clone())
+            }
+            Self::Body { url, .. } => {
+                Diagnostic::error("net.body", Category::NET, msg).with_url(url.clone())
+            }
+            Self::ListingParse { url, sample } => {
+                Diagnostic::error("listing.parse_failed", Category::LISTING, msg)
+                    .with_url(url.clone())
+                    .with_sample(sample)
+            }
+            Self::NoMatch { url, table, .. } => {
+                Diagnostic::error("listing.no_match", Category::LISTING, msg)
+                    .with_url(url.clone())
+                    .with_table(table.clone())
+            }
+            Self::MonthMissing { url, .. } => {
+                Diagnostic::error("listing.month_missing", Category::LISTING, msg)
+                    .with_url(url.clone())
+            }
+            Self::Blocked {
+                url,
+                status,
+                body_head,
+                ..
+            } => Diagnostic::error("net.blocked", Category::NET, msg)
+                .with_url(url.clone())
+                .expected_observed("200", status.to_string())
+                .with_sample(body_head),
+            Self::RangeIgnored { url } => {
+                Diagnostic::warning("net.range_ignored", Category::NET, msg).with_url(url.clone())
+            }
+            Self::EntryCorrupt { url, entry, .. } => {
+                Diagnostic::error("zip.entry_corrupt", Category::ZIP, msg)
+                    .with_url(url.clone())
+                    .with_file(entry.clone())
+            }
+            Self::CacheIo { path, source } => Diagnostic::error("cache.io", Category::CACHE, msg)
+                .with_file(path.clone())
+                .caused_by(source),
+            Self::SidecarCorrupt { path, .. } => {
+                Diagnostic::warning("cache.sidecar_corrupt", Category::CACHE, msg)
+                    .with_file(path.clone())
+            }
+            Self::Sha256Mismatch {
+                path,
+                expected,
+                observed,
+            } => Diagnostic::warning("cache.sha256_mismatch", Category::CACHE, msg)
+                .with_file(path.clone())
+                .expected_observed(expected.clone(), observed.clone()),
+            Self::Parse { url, .. } => {
+                Diagnostic::error("listing.parse_failed", Category::LISTING, msg)
+                    .with_url(url.clone())
+            }
+        }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn retryable_and_codes() {
+        assert!(
+            FetchError::Connect {
+                url: "u".into(),
+                message: "m".into()
+            }
+            .is_retryable()
+        );
+        assert!(
+            FetchError::Timeout {
+                url: "u".into(),
+                secs: 1
+            }
+            .is_retryable()
+        );
+        assert!(
+            FetchError::HttpStatus {
+                url: "u".into(),
+                status: 503,
+                body_head: vec![]
+            }
+            .is_retryable()
+        );
+        assert!(
+            FetchError::HttpStatus {
+                url: "u".into(),
+                status: 429,
+                body_head: vec![]
+            }
+            .is_retryable()
+        );
+        assert!(
+            !FetchError::HttpStatus {
+                url: "u".into(),
+                status: 404,
+                body_head: vec![]
+            }
+            .is_retryable()
+        );
+        assert!(
+            FetchError::ContentLength {
+                url: "u".into(),
+                expected: 1,
+                received: 0
+            }
+            .is_retryable()
+        );
+        assert!(
+            FetchError::Body {
+                url: "u".into(),
+                received: 0,
+                message: "m".into()
+            }
+            .is_retryable()
+        );
+        assert!(!FetchError::Offline { url: "u".into() }.is_retryable());
+        assert!(
+            !FetchError::MonthMissing {
+                period: "p".into(),
+                url: "u".into(),
+                available: "a".into()
+            }
+            .is_retryable()
+        );
+        let d = FetchError::HttpStatus {
+            url: "u".into(),
+            status: 503,
+            body_head: b"<html>".to_vec(),
+        }
+        .diagnostic();
+        assert_eq!(d.code, "net.http_status");
+        assert_eq!(d.observed.as_deref(), Some("503"));
+        assert_eq!(d.sample.unwrap().text, "<html>");
+        let d = FetchError::RetriesExhausted {
+            url: "u".into(),
+            attempts: 5,
+            last: Box::new(FetchError::Timeout {
+                url: "u".into(),
+                secs: 1,
+            }),
+        }
+        .diagnostic();
+        assert_eq!(d.code, "net.retries_exhausted");
+        assert_eq!(d.cause.len(), 1);
+        for (e, code) in [
+            (
+                FetchError::Connect {
+                    url: "u".into(),
+                    message: "m".into(),
+                },
+                "net.connect",
+            ),
+            (
+                FetchError::Timeout {
+                    url: "u".into(),
+                    secs: 1,
+                },
+                "net.timeout",
+            ),
+            (
+                FetchError::ContentLength {
+                    url: "u".into(),
+                    expected: 1,
+                    received: 0,
+                },
+                "net.content_length_mismatch",
+            ),
+            (FetchError::Offline { url: "u".into() }, "net.offline"),
+            (
+                FetchError::Body {
+                    url: "u".into(),
+                    received: 0,
+                    message: "m".into(),
+                },
+                "net.body",
+            ),
+            (
+                FetchError::ListingParse {
+                    url: "u".into(),
+                    sample: vec![],
+                },
+                "listing.parse_failed",
+            ),
+            (
+                FetchError::NoMatch {
+                    url: "u".into(),
+                    entries: 1,
+                    table: "T".into(),
+                    period: "p".into(),
+                    nearest: "n".into(),
+                },
+                "listing.no_match",
+            ),
+            (
+                FetchError::MonthMissing {
+                    period: "p".into(),
+                    url: "u".into(),
+                    available: "a".into(),
+                },
+                "listing.month_missing",
+            ),
+            (
+                FetchError::Blocked {
+                    url: "u".into(),
+                    status: 403,
+                    first_url: "f".into(),
+                    body_head: b"Website is unavailable".to_vec(),
+                },
+                "net.blocked",
+            ),
+            (
+                FetchError::CacheIo {
+                    path: "p".into(),
+                    source: std::io::Error::other("x"),
+                },
+                "cache.io",
+            ),
+            (
+                FetchError::SidecarCorrupt {
+                    path: "p".into(),
+                    message: "m".into(),
+                },
+                "cache.sidecar_corrupt",
+            ),
+            (
+                FetchError::Sha256Mismatch {
+                    path: "p".into(),
+                    expected: "a".into(),
+                    observed: "b".into(),
+                },
+                "cache.sha256_mismatch",
+            ),
+            (
+                FetchError::Parse {
+                    url: "u".into(),
+                    what: "yaml",
+                    message: "m".into(),
+                },
+                "listing.parse_failed",
+            ),
+        ] {
+            assert_eq!(e.diagnostic().code, code, "{e}");
+        }
+    }
+}
+
+#[cfg(test)]
+mod ranged_tests {
+    use super::*;
+
+    #[test]
+    fn a_range_ignored_warns_and_a_corrupt_entry_names_the_zip_and_entry() {
+        let ignored = FetchError::RangeIgnored {
+            url: "https://h/a.zip".into(),
+        };
+        assert!(!ignored.is_retryable());
+        let d = ignored.diagnostic();
+        assert_eq!(d.code, "net.range_ignored");
+        assert_eq!(d.url.as_deref(), Some("https://h/a.zip"));
+        let corrupt = FetchError::EntryCorrupt {
+            url: "https://h/a.zip".into(),
+            entry: "b.zip".into(),
+            message: "CRC-32 differs".into(),
+        };
+        assert!(!corrupt.is_retryable());
+        let d = corrupt.diagnostic();
+        assert_eq!(d.code, "zip.entry_corrupt");
+        assert_eq!(d.file.as_deref(), Some("b.zip"));
+        assert!(corrupt.to_string().contains("CRC-32 differs"));
+    }
+}

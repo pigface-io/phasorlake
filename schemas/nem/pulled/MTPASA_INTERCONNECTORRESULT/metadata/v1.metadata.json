@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1525096800000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MTPASA_INTERCONNECTORRESULT",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/MTPASA_INTERCONNECTORRESULT",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -19,22 +19,22 @@
   ],
   "properties": {
     "comment": "Interconnector results for interval of max demand per day",
-    "utilake.declared": "true",
-    "utilake.format": "4",
-    "utilake.key": "[\"RUN_DATETIME\",\"RUN_NO\",\"RUNTYPE\",\"DEMAND_POE_TYPE\",\"DAY\",\"INTERCONNECTORID\"]",
-    "utilake.load": "append",
-    "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(4)\",\"3\":\"VARCHAR(20)\",\"4\":\"VARCHAR(20)\",\"5\":\"TIMESTAMP(0)\",\"6\":\"VARCHAR(20)\",\"7\":\"NUMERIC(3,0)\",\"8\":\"NUMERIC(12,2)\",\"9\":\"NUMERIC(12,2)\",\"10\":\"NUMERIC(12,2)\",\"11\":\"NUMERIC(8,5)\",\"12\":\"NUMERIC(8,5)\",\"13\":\"NUMERIC(12,2)\",\"14\":\"NUMERIC(12,2)\",\"15\":\"TIMESTAMP(0)\"}",
-    "utilake.package": "MTPASA",
-    "utilake.reports": "[[\"MTPASA\",\"INTERCONNECTORRESULT\"]]",
-    "utilake.table": "MTPASA_INTERCONNECTORRESULT",
-    "utilake.temporal.cutoff": "RUN_DATETIME",
-    "utilake.temporal.entity": "[\"RUNTYPE\",\"DEMAND_POE_TYPE\",\"INTERCONNECTORID\"]",
-    "utilake.temporal.order": "[\"RUN_DATETIME\",\"RUN_NO\",\"LASTCHANGED\"]",
-    "utilake.temporal.origin": "derived",
-    "utilake.temporal.valid.column": "DAY",
-    "utilake.temporal.valid.kind": "instant",
-    "utilake.time": "RUN_DATETIME",
-    "utilake.visibility": "PUBLIC"
+    "phasor.declared": "true",
+    "phasor.format": "4",
+    "phasor.key": "[\"RUN_DATETIME\",\"RUN_NO\",\"RUNTYPE\",\"DEMAND_POE_TYPE\",\"DAY\",\"INTERCONNECTORID\"]",
+    "phasor.load": "append",
+    "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(4)\",\"3\":\"VARCHAR(20)\",\"4\":\"VARCHAR(20)\",\"5\":\"TIMESTAMP(0)\",\"6\":\"VARCHAR(20)\",\"7\":\"NUMERIC(3,0)\",\"8\":\"NUMERIC(12,2)\",\"9\":\"NUMERIC(12,2)\",\"10\":\"NUMERIC(12,2)\",\"11\":\"NUMERIC(8,5)\",\"12\":\"NUMERIC(8,5)\",\"13\":\"NUMERIC(12,2)\",\"14\":\"NUMERIC(12,2)\",\"15\":\"TIMESTAMP(0)\"}",
+    "phasor.package": "MTPASA",
+    "phasor.reports": "[[\"MTPASA\",\"INTERCONNECTORRESULT\"]]",
+    "phasor.table": "MTPASA_INTERCONNECTORRESULT",
+    "phasor.temporal.cutoff": "RUN_DATETIME",
+    "phasor.temporal.entity": "[\"RUNTYPE\",\"DEMAND_POE_TYPE\",\"INTERCONNECTORID\"]",
+    "phasor.temporal.order": "[\"RUN_DATETIME\",\"RUN_NO\",\"LASTCHANGED\"]",
+    "phasor.temporal.origin": "derived",
+    "phasor.temporal.valid.column": "DAY",
+    "phasor.temporal.valid.kind": "instant",
+    "phasor.time": "RUN_DATETIME",
+    "phasor.visibility": "PUBLIC"
   },
   "refs": {
     "main": {
@@ -173,27 +173,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MTPASA_INTERCONNECTORRESULT/metadata/snap-831124410278230441-1-e460b7e9-2ad7-8dfc-a1d8-f94f9976933e.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/MTPASA_INTERCONNECTORRESULT/metadata/snap-831124410278230441-1-549fc5c2-6fcb-872e-aacc-8c93b124c356.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 831124410278230441,
       "summary": {
         "operation": "append",
-        "utilake.files": "163",
-        "utilake.from.file": "PUBLIC_DVD_MTPASA_INTERCONNECTORRESULT_201805010000.zip",
-        "utilake.from.release": "2018-05",
-        "utilake.from.sha256": "f17e40a75b5f1d7ffe97f51aa3e602d4ebfdbbd3ea8029105d845260358fc586",
-        "utilake.from.time": "2018-05-14T10:59:49+10:00",
-        "utilake.kinds": "[\"archive\",\"dvd\",\"reports\"]",
-        "utilake.report-subtype": "INTERCONNECTORRESULT",
-        "utilake.report-type": "MTPASA",
-        "utilake.rows": "2287353",
-        "utilake.to.file": "PUBLIC_MTPASA_202610182230_0000000543880583.zip",
-        "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "e3e92a13affdf30dceb54812acd0cc8e79daafb91abda0ef5b0c05881fea2548",
-        "utilake.to.time": "2026-10-18T22:30:00+10:00",
-        "utilake.total-rows": "2287353",
-        "utilake.version": "1"
+        "phasor.files": "163",
+        "phasor.from.file": "PUBLIC_DVD_MTPASA_INTERCONNECTORRESULT_201805010000.zip",
+        "phasor.from.release": "2018-05",
+        "phasor.from.sha256": "f17e40a75b5f1d7ffe97f51aa3e602d4ebfdbbd3ea8029105d845260358fc586",
+        "phasor.from.time": "2018-05-14T10:59:49+10:00",
+        "phasor.kinds": "[\"archive\",\"dvd\",\"reports\"]",
+        "phasor.report-subtype": "INTERCONNECTORRESULT",
+        "phasor.report-type": "MTPASA",
+        "phasor.rows": "2287353",
+        "phasor.to.file": "PUBLIC_MTPASA_202610182230_0000000543880583.zip",
+        "phasor.to.release": "2026-10",
+        "phasor.to.sha256": "e3e92a13affdf30dceb54812acd0cc8e79daafb91abda0ef5b0c05881fea2548",
+        "phasor.to.time": "2026-10-18T22:30:00+10:00",
+        "phasor.total-rows": "2287353",
+        "phasor.version": "1"
       },
       "timestamp-ms": 1525096800000
     }
@@ -204,5 +204,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "e460b7e9-2ad7-8dfc-a1d8-f94f9976933e"
+  "table-uuid": "549fc5c2-6fcb-872e-aacc-8c93b124c356"
 }

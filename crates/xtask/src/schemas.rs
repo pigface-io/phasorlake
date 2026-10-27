@@ -1,9 +1,9 @@
-//! The tables utilake reads are the ones utilake-schemas publishes: each
+//! The tables phasor reads are the ones phasor-schemas publishes: each
 //! table's Iceberg table metadata, `{market}/<TABLE>/metadata/v1.metadata.json`,
 //! and the manifest of their hashes. `pull` copies them at a commit into
 //! `schemas/{market}/pulled/` for every market published and records the
 //! commit in each `SOURCE`; `check` holds each copy to the manifest and the
-//! commit to the one `Cargo.lock` takes `utilake-iceberg` from, so the
+//! commit to the one `Cargo.lock` takes `phasor-iceberg` from, so the
 //! histories and the crate that reads them are always of one commit. A
 //! market with no table published has no `pulled/`.
 
@@ -14,7 +14,7 @@ use std::process::{Command, Stdio};
 
 use anyhow::{Context, Result, bail};
 
-/// The markets utilake-schemas may publish, each a directory of its own.
+/// The markets phasor-schemas may publish, each a directory of its own.
 pub const MARKETS: [&str; 3] = ["nem", "wem", "gas"];
 
 /// Where a market's copy lives, under the repository root.
@@ -25,12 +25,12 @@ fn pulled_rel(market: &str) -> String {
 /// The file that names the commit the copy was taken at.
 const SOURCE: &str = "SOURCE";
 
-/// The manifest of the copy, as utilake-schemas publishes it.
+/// The manifest of the copy, as phasor-schemas publishes it.
 const MANIFEST: &str = "manifest.json";
 /// Which report folder carries each block, beside the tables.
 const FOLDERS: &str = "folders.json";
 
-/// Where utilake-schemas publishes a market's folders file.
+/// Where phasor-schemas publishes a market's folders file.
 fn folders_source(market: &str) -> String {
     format!("{market}/{FOLDERS}")
 }
@@ -143,7 +143,7 @@ pub fn pull(rev: &str, checkout: &Path) -> Result<bool> {
         .collect();
     if !paths.iter().any(|p| p == MANIFEST) {
         bail!(
-            "{full} has no {MANIFEST}; is {} utilake-schemas?",
+            "{full} has no {MANIFEST}; is {} phasor-schemas?",
             checkout.display()
         );
     }
@@ -196,19 +196,19 @@ pub fn pull(rev: &str, checkout: &Path) -> Result<bool> {
         ));
     }
     println!(
-        "schemas-pull: {} of utilake-schemas {full} into schemas/{{market}}/pulled",
+        "schemas-pull: {} of phasor-schemas {full} into schemas/{{market}}/pulled",
         report.join(", ")
     );
     Ok(true)
 }
 
-/// The commit `Cargo.lock` takes `utilake-iceberg` from.
+/// The commit `Cargo.lock` takes `phasor-iceberg` from.
 pub fn locked_rev(lock: &str) -> Option<&str> {
     let mut in_package = false;
     for line in lock.lines() {
         if line.starts_with("[[package]]") {
             in_package = false;
-        } else if line == "name = \"utilake-iceberg\"" {
+        } else if line == "name = \"phasor-iceberg\"" {
             in_package = true;
         } else if in_package && let Some(source) = line.strip_prefix("source = ") {
             return source
@@ -239,9 +239,9 @@ pub fn problems(dir: &Path, lock: &str, market: &str) -> Vec<String> {
     let source = std::fs::read_to_string(dir.join(SOURCE)).unwrap_or_default();
     let source = source.trim();
     match locked_rev(lock) {
-        None => out.push("Cargo.lock takes utilake-iceberg from no git commit".to_owned()),
+        None => out.push("Cargo.lock takes phasor-iceberg from no git commit".to_owned()),
         Some(rev) if rev != source => out.push(format!(
-            "{pulled}/{SOURCE} is {source:?} but Cargo.lock takes utilake-iceberg from {rev}; run `just schemas-pull {rev}`"
+            "{pulled}/{SOURCE} is {source:?} but Cargo.lock takes phasor-iceberg from {rev}; run `just schemas-pull {rev}`"
         )),
         Some(_) => {}
     }
@@ -355,7 +355,7 @@ pub fn check() -> Result<bool> {
 mod tests {
     use super::*;
 
-    const LOCK: &str = "[[package]]\nname = \"other\"\nsource = \"git+ssh://x?rev=1#1\"\n\n[[package]]\nname = \"utilake-iceberg\"\nversion = \"0.1.0\"\nsource = \"git+ssh://git@github.com/g0itb4/utilake-schemas.git?rev=abc#abc\"\n";
+    const LOCK: &str = "[[package]]\nname = \"other\"\nsource = \"git+ssh://x?rev=1#1\"\n\n[[package]]\nname = \"phasor-iceberg\"\nversion = \"0.1.0\"\nsource = \"git+ssh://git@github.com/pigface-io/phasorlake-schemas.git?rev=abc#abc\"\n";
 
     fn tree() -> tempfile::TempDir {
         let dir = tempfile::tempdir().unwrap();

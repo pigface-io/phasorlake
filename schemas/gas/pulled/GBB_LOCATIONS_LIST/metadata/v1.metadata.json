@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1790776800000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GBB_LOCATIONS_LIST",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/gas/GBB_LOCATIONS_LIST",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -19,24 +19,24 @@
   ],
   "properties": {
     "comment": "Lists all production and demand locations within the Bulletin Board system.",
-    "utilake.declared": "true",
-    "utilake.format": "4",
-    "utilake.headers": "{\"1\":\"LocationName\",\"2\":\"LocationId\",\"3\":\"LocationType\",\"4\":\"State\",\"5\":\"Description\",\"6\":\"LastUpdated\"}",
-    "utilake.key": "[\"LOCATIONID\"]",
-    "utilake.load": "snapshot",
-    "utilake.market": "gas",
-    "utilake.model": "[\"GAS_LOCATION\"]",
-    "utilake.model-types": "{\"1\":\"VARCHAR2(100)\",\"2\":\"NUMBER(10,0)\",\"3\":\"VARCHAR2(40)\",\"5\":\"VARCHAR2(800)\"}",
-    "utilake.offset": "+10:00",
-    "utilake.reports": "[[\"GBB\",\"LOCATIONS_LIST\"]]",
-    "utilake.table": "GBB_LOCATIONS_LIST",
-    "utilake.temporal.cutoff": "LASTUPDATED",
-    "utilake.temporal.entity": "[\"LOCATIONID\"]",
-    "utilake.temporal.order": "[\"LASTUPDATED\"]",
-    "utilake.temporal.origin": "hand",
-    "utilake.temporal.valid.kind": "timeless",
-    "utilake.time": "LASTUPDATED",
-    "utilake.visibility": "PUBLIC"
+    "phasor.declared": "true",
+    "phasor.format": "4",
+    "phasor.headers": "{\"1\":\"LocationName\",\"2\":\"LocationId\",\"3\":\"LocationType\",\"4\":\"State\",\"5\":\"Description\",\"6\":\"LastUpdated\"}",
+    "phasor.key": "[\"LOCATIONID\"]",
+    "phasor.load": "snapshot",
+    "phasor.market": "gas",
+    "phasor.model": "[\"GAS_LOCATION\"]",
+    "phasor.model-types": "{\"1\":\"VARCHAR2(100)\",\"2\":\"NUMBER(10,0)\",\"3\":\"VARCHAR2(40)\",\"5\":\"VARCHAR2(800)\"}",
+    "phasor.offset": "+10:00",
+    "phasor.reports": "[[\"GBB\",\"LOCATIONS_LIST\"]]",
+    "phasor.table": "GBB_LOCATIONS_LIST",
+    "phasor.temporal.cutoff": "LASTUPDATED",
+    "phasor.temporal.entity": "[\"LOCATIONID\"]",
+    "phasor.temporal.order": "[\"LASTUPDATED\"]",
+    "phasor.temporal.origin": "hand",
+    "phasor.temporal.valid.kind": "timeless",
+    "phasor.time": "LASTUPDATED",
+    "phasor.visibility": "PUBLIC"
   },
   "refs": {
     "main": {
@@ -105,27 +105,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GBB_LOCATIONS_LIST/metadata/snap-1924526395509545490-1-30ae8d97-ecc1-8d8d-94fe-91312d027467.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/gas/GBB_LOCATIONS_LIST/metadata/snap-1924526395509545490-1-f844ae54-2525-8b70-a309-ddff838644f5.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 1924526395509545490,
       "summary": {
         "operation": "append",
-        "utilake.files": "1",
-        "utilake.from.file": "GasBBLocationsList.CSV",
-        "utilake.from.release": "2026-10",
-        "utilake.from.sha256": "6e9b57a5d37b979209184fe3b04b114d2582fa7ec0d2f6e8cf3f01a6fed8f56d",
-        "utilake.from.time": "2018-05-01T00:00:00+10:00",
-        "utilake.kinds": "[\"gbb\"]",
-        "utilake.report-subtype": "LOCATIONS_LIST",
-        "utilake.report-type": "GBB",
-        "utilake.rows": "25",
-        "utilake.to.file": "GasBBLocationsList.CSV",
-        "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "6e9b57a5d37b979209184fe3b04b114d2582fa7ec0d2f6e8cf3f01a6fed8f56d",
-        "utilake.to.time": "2020-01-13T14:25:51+10:00",
-        "utilake.total-rows": "25",
-        "utilake.version": "1"
+        "phasor.files": "1",
+        "phasor.from.file": "GasBBLocationsList.CSV",
+        "phasor.from.release": "2026-10",
+        "phasor.from.sha256": "6e9b57a5d37b979209184fe3b04b114d2582fa7ec0d2f6e8cf3f01a6fed8f56d",
+        "phasor.from.time": "2018-05-01T00:00:00+10:00",
+        "phasor.kinds": "[\"gbb\"]",
+        "phasor.report-subtype": "LOCATIONS_LIST",
+        "phasor.report-type": "GBB",
+        "phasor.rows": "25",
+        "phasor.to.file": "GasBBLocationsList.CSV",
+        "phasor.to.release": "2026-10",
+        "phasor.to.sha256": "6e9b57a5d37b979209184fe3b04b114d2582fa7ec0d2f6e8cf3f01a6fed8f56d",
+        "phasor.to.time": "2020-01-13T14:25:51+10:00",
+        "phasor.total-rows": "25",
+        "phasor.version": "1"
       },
       "timestamp-ms": 1790776800000
     }
@@ -136,5 +136,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "30ae8d97-ecc1-8d8d-94fe-91312d027467"
+  "table-uuid": "f844ae54-2525-8b70-a309-ddff838644f5"
 }

@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1496239200000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PDINT",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/PDINT",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -18,9 +18,9 @@
     }
   ],
   "properties": {
-    "utilake.declared": "false",
-    "utilake.format": "4",
-    "utilake.table": "PDINT"
+    "phasor.declared": "false",
+    "phasor.format": "4",
+    "phasor.table": "PDINT"
   },
   "refs": {
     "main": {
@@ -143,27 +143,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PDINT/metadata/snap-3273967697262136201-1-8d14c60f-55fb-81f8-9b30-e6bdbf641cf1.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/PDINT/metadata/snap-3273967697262136201-1-f21b401a-d1ae-8589-952a-0e33b715e473.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 3273967697262136201,
       "summary": {
         "operation": "append",
-        "utilake.files": "18792",
-        "utilake.from.file": "PUBLIC_PREDISPATCH_201706191400_20170619133258_LEGACY.zip",
-        "utilake.from.release": "2017-06",
-        "utilake.from.sha256": "911cf5ba9d8a4adcb1c8dbc3bc964f8eb4c3d0752c684dbb44f016c7ed2fa3ee",
-        "utilake.from.time": "2017-06-19T14:00:00+10:00",
-        "utilake.kinds": "[\"reports\"]",
-        "utilake.report-subtype": "",
-        "utilake.report-type": "PDINT",
-        "utilake.rows": "6320248",
-        "utilake.to.file": "PUBLIC_PREDISPATCH_202610241200_20261024113111_LEGACY.zip",
-        "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "1fe50fcf5bc3fec6cabfcda94a0ce20080e9487a5cf92e5911fd883d47a829db",
-        "utilake.to.time": "2026-10-24T12:00:00+10:00",
-        "utilake.total-rows": "6320248",
-        "utilake.version": "5"
+        "phasor.files": "18792",
+        "phasor.from.file": "PUBLIC_PREDISPATCH_201706191400_20170619133258_LEGACY.zip",
+        "phasor.from.release": "2017-06",
+        "phasor.from.sha256": "911cf5ba9d8a4adcb1c8dbc3bc964f8eb4c3d0752c684dbb44f016c7ed2fa3ee",
+        "phasor.from.time": "2017-06-19T14:00:00+10:00",
+        "phasor.kinds": "[\"reports\"]",
+        "phasor.report-subtype": "",
+        "phasor.report-type": "PDINT",
+        "phasor.rows": "6320248",
+        "phasor.to.file": "PUBLIC_PREDISPATCH_202610241200_20261024113111_LEGACY.zip",
+        "phasor.to.release": "2026-10",
+        "phasor.to.sha256": "1fe50fcf5bc3fec6cabfcda94a0ce20080e9487a5cf92e5911fd883d47a829db",
+        "phasor.to.time": "2026-10-24T12:00:00+10:00",
+        "phasor.total-rows": "6320248",
+        "phasor.version": "5"
       },
       "timestamp-ms": 1496239200000
     }
@@ -174,5 +174,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "8d14c60f-55fb-81f8-9b30-e6bdbf641cf1"
+  "table-uuid": "f21b401a-d1ae-8589-952a-0e33b715e473"
 }

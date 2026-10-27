@@ -1,10 +1,10 @@
-# utilake
+# phasor
 
 AEMO market data into a local Parquet lake, from one Rust binary.
 Pronounced *util-lake*: a lake for the utilities' data, the electricity
 markets first.
 
-`utilake` downloads the National Electricity Market's monthly archive files
+`phasor` downloads the National Electricity Market's monthly archive files
 from nemweb, parses their `C`/`I`/`D` row format through a schema registry
 that knows every schema each table's files have had, and writes typed,
 Hive-partitioned Parquet that DuckDB, Polars and anything else that reads
@@ -15,8 +15,8 @@ a failure is explained.
 ## Quick start
 
 ```sh
-cargo install --path crates/utilake-cli --locked
-utilake fetch DISPATCH_UNIT_SCADA --from 2024-01-15 --to 2024-01-18
+cargo install --path crates/phasor-cli --locked
+phasor fetch DISPATCH_UNIT_SCADA --from 2024-01-15 --to 2024-01-18
 ```
 
 `fetch` plans the interval across the market's sources (whole published
@@ -33,8 +33,8 @@ shows what would be fetched. Every command's `--help` ends with examples.
 Files already on disk:
 
 ```sh
-utilake ingest DISPATCH_UNIT_SCADA --from 2024-01 --to 2024-01
-utilake import PUBLIC_DVD_DISPATCHPRICE_202401010000.zip
+phasor ingest DISPATCH_UNIT_SCADA --from 2024-01 --to 2024-01
+phasor import PUBLIC_DVD_DISPATCHPRICE_202401010000.zip
 ```
 
 `ingest` writes Parquet from what is archived, without the network (with
@@ -45,49 +45,49 @@ says nothing of its market. `ingest --source gas-sttm` names which
 archived source to read; by default it is the one that publishes the
 tables.
 
-The result lands under `~/.utilake/lake/nem/dispatch_unit_scada/data/year=2024/month=01/`.
+The result lands under `~/.phasor/lake/nem/dispatch_unit_scada/data/year=2024/month=01/`.
 Query it:
 
 ```sql
 select count(*), typeof(settlementdate)
-from read_parquet('~/.utilake/lake/nem/dispatch_unit_scada/data/**/*.parquet', hive_partitioning = true);
+from read_parquet('~/.phasor/lake/nem/dispatch_unit_scada/data/**/*.parquet', hive_partitioning = true);
 ```
 
 Run the same commands again and they finish in milliseconds: the archive has
 the file, and the manifest knows it is already in the lake.
 
-utilake writes the lake and does not read it. Every row keeps every
+phasor writes the lake and does not read it. Every row keeps every
 revision and copy, with its source and the times that source was stamped
 with, so "latest", "every revision" and "as known at" are questions you
 ask in your own SQL: `docs/reading.md` gives each as one query, tested
 against a fixture lake. `docs/semantics.md` says what a window and a
-revision mean on each kind of table, and `utilake list T` names a table's
+revision mean on each kind of table, and `phasor list T` names a table's
 roles (its entity, valid time, order and cutoff columns).
 
 ## Commands
 
 | command | what it does |
 |---|---|
-| `utilake fetch T,T (--from A --to B \| --at T \| --day D) [--source auto\|monthly\|daily] [--downloads N] [--no-ingest] [--dry-run]` | the files that cover the window, into the archive, each once, and read into the lake; `--no-ingest` downloads only. Times in the market's clock |
-| `utilake fetch --documents` | AEMO's documents (the NEM Registration and Exemption List) fetched again; a version whose bytes are new is kept beside the earlier ones |
-| `utilake import <zip\|csv\|dir>...` | files you already have, into the lake; no network |
-| `utilake ingest [T,T --from A --to B] [--source ID] [--dry-run]` | archived files into the lake, no network; with no arguments, every archived file not yet in the lake and every lake file behind its rules |
-| `utilake list [T] [--market M] [--kind K] [--grep TEXT] [--coverage] [--files] [--archive] [--ingests [--failed]] [--runs]` | every table with its roles and what the lake holds; one table's columns; the months held and the gaps; the files, the archive, the manifest |
-| `utilake inspect <file>` | every block in a file, its version and how the registry resolves it |
-| `utilake errors [--last] [--table T] [--code C]` | diagnostics recorded by past runs |
-| `utilake verify [--table T] [--archive]` | every Parquet file the manifest lists exists with its size; `--archive` hashes every download again |
-| `utilake schema list\|show\|history\|validate` | the registry; `history T` lists a table's schemas, with the columns each adds or drops, and the runs of files under each (`--json`: its Iceberg history) |
-| `utilake schema plan <type> <subtype> <version> --columns A,B,C [--month YYYY-MM]` | the conformance plan a shape is read with, as JSON: where each file column goes, its cast, what is written null |
-| `utilake wem manifest <dataset>` | a WEM dataset's file list (WEM ingestion comes later) |
+| `phasor fetch T,T (--from A --to B \| --at T \| --day D) [--source auto\|monthly\|daily] [--downloads N] [--no-ingest] [--dry-run]` | the files that cover the window, into the archive, each once, and read into the lake; `--no-ingest` downloads only. Times in the market's clock |
+| `phasor fetch --documents` | AEMO's documents (the NEM Registration and Exemption List) fetched again; a version whose bytes are new is kept beside the earlier ones |
+| `phasor import <zip\|csv\|dir>...` | files you already have, into the lake; no network |
+| `phasor ingest [T,T --from A --to B] [--source ID] [--dry-run]` | archived files into the lake, no network; with no arguments, every archived file not yet in the lake and every lake file behind its rules |
+| `phasor list [T] [--market M] [--kind K] [--grep TEXT] [--coverage] [--files] [--archive] [--ingests [--failed]] [--runs]` | every table with its roles and what the lake holds; one table's columns; the months held and the gaps; the files, the archive, the manifest |
+| `phasor inspect <file>` | every block in a file, its version and how the registry resolves it |
+| `phasor errors [--last] [--table T] [--code C]` | diagnostics recorded by past runs |
+| `phasor verify [--table T] [--archive]` | every Parquet file the manifest lists exists with its size; `--archive` hashes every download again |
+| `phasor schema list\|show\|history\|validate` | the registry; `history T` lists a table's schemas, with the columns each adds or drops, and the runs of files under each (`--json`: its Iceberg history) |
+| `phasor schema plan <type> <subtype> <version> --columns A,B,C [--month YYYY-MM]` | the conformance plan a shape is read with, as JSON: where each file column goes, its cast, what is written null |
+| `phasor wem manifest <dataset>` | a WEM dataset's file list (WEM ingestion comes later) |
 
-Global flags: `--home DIR` (or `UTILAKE_HOME`), `--json`, `-v`, `--offline`,
+Global flags: `--home DIR` (or `PHASOR_HOME`), `--json`, `-v`, `--offline`,
 `--jobs N`, `--no-user-schemas`. Ingest flags: `--max-bad-rows N`, `--strict`,
 `--fail-fast`.
 
 ## How the data is laid out
 
 ```
-~/.utilake/
+~/.phasor/
   lake/nem/{table}/data/year=YYYY/month=MM/{source}-v{version}-{shape8}-{sha8}.parquet   appended tables, partitioned by market-local month
   lake/nem/{table}/data/snapshot=YYYYMM/...                                     standing-data tables (REGION, PARTICIPANT, ...): each month's file is the whole table
   lake/nem/{table}/metadata/                                                    the table's Iceberg metadata, written for where the lake is now
@@ -171,13 +171,13 @@ All three are written into the file's footer and into the manifest:
 
 | footer key | what it says |
 |---|---|
-| `utilake.source_url`, `utilake.source_sha256`, `utilake.entry` | the source: where it came from, its hash, the CSV inside it |
-| `utilake.report_type`, `utilake.report_subtype`, `utilake.source_version`, `utilake.source_columns`, `utilake.fingerprint` | the shape: the block's I row as AEMO published it |
-| `utilake.source_period` | the month the source was released in, which picks among the runs of the table's history that fit a block |
-| `utilake.plan` | the hash of the conformance plan the shape was read by: which file column feeds which lake column, that column's id, type and nullability, how the value is parsed, the key and time columns, the load mode, the directory |
-| `utilake.shape_id` | the id the census gives the shape: the block's report pair and columns, hashed with the census's own canonical bytes, so it can be looked up in the census |
-| `utilake.schema_source` | where the table's definition came from: `registry` (built in), `user` (your own table file), `file` (nobody declared it, so the file's own header) |
-| `utilake.resolution`, `utilake.table`, `utilake.schema_version` | how the shape matched: `conforms` (a run of the table's history has its columns), `deviates` or `derived`; the table, and the schema of its history the block was read with (AEMO's version is `source_version`) |
+| `phasor.source_url`, `phasor.source_sha256`, `phasor.entry` | the source: where it came from, its hash, the CSV inside it |
+| `phasor.report_type`, `phasor.report_subtype`, `phasor.source_version`, `phasor.source_columns`, `phasor.fingerprint` | the shape: the block's I row as AEMO published it |
+| `phasor.source_period` | the month the source was released in, which picks among the runs of the table's history that fit a block |
+| `phasor.plan` | the hash of the conformance plan the shape was read by: which file column feeds which lake column, that column's id, type and nullability, how the value is parsed, the key and time columns, the load mode, the directory |
+| `phasor.shape_id` | the id the census gives the shape: the block's report pair and columns, hashed with the census's own canonical bytes, so it can be looked up in the census |
+| `phasor.schema_source` | where the table's definition came from: `registry` (built in), `user` (your own table file), `file` (nobody declared it, so the file's own header) |
+| `phasor.resolution`, `phasor.table`, `phasor.schema_version` | how the shape matched: `conforms` (a run of the table's history has its columns), `deviates` or `derived`; the table, and the schema of its history the block was read with (AEMO's version is `source_version`) |
 
 The plan hash changes when the output of that shape would: a column it
 carries gets another type, a table gets a schema where it had none, the
@@ -187,32 +187,32 @@ shape does not carry: its files simply lack that column, which reads as
 null. A source whose recorded hash is no longer what the current schemas
 give is behind: the next `fetch` or
 `ingest` that covers it reads it again instead of skipping it, and
-`utilake ingest` with no arguments does that for every source in the
+`phasor ingest` with no arguments does that for every source in the
 manifest, straight from the archive. The Parquet files the earlier read
 wrote are replaced, and the run reports each such source as
-`manifest.rules_changed`. `utilake ingest --dry-run` lists what is behind
+`manifest.rules_changed`. `phasor ingest --dry-run` lists what is behind
 and changes nothing.
 
 ## The archive of downloads
 
-Every file utilake downloads is kept exactly as the server sent it, at the
+Every file phasor downloads is kept exactly as the server sent it, at the
 path its URL spells out:
 
 ```
-~/.utilake/archive/www.nemweb.com.au/Data_Archive/Wholesale_Electricity/MMSDM/2024/MMSDM_2024_01/MMSDM_Historical_Data_SQLLoader/DATA/
+~/.phasor/archive/www.nemweb.com.au/Data_Archive/Wholesale_Electricity/MMSDM/2024/MMSDM_2024_01/MMSDM_Historical_Data_SQLLoader/DATA/
   PUBLIC_DVD_DISPATCHPRICE_202401010000.zip
   PUBLIC_DVD_DISPATCHPRICE_202401010000.zip.provenance.json
 ```
 
-The record beside it (`utilake_provenance`, shared with the mirror) says
+The record beside it (`phasor_provenance`, shared with the mirror) says
 what the bytes are, their size, sha256 and CRC-32, and every address that
 served them: the URL it was fetched from first, with when, the listing's
 line and the server's `ETag` and `Last-Modified` (when AEMO published it),
 and every other place the same bytes were found since. A record of format
-1, the flat `{name}.json` an older utilake or mirror wrote, is read as it
-is (`crates/utilake-mirror/docs/archive.md`, Provenance record).
+1, the flat `{name}.json` an older phasor or mirror wrote, is read as it
+is (`crates/phasor-mirror/docs/archive.md`, Provenance record).
 
-Every time utilake writes is RFC 3339 with an offset: when bytes were
+Every time phasor writes is RFC 3339 with an offset: when bytes were
 fetched in UTC, a server's `Last-Modified` in UTC, a listing's time in the
 host's clock (AEST, `+10:00`, for nemweb, which has no daylight saving).
 Where a time comes in as text it is kept as an instant; in listing output
@@ -221,15 +221,15 @@ and the manifest's `files`, `last_modified` is the HTTP date and
 `_at` gets `{field}_utc`, the instant in UTC (the WEM manifest's
 `generated_at_utc`). A time written without an offset is a defect.
 
-A file is downloaded once. Nothing in utilake replaces or deletes an
+A file is downloaded once. Nothing in phasor replaces or deletes an
 archived file; to fetch one again, delete it and its record. Everything in
-the lake is derived from the archive, which is what `utilake ingest` does
-when a table's schema improves. `utilake verify --archive` hashes every
+the lake is derived from the archive, which is what `phasor ingest` does
+when a table's schema improves. `phasor verify --archive` hashes every
 file against its record.
 
 ## The mirror
 
-`utilake-mirror` (`crates/utilake-mirror`) keeps a copy of every file under
+`phasor-mirror` (`crates/phasor-mirror`) keeps a copy of every file under
 nemweb's archive folders and a catalog of it: it crawls every listing page
 under `Data_Archive/`, `Reports/ARCHIVE/` and `Reports/CURRENT/`, peeks
 into each zip's central directory before downloading, downloads every
@@ -237,40 +237,40 @@ listed file once at a paced rate (a refusal is waited out), keeps every
 version of a file nemweb rewrites in place, watches the folders on a
 schedule of their own after the crawl, maps every zip as a folder, and
 compares each month's zip with its folder so most zips are never
-downloaded. Its home is `UTILAKE_MIRROR_HOME` (default `~/.utilake-mirror`):
+downloaded. Its home is `PHASOR_MIRROR_HOME` (default `~/.phasor-mirror`):
 the archive, with a provenance record beside every file, and its own
 records under `state/`: each folder's listing, pages and events, and the
 catalog.
-`crates/utilake-mirror/README.md` has the commands and the layout on disk;
-the census in utilake-schemas and `utilake` read what it keeps.
+`crates/phasor-mirror/README.md` has the commands and the layout on disk;
+the census in phasor-schemas and `phasor` read what it keeps.
 
 ## Our schemas: the shared histories
 
 A table's schemas are its history as an Iceberg table, which
-utilake-schemas folds from its census of every file AEMO published and
+phasor-schemas folds from its census of every file AEMO published and
 publishes as the table's Iceberg table metadata,
 `nem/{TABLE}/metadata/v1.metadata.json`, with a manifest of every file's
-hash (github.com/g0itb4/utilake-schemas; its README describes what the
-metadata holds). utilake keeps a copy, taken at one commit and never
+hash (github.com/pigface-io/phasorlake-schemas; its README describes what the
+metadata holds). phasor keeps a copy, taken at one commit and never
 edited:
 
 ```
 schemas/nem/pulled/
-  SOURCE                                       the utilake-schemas commit it was taken at
+  SOURCE                                       the phasor-schemas commit it was taken at
   manifest.json                                the sha256 of every file published then
   DISPATCH_UNIT_SCADA/metadata/v1.metadata.json  the table: its schemas, its runs as snapshots, its declaration
   ...
 ```
 
-`just schemas-pull REV` takes the copy at a commit of a utilake-schemas
-checkout (`../utilake-schemas` unless you name another), whatever its
+`just schemas-pull REV` takes the copy at a commit of a phasor-schemas
+checkout (`../phasorlake-schemas` unless you name another), whatever its
 working tree holds. `just schemas-check`, a hook and part of `just check`,
 holds every file to the manifest and `SOURCE` to the commit `Cargo.lock`
-takes the `utilake-iceberg` crate from, so the histories and the code that
+takes the `phasor-iceberg` crate from, so the histories and the code that
 reads them are always of one commit. A newer census is a pull and a bump of
 that rev, together.
 
-The registry reads each table through `utilake_iceberg::from_metadata`.
+The registry reads each table through `phasor_iceberg::from_metadata`.
 The table's columns are the history's fields, by id, each typed by its
 Iceberg type, under its newest name; a column takes nulls unless every
 schema requires it. A block goes to the table of its report pair whose
@@ -284,21 +284,21 @@ does. A block no run fits deviates: it is kept whole (a column the table
 lacks as text of its own, a column the file lacks as null), compared with
 the schema in force for its pair then and reported, and `--strict` refuses
 it. A renamed column is a new column. A table with a breaking column (one
-name under two fields) is refused until utilake reads a column by more
+name under two fields) is refused until phasor reads a column by more
 than one field.
 
 Where AEMO's files have columns the history has not seen, the fix is the
-census's, in utilake-schemas; until then a table of your own reads them.
+census's, in phasor-schemas; until then a table of your own reads them.
 
 ## Your own tables
 
-A table of your own goes in `~/.utilake/schemas/nem/{TABLE}/`. Every command
+A table of your own goes in `~/.phasor/schemas/nem/{TABLE}/`. Every command
 uses it: one named after a built-in table replaces it, any other adds a
 table. `--no-user-schemas` runs without them. What was ingested before the
-table existed is brought up to it by `utilake ingest`.
+table existed is brought up to it by `phasor ingest`.
 
 It is either a `table.json` of the pulled form, such as a newer one from
-utilake-schemas, or a `table.toml` written by hand. `utilake schema show T`
+phasor-schemas, or a `table.toml` written by hand. `phasor schema show T`
 prints any table as one, a start for your own:
 
 ```toml
@@ -338,20 +338,20 @@ lists, is refused with how to write it now.
 ## The census of every shape
 
 The census of every file AEMO published, each table's Iceberg history folded
-from it, and the export of each table's metadata live in the utilake-schemas repository
-(github.com/g0itb4/utilake-schemas): MMSDM months and the report folders
+from it, and the export of each table's metadata live in the phasor-schemas repository
+(github.com/pigface-io/phasorlake-schemas): MMSDM months and the report folders
 (`Reports/ARCHIVE`, `Reports/CURRENT`), including each version of a file
-nemweb rewrote in place. utilake reads the histories it publishes
-(`schemas/nem/pulled/`) with its `utilake-iceberg` crate, the Iceberg
+nemweb rewrote in place. phasor reads the histories it publishes
+(`schemas/nem/pulled/`) with its `phasor-iceberg` crate, the Iceberg
 contract both repositories share, at the rev `Cargo.toml` pins. Every block
-utilake reads carries the census's id of its shape (`utilake.shape_id`).
+phasor reads carries the census's id of its shape (`phasor.shape_id`).
 
 ## Which months
 
 The archive begins in July 2009. From 2015 each month is a directory of
-per-table zips and utilake downloads the ones asked for. Before 2015 a month
+per-table zips and phasor downloads the ones asked for. Before 2015 a month
 exists only as one zip of 1.4 to 2.1 GB holding those per-table zips;
-utilake downloads it whole, once, and reads the per-table zips nested in it
+phasor downloads it whole, once, and reads the per-table zips nested in it
 from disk.
 
 File names changed along the way, from `PUBLIC_DVD_{TABLE}_{YYYYMM}010000.zip`
@@ -367,7 +367,7 @@ tables the census found that the data model does not declare are not in
 the registry; their files are kept as text, as for any table nobody
 declares.
 
-AEMO's web server blocks a client that asks too fast. utilake leaves 250 ms
+AEMO's web server blocks a client that asks too fast. phasor leaves 250 ms
 between requests (`request_interval_ms` in `config.toml`), and when the
 server refuses it (HTTP 403, or 429 through every retry) it sends nothing
 more in that run and reports `net.blocked` for what is left.
@@ -378,7 +378,7 @@ first five keys by flags of `ingest`, `import` and `fetch`
 `--lake-compression`, `--lake-zstd-level`). The
 layout changes how files are cut, never what they hold, so changing it
 does not re-read the lake; each file records the layout it was written
-with (`utilake.write_options` in its footer).
+with (`phasor.write_options` in its footer).
 
 ```toml
 [lake]
@@ -408,7 +408,7 @@ for a schema that could not be resolved in strict mode. `docs/errors.md` lists
 every code.
 
 Errors and warnings are printed as JSON, one object a line, as they happen
-on stderr and again in the summary and in `utilake errors`:
+on stderr and again in the summary and in `phasor errors`:
 
 ```json
 {"code":"parse.integer","category":"parse","severity":"error","message":"Column REGISTEREDCAPACITY: the value 13.55 is a number with a fraction or exponent, but the column is declared a whole number (Int64).","table":"DUDETAIL","version":7,"line":133,"column":"REGISTEREDCAPACITY","expected":"a whole number (Int64)","observed":"13.55","sample":{"text":"D,PARTICIPANT_REGISTRATION,DUDETAIL,7,..."}}
@@ -437,7 +437,7 @@ numbers may not regress below live in `bench/budgets.json`.
 
 Working today: the NEM monthly archive from July 2009 on, Parquet + manifest,
 every table the data model declares (241) in the registry, each with the
-Iceberg history utilake-schemas folds from the census of every file,
+Iceberg history phasor-schemas folds from the census of every file,
 downloads that resume where they stopped, and a lake that can be read
 again from the archive when a schema changes. Next: live 5-minute feeds
 and compaction; then WEM.
@@ -446,12 +446,12 @@ and compaction; then WEM.
 
 Each crate does one job, and `layers.json` holds the dependencies between
 them (drawn in `CONTRIBUTING.md`). A market's kit (nem, wem, gas) brings its
-sources, decoders and catalog through the ports of `utilake-kit`; the
+sources, decoders and catalog through the ports of `phasor-kit`; the
 pipeline runs those ports and hands each file's blocks to the writer, which
 alone decides how the lake is laid out. Every HTTP request goes through
-`utilake-net`, whether the lake's `fetch` or the mirror makes it, and both
+`phasor-net`, whether the lake's `fetch` or the mirror makes it, and both
 keep what they download in the one archive. The formats' decoders, the
-Iceberg contract and the shared histories come from utilake-schemas.
+Iceberg contract and the shared histories come from phasor-schemas.
 
 ## Developing
 

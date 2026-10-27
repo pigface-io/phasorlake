@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1246370400000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/INTERCONNECTOR",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/INTERCONNECTOR",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -19,20 +19,20 @@
   ],
   "properties": {
     "comment": "INTERCONNECTOR sets out valid identifiers for each interconnector.",
-    "utilake.declared": "true",
-    "utilake.format": "4",
-    "utilake.key": "[\"INTERCONNECTORID\"]",
-    "utilake.load": "snapshot",
-    "utilake.model-types": "{\"1\":\"VARCHAR(10)\",\"2\":\"VARCHAR(10)\",\"3\":\"VARCHAR(10)\",\"4\":\"VARCHAR(10)\",\"5\":\"VARCHAR(64)\",\"6\":\"TIMESTAMP(0)\"}",
-    "utilake.package": "MARKET_CONFIG",
-    "utilake.reports": "[[\"MARKET_CONFIG\",\"INTERCONNECTOR\"]]",
-    "utilake.table": "INTERCONNECTOR",
-    "utilake.temporal.cutoff": "LASTCHANGED",
-    "utilake.temporal.entity": "[\"INTERCONNECTORID\"]",
-    "utilake.temporal.order": "[\"LASTCHANGED\"]",
-    "utilake.temporal.origin": "derived",
-    "utilake.temporal.valid.kind": "timeless",
-    "utilake.visibility": "PUBLIC"
+    "phasor.declared": "true",
+    "phasor.format": "4",
+    "phasor.key": "[\"INTERCONNECTORID\"]",
+    "phasor.load": "snapshot",
+    "phasor.model-types": "{\"1\":\"VARCHAR(10)\",\"2\":\"VARCHAR(10)\",\"3\":\"VARCHAR(10)\",\"4\":\"VARCHAR(10)\",\"5\":\"VARCHAR(64)\",\"6\":\"TIMESTAMP(0)\"}",
+    "phasor.package": "MARKET_CONFIG",
+    "phasor.reports": "[[\"MARKET_CONFIG\",\"INTERCONNECTOR\"]]",
+    "phasor.table": "INTERCONNECTOR",
+    "phasor.temporal.cutoff": "LASTCHANGED",
+    "phasor.temporal.entity": "[\"INTERCONNECTORID\"]",
+    "phasor.temporal.order": "[\"LASTCHANGED\"]",
+    "phasor.temporal.origin": "derived",
+    "phasor.temporal.valid.kind": "timeless",
+    "phasor.visibility": "PUBLIC"
   },
   "refs": {
     "main": {
@@ -103,27 +103,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/INTERCONNECTOR/metadata/snap-2910206716057268418-1-067504d6-76ac-836b-aa94-797025c40d20.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/INTERCONNECTOR/metadata/snap-2910206716057268418-1-612c9168-278d-8cfd-90f1-427c5b36f485.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 2910206716057268418,
       "summary": {
         "operation": "append",
-        "utilake.files": "207",
-        "utilake.from.file": "PUBLIC_DVD_INTERCONNECTOR_200907010000.zip",
-        "utilake.from.release": "2009-07",
-        "utilake.from.sha256": "44539eb2dbd1be88df4d0e25d3424acce148a40d2632a20dc0d5556981bbd261",
-        "utilake.from.time": "2004-06-11T10:43:05+10:00",
-        "utilake.kinds": "[\"archive\",\"dvd\"]",
-        "utilake.report-subtype": "INTERCONNECTOR",
-        "utilake.report-type": "MARKET_CONFIG",
-        "utilake.rows": "1658",
-        "utilake.to.file": "PUBLIC_ARCHIVE#INTERCONNECTOR#FILE01#202609010000.zip",
-        "utilake.to.release": "2026-09",
-        "utilake.to.sha256": "df945c76d67a4b20acaa5ece08a921fd5adae70950705cceb15e4d2e43a078ab",
-        "utilake.to.time": "2026-08-13T10:09:20+10:00",
-        "utilake.total-rows": "1658",
-        "utilake.version": "1"
+        "phasor.files": "207",
+        "phasor.from.file": "PUBLIC_DVD_INTERCONNECTOR_200907010000.zip",
+        "phasor.from.release": "2009-07",
+        "phasor.from.sha256": "44539eb2dbd1be88df4d0e25d3424acce148a40d2632a20dc0d5556981bbd261",
+        "phasor.from.time": "2004-06-11T10:43:05+10:00",
+        "phasor.kinds": "[\"archive\",\"dvd\"]",
+        "phasor.report-subtype": "INTERCONNECTOR",
+        "phasor.report-type": "MARKET_CONFIG",
+        "phasor.rows": "1658",
+        "phasor.to.file": "PUBLIC_ARCHIVE#INTERCONNECTOR#FILE01#202609010000.zip",
+        "phasor.to.release": "2026-09",
+        "phasor.to.sha256": "df945c76d67a4b20acaa5ece08a921fd5adae70950705cceb15e4d2e43a078ab",
+        "phasor.to.time": "2026-08-13T10:09:20+10:00",
+        "phasor.total-rows": "1658",
+        "phasor.version": "1"
       },
       "timestamp-ms": 1246370400000
     }
@@ -134,5 +134,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "067504d6-76ac-836b-aa94-797025c40d20"
+  "table-uuid": "612c9168-278d-8cfd-90f1-427c5b36f485"
 }

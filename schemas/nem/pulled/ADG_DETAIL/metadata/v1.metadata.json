@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1722434400000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/ADG_DETAIL",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/ADG_DETAIL",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -19,20 +19,20 @@
   ],
   "properties": {
     "comment": "Table for tracking evolving Aggregate Dispatch Group attributes",
-    "utilake.declared": "true",
-    "utilake.format": "4",
-    "utilake.key": "[]",
-    "utilake.load": "append",
-    "utilake.model-types": "{\"1\":\"VARCHAR(20)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"TIMESTAMP(0)\",\"4\":\"VARCHAR(20)\",\"5\":\"TIMESTAMP(0)\",\"6\":\"VARCHAR(15)\",\"7\":\"TIMESTAMP(0)\"}",
-    "utilake.reports": "[[\"PARTICIPANT_REGISTRATION\",\"ADG_DETAIL\"]]",
-    "utilake.table": "ADG_DETAIL",
-    "utilake.temporal.cutoff": "LASTCHANGED",
-    "utilake.temporal.entity": "[]",
-    "utilake.temporal.order": "[\"VERSION_DATETIME\",\"LASTCHANGED\"]",
-    "utilake.temporal.origin": "derived",
-    "utilake.temporal.valid.kind": "timeless",
-    "utilake.time": "EFFECTIVEDATE",
-    "utilake.visibility": "PUBLIC"
+    "phasor.declared": "true",
+    "phasor.format": "4",
+    "phasor.key": "[]",
+    "phasor.load": "append",
+    "phasor.model-types": "{\"1\":\"VARCHAR(20)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"TIMESTAMP(0)\",\"4\":\"VARCHAR(20)\",\"5\":\"TIMESTAMP(0)\",\"6\":\"VARCHAR(15)\",\"7\":\"TIMESTAMP(0)\"}",
+    "phasor.reports": "[[\"PARTICIPANT_REGISTRATION\",\"ADG_DETAIL\"]]",
+    "phasor.table": "ADG_DETAIL",
+    "phasor.temporal.cutoff": "LASTCHANGED",
+    "phasor.temporal.entity": "[]",
+    "phasor.temporal.order": "[\"VERSION_DATETIME\",\"LASTCHANGED\"]",
+    "phasor.temporal.origin": "derived",
+    "phasor.temporal.valid.kind": "timeless",
+    "phasor.time": "EFFECTIVEDATE",
+    "phasor.visibility": "PUBLIC"
   },
   "refs": {
     "main": {
@@ -108,27 +108,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/ADG_DETAIL/metadata/snap-5155715949342366677-1-447fe174-a50e-8670-98ae-23ebf8238140.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/ADG_DETAIL/metadata/snap-5155715949342366677-1-0c4bfbdd-76f7-862c-9883-07f0abf2cfc0.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 5155715949342366677,
       "summary": {
         "operation": "append",
-        "utilake.files": "27",
-        "utilake.from.file": "PUBLIC_ARCHIVE#ADG_DETAIL#FILE01#202408010000.zip",
-        "utilake.from.release": "2024-08",
-        "utilake.from.sha256": "3b82aa3b8b792cd99731ed4f869dff854cc13662dbd0e304e650652644d6fe4d",
-        "utilake.from.time": "2023-08-09T00:00:00+10:00",
-        "utilake.kinds": "[\"archive\",\"other\"]",
-        "utilake.report-subtype": "ADG_DETAIL",
-        "utilake.report-type": "PARTICIPANT_REGISTRATION",
-        "utilake.rows": "766",
-        "utilake.to.file": "PUBLIC_ARCHIVE#ADG_DETAIL#FILE01#202609010000.zip",
-        "utilake.to.release": "2026-09",
-        "utilake.to.sha256": "294a6ffc370b744dc7def98d769885ac751537d7395c5a6b5f9bcc61b1d20c79",
-        "utilake.to.time": "2026-01-20T00:00:00+10:00",
-        "utilake.total-rows": "766",
-        "utilake.version": "1"
+        "phasor.files": "27",
+        "phasor.from.file": "PUBLIC_ARCHIVE#ADG_DETAIL#FILE01#202408010000.zip",
+        "phasor.from.release": "2024-08",
+        "phasor.from.sha256": "3b82aa3b8b792cd99731ed4f869dff854cc13662dbd0e304e650652644d6fe4d",
+        "phasor.from.time": "2023-08-09T00:00:00+10:00",
+        "phasor.kinds": "[\"archive\",\"other\"]",
+        "phasor.report-subtype": "ADG_DETAIL",
+        "phasor.report-type": "PARTICIPANT_REGISTRATION",
+        "phasor.rows": "766",
+        "phasor.to.file": "PUBLIC_ARCHIVE#ADG_DETAIL#FILE01#202609010000.zip",
+        "phasor.to.release": "2026-09",
+        "phasor.to.sha256": "294a6ffc370b744dc7def98d769885ac751537d7395c5a6b5f9bcc61b1d20c79",
+        "phasor.to.time": "2026-01-20T00:00:00+10:00",
+        "phasor.total-rows": "766",
+        "phasor.version": "1"
       },
       "timestamp-ms": 1722434400000
     }
@@ -139,5 +139,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "447fe174-a50e-8670-98ae-23ebf8238140"
+  "table-uuid": "0c4bfbdd-76f7-862c-9883-07f0abf2cfc0"
 }

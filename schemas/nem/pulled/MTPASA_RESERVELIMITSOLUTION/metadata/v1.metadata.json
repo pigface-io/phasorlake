@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1272636000000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MTPASA_RESERVELIMITSOLUTION",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/MTPASA_RESERVELIMITSOLUTION",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -19,10 +19,10 @@
   ],
   "properties": {
     "comment": "MTPASA_RESERVELIMITSOLUTION is obsolete from 2017 End of Year DM4.27 Release. \nMT PASA Solution table reporting whether a MT PASA Reserve requirement is binding for each day and LDC block of the run.",
-    "utilake.declared": "false",
-    "utilake.format": "4",
-    "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(3,0)\",\"3\":\"VARCHAR(20)\",\"4\":\"TIMESTAMP(0)\",\"5\":\"TIMESTAMP(0)\",\"6\":\"NUMERIC(3,0)\",\"7\":\"VARCHAR(20)\",\"8\":\"NUMERIC(16,6)\",\"9\":\"TIMESTAMP(0)\"}",
-    "utilake.table": "MTPASA_RESERVELIMITSOLUTION"
+    "phasor.declared": "false",
+    "phasor.format": "4",
+    "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(3,0)\",\"3\":\"VARCHAR(20)\",\"4\":\"TIMESTAMP(0)\",\"5\":\"TIMESTAMP(0)\",\"6\":\"NUMERIC(3,0)\",\"7\":\"VARCHAR(20)\",\"8\":\"NUMERIC(16,6)\",\"9\":\"TIMESTAMP(0)\"}",
+    "phasor.table": "MTPASA_RESERVELIMITSOLUTION"
   },
   "refs": {
     "main": {
@@ -112,27 +112,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MTPASA_RESERVELIMITSOLUTION/metadata/snap-955016150339972385-1-e14dd9e4-ffb8-8aee-85b2-b41df352168f.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/MTPASA_RESERVELIMITSOLUTION/metadata/snap-955016150339972385-1-6a58b337-9dc0-8fca-abe9-355eeec9953a.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 955016150339972385,
       "summary": {
         "operation": "append",
-        "utilake.files": "97",
-        "utilake.from.file": "PUBLIC_DVD_MTPASA_RESERVELIMITSOLUTION_201005010000.zip",
-        "utilake.from.release": "2010-05",
-        "utilake.from.sha256": "34146e389a0c5fbeeeac6510f42613eb362de7acf71d579bda892b6ec1eeb564",
-        "utilake.from.time": "2010-05-30T00:00:00+10:00",
-        "utilake.kinds": "[\"dvd\"]",
-        "utilake.report-subtype": "RESERVELIMITSOLUTION",
-        "utilake.report-type": "MTPASA",
-        "utilake.rows": "3923017",
-        "utilake.to.file": "PUBLIC_DVD_MTPASA_RESERVELIMITSOLUTION_201805010000.zip",
-        "utilake.to.release": "2018-05",
-        "utilake.to.sha256": "ed68cc29b637ca99ec659f83cb5e9ab21ac993a3a9a5d2bca0971073361454ac",
-        "utilake.to.time": "2020-05-23T00:00:00+10:00",
-        "utilake.total-rows": "3923017",
-        "utilake.version": "1"
+        "phasor.files": "97",
+        "phasor.from.file": "PUBLIC_DVD_MTPASA_RESERVELIMITSOLUTION_201005010000.zip",
+        "phasor.from.release": "2010-05",
+        "phasor.from.sha256": "34146e389a0c5fbeeeac6510f42613eb362de7acf71d579bda892b6ec1eeb564",
+        "phasor.from.time": "2010-05-30T00:00:00+10:00",
+        "phasor.kinds": "[\"dvd\"]",
+        "phasor.report-subtype": "RESERVELIMITSOLUTION",
+        "phasor.report-type": "MTPASA",
+        "phasor.rows": "3923017",
+        "phasor.to.file": "PUBLIC_DVD_MTPASA_RESERVELIMITSOLUTION_201805010000.zip",
+        "phasor.to.release": "2018-05",
+        "phasor.to.sha256": "ed68cc29b637ca99ec659f83cb5e9ab21ac993a3a9a5d2bca0971073361454ac",
+        "phasor.to.time": "2020-05-23T00:00:00+10:00",
+        "phasor.total-rows": "3923017",
+        "phasor.version": "1"
       },
       "timestamp-ms": 1272636000000
     }
@@ -143,5 +143,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "e14dd9e4-ffb8-8aee-85b2-b41df352168f"
+  "table-uuid": "6a58b337-9dc0-8fca-abe9-355eeec9953a"
 }

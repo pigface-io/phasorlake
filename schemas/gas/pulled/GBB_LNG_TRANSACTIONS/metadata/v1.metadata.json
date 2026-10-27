@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1785506400000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GBB_LNG_TRANSACTIONS",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/gas/GBB_LNG_TRANSACTIONS",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -19,24 +19,24 @@
   ],
   "properties": {
     "comment": "This table displays LNG transaction aggregated data",
-    "utilake.declared": "true",
-    "utilake.format": "4",
-    "utilake.headers": "{\"1\":\"TransactionMonth\",\"2\":\"VolWeightPrice\",\"3\":\"VolumePJ\",\"4\":\"SupplyStartDate\",\"5\":\"SupplyEndDate\"}",
-    "utilake.key": "[]",
-    "utilake.load": "append",
-    "utilake.market": "gas",
-    "utilake.model": "[\"GAS_LNG_TRANSACTION\"]",
-    "utilake.model-types": "{\"2\":\"NUMBER(18,8)\",\"3\":\"NUMBER(18,8)\"}",
-    "utilake.offset": "+10:00",
-    "utilake.reports": "[[\"GBB\",\"LNG_TRANSACTIONS\"]]",
-    "utilake.table": "GBB_LNG_TRANSACTIONS",
-    "utilake.temporal.entity": "[]",
-    "utilake.temporal.order": "[]",
-    "utilake.temporal.origin": "hand",
-    "utilake.temporal.valid.column": "SUPPLYSTARTDATE",
-    "utilake.temporal.valid.kind": "instant",
-    "utilake.time": "SUPPLYSTARTDATE",
-    "utilake.visibility": "PUBLIC"
+    "phasor.declared": "true",
+    "phasor.format": "4",
+    "phasor.headers": "{\"1\":\"TransactionMonth\",\"2\":\"VolWeightPrice\",\"3\":\"VolumePJ\",\"4\":\"SupplyStartDate\",\"5\":\"SupplyEndDate\"}",
+    "phasor.key": "[]",
+    "phasor.load": "append",
+    "phasor.market": "gas",
+    "phasor.model": "[\"GAS_LNG_TRANSACTION\"]",
+    "phasor.model-types": "{\"2\":\"NUMBER(18,8)\",\"3\":\"NUMBER(18,8)\"}",
+    "phasor.offset": "+10:00",
+    "phasor.reports": "[[\"GBB\",\"LNG_TRANSACTIONS\"]]",
+    "phasor.table": "GBB_LNG_TRANSACTIONS",
+    "phasor.temporal.entity": "[]",
+    "phasor.temporal.order": "[]",
+    "phasor.temporal.origin": "hand",
+    "phasor.temporal.valid.column": "SUPPLYSTARTDATE",
+    "phasor.temporal.valid.kind": "instant",
+    "phasor.time": "SUPPLYSTARTDATE",
+    "phasor.visibility": "PUBLIC"
   },
   "refs": {
     "main": {
@@ -95,27 +95,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GBB_LNG_TRANSACTIONS/metadata/snap-5391615256095189669-1-9df31388-7b94-8afc-9827-72ccd152c68d.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/gas/GBB_LNG_TRANSACTIONS/metadata/snap-5391615256095189669-1-cf4f1a57-98d0-85dc-bef5-6c1bd3c33ba7.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 5391615256095189669,
       "summary": {
         "operation": "append",
-        "utilake.files": "1",
-        "utilake.from.file": "GasBBLNGTransactions.csv",
-        "utilake.from.release": "2026-08",
-        "utilake.from.sha256": "a16e18422bfeaaf7620a4a1c48d0490db5cf7b092bdd99ec8f25cd384ec58b50",
-        "utilake.from.time": "2023-10-07T00:00:00+10:00",
-        "utilake.kinds": "[\"gbb\"]",
-        "utilake.report-subtype": "LNG_TRANSACTIONS",
-        "utilake.report-type": "GBB",
-        "utilake.rows": "14",
-        "utilake.to.file": "GasBBLNGTransactions.csv",
-        "utilake.to.release": "2026-08",
-        "utilake.to.sha256": "a16e18422bfeaaf7620a4a1c48d0490db5cf7b092bdd99ec8f25cd384ec58b50",
-        "utilake.to.time": "2026-05-22T00:00:00+10:00",
-        "utilake.total-rows": "14",
-        "utilake.version": "1"
+        "phasor.files": "1",
+        "phasor.from.file": "GasBBLNGTransactions.csv",
+        "phasor.from.release": "2026-08",
+        "phasor.from.sha256": "a16e18422bfeaaf7620a4a1c48d0490db5cf7b092bdd99ec8f25cd384ec58b50",
+        "phasor.from.time": "2023-10-07T00:00:00+10:00",
+        "phasor.kinds": "[\"gbb\"]",
+        "phasor.report-subtype": "LNG_TRANSACTIONS",
+        "phasor.report-type": "GBB",
+        "phasor.rows": "14",
+        "phasor.to.file": "GasBBLNGTransactions.csv",
+        "phasor.to.release": "2026-08",
+        "phasor.to.sha256": "a16e18422bfeaaf7620a4a1c48d0490db5cf7b092bdd99ec8f25cd384ec58b50",
+        "phasor.to.time": "2026-05-22T00:00:00+10:00",
+        "phasor.total-rows": "14",
+        "phasor.version": "1"
       },
       "timestamp-ms": 1785506400000
     }
@@ -126,5 +126,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "9df31388-7b94-8afc-9827-72ccd152c68d"
+  "table-uuid": "cf4f1a57-98d0-85dc-bef5-6c1bd3c33ba7"
 }

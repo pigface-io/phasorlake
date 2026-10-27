@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1246370400000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/BIDTYPESTRK",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/BIDTYPESTRK",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -19,21 +19,21 @@
   ],
   "properties": {
     "comment": "BIDTYPESTRK, together with the associated data in BIDTYPES, define a set of ancillary services with bidding parameters from a given date.",
-    "utilake.declared": "true",
-    "utilake.format": "4",
-    "utilake.key": "[\"EFFECTIVEDATE\",\"VERSIONNO\"]",
-    "utilake.load": "snapshot",
-    "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(3,0)\",\"3\":\"TIMESTAMP(0)\",\"4\":\"VARCHAR(15)\",\"5\":\"TIMESTAMP(0)\"}",
-    "utilake.package": "MARKET_CONFIG",
-    "utilake.reports": "[[\"MARKET_CONFIG\",\"BIDTYPESTRK\"]]",
-    "utilake.table": "BIDTYPESTRK",
-    "utilake.temporal.cutoff": "LASTCHANGED",
-    "utilake.temporal.entity": "[]",
-    "utilake.temporal.order": "[\"VERSIONNO\",\"LASTCHANGED\"]",
-    "utilake.temporal.origin": "derived",
-    "utilake.temporal.valid.column": "EFFECTIVEDATE",
-    "utilake.temporal.valid.kind": "from",
-    "utilake.visibility": "PUBLIC"
+    "phasor.declared": "true",
+    "phasor.format": "4",
+    "phasor.key": "[\"EFFECTIVEDATE\",\"VERSIONNO\"]",
+    "phasor.load": "snapshot",
+    "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(3,0)\",\"3\":\"TIMESTAMP(0)\",\"4\":\"VARCHAR(15)\",\"5\":\"TIMESTAMP(0)\"}",
+    "phasor.package": "MARKET_CONFIG",
+    "phasor.reports": "[[\"MARKET_CONFIG\",\"BIDTYPESTRK\"]]",
+    "phasor.table": "BIDTYPESTRK",
+    "phasor.temporal.cutoff": "LASTCHANGED",
+    "phasor.temporal.entity": "[]",
+    "phasor.temporal.order": "[\"VERSIONNO\",\"LASTCHANGED\"]",
+    "phasor.temporal.origin": "derived",
+    "phasor.temporal.valid.column": "EFFECTIVEDATE",
+    "phasor.temporal.valid.kind": "from",
+    "phasor.visibility": "PUBLIC"
   },
   "refs": {
     "main": {
@@ -98,27 +98,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/BIDTYPESTRK/metadata/snap-606247805718226437-1-622451fe-75fc-85ed-875b-cbad83cc7f77.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/BIDTYPESTRK/metadata/snap-606247805718226437-1-bec45061-ab12-8ef7-8fd8-dc38d3a1dd61.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 606247805718226437,
       "summary": {
         "operation": "append",
-        "utilake.files": "207",
-        "utilake.from.file": "PUBLIC_DVD_BIDTYPESTRK_200907010000.zip",
-        "utilake.from.release": "2009-07",
-        "utilake.from.sha256": "44539eb2dbd1be88df4d0e25d3424acce148a40d2632a20dc0d5556981bbd261",
-        "utilake.from.time": "2000-09-12T00:00:00+10:00",
-        "utilake.kinds": "[\"archive\",\"dvd\"]",
-        "utilake.report-subtype": "BIDTYPESTRK",
-        "utilake.report-type": "MARKET_CONFIG",
-        "utilake.rows": "245",
-        "utilake.to.file": "PUBLIC_ARCHIVE#BIDTYPESTRK#FILE01#202609010000.zip",
-        "utilake.to.release": "2026-09",
-        "utilake.to.sha256": "02b09ac32b1b3f85e66d679683a58f73312a7a50917716ab81e1c98966f52ee8",
-        "utilake.to.time": "2023-08-14T00:00:00+10:00",
-        "utilake.total-rows": "245",
-        "utilake.version": "1"
+        "phasor.files": "207",
+        "phasor.from.file": "PUBLIC_DVD_BIDTYPESTRK_200907010000.zip",
+        "phasor.from.release": "2009-07",
+        "phasor.from.sha256": "44539eb2dbd1be88df4d0e25d3424acce148a40d2632a20dc0d5556981bbd261",
+        "phasor.from.time": "2000-09-12T00:00:00+10:00",
+        "phasor.kinds": "[\"archive\",\"dvd\"]",
+        "phasor.report-subtype": "BIDTYPESTRK",
+        "phasor.report-type": "MARKET_CONFIG",
+        "phasor.rows": "245",
+        "phasor.to.file": "PUBLIC_ARCHIVE#BIDTYPESTRK#FILE01#202609010000.zip",
+        "phasor.to.release": "2026-09",
+        "phasor.to.sha256": "02b09ac32b1b3f85e66d679683a58f73312a7a50917716ab81e1c98966f52ee8",
+        "phasor.to.time": "2023-08-14T00:00:00+10:00",
+        "phasor.total-rows": "245",
+        "phasor.version": "1"
       },
       "timestamp-ms": 1246370400000
     }
@@ -129,5 +129,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "622451fe-75fc-85ed-875b-cbad83cc7f77"
+  "table-uuid": "bec45061-ab12-8ef7-8fd8-dc38d3a1dd61"
 }

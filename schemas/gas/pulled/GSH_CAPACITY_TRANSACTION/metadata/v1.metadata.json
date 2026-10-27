@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1767189600000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GSH_CAPACITY_TRANSACTION",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/gas/GSH_CAPACITY_TRANSACTION",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -19,23 +19,23 @@
   ],
   "properties": {
     "comment": "Consolidated list of all secondary capacity trades which includes GSH trades (screen traded and off-market trades) and Bilateral trades submitted into the GBB",
-    "utilake.declared": "true",
-    "utilake.format": "4",
-    "utilake.key": "[\"TRANSACTION_ID\",\"VERSION_DATETIME\"]",
-    "utilake.load": "append",
-    "utilake.market": "gas",
-    "utilake.model-types": "{\"1\":\"VARCHAR2(50)\",\"2\":\"DATE\",\"3\":\"DATE\",\"4\":\"DATE\",\"5\":\"DATE\",\"6\":\"VARCHAR2(30)\",\"7\":\"NUMBER(10,0)\",\"8\":\"VARCHAR2(100)\",\"9\":\"VARCHAR2(12)\",\"10\":\"VARCHAR2(20)\",\"11\":\"NUMBER(10,0)\",\"12\":\"VARCHAR2(255)\",\"13\":\"NUMBER(10,0)\",\"14\":\"VARCHAR2(255)\",\"16\":\"VARCHAR2(255)\",\"17\":\"VARCHAR2(255)\",\"18\":\"VARCHAR2(255)\",\"19\":\"NUMBER(10,0)\",\"20\":\"NUMBER(10,0)\",\"21\":\"NUMBER(18,8)\",\"22\":\"VARCHAR2(255)\",\"23\":\"VARCHAR2(255)\",\"24\":\"DATE\"}",
-    "utilake.offset": "+10:00",
-    "utilake.reports": "[[\"GSH\",\"CAPACITY_TRANSACTION\"]]",
-    "utilake.table": "GSH_CAPACITY_TRANSACTION",
-    "utilake.temporal.cutoff": "LASTCHANGED",
-    "utilake.temporal.entity": "[\"TRANSACTION_ID\"]",
-    "utilake.temporal.order": "[\"LASTCHANGED\"]",
-    "utilake.temporal.origin": "hand",
-    "utilake.temporal.valid.column": "VERSION_DATETIME",
-    "utilake.temporal.valid.kind": "instant",
-    "utilake.time": "VERSION_DATETIME",
-    "utilake.visibility": "PUBLIC"
+    "phasor.declared": "true",
+    "phasor.format": "4",
+    "phasor.key": "[\"TRANSACTION_ID\",\"VERSION_DATETIME\"]",
+    "phasor.load": "append",
+    "phasor.market": "gas",
+    "phasor.model-types": "{\"1\":\"VARCHAR2(50)\",\"2\":\"DATE\",\"3\":\"DATE\",\"4\":\"DATE\",\"5\":\"DATE\",\"6\":\"VARCHAR2(30)\",\"7\":\"NUMBER(10,0)\",\"8\":\"VARCHAR2(100)\",\"9\":\"VARCHAR2(12)\",\"10\":\"VARCHAR2(20)\",\"11\":\"NUMBER(10,0)\",\"12\":\"VARCHAR2(255)\",\"13\":\"NUMBER(10,0)\",\"14\":\"VARCHAR2(255)\",\"16\":\"VARCHAR2(255)\",\"17\":\"VARCHAR2(255)\",\"18\":\"VARCHAR2(255)\",\"19\":\"NUMBER(10,0)\",\"20\":\"NUMBER(10,0)\",\"21\":\"NUMBER(18,8)\",\"22\":\"VARCHAR2(255)\",\"23\":\"VARCHAR2(255)\",\"24\":\"DATE\"}",
+    "phasor.offset": "+10:00",
+    "phasor.reports": "[[\"GSH\",\"CAPACITY_TRANSACTION\"]]",
+    "phasor.table": "GSH_CAPACITY_TRANSACTION",
+    "phasor.temporal.cutoff": "LASTCHANGED",
+    "phasor.temporal.entity": "[\"TRANSACTION_ID\"]",
+    "phasor.temporal.order": "[\"LASTCHANGED\"]",
+    "phasor.temporal.origin": "hand",
+    "phasor.temporal.valid.column": "VERSION_DATETIME",
+    "phasor.temporal.valid.kind": "instant",
+    "phasor.time": "VERSION_DATETIME",
+    "phasor.visibility": "PUBLIC"
   },
   "refs": {
     "main": {
@@ -232,27 +232,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GSH_CAPACITY_TRANSACTION/metadata/snap-8702854034680305978-1-ec2ec786-b47d-8bb1-9e7c-6d190ee8ac3c.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/gas/GSH_CAPACITY_TRANSACTION/metadata/snap-8702854034680305978-1-e1a76eeb-0fe2-864f-963c-7ee73e81afee.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 8702854034680305978,
       "summary": {
         "operation": "append",
-        "utilake.files": "1",
-        "utilake.from.file": "PUBLIC_SECONDARYCAPACITYTRADES_20260101.zip",
-        "utilake.from.release": "2026-01",
-        "utilake.from.sha256": "da63f7626735bdecb6bf4ba7e10a867938e9bd46631013e3c94bc88b96e4c032",
-        "utilake.from.time": "2026-01-02T15:22:18+10:00",
-        "utilake.kinds": "[\"gsh\"]",
-        "utilake.report-subtype": "CAPACITY_TRANSACTION",
-        "utilake.report-type": "GSH",
-        "utilake.rows": "1",
-        "utilake.to.file": "PUBLIC_SECONDARYCAPACITYTRADES_20260101.zip",
-        "utilake.to.release": "2026-01",
-        "utilake.to.sha256": "da63f7626735bdecb6bf4ba7e10a867938e9bd46631013e3c94bc88b96e4c032",
-        "utilake.to.time": "2026-01-02T15:22:18+10:00",
-        "utilake.total-rows": "1",
-        "utilake.version": "1"
+        "phasor.files": "1",
+        "phasor.from.file": "PUBLIC_SECONDARYCAPACITYTRADES_20260101.zip",
+        "phasor.from.release": "2026-01",
+        "phasor.from.sha256": "da63f7626735bdecb6bf4ba7e10a867938e9bd46631013e3c94bc88b96e4c032",
+        "phasor.from.time": "2026-01-02T15:22:18+10:00",
+        "phasor.kinds": "[\"gsh\"]",
+        "phasor.report-subtype": "CAPACITY_TRANSACTION",
+        "phasor.report-type": "GSH",
+        "phasor.rows": "1",
+        "phasor.to.file": "PUBLIC_SECONDARYCAPACITYTRADES_20260101.zip",
+        "phasor.to.release": "2026-01",
+        "phasor.to.sha256": "da63f7626735bdecb6bf4ba7e10a867938e9bd46631013e3c94bc88b96e4c032",
+        "phasor.to.time": "2026-01-02T15:22:18+10:00",
+        "phasor.total-rows": "1",
+        "phasor.version": "1"
       },
       "timestamp-ms": 1767189600000
     }
@@ -263,5 +263,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "ec2ec786-b47d-8bb1-9e7c-6d190ee8ac3c"
+  "table-uuid": "e1a76eeb-0fe2-864f-963c-7ee73e81afee"
 }

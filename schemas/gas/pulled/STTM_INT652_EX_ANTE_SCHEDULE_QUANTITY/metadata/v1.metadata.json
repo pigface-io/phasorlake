@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1785506400000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/STTM_INT652_EX_ANTE_SCHEDULE_QUANTITY",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/gas/STTM_INT652_EX_ANTE_SCHEDULE_QUANTITY",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -18,23 +18,23 @@
     }
   ],
   "properties": {
-    "utilake.declared": "true",
-    "utilake.format": "4",
-    "utilake.headers": "{\"1\":\"gas_date\",\"2\":\"hub_identifier\",\"3\":\"hub_name\",\"4\":\"schedule_identifier\",\"5\":\"facility_identifier\",\"6\":\"facility_name\",\"7\":\"scheduled_qty\",\"8\":\"firm_gas_scheduled_qty\",\"9\":\"as_available_scheduled_qty\",\"10\":\"flow_direction\",\"11\":\"price_taker_bid_qty\",\"12\":\"price_taker_bid_not_sched_qty\",\"13\":\"approval_datetime\",\"14\":\"report_datetime\"}",
-    "utilake.key": "[]",
-    "utilake.load": "append",
-    "utilake.market": "gas",
-    "utilake.offset": "+10:00",
-    "utilake.reports": "[[\"STTM\",\"INT652_EX_ANTE_SCHEDULE_QUANTITY_RPT_1\"]]",
-    "utilake.table": "STTM_INT652_EX_ANTE_SCHEDULE_QUANTITY",
-    "utilake.temporal.cutoff": "REPORT_DATETIME",
-    "utilake.temporal.entity": "[\"HUB_IDENTIFIER\",\"SCHEDULE_IDENTIFIER\",\"FACILITY_IDENTIFIER\"]",
-    "utilake.temporal.order": "[\"APPROVAL_DATETIME\",\"REPORT_DATETIME\"]",
-    "utilake.temporal.origin": "hand",
-    "utilake.temporal.valid.column": "GAS_DATE",
-    "utilake.temporal.valid.kind": "instant",
-    "utilake.time": "GAS_DATE",
-    "utilake.visibility": "PUBLIC"
+    "phasor.declared": "true",
+    "phasor.format": "4",
+    "phasor.headers": "{\"1\":\"gas_date\",\"2\":\"hub_identifier\",\"3\":\"hub_name\",\"4\":\"schedule_identifier\",\"5\":\"facility_identifier\",\"6\":\"facility_name\",\"7\":\"scheduled_qty\",\"8\":\"firm_gas_scheduled_qty\",\"9\":\"as_available_scheduled_qty\",\"10\":\"flow_direction\",\"11\":\"price_taker_bid_qty\",\"12\":\"price_taker_bid_not_sched_qty\",\"13\":\"approval_datetime\",\"14\":\"report_datetime\"}",
+    "phasor.key": "[]",
+    "phasor.load": "append",
+    "phasor.market": "gas",
+    "phasor.offset": "+10:00",
+    "phasor.reports": "[[\"STTM\",\"INT652_EX_ANTE_SCHEDULE_QUANTITY_RPT_1\"]]",
+    "phasor.table": "STTM_INT652_EX_ANTE_SCHEDULE_QUANTITY",
+    "phasor.temporal.cutoff": "REPORT_DATETIME",
+    "phasor.temporal.entity": "[\"HUB_IDENTIFIER\",\"SCHEDULE_IDENTIFIER\",\"FACILITY_IDENTIFIER\"]",
+    "phasor.temporal.order": "[\"APPROVAL_DATETIME\",\"REPORT_DATETIME\"]",
+    "phasor.temporal.origin": "hand",
+    "phasor.temporal.valid.column": "GAS_DATE",
+    "phasor.temporal.valid.kind": "instant",
+    "phasor.time": "GAS_DATE",
+    "phasor.visibility": "PUBLIC"
   },
   "refs": {
     "main": {
@@ -145,27 +145,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/STTM_INT652_EX_ANTE_SCHEDULE_QUANTITY/metadata/snap-6382911098963512697-1-3b5657c0-5ce8-8da3-93bd-85629b9025ca.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/gas/STTM_INT652_EX_ANTE_SCHEDULE_QUANTITY/metadata/snap-6382911098963512697-1-d2c5aa4e-7d22-889b-a9d7-10021fb5b0dd.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 6382911098963512697,
       "summary": {
         "operation": "append",
-        "utilake.files": "39",
-        "utilake.from.file": "Day31.zip",
-        "utilake.from.release": "2026-08",
-        "utilake.from.sha256": "ae9eda135c5f3c28548b31911da9dcc65c767009ef5b7d16ceee4cce2755509e",
-        "utilake.from.time": "2026-08-26T00:00:00+10:00",
-        "utilake.kinds": "[\"sttm\"]",
-        "utilake.report-subtype": "INT652_EX_ANTE_SCHEDULE_QUANTITY_RPT_1",
-        "utilake.report-type": "STTM",
-        "utilake.rows": "1536",
-        "utilake.to.file": "int652_v1_ex_ante_schedule_quantity_rpt_1.csv@20261024T113100+1000",
-        "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "113e0c9108eebe1ebf98917af279971f3f3a02c73ad845a9772575524962392b",
-        "utilake.to.time": "2026-10-25T00:00:00+10:00",
-        "utilake.total-rows": "1536",
-        "utilake.version": "1"
+        "phasor.files": "39",
+        "phasor.from.file": "Day31.zip",
+        "phasor.from.release": "2026-08",
+        "phasor.from.sha256": "ae9eda135c5f3c28548b31911da9dcc65c767009ef5b7d16ceee4cce2755509e",
+        "phasor.from.time": "2026-08-26T00:00:00+10:00",
+        "phasor.kinds": "[\"sttm\"]",
+        "phasor.report-subtype": "INT652_EX_ANTE_SCHEDULE_QUANTITY_RPT_1",
+        "phasor.report-type": "STTM",
+        "phasor.rows": "1536",
+        "phasor.to.file": "int652_v1_ex_ante_schedule_quantity_rpt_1.csv@20261024T113100+1000",
+        "phasor.to.release": "2026-10",
+        "phasor.to.sha256": "113e0c9108eebe1ebf98917af279971f3f3a02c73ad845a9772575524962392b",
+        "phasor.to.time": "2026-10-25T00:00:00+10:00",
+        "phasor.total-rows": "1536",
+        "phasor.version": "1"
       },
       "timestamp-ms": 1785506400000
     }
@@ -176,5 +176,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "3b5657c0-5ce8-8da3-93bd-85629b9025ca"
+  "table-uuid": "d2c5aa4e-7d22-889b-a9d7-10021fb5b0dd"
 }

@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1732975200000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DISPATCH_FCAS_REQ_CONSTRAINT",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/DISPATCH_FCAS_REQ_CONSTRAINT",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -19,19 +19,19 @@
   ],
   "properties": {
     "comment": "The constraint level FCAS cost / price details for constraint FCAS processor runs. This enhanced output table format is established for the constraint FCAS processor release required for the Frequency Performance Payments (FPP) release. This enhanced output is hierarchical in nature, with the parent *_FCAS_REQ_RUN table holding the details about the triggering case run and time, and the child *_FCAS_REQ_CONSTRAINT table holding the constraint level details of FCAS costs / prices.",
-    "utilake.declared": "true",
-    "utilake.format": "4",
-    "utilake.key": "[]",
-    "utilake.load": "append",
-    "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(5)\",\"3\":\"TIMESTAMP(0)\",\"4\":\"VARCHAR(20)\",\"5\":\"VARCHAR(20)\",\"6\":\"VARCHAR(10)\",\"7\":\"NUMERIC(15,5)\",\"8\":\"NUMERIC(15,5)\",\"9\":\"NUMERIC(15,5)\",\"10\":\"NUMERIC(15,5)\",\"11\":\"NUMERIC(15,5)\",\"12\":\"NUMERIC(15,5)\",\"13\":\"NUMERIC(18,8)\",\"14\":\"NUMERIC(18,8)\",\"15\":\"NUMERIC(18,8)\",\"16\":\"NUMERIC(18,8)\"}",
-    "utilake.reports": "[[\"DISPATCH\",\"FCAS_REQ_CONSTRAINT\"]]",
-    "utilake.table": "DISPATCH_FCAS_REQ_CONSTRAINT",
-    "utilake.temporal.entity": "[]",
-    "utilake.temporal.order": "[\"RUN_DATETIME\",\"RUNNO\"]",
-    "utilake.temporal.origin": "derived",
-    "utilake.temporal.valid.kind": "timeless",
-    "utilake.time": "INTERVAL_DATETIME",
-    "utilake.visibility": "PUBLIC"
+    "phasor.declared": "true",
+    "phasor.format": "4",
+    "phasor.key": "[]",
+    "phasor.load": "append",
+    "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(5)\",\"3\":\"TIMESTAMP(0)\",\"4\":\"VARCHAR(20)\",\"5\":\"VARCHAR(20)\",\"6\":\"VARCHAR(10)\",\"7\":\"NUMERIC(15,5)\",\"8\":\"NUMERIC(15,5)\",\"9\":\"NUMERIC(15,5)\",\"10\":\"NUMERIC(15,5)\",\"11\":\"NUMERIC(15,5)\",\"12\":\"NUMERIC(15,5)\",\"13\":\"NUMERIC(18,8)\",\"14\":\"NUMERIC(18,8)\",\"15\":\"NUMERIC(18,8)\",\"16\":\"NUMERIC(18,8)\"}",
+    "phasor.reports": "[[\"DISPATCH\",\"FCAS_REQ_CONSTRAINT\"]]",
+    "phasor.table": "DISPATCH_FCAS_REQ_CONSTRAINT",
+    "phasor.temporal.entity": "[]",
+    "phasor.temporal.order": "[\"RUN_DATETIME\",\"RUNNO\"]",
+    "phasor.temporal.origin": "derived",
+    "phasor.temporal.valid.kind": "timeless",
+    "phasor.time": "INTERVAL_DATETIME",
+    "phasor.visibility": "PUBLIC"
   },
   "refs": {
     "main": {
@@ -170,27 +170,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DISPATCH_FCAS_REQ_CONSTRAINT/metadata/snap-4147970089479196564-1-a7bce60c-adfb-831c-93ee-99551d874b91.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/DISPATCH_FCAS_REQ_CONSTRAINT/metadata/snap-4147970089479196564-1-ebb48469-5e7c-829f-931b-7e49b425f88d.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 4147970089479196564,
       "summary": {
         "operation": "append",
-        "utilake.files": "115194",
-        "utilake.from.file": "PUBLIC_ARCHIVE#DISPATCH_FCAS_REQ_CONSTRAINT#FILE01#202412010000.zip",
-        "utilake.from.release": "2024-12",
-        "utilake.from.sha256": "98311012874cbccf33def70784d05c37bf9123380363bb46fc5e0819f542882a",
-        "utilake.from.time": "2024-12-09T11:10:00+10:00",
-        "utilake.kinds": "[\"archive\",\"reports\"]",
-        "utilake.report-subtype": "FCAS_REQ_CONSTRAINT",
-        "utilake.report-type": "DISPATCH",
-        "utilake.rows": "1150420260",
-        "utilake.to.file": "PUBLIC_DISPATCHFCST_202610241145_0000000544595566.zip",
-        "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "7e0d3f8d9617cd49d5e61a44f7e56a091a5a115fc1a854d26ef94ee86c50442a",
-        "utilake.to.time": "2026-10-24T11:45:00+10:00",
-        "utilake.total-rows": "1150420260",
-        "utilake.version": "1"
+        "phasor.files": "115194",
+        "phasor.from.file": "PUBLIC_ARCHIVE#DISPATCH_FCAS_REQ_CONSTRAINT#FILE01#202412010000.zip",
+        "phasor.from.release": "2024-12",
+        "phasor.from.sha256": "98311012874cbccf33def70784d05c37bf9123380363bb46fc5e0819f542882a",
+        "phasor.from.time": "2024-12-09T11:10:00+10:00",
+        "phasor.kinds": "[\"archive\",\"reports\"]",
+        "phasor.report-subtype": "FCAS_REQ_CONSTRAINT",
+        "phasor.report-type": "DISPATCH",
+        "phasor.rows": "1150420260",
+        "phasor.to.file": "PUBLIC_DISPATCHFCST_202610241145_0000000544595566.zip",
+        "phasor.to.release": "2026-10",
+        "phasor.to.sha256": "7e0d3f8d9617cd49d5e61a44f7e56a091a5a115fc1a854d26ef94ee86c50442a",
+        "phasor.to.time": "2026-10-24T11:45:00+10:00",
+        "phasor.total-rows": "1150420260",
+        "phasor.version": "1"
       },
       "timestamp-ms": 1732975200000
     }
@@ -201,5 +201,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "a7bce60c-adfb-831c-93ee-99551d874b91"
+  "table-uuid": "ebb48469-5e7c-829f-931b-7e49b425f88d"
 }

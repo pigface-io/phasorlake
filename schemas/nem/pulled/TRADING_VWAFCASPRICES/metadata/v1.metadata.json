@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1785506400000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/TRADING_VWAFCASPRICES",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/TRADING_VWAFCASPRICES",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -18,9 +18,9 @@
     }
   ],
   "properties": {
-    "utilake.declared": "false",
-    "utilake.format": "4",
-    "utilake.table": "TRADING_VWAFCASPRICES"
+    "phasor.declared": "false",
+    "phasor.format": "4",
+    "phasor.table": "TRADING_VWAFCASPRICES"
   },
   "refs": {
     "main": {
@@ -209,27 +209,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/TRADING_VWAFCASPRICES/metadata/snap-4225665863219645298-1-55408c81-877d-88fc-bfdc-39a881cc2fed.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/TRADING_VWAFCASPRICES/metadata/snap-4225665863219645298-1-c17da05d-96b3-86c7-9131-deb74bc75e94.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 4225665863219645298,
       "summary": {
         "operation": "append",
-        "utilake.files": "64",
-        "utilake.from.file": "PUBLIC_VWAFCASPRICES_202608210000_20260822040502.zip",
-        "utilake.from.release": "2026-08",
-        "utilake.from.sha256": "0d39e4a671e0e9a908266df8caca24b7411e7a0b786a1a734350251abc1b21c8",
-        "utilake.from.time": "2026-08-21T04:30:00+10:00",
-        "utilake.kinds": "[\"reports\"]",
-        "utilake.report-subtype": "VWAFCASPRICES",
-        "utilake.report-type": "TRADING",
-        "utilake.rows": "3072",
-        "utilake.to.file": "PUBLIC_VWAFCASPRICES_202610230000_20261024040502.zip",
-        "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "d2b077777bcf6ed24be89da95a0f276b09a01eafa6243610bb7678868680c991",
-        "utilake.to.time": "2026-10-24T04:00:00+10:00",
-        "utilake.total-rows": "3072",
-        "utilake.version": "1"
+        "phasor.files": "64",
+        "phasor.from.file": "PUBLIC_VWAFCASPRICES_202608210000_20260822040502.zip",
+        "phasor.from.release": "2026-08",
+        "phasor.from.sha256": "0d39e4a671e0e9a908266df8caca24b7411e7a0b786a1a734350251abc1b21c8",
+        "phasor.from.time": "2026-08-21T04:30:00+10:00",
+        "phasor.kinds": "[\"reports\"]",
+        "phasor.report-subtype": "VWAFCASPRICES",
+        "phasor.report-type": "TRADING",
+        "phasor.rows": "3072",
+        "phasor.to.file": "PUBLIC_VWAFCASPRICES_202610230000_20261024040502.zip",
+        "phasor.to.release": "2026-10",
+        "phasor.to.sha256": "d2b077777bcf6ed24be89da95a0f276b09a01eafa6243610bb7678868680c991",
+        "phasor.to.time": "2026-10-24T04:00:00+10:00",
+        "phasor.total-rows": "3072",
+        "phasor.version": "1"
       },
       "timestamp-ms": 1785506400000
     }
@@ -240,5 +240,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "55408c81-877d-88fc-bfdc-39a881cc2fed"
+  "table-uuid": "c17da05d-96b3-86c7-9131-deb74bc75e94"
 }

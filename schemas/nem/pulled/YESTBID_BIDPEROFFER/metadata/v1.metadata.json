@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1480514400000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/YESTBID_BIDPEROFFER",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/YESTBID_BIDPEROFFER",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -18,9 +18,9 @@
     }
   ],
   "properties": {
-    "utilake.declared": "false",
-    "utilake.format": "4",
-    "utilake.table": "YESTBID_BIDPEROFFER"
+    "phasor.declared": "false",
+    "phasor.format": "4",
+    "phasor.table": "YESTBID_BIDPEROFFER"
   },
   "refs": {
     "main": {
@@ -221,27 +221,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/YESTBID_BIDPEROFFER/metadata/snap-4050107789793679537-1-c8d949e9-a268-81c8-abf1-8fb65b2881a3.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/YESTBID_BIDPEROFFER/metadata/snap-4050107789793679537-1-6cd2caf9-967c-8f6c-8208-4224398f49ac.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 4050107789793679537,
       "summary": {
         "operation": "append",
-        "utilake.files": "1",
-        "utilake.from.file": "PUBLIC_YESTBID_201612220000_20161223040519.zip",
-        "utilake.from.release": "2016-12",
-        "utilake.from.sha256": "2bf08875582930907733606568bbcf3592c88fb9ec7e19ea9509bcc8a779ad70",
-        "utilake.from.time": "2016-12-22T00:00:00+10:00",
-        "utilake.kinds": "[\"reports\"]",
-        "utilake.report-subtype": "BIDPEROFFER",
-        "utilake.report-type": "YESTBID",
-        "utilake.rows": "125616",
-        "utilake.to.file": "PUBLIC_YESTBID_201612220000_20161223040519.zip",
-        "utilake.to.release": "2016-12",
-        "utilake.to.sha256": "2bf08875582930907733606568bbcf3592c88fb9ec7e19ea9509bcc8a779ad70",
-        "utilake.to.time": "2016-12-22T00:00:00+10:00",
-        "utilake.total-rows": "125616",
-        "utilake.version": "3"
+        "phasor.files": "1",
+        "phasor.from.file": "PUBLIC_YESTBID_201612220000_20161223040519.zip",
+        "phasor.from.release": "2016-12",
+        "phasor.from.sha256": "2bf08875582930907733606568bbcf3592c88fb9ec7e19ea9509bcc8a779ad70",
+        "phasor.from.time": "2016-12-22T00:00:00+10:00",
+        "phasor.kinds": "[\"reports\"]",
+        "phasor.report-subtype": "BIDPEROFFER",
+        "phasor.report-type": "YESTBID",
+        "phasor.rows": "125616",
+        "phasor.to.file": "PUBLIC_YESTBID_201612220000_20161223040519.zip",
+        "phasor.to.release": "2016-12",
+        "phasor.to.sha256": "2bf08875582930907733606568bbcf3592c88fb9ec7e19ea9509bcc8a779ad70",
+        "phasor.to.time": "2016-12-22T00:00:00+10:00",
+        "phasor.total-rows": "125616",
+        "phasor.version": "3"
       },
       "timestamp-ms": 1480514400000
     }
@@ -252,5 +252,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "c8d949e9-a268-81c8-abf1-8fb65b2881a3"
+  "table-uuid": "6cd2caf9-967c-8f6c-8208-4224398f49ac"
 }

@@ -1,0 +1,43 @@
+[package]
+name = "phasor-acquire"
+description = "Getting AEMO's files: the fetcher over phasor-net, a feed's folders as a source, nemweb's listing pages; the adapters behind the kit's ports."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+phasor-plain-decode.workspace = true
+phasor-core.workspace = true
+phasor-kit.workspace = true
+phasor-zip.workspace = true
+phasor-provenance.workspace = true
+phasor-net = { workspace = true, features = ["http", "fetch"] }
+async-trait.workspace = true
+bytes.workspace = true
+crc32fast.workspace = true
+flate2.workspace = true
+futures.workspace = true
+memchr.workspace = true
+reqwest.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+sha2.workspace = true
+thiserror.workspace = true
+tokio = { workspace = true, features = ["sync", "time", "fs", "io-util"] }
+url.workspace = true
+
+[dev-dependencies]
+criterion.workspace = true
+tempfile.workspace = true
+zip.workspace = true
+tokio = { workspace = true, features = ["rt-multi-thread", "macros", "net"] }
+
+[[bench]]
+name = "fetch"
+harness = false

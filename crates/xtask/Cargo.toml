@@ -16,11 +16,11 @@ name = "xtask"
 path = "src/main.rs"
 
 [dependencies]
-utilake-core.workspace = true
-utilake-iceberg.workspace = true
-utilake-mms-decode.workspace = true
-utilake-registry.workspace = true
-utilake-gates.workspace = true
+phasor-core.workspace = true
+phasor-iceberg.workspace = true
+phasor-mms-decode.workspace = true
+phasor-registry.workspace = true
+phasor-gates.workspace = true
 anyhow.workspace = true
 clap.workspace = true
 serde.workspace = true

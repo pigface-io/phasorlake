@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1246370400000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/REGIONAPCINTERVALS",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/REGIONAPCINTERVALS",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -19,21 +19,21 @@
   ],
   "properties": {
     "comment": "REGIONAPCINTERVALS contains Administered Price profiles (Energy and FCAS) applicable to each interval for a region.",
-    "utilake.declared": "true",
-    "utilake.format": "4",
-    "utilake.key": "[\"REGIONID\",\"EFFECTIVEDATE\",\"VERSIONNO\",\"PERIODID\"]",
-    "utilake.load": "snapshot",
-    "utilake.model-types": "{\"1\":\"VARCHAR(10)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"NUMERIC(3,0)\",\"4\":\"NUMERIC(3,0)\",\"5\":\"NUMERIC(16,6)\",\"6\":\"TIMESTAMP(0)\",\"7\":\"NUMERIC(3,0)\",\"8\":\"NUMERIC(16,6)\",\"9\":\"NUMERIC(16,6)\"}",
-    "utilake.package": "FORCE_MAJEURE",
-    "utilake.reports": "[[\"AP\",\"REGIONAPCINTERVALS\"]]",
-    "utilake.table": "REGIONAPCINTERVALS",
-    "utilake.temporal.cutoff": "LASTCHANGED",
-    "utilake.temporal.entity": "[\"REGIONID\",\"PERIODID\"]",
-    "utilake.temporal.order": "[\"VERSIONNO\",\"LASTCHANGED\"]",
-    "utilake.temporal.origin": "derived",
-    "utilake.temporal.valid.column": "EFFECTIVEDATE",
-    "utilake.temporal.valid.kind": "from",
-    "utilake.visibility": "PUBLIC"
+    "phasor.declared": "true",
+    "phasor.format": "4",
+    "phasor.key": "[\"REGIONID\",\"EFFECTIVEDATE\",\"VERSIONNO\",\"PERIODID\"]",
+    "phasor.load": "snapshot",
+    "phasor.model-types": "{\"1\":\"VARCHAR(10)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"NUMERIC(3,0)\",\"4\":\"NUMERIC(3,0)\",\"5\":\"NUMERIC(16,6)\",\"6\":\"TIMESTAMP(0)\",\"7\":\"NUMERIC(3,0)\",\"8\":\"NUMERIC(16,6)\",\"9\":\"NUMERIC(16,6)\"}",
+    "phasor.package": "FORCE_MAJEURE",
+    "phasor.reports": "[[\"AP\",\"REGIONAPCINTERVALS\"]]",
+    "phasor.table": "REGIONAPCINTERVALS",
+    "phasor.temporal.cutoff": "LASTCHANGED",
+    "phasor.temporal.entity": "[\"REGIONID\",\"PERIODID\"]",
+    "phasor.temporal.order": "[\"VERSIONNO\",\"LASTCHANGED\"]",
+    "phasor.temporal.origin": "derived",
+    "phasor.temporal.valid.column": "EFFECTIVEDATE",
+    "phasor.temporal.valid.kind": "from",
+    "phasor.visibility": "PUBLIC"
   },
   "refs": {
     "main": {
@@ -128,27 +128,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/REGIONAPCINTERVALS/metadata/snap-8337218508747138887-1-78a6022a-9368-80cf-9b05-11eae1c73403.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/REGIONAPCINTERVALS/metadata/snap-8337218508747138887-1-8601442b-1206-82c9-8ff2-46c9f43c4896.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 8337218508747138887,
       "summary": {
         "operation": "append",
-        "utilake.files": "207",
-        "utilake.from.file": "PUBLIC_DVD_REGIONAPCINTERVALS_200907010000.zip",
-        "utilake.from.release": "2009-07",
-        "utilake.from.sha256": "44539eb2dbd1be88df4d0e25d3424acce148a40d2632a20dc0d5556981bbd261",
-        "utilake.from.time": "1998-11-27T00:00:00+10:00",
-        "utilake.kinds": "[\"archive\",\"dvd\"]",
-        "utilake.report-subtype": "REGIONAPCINTERVALS",
-        "utilake.report-type": "AP",
-        "utilake.rows": "593280",
-        "utilake.to.file": "PUBLIC_ARCHIVE#REGIONAPCINTERVALS#FILE01#202609010000.zip",
-        "utilake.to.release": "2026-09",
-        "utilake.to.sha256": "d74db0706acfd3b53fc9a71e33b55b9bbf73ebf65505ee97d9e048d95e875204",
-        "utilake.to.time": "2022-12-01T00:00:00+10:00",
-        "utilake.total-rows": "593280",
-        "utilake.version": "1"
+        "phasor.files": "207",
+        "phasor.from.file": "PUBLIC_DVD_REGIONAPCINTERVALS_200907010000.zip",
+        "phasor.from.release": "2009-07",
+        "phasor.from.sha256": "44539eb2dbd1be88df4d0e25d3424acce148a40d2632a20dc0d5556981bbd261",
+        "phasor.from.time": "1998-11-27T00:00:00+10:00",
+        "phasor.kinds": "[\"archive\",\"dvd\"]",
+        "phasor.report-subtype": "REGIONAPCINTERVALS",
+        "phasor.report-type": "AP",
+        "phasor.rows": "593280",
+        "phasor.to.file": "PUBLIC_ARCHIVE#REGIONAPCINTERVALS#FILE01#202609010000.zip",
+        "phasor.to.release": "2026-09",
+        "phasor.to.sha256": "d74db0706acfd3b53fc9a71e33b55b9bbf73ebf65505ee97d9e048d95e875204",
+        "phasor.to.time": "2022-12-01T00:00:00+10:00",
+        "phasor.total-rows": "593280",
+        "phasor.version": "1"
       },
       "timestamp-ms": 1246370400000
     }
@@ -159,5 +159,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "78a6022a-9368-80cf-9b05-11eae1c73403"
+  "table-uuid": "8601442b-1206-82c9-8ff2-46c9f43c4896"
 }

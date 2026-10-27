@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1254319200000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/RESERVE_DATA_RESERVE",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/RESERVE_DATA_RESERVE",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -18,9 +18,9 @@
     }
   ],
   "properties": {
-    "utilake.declared": "false",
-    "utilake.format": "4",
-    "utilake.table": "RESERVE_DATA_RESERVE"
+    "phasor.declared": "false",
+    "phasor.format": "4",
+    "phasor.table": "RESERVE_DATA_RESERVE"
   },
   "refs": {
     "main": {
@@ -149,27 +149,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/RESERVE_DATA_RESERVE/metadata/snap-2283434892026405423-1-7876fd2d-e655-80f1-acf5-a5c7b1ba1ddf.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/RESERVE_DATA_RESERVE/metadata/snap-2283434892026405423-1-dda39d3a-33e4-8331-a1ef-9d1358f1cbae.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 2283434892026405423,
       "summary": {
         "operation": "append",
-        "utilake.files": "74",
-        "utilake.from.file": "PUBLIC_DVD_RESERVE_200910010000.zip",
-        "utilake.from.release": "2009-10",
-        "utilake.from.sha256": "b164a3d28c04bf3e9e0b202abd7faf98fdc338a77b74582ebddce7c238329944",
-        "utilake.from.time": "2009-10-29T00:00:00+10:00",
-        "utilake.kinds": "[\"dvd\"]",
-        "utilake.report-subtype": "RESERVE",
-        "utilake.report-type": "RESERVE_DATA",
-        "utilake.rows": "33696",
-        "utilake.to.file": "PUBLIC_DVD_RESERVE_201805010000.zip",
-        "utilake.to.release": "2018-05",
-        "utilake.to.sha256": "f279b3884428753e4fa04418831d2f600025f8152549d5dc68aa4795069d05e0",
-        "utilake.to.time": "2018-05-04T00:00:00+10:00",
-        "utilake.total-rows": "33696",
-        "utilake.version": "1"
+        "phasor.files": "74",
+        "phasor.from.file": "PUBLIC_DVD_RESERVE_200910010000.zip",
+        "phasor.from.release": "2009-10",
+        "phasor.from.sha256": "b164a3d28c04bf3e9e0b202abd7faf98fdc338a77b74582ebddce7c238329944",
+        "phasor.from.time": "2009-10-29T00:00:00+10:00",
+        "phasor.kinds": "[\"dvd\"]",
+        "phasor.report-subtype": "RESERVE",
+        "phasor.report-type": "RESERVE_DATA",
+        "phasor.rows": "33696",
+        "phasor.to.file": "PUBLIC_DVD_RESERVE_201805010000.zip",
+        "phasor.to.release": "2018-05",
+        "phasor.to.sha256": "f279b3884428753e4fa04418831d2f600025f8152549d5dc68aa4795069d05e0",
+        "phasor.to.time": "2018-05-04T00:00:00+10:00",
+        "phasor.total-rows": "33696",
+        "phasor.version": "1"
       },
       "timestamp-ms": 1254319200000
     }
@@ -180,5 +180,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "7876fd2d-e655-80f1-acf5-a5c7b1ba1ddf"
+  "table-uuid": "dda39d3a-33e4-8331-a1ef-9d1358f1cbae"
 }

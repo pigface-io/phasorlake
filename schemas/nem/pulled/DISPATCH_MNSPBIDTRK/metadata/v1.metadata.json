@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1246370400000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DISPATCH_MNSPBIDTRK",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/DISPATCH_MNSPBIDTRK",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -19,22 +19,22 @@
   ],
   "properties": {
     "comment": "DISPATCH_MNSPBIDTRK shows the MNSP bid tracking, including the bid version used in each dispatch run for each MNSP Interconnector Link. The table identifies which bids from MNSP_DAYOFFER and MNSP_BIDOFFERPERIOD were applied.",
-    "utilake.declared": "true",
-    "utilake.format": "4",
-    "utilake.key": "[\"SETTLEMENTDATE\",\"RUNNO\",\"PARTICIPANTID\",\"LINKID\"]",
-    "utilake.load": "append",
-    "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(3,0)\",\"3\":\"VARCHAR(10)\",\"4\":\"VARCHAR(10)\",\"5\":\"TIMESTAMP(0)\",\"6\":\"TIMESTAMP(3)\",\"7\":\"NUMERIC(3,0)\",\"8\":\"TIMESTAMP(0)\"}",
-    "utilake.package": "DISPATCH",
-    "utilake.reports": "[[\"DISPATCH\",\"MNSPBIDTRK\"]]",
-    "utilake.table": "DISPATCH_MNSPBIDTRK",
-    "utilake.temporal.cutoff": "LASTCHANGED",
-    "utilake.temporal.entity": "[\"PARTICIPANTID\",\"LINKID\"]",
-    "utilake.temporal.order": "[\"RUNNO\",\"LASTCHANGED\"]",
-    "utilake.temporal.origin": "derived",
-    "utilake.temporal.valid.column": "SETTLEMENTDATE",
-    "utilake.temporal.valid.kind": "interval_end",
-    "utilake.time": "SETTLEMENTDATE",
-    "utilake.visibility": "PUBLIC"
+    "phasor.declared": "true",
+    "phasor.format": "4",
+    "phasor.key": "[\"SETTLEMENTDATE\",\"RUNNO\",\"PARTICIPANTID\",\"LINKID\"]",
+    "phasor.load": "append",
+    "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(3,0)\",\"3\":\"VARCHAR(10)\",\"4\":\"VARCHAR(10)\",\"5\":\"TIMESTAMP(0)\",\"6\":\"TIMESTAMP(3)\",\"7\":\"NUMERIC(3,0)\",\"8\":\"TIMESTAMP(0)\"}",
+    "phasor.package": "DISPATCH",
+    "phasor.reports": "[[\"DISPATCH\",\"MNSPBIDTRK\"]]",
+    "phasor.table": "DISPATCH_MNSPBIDTRK",
+    "phasor.temporal.cutoff": "LASTCHANGED",
+    "phasor.temporal.entity": "[\"PARTICIPANTID\",\"LINKID\"]",
+    "phasor.temporal.order": "[\"RUNNO\",\"LASTCHANGED\"]",
+    "phasor.temporal.origin": "derived",
+    "phasor.temporal.valid.column": "SETTLEMENTDATE",
+    "phasor.temporal.valid.kind": "interval_end",
+    "phasor.time": "SETTLEMENTDATE",
+    "phasor.visibility": "PUBLIC"
   },
   "refs": {
     "main": {
@@ -122,27 +122,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DISPATCH_MNSPBIDTRK/metadata/snap-6547043777174987424-1-e80635f1-8b37-87fd-8509-0cb448e46a14.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/DISPATCH_MNSPBIDTRK/metadata/snap-6547043777174987424-1-7efcbbd1-257f-8fa5-8f56-e9805b6b43a5.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 6547043777174987424,
       "summary": {
         "operation": "append",
-        "utilake.files": "507",
-        "utilake.from.file": "PUBLIC_DVD_DISPATCH_MNSPBIDTRK_200907010000.zip",
-        "utilake.from.release": "2009-07",
-        "utilake.from.sha256": "44539eb2dbd1be88df4d0e25d3424acce148a40d2632a20dc0d5556981bbd261",
-        "utilake.from.time": "2009-07-01T00:05:00+10:00",
-        "utilake.kinds": "[\"archive\",\"dvd\",\"reports\"]",
-        "utilake.report-subtype": "MNSPBIDTRK",
-        "utilake.report-type": "DISPATCH",
-        "utilake.rows": "3754368",
-        "utilake.to.file": "PUBLIC_NEXT_DAY_DISPATCH_20260601.zip",
-        "utilake.to.release": "2026-06",
-        "utilake.to.sha256": "89439bfec9c2b1211725d66b7201e65eb9b6ab31eb0fc20f3b780e91b8c994da",
-        "utilake.to.time": "2026-07-01T00:00:00+10:00",
-        "utilake.total-rows": "3754368",
-        "utilake.version": "1"
+        "phasor.files": "507",
+        "phasor.from.file": "PUBLIC_DVD_DISPATCH_MNSPBIDTRK_200907010000.zip",
+        "phasor.from.release": "2009-07",
+        "phasor.from.sha256": "44539eb2dbd1be88df4d0e25d3424acce148a40d2632a20dc0d5556981bbd261",
+        "phasor.from.time": "2009-07-01T00:05:00+10:00",
+        "phasor.kinds": "[\"archive\",\"dvd\",\"reports\"]",
+        "phasor.report-subtype": "MNSPBIDTRK",
+        "phasor.report-type": "DISPATCH",
+        "phasor.rows": "3754368",
+        "phasor.to.file": "PUBLIC_NEXT_DAY_DISPATCH_20260601.zip",
+        "phasor.to.release": "2026-06",
+        "phasor.to.sha256": "89439bfec9c2b1211725d66b7201e65eb9b6ab31eb0fc20f3b780e91b8c994da",
+        "phasor.to.time": "2026-07-01T00:00:00+10:00",
+        "phasor.total-rows": "3754368",
+        "phasor.version": "1"
       },
       "timestamp-ms": 1246370400000
     }
@@ -153,5 +153,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "e80635f1-8b37-87fd-8509-0cb448e46a14"
+  "table-uuid": "7efcbbd1-257f-8fa5-8f56-e9805b6b43a5"
 }

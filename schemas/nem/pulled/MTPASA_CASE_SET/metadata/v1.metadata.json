@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1246370400000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MTPASA_CASE_SET",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/MTPASA_CASE_SET",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -19,10 +19,10 @@
   ],
   "properties": {
     "comment": "MTPASA_CASE_SET is obsolete from 2005 End of Year Release. The RUNTYPE added to the primary key of the detail tables for MTPASA allows for the different types of runs for each case.\nMTPASA_CASE_SET allows a MT PASA scenario to be linked across runs.",
-    "utilake.declared": "false",
-    "utilake.format": "4",
-    "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(3,0)\",\"3\":\"NUMERIC(3,0)\",\"4\":\"NUMERIC(1,0)\",\"5\":\"TIMESTAMP(0)\"}",
-    "utilake.table": "MTPASA_CASE_SET"
+    "phasor.declared": "false",
+    "phasor.format": "4",
+    "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(3,0)\",\"3\":\"NUMERIC(3,0)\",\"4\":\"NUMERIC(1,0)\",\"5\":\"TIMESTAMP(0)\"}",
+    "phasor.table": "MTPASA_CASE_SET"
   },
   "refs": {
     "main": {
@@ -84,27 +84,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/MTPASA_CASE_SET/metadata/snap-6094519105220115180-1-4a365d0e-f865-8a06-a30b-34ac3d336a71.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/MTPASA_CASE_SET/metadata/snap-6094519105220115180-1-68757137-5c5b-8511-8461-6901b3c76d11.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 6094519105220115180,
       "summary": {
         "operation": "append",
-        "utilake.files": "39",
-        "utilake.from.file": "PUBLIC_DVD_MTPASA_CASE_SET_200907010000.zip",
-        "utilake.from.release": "2009-07",
-        "utilake.from.sha256": "44539eb2dbd1be88df4d0e25d3424acce148a40d2632a20dc0d5556981bbd261",
-        "utilake.from.time": "2009-07-07T05:30:03+10:00",
-        "utilake.kinds": "[\"dvd\"]",
-        "utilake.report-subtype": "CASE_SET",
-        "utilake.report-type": "MTPASA",
-        "utilake.rows": "189",
-        "utilake.to.file": "PUBLIC_DVD_MTPASA_CASE_SET_201209010000.zip",
-        "utilake.to.release": "2012-09",
-        "utilake.to.sha256": "9fae153f045710621881b5f12431f752254028da84cca685f6a350ce76c5b101",
-        "utilake.to.time": "2012-09-25T11:00:00+10:00",
-        "utilake.total-rows": "189",
-        "utilake.version": "1"
+        "phasor.files": "39",
+        "phasor.from.file": "PUBLIC_DVD_MTPASA_CASE_SET_200907010000.zip",
+        "phasor.from.release": "2009-07",
+        "phasor.from.sha256": "44539eb2dbd1be88df4d0e25d3424acce148a40d2632a20dc0d5556981bbd261",
+        "phasor.from.time": "2009-07-07T05:30:03+10:00",
+        "phasor.kinds": "[\"dvd\"]",
+        "phasor.report-subtype": "CASE_SET",
+        "phasor.report-type": "MTPASA",
+        "phasor.rows": "189",
+        "phasor.to.file": "PUBLIC_DVD_MTPASA_CASE_SET_201209010000.zip",
+        "phasor.to.release": "2012-09",
+        "phasor.to.sha256": "9fae153f045710621881b5f12431f752254028da84cca685f6a350ce76c5b101",
+        "phasor.to.time": "2012-09-25T11:00:00+10:00",
+        "phasor.total-rows": "189",
+        "phasor.version": "1"
       },
       "timestamp-ms": 1246370400000
     }
@@ -115,5 +115,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "4a365d0e-f865-8a06-a30b-34ac3d336a71"
+  "table-uuid": "68757137-5c5b-8511-8461-6901b3c76d11"
 }

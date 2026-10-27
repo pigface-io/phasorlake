@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1756648800000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DEMANDOPERATIONALFORECAST_AREA",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/DEMANDOPERATIONALFORECAST_AREA",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -18,22 +18,22 @@
     }
   ],
   "properties": {
-    "utilake.declared": "true",
-    "utilake.format": "4",
-    "utilake.key": "[\"INTERVAL_DATETIME\",\"AREAID\"]",
-    "utilake.load": "append",
-    "utilake.package": "DEMAND_FORECASTS",
-    "utilake.reports": "[[\"OPERATIONAL_DEMAND\",\"FORECAST\"]]",
-    "utilake.table": "DEMANDOPERATIONALFORECAST_AREA",
-    "utilake.temporal.cutoff": "LASTCHANGED",
-    "utilake.temporal.entity": "[\"AREAID\"]",
-    "utilake.temporal.order": "[\"LASTCHANGED\"]",
-    "utilake.temporal.origin": "derived",
-    "utilake.temporal.valid.column": "INTERVAL_DATETIME",
-    "utilake.temporal.valid.kind": "interval_end",
-    "utilake.time": "INTERVAL_DATETIME",
-    "utilake.visibility": "PUBLIC",
-    "utilake.with-columns": "[\"AREAID\"]"
+    "phasor.declared": "true",
+    "phasor.format": "4",
+    "phasor.key": "[\"INTERVAL_DATETIME\",\"AREAID\"]",
+    "phasor.load": "append",
+    "phasor.package": "DEMAND_FORECASTS",
+    "phasor.reports": "[[\"OPERATIONAL_DEMAND\",\"FORECAST\"]]",
+    "phasor.table": "DEMANDOPERATIONALFORECAST_AREA",
+    "phasor.temporal.cutoff": "LASTCHANGED",
+    "phasor.temporal.entity": "[\"AREAID\"]",
+    "phasor.temporal.order": "[\"LASTCHANGED\"]",
+    "phasor.temporal.origin": "derived",
+    "phasor.temporal.valid.column": "INTERVAL_DATETIME",
+    "phasor.temporal.valid.kind": "interval_end",
+    "phasor.time": "INTERVAL_DATETIME",
+    "phasor.visibility": "PUBLIC",
+    "phasor.with-columns": "[\"AREAID\"]"
   },
   "refs": {
     "main": {
@@ -105,27 +105,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DEMANDOPERATIONALFORECAST_AREA/metadata/snap-5782288045591545876-1-9e1bd064-94ec-8635-bc3a-327477d3bea8.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/DEMANDOPERATIONALFORECAST_AREA/metadata/snap-5782288045591545876-1-8d548412-b64e-8d57-ab29-6c4e1b5783cd.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 5782288045591545876,
       "summary": {
         "operation": "append",
-        "utilake.files": "18697",
-        "utilake.from.file": "PUBLIC_FORECAST_OPERATIONAL_DEMAND_HH_AREA_20250930.zip",
-        "utilake.from.release": "2025-09",
-        "utilake.from.sha256": "1ee142180fa3c0ea15488e84e97237fb9e7bb9a17ef981ce2cf770a4173a40c8",
-        "utilake.from.time": "2025-09-30T00:30:00+10:00",
-        "utilake.kinds": "[\"reports\"]",
-        "utilake.report-subtype": "FORECAST",
-        "utilake.report-type": "OPERATIONAL_DEMAND",
-        "utilake.rows": "61250552",
-        "utilake.to.file": "PUBLIC_FORECAST_OPERATIONAL_DEMAND_HH_AREA_202610241200_20261024113111.zip",
-        "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "3cad313440311c777e7533504c0df8b71b36a2d1914e181db2bacba140b2cd9b",
-        "utilake.to.time": "2026-11-02T00:00:00+10:00",
-        "utilake.total-rows": "61250552",
-        "utilake.version": "1"
+        "phasor.files": "18697",
+        "phasor.from.file": "PUBLIC_FORECAST_OPERATIONAL_DEMAND_HH_AREA_20250930.zip",
+        "phasor.from.release": "2025-09",
+        "phasor.from.sha256": "1ee142180fa3c0ea15488e84e97237fb9e7bb9a17ef981ce2cf770a4173a40c8",
+        "phasor.from.time": "2025-09-30T00:30:00+10:00",
+        "phasor.kinds": "[\"reports\"]",
+        "phasor.report-subtype": "FORECAST",
+        "phasor.report-type": "OPERATIONAL_DEMAND",
+        "phasor.rows": "61250552",
+        "phasor.to.file": "PUBLIC_FORECAST_OPERATIONAL_DEMAND_HH_AREA_202610241200_20261024113111.zip",
+        "phasor.to.release": "2026-10",
+        "phasor.to.sha256": "3cad313440311c777e7533504c0df8b71b36a2d1914e181db2bacba140b2cd9b",
+        "phasor.to.time": "2026-11-02T00:00:00+10:00",
+        "phasor.total-rows": "61250552",
+        "phasor.version": "1"
       },
       "timestamp-ms": 1756648800000
     }
@@ -136,5 +136,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "9e1bd064-94ec-8635-bc3a-327477d3bea8"
+  "table-uuid": "8d548412-b64e-8d57-ab29-6c4e1b5783cd"
 }

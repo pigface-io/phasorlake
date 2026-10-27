@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1790776800000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GAS_GSH_TRADES",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/gas/GAS_GSH_TRADES",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -19,22 +19,22 @@
   ],
   "properties": {
     "comment": "Provides participants (buyer and seller) a confirmation whenever a trade is executed through auto matching of bids and offers or by off-market trades. Also provides participants with a list of all their future trades when triggered daily after the end of the trades for the current day",
-    "utilake.declared": "true",
-    "utilake.format": "4",
-    "utilake.key": "[\"LOCATION\",\"PRODUCT\",\"TRADE_DATE\",\"TRADE_PRICE\",\"TYPE\"]",
-    "utilake.load": "append",
-    "utilake.market": "gas",
-    "utilake.model-types": "{\"1\":\"DATE\",\"3\":\"VARCHAR2(80)\",\"4\":\"VARCHAR2(100)\",\"5\":\"NUMBER(18,8)\",\"6\":\"NUMBER(18,8)\",\"7\":\"DATE\",\"8\":\"DATE\",\"9\":\"VARCHAR2(50)\"}",
-    "utilake.offset": "+10:00",
-    "utilake.reports": "[[\"GSH\",\"GAS_TRADES\"]]",
-    "utilake.table": "GAS_GSH_TRADES",
-    "utilake.temporal.entity": "[\"LOCATION\",\"PRODUCT\",\"TRADE_PRICE\",\"TYPE\"]",
-    "utilake.temporal.order": "[]",
-    "utilake.temporal.origin": "hand",
-    "utilake.temporal.valid.column": "TRADE_DATE",
-    "utilake.temporal.valid.kind": "instant",
-    "utilake.time": "TRADE_DATE",
-    "utilake.visibility": "PUBLIC"
+    "phasor.declared": "true",
+    "phasor.format": "4",
+    "phasor.key": "[\"LOCATION\",\"PRODUCT\",\"TRADE_DATE\",\"TRADE_PRICE\",\"TYPE\"]",
+    "phasor.load": "append",
+    "phasor.market": "gas",
+    "phasor.model-types": "{\"1\":\"DATE\",\"3\":\"VARCHAR2(80)\",\"4\":\"VARCHAR2(100)\",\"5\":\"NUMBER(18,8)\",\"6\":\"NUMBER(18,8)\",\"7\":\"DATE\",\"8\":\"DATE\",\"9\":\"VARCHAR2(50)\"}",
+    "phasor.offset": "+10:00",
+    "phasor.reports": "[[\"GSH\",\"GAS_TRADES\"]]",
+    "phasor.table": "GAS_GSH_TRADES",
+    "phasor.temporal.entity": "[\"LOCATION\",\"PRODUCT\",\"TRADE_PRICE\",\"TYPE\"]",
+    "phasor.temporal.order": "[]",
+    "phasor.temporal.origin": "hand",
+    "phasor.temporal.valid.column": "TRADE_DATE",
+    "phasor.temporal.valid.kind": "instant",
+    "phasor.time": "TRADE_DATE",
+    "phasor.visibility": "PUBLIC"
   },
   "refs": {
     "main": {
@@ -125,27 +125,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GAS_GSH_TRADES/metadata/snap-7026274112973757341-1-8a5c1a39-b8ba-8112-8406-116ffd386864.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/gas/GAS_GSH_TRADES/metadata/snap-7026274112973757341-1-1ecebb5c-d36c-8969-b596-309efa109dac.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 7026274112973757341,
       "summary": {
         "operation": "append",
-        "utilake.files": "4",
-        "utilake.from.file": "GasBBGSHGasTrades.CSV",
-        "utilake.from.release": "2026-10",
-        "utilake.from.sha256": "fdb6cb436a8daeefef4c6a78d71f2ab699c51fe4bfe1c58c705df523f254dad3",
-        "utilake.from.time": "2014-01-01T00:00:00+10:00",
-        "utilake.kinds": "[\"gbb\"]",
-        "utilake.report-subtype": "GAS_TRADES",
-        "utilake.report-type": "GSH",
-        "utilake.rows": "39809",
-        "utilake.to.file": "GasBBGSHGasTrades.CSV@20261024T060000+1000",
-        "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "2528b54e2677219a73d1d3c54f4f5ca70ef6238d04fc62b4addb6530ed2b3303",
-        "utilake.to.time": "2026-10-24T00:00:00+10:00",
-        "utilake.total-rows": "39809",
-        "utilake.version": "1"
+        "phasor.files": "4",
+        "phasor.from.file": "GasBBGSHGasTrades.CSV",
+        "phasor.from.release": "2026-10",
+        "phasor.from.sha256": "fdb6cb436a8daeefef4c6a78d71f2ab699c51fe4bfe1c58c705df523f254dad3",
+        "phasor.from.time": "2014-01-01T00:00:00+10:00",
+        "phasor.kinds": "[\"gbb\"]",
+        "phasor.report-subtype": "GAS_TRADES",
+        "phasor.report-type": "GSH",
+        "phasor.rows": "39809",
+        "phasor.to.file": "GasBBGSHGasTrades.CSV@20261024T060000+1000",
+        "phasor.to.release": "2026-10",
+        "phasor.to.sha256": "2528b54e2677219a73d1d3c54f4f5ca70ef6238d04fc62b4addb6530ed2b3303",
+        "phasor.to.time": "2026-10-24T00:00:00+10:00",
+        "phasor.total-rows": "39809",
+        "phasor.version": "1"
       },
       "timestamp-ms": 1790776800000
     }
@@ -156,5 +156,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "8a5c1a39-b8ba-8112-8406-116ffd386864"
+  "table-uuid": "1ecebb5c-d36c-8969-b596-309efa109dac"
 }

@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1722434400000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/SPDREGIONCONSTRAINT",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/SPDREGIONCONSTRAINT",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -19,22 +19,22 @@
   ],
   "properties": {
     "comment": "SPDREGIONCONSTRAINT contains details on region demand constraint factors used in dispatch. SPDREGIONCONSTRAINTsets a LHS value.",
-    "utilake.declared": "true",
-    "utilake.format": "4",
-    "utilake.key": "[\"REGIONID\",\"EFFECTIVEDATE\",\"VERSIONNO\",\"GENCONID\",\"BIDTYPE\"]",
-    "utilake.load": "append",
-    "utilake.model-types": "{\"1\":\"VARCHAR(10)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"NUMERIC(3,0)\",\"4\":\"VARCHAR(20)\",\"5\":\"NUMERIC(16,6)\",\"6\":\"TIMESTAMP(0)\",\"7\":\"VARCHAR(10)\"}",
-    "utilake.package": "GENERIC_CONSTRAINT",
-    "utilake.reports": "[[\"SPDRC\",\"NULL\"]]",
-    "utilake.table": "SPDREGIONCONSTRAINT",
-    "utilake.temporal.cutoff": "LASTCHANGED",
-    "utilake.temporal.entity": "[\"REGIONID\",\"GENCONID\",\"BIDTYPE\"]",
-    "utilake.temporal.order": "[\"VERSIONNO\",\"LASTCHANGED\"]",
-    "utilake.temporal.origin": "derived",
-    "utilake.temporal.valid.column": "EFFECTIVEDATE",
-    "utilake.temporal.valid.kind": "from",
-    "utilake.time": "EFFECTIVEDATE",
-    "utilake.visibility": "PUBLIC"
+    "phasor.declared": "true",
+    "phasor.format": "4",
+    "phasor.key": "[\"REGIONID\",\"EFFECTIVEDATE\",\"VERSIONNO\",\"GENCONID\",\"BIDTYPE\"]",
+    "phasor.load": "append",
+    "phasor.model-types": "{\"1\":\"VARCHAR(10)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"NUMERIC(3,0)\",\"4\":\"VARCHAR(20)\",\"5\":\"NUMERIC(16,6)\",\"6\":\"TIMESTAMP(0)\",\"7\":\"VARCHAR(10)\"}",
+    "phasor.package": "GENERIC_CONSTRAINT",
+    "phasor.reports": "[[\"SPDRC\",\"NULL\"]]",
+    "phasor.table": "SPDREGIONCONSTRAINT",
+    "phasor.temporal.cutoff": "LASTCHANGED",
+    "phasor.temporal.entity": "[\"REGIONID\",\"GENCONID\",\"BIDTYPE\"]",
+    "phasor.temporal.order": "[\"VERSIONNO\",\"LASTCHANGED\"]",
+    "phasor.temporal.origin": "derived",
+    "phasor.temporal.valid.column": "EFFECTIVEDATE",
+    "phasor.temporal.valid.kind": "from",
+    "phasor.time": "EFFECTIVEDATE",
+    "phasor.visibility": "PUBLIC"
   },
   "refs": {
     "main": {
@@ -116,27 +116,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/SPDREGIONCONSTRAINT/metadata/snap-3654347257306521670-1-7f4f0325-6cbd-8130-aecf-6cd837048285.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/SPDREGIONCONSTRAINT/metadata/snap-3654347257306521670-1-d1ce19ee-f042-8de0-bfb0-cf3a0cca3e24.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 3654347257306521670,
       "summary": {
         "operation": "append",
-        "utilake.files": "25",
-        "utilake.from.file": "PUBLIC_ARCHIVE#SPDREGIONCONSTRAINT#FILE01#202408010000.zip",
-        "utilake.from.release": "2024-08",
-        "utilake.from.sha256": "b4486d793400d83721dd51df4dfeec084f4febd05a1af054caf9155ac0a06fb4",
-        "utilake.from.time": "2024-08-01T00:00:00+10:00",
-        "utilake.kinds": "[\"archive\"]",
-        "utilake.report-subtype": "NULL",
-        "utilake.report-type": "SPDRC",
-        "utilake.rows": "6955",
-        "utilake.to.file": "PUBLIC_ARCHIVE#SPDREGIONCONSTRAINT#FILE01#202609010000.zip",
-        "utilake.to.release": "2026-09",
-        "utilake.to.sha256": "e124184f9d93040e9f6376f77dd22058c9d608b8b554da20c83825c6dfa30e2e",
-        "utilake.to.time": "2026-09-14T00:00:00+10:00",
-        "utilake.total-rows": "6955",
-        "utilake.version": "2"
+        "phasor.files": "25",
+        "phasor.from.file": "PUBLIC_ARCHIVE#SPDREGIONCONSTRAINT#FILE01#202408010000.zip",
+        "phasor.from.release": "2024-08",
+        "phasor.from.sha256": "b4486d793400d83721dd51df4dfeec084f4febd05a1af054caf9155ac0a06fb4",
+        "phasor.from.time": "2024-08-01T00:00:00+10:00",
+        "phasor.kinds": "[\"archive\"]",
+        "phasor.report-subtype": "NULL",
+        "phasor.report-type": "SPDRC",
+        "phasor.rows": "6955",
+        "phasor.to.file": "PUBLIC_ARCHIVE#SPDREGIONCONSTRAINT#FILE01#202609010000.zip",
+        "phasor.to.release": "2026-09",
+        "phasor.to.sha256": "e124184f9d93040e9f6376f77dd22058c9d608b8b554da20c83825c6dfa30e2e",
+        "phasor.to.time": "2026-09-14T00:00:00+10:00",
+        "phasor.total-rows": "6955",
+        "phasor.version": "2"
       },
       "timestamp-ms": 1722434400000
     }
@@ -147,5 +147,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "7f4f0325-6cbd-8130-aecf-6cd837048285"
+  "table-uuid": "d1ce19ee-f042-8de0-bfb0-cf3a0cca3e24"
 }

@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1785506400000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/DWGM_INT891_EDDACT",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/gas/DWGM_INT891_EDDACT",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -18,23 +18,23 @@
     }
   ],
   "properties": {
-    "utilake.declared": "true",
-    "utilake.format": "4",
-    "utilake.headers": "{\"1\":\"edd_update\",\"2\":\"edd_date\",\"3\":\"edd_value\",\"4\":\"edd_type\",\"5\":\"current_date\"}",
-    "utilake.key": "[]",
-    "utilake.load": "append",
-    "utilake.market": "gas",
-    "utilake.offset": "+10:00",
-    "utilake.reports": "[[\"DWGM\",\"INT891_EDDACT_1\"]]",
-    "utilake.table": "DWGM_INT891_EDDACT",
-    "utilake.temporal.cutoff": "CURRENT_DATE",
-    "utilake.temporal.entity": "[]",
-    "utilake.temporal.order": "[\"CURRENT_DATE\"]",
-    "utilake.temporal.origin": "hand",
-    "utilake.temporal.valid.column": "EDD_UPDATE",
-    "utilake.temporal.valid.kind": "instant",
-    "utilake.time": "EDD_UPDATE",
-    "utilake.visibility": "PUBLIC"
+    "phasor.declared": "true",
+    "phasor.format": "4",
+    "phasor.headers": "{\"1\":\"edd_update\",\"2\":\"edd_date\",\"3\":\"edd_value\",\"4\":\"edd_type\",\"5\":\"current_date\"}",
+    "phasor.key": "[]",
+    "phasor.load": "append",
+    "phasor.market": "gas",
+    "phasor.offset": "+10:00",
+    "phasor.reports": "[[\"DWGM\",\"INT891_EDDACT_1\"]]",
+    "phasor.table": "DWGM_INT891_EDDACT",
+    "phasor.temporal.cutoff": "CURRENT_DATE",
+    "phasor.temporal.entity": "[]",
+    "phasor.temporal.order": "[\"CURRENT_DATE\"]",
+    "phasor.temporal.origin": "hand",
+    "phasor.temporal.valid.column": "EDD_UPDATE",
+    "phasor.temporal.valid.kind": "instant",
+    "phasor.time": "EDD_UPDATE",
+    "phasor.visibility": "PUBLIC"
   },
   "refs": {
     "main": {
@@ -91,27 +91,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/DWGM_INT891_EDDACT/metadata/snap-7167300897528401551-1-4e4f7e32-aaf0-899a-b6ae-27d5cd3c9139.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/gas/DWGM_INT891_EDDACT/metadata/snap-7167300897528401551-1-9584e13d-929e-8813-a67e-df9d92d48bcf.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 7167300897528401551,
       "summary": {
         "operation": "append",
-        "utilake.files": "37",
-        "utilake.from.file": "PublicRpts31.zip",
-        "utilake.from.release": "2026-08",
-        "utilake.from.sha256": "735fad42989ef107a70ecdfc43f290c13afc957673461c78e4538d9ffcc9b0fe",
-        "utilake.from.time": "2026-07-04T07:00:01+10:00",
-        "utilake.kinds": "[\"dwgm\"]",
-        "utilake.report-subtype": "INT891_EDDACT_1",
-        "utilake.report-type": "DWGM",
-        "utilake.rows": "558",
-        "utilake.to.file": "int891_v1_eddact_1.csv@20261024T113600+1000",
-        "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "4b500a9b1ad9f887120323b9c891201598aa57e1a71b7a269590085b5dbf408a",
-        "utilake.to.time": "2026-10-23T07:00:01+10:00",
-        "utilake.total-rows": "558",
-        "utilake.version": "1"
+        "phasor.files": "37",
+        "phasor.from.file": "PublicRpts31.zip",
+        "phasor.from.release": "2026-08",
+        "phasor.from.sha256": "735fad42989ef107a70ecdfc43f290c13afc957673461c78e4538d9ffcc9b0fe",
+        "phasor.from.time": "2026-07-04T07:00:01+10:00",
+        "phasor.kinds": "[\"dwgm\"]",
+        "phasor.report-subtype": "INT891_EDDACT_1",
+        "phasor.report-type": "DWGM",
+        "phasor.rows": "558",
+        "phasor.to.file": "int891_v1_eddact_1.csv@20261024T113600+1000",
+        "phasor.to.release": "2026-10",
+        "phasor.to.sha256": "4b500a9b1ad9f887120323b9c891201598aa57e1a71b7a269590085b5dbf408a",
+        "phasor.to.time": "2026-10-23T07:00:01+10:00",
+        "phasor.total-rows": "558",
+        "phasor.version": "1"
       },
       "timestamp-ms": 1785506400000
     }
@@ -122,5 +122,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "4e4f7e32-aaf0-899a-b6ae-27d5cd3c9139"
+  "table-uuid": "9584e13d-929e-8813-a67e-df9d92d48bcf"
 }

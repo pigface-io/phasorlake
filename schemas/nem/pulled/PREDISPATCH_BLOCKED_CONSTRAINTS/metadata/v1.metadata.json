@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1738332000000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PREDISPATCH_BLOCKED_CONSTRAINTS",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/PREDISPATCH_BLOCKED_CONSTRAINTS",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -18,9 +18,9 @@
     }
   ],
   "properties": {
-    "utilake.declared": "false",
-    "utilake.format": "4",
-    "utilake.table": "PREDISPATCH_BLOCKED_CONSTRAINTS"
+    "phasor.declared": "false",
+    "phasor.format": "4",
+    "phasor.table": "PREDISPATCH_BLOCKED_CONSTRAINTS"
   },
   "refs": {
     "main": {
@@ -59,25 +59,25 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PREDISPATCH_BLOCKED_CONSTRAINTS/metadata/snap-1957818842093588847-1-79ec6d77-aef2-8e5c-8a16-41f330816aa9.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/PREDISPATCH_BLOCKED_CONSTRAINTS/metadata/snap-1957818842093588847-1-3da0405c-adf0-8631-a173-f304f5a796a5.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 1957818842093588847,
       "summary": {
         "operation": "append",
-        "utilake.files": "827",
-        "utilake.from.file": "PUBLIC_ARCHIVE#PREDISPATCHBLOCKEDCONSTRAINT#FILE01#202502010000.zip",
-        "utilake.from.release": "2025-02",
-        "utilake.from.sha256": "b32c5b91e6b8d924817f1eb838a82272b5fbbef417b023af05f6de66b50149f9",
-        "utilake.kinds": "[\"archive\",\"reports\"]",
-        "utilake.report-subtype": "BLOCKED_CONSTRAINTS",
-        "utilake.report-type": "PREDISPATCH",
-        "utilake.rows": "2214",
-        "utilake.to.file": "PUBLIC_PREDISPATCHIS_20260712_20260718.zip",
-        "utilake.to.release": "2026-07",
-        "utilake.to.sha256": "35b73cec1e804b0437f51f8f2b55a545e6d48bf594742cda42135d959e38d7de",
-        "utilake.total-rows": "2214",
-        "utilake.version": "1"
+        "phasor.files": "827",
+        "phasor.from.file": "PUBLIC_ARCHIVE#PREDISPATCHBLOCKEDCONSTRAINT#FILE01#202502010000.zip",
+        "phasor.from.release": "2025-02",
+        "phasor.from.sha256": "b32c5b91e6b8d924817f1eb838a82272b5fbbef417b023af05f6de66b50149f9",
+        "phasor.kinds": "[\"archive\",\"reports\"]",
+        "phasor.report-subtype": "BLOCKED_CONSTRAINTS",
+        "phasor.report-type": "PREDISPATCH",
+        "phasor.rows": "2214",
+        "phasor.to.file": "PUBLIC_PREDISPATCHIS_20260712_20260718.zip",
+        "phasor.to.release": "2026-07",
+        "phasor.to.sha256": "35b73cec1e804b0437f51f8f2b55a545e6d48bf594742cda42135d959e38d7de",
+        "phasor.total-rows": "2214",
+        "phasor.version": "1"
       },
       "timestamp-ms": 1738332000000
     }
@@ -88,5 +88,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "79ec6d77-aef2-8e5c-8a16-41f330816aa9"
+  "table-uuid": "3da0405c-adf0-8631-a173-f304f5a796a5"
 }

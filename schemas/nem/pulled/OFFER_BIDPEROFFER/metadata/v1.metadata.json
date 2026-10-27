@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1246370400000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/OFFER_BIDPEROFFER",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/OFFER_BIDPEROFFER",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -18,9 +18,9 @@
     }
   ],
   "properties": {
-    "utilake.declared": "false",
-    "utilake.format": "4",
-    "utilake.table": "OFFER_BIDPEROFFER"
+    "phasor.declared": "false",
+    "phasor.format": "4",
+    "phasor.table": "OFFER_BIDPEROFFER"
   },
   "refs": {
     "main": {
@@ -209,27 +209,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/OFFER_BIDPEROFFER/metadata/snap-7948231411377982128-1-5cc2d547-6651-8133-b05b-712d5aa3aeff.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/OFFER_BIDPEROFFER/metadata/snap-7948231411377982128-1-3fab85a9-78cd-8f59-8c5e-482733668acf.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 7948231411377982128,
       "summary": {
         "operation": "append",
-        "utilake.files": "139",
-        "utilake.from.file": "PUBLIC_DVD_BIDPEROFFER_200907010000.zip",
-        "utilake.from.release": "2009-07",
-        "utilake.from.sha256": "44539eb2dbd1be88df4d0e25d3424acce148a40d2632a20dc0d5556981bbd261",
-        "utilake.from.time": "2009-07-02T00:00:00+10:00",
-        "utilake.kinds": "[\"dvd\"]",
-        "utilake.report-subtype": "BIDPEROFFER",
-        "utilake.report-type": "OFFER",
-        "utilake.rows": "1526997792",
-        "utilake.to.file": "PUBLIC_DVD_BIDPEROFFER_202102010000.zip",
-        "utilake.to.release": "2021-02",
-        "utilake.to.sha256": "0ff2568f6546c7eb625d4d8939ff0cae87fbe7f446dcd7f0fe54101191568d4b",
-        "utilake.to.time": "2021-03-01T00:00:00+10:00",
-        "utilake.total-rows": "1526997792",
-        "utilake.version": "1"
+        "phasor.files": "139",
+        "phasor.from.file": "PUBLIC_DVD_BIDPEROFFER_200907010000.zip",
+        "phasor.from.release": "2009-07",
+        "phasor.from.sha256": "44539eb2dbd1be88df4d0e25d3424acce148a40d2632a20dc0d5556981bbd261",
+        "phasor.from.time": "2009-07-02T00:00:00+10:00",
+        "phasor.kinds": "[\"dvd\"]",
+        "phasor.report-subtype": "BIDPEROFFER",
+        "phasor.report-type": "OFFER",
+        "phasor.rows": "1526997792",
+        "phasor.to.file": "PUBLIC_DVD_BIDPEROFFER_202102010000.zip",
+        "phasor.to.release": "2021-02",
+        "phasor.to.sha256": "0ff2568f6546c7eb625d4d8939ff0cae87fbe7f446dcd7f0fe54101191568d4b",
+        "phasor.to.time": "2021-03-01T00:00:00+10:00",
+        "phasor.total-rows": "1526997792",
+        "phasor.version": "1"
       },
       "timestamp-ms": 1246370400000
     }
@@ -240,5 +240,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "5cc2d547-6651-8133-b05b-712d5aa3aeff"
+  "table-uuid": "3fab85a9-78cd-8f59-8c5e-482733668acf"
 }

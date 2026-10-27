@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1251727200000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/IRAUCTION_RESIDUE_PRICE_FUNDS_BID",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/IRAUCTION_RESIDUE_PRICE_FUNDS_BID",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -18,9 +18,9 @@
     }
   ],
   "properties": {
-    "utilake.declared": "false",
-    "utilake.format": "4",
-    "utilake.table": "IRAUCTION_RESIDUE_PRICE_FUNDS_BID"
+    "phasor.declared": "false",
+    "phasor.format": "4",
+    "phasor.table": "IRAUCTION_RESIDUE_PRICE_FUNDS_BID"
   },
   "refs": {
     "main": {
@@ -95,27 +95,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/IRAUCTION_RESIDUE_PRICE_FUNDS_BID/metadata/snap-7185126483007451362-1-836215e6-4a21-8c52-9387-2098c444d2a0.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/IRAUCTION_RESIDUE_PRICE_FUNDS_BID/metadata/snap-7185126483007451362-1-1a15a79f-fa14-882f-89e1-39ea7d0758a8.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 7185126483007451362,
       "summary": {
         "operation": "append",
-        "utilake.files": "73",
-        "utilake.from.file": "PUBLIC_DVD_RESIDUE_PRICE_FUNDS_BID_200909010000.zip",
-        "utilake.from.release": "2009-09",
-        "utilake.from.sha256": "9cf326f7fabd7b91220c5950a2de3fdb28d9c7b97f1a4045f8075ad7b3abaaf5",
-        "utilake.from.time": "2009-09-14T14:19:22+10:00",
-        "utilake.kinds": "[\"archive\",\"dvd\"]",
-        "utilake.report-subtype": "RESIDUE_PRICE_FUNDS_BID",
-        "utilake.report-type": "IRAUCTION",
-        "utilake.rows": "599945",
-        "utilake.to.file": "PUBLIC_ARCHIVE#RESIDUE_PRICE_FUNDS_BID#FILE01#202609010000.zip",
-        "utilake.to.release": "2026-09",
-        "utilake.to.sha256": "d0432a372a32a1610ede51bda3bba252289c6490c1b4fa993f07653d6394537f",
-        "utilake.to.time": "2026-09-15T14:00:05+10:00",
-        "utilake.total-rows": "599945",
-        "utilake.version": "1"
+        "phasor.files": "73",
+        "phasor.from.file": "PUBLIC_DVD_RESIDUE_PRICE_FUNDS_BID_200909010000.zip",
+        "phasor.from.release": "2009-09",
+        "phasor.from.sha256": "9cf326f7fabd7b91220c5950a2de3fdb28d9c7b97f1a4045f8075ad7b3abaaf5",
+        "phasor.from.time": "2009-09-14T14:19:22+10:00",
+        "phasor.kinds": "[\"archive\",\"dvd\"]",
+        "phasor.report-subtype": "RESIDUE_PRICE_FUNDS_BID",
+        "phasor.report-type": "IRAUCTION",
+        "phasor.rows": "599945",
+        "phasor.to.file": "PUBLIC_ARCHIVE#RESIDUE_PRICE_FUNDS_BID#FILE01#202609010000.zip",
+        "phasor.to.release": "2026-09",
+        "phasor.to.sha256": "d0432a372a32a1610ede51bda3bba252289c6490c1b4fa993f07653d6394537f",
+        "phasor.to.time": "2026-09-15T14:00:05+10:00",
+        "phasor.total-rows": "599945",
+        "phasor.version": "1"
       },
       "timestamp-ms": 1251727200000
     }
@@ -126,5 +126,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "836215e6-4a21-8c52-9387-2098c444d2a0"
+  "table-uuid": "1a15a79f-fa14-882f-89e1-39ea7d0758a8"
 }

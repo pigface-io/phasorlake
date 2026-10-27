@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1790776800000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/STTM_INT675_DEFAULT_ALLOCATION_NOTICE",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/gas/STTM_INT675_DEFAULT_ALLOCATION_NOTICE",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -18,23 +18,23 @@
     }
   ],
   "properties": {
-    "utilake.declared": "true",
-    "utilake.format": "4",
-    "utilake.headers": "{\"1\":\"notice_identifier\",\"2\":\"gas_date\",\"3\":\"hub_identifier\",\"4\":\"hub_name\",\"5\":\"facility_identifier\",\"6\":\"facility_name\",\"7\":\"notice_message\",\"8\":\"report_datetime\"}",
-    "utilake.key": "[]",
-    "utilake.load": "append",
-    "utilake.market": "gas",
-    "utilake.offset": "+10:00",
-    "utilake.reports": "[[\"STTM\",\"INT675_DEFAULT_ALLOCATION_NOTICE_RPT_1\"]]",
-    "utilake.table": "STTM_INT675_DEFAULT_ALLOCATION_NOTICE",
-    "utilake.temporal.cutoff": "REPORT_DATETIME",
-    "utilake.temporal.entity": "[\"NOTICE_IDENTIFIER\",\"HUB_IDENTIFIER\",\"FACILITY_IDENTIFIER\"]",
-    "utilake.temporal.order": "[\"REPORT_DATETIME\"]",
-    "utilake.temporal.origin": "hand",
-    "utilake.temporal.valid.column": "GAS_DATE",
-    "utilake.temporal.valid.kind": "instant",
-    "utilake.time": "GAS_DATE",
-    "utilake.visibility": "PUBLIC"
+    "phasor.declared": "true",
+    "phasor.format": "4",
+    "phasor.headers": "{\"1\":\"notice_identifier\",\"2\":\"gas_date\",\"3\":\"hub_identifier\",\"4\":\"hub_name\",\"5\":\"facility_identifier\",\"6\":\"facility_name\",\"7\":\"notice_message\",\"8\":\"report_datetime\"}",
+    "phasor.key": "[]",
+    "phasor.load": "append",
+    "phasor.market": "gas",
+    "phasor.offset": "+10:00",
+    "phasor.reports": "[[\"STTM\",\"INT675_DEFAULT_ALLOCATION_NOTICE_RPT_1\"]]",
+    "phasor.table": "STTM_INT675_DEFAULT_ALLOCATION_NOTICE",
+    "phasor.temporal.cutoff": "REPORT_DATETIME",
+    "phasor.temporal.entity": "[\"NOTICE_IDENTIFIER\",\"HUB_IDENTIFIER\",\"FACILITY_IDENTIFIER\"]",
+    "phasor.temporal.order": "[\"REPORT_DATETIME\"]",
+    "phasor.temporal.origin": "hand",
+    "phasor.temporal.valid.column": "GAS_DATE",
+    "phasor.temporal.valid.kind": "instant",
+    "phasor.time": "GAS_DATE",
+    "phasor.visibility": "PUBLIC"
   },
   "refs": {
     "main": {
@@ -109,27 +109,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/STTM_INT675_DEFAULT_ALLOCATION_NOTICE/metadata/snap-6149338428026813135-1-6bd0df14-467b-8b4d-afff-967f02d5c5dc.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/gas/STTM_INT675_DEFAULT_ALLOCATION_NOTICE/metadata/snap-6149338428026813135-1-a7eb821e-b9ca-8fe5-b678-360de3963848.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 6149338428026813135,
       "summary": {
         "operation": "append",
-        "utilake.files": "1",
-        "utilake.from.file": "int675_v1_default_allocation_notice_rpt_1.csv",
-        "utilake.from.release": "2026-10",
-        "utilake.from.sha256": "d5329e6218fe85edcf8958566e9d84e3b9b36d79e15818ea6d38cf289019fe20",
-        "utilake.from.time": "2026-05-16T00:00:00+10:00",
-        "utilake.kinds": "[\"sttm\"]",
-        "utilake.report-subtype": "INT675_DEFAULT_ALLOCATION_NOTICE_RPT_1",
-        "utilake.report-type": "STTM",
-        "utilake.rows": "1",
-        "utilake.to.file": "int675_v1_default_allocation_notice_rpt_1.csv",
-        "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "d5329e6218fe85edcf8958566e9d84e3b9b36d79e15818ea6d38cf289019fe20",
-        "utilake.to.time": "2026-05-16T00:00:00+10:00",
-        "utilake.total-rows": "1",
-        "utilake.version": "1"
+        "phasor.files": "1",
+        "phasor.from.file": "int675_v1_default_allocation_notice_rpt_1.csv",
+        "phasor.from.release": "2026-10",
+        "phasor.from.sha256": "d5329e6218fe85edcf8958566e9d84e3b9b36d79e15818ea6d38cf289019fe20",
+        "phasor.from.time": "2026-05-16T00:00:00+10:00",
+        "phasor.kinds": "[\"sttm\"]",
+        "phasor.report-subtype": "INT675_DEFAULT_ALLOCATION_NOTICE_RPT_1",
+        "phasor.report-type": "STTM",
+        "phasor.rows": "1",
+        "phasor.to.file": "int675_v1_default_allocation_notice_rpt_1.csv",
+        "phasor.to.release": "2026-10",
+        "phasor.to.sha256": "d5329e6218fe85edcf8958566e9d84e3b9b36d79e15818ea6d38cf289019fe20",
+        "phasor.to.time": "2026-05-16T00:00:00+10:00",
+        "phasor.total-rows": "1",
+        "phasor.version": "1"
       },
       "timestamp-ms": 1790776800000
     }
@@ -140,5 +140,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "6bd0df14-467b-8b4d-afff-967f02d5c5dc"
+  "table-uuid": "a7eb821e-b9ca-8fe5-b678-360de3963848"
 }

@@ -1,0 +1,43 @@
+[package]
+name = "phasor-writer"
+description = "Everything phasor writes under the home: one source file's write into the lake, the quarantine, the SQLite manifest, supersede, Iceberg metadata and verify."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+zonetrace = { workspace = true, optional = true }
+phasor-core.workspace = true
+phasor-iceberg.workspace = true
+phasor-iceberg-store.workspace = true
+phasor-kit.workspace = true
+arrow.workspace = true
+arrow-array.workspace = true
+arrow-schema.workspace = true
+arrow-select.workspace = true
+parquet.workspace = true
+rusqlite.workspace = true
+rustix.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+tokio = { workspace = true, features = ["sync"] }
+
+[dev-dependencies]
+criterion.workspace = true
+tempfile.workspace = true
+tokio = { workspace = true, features = ["rt", "macros"] }
+
+[[bench]]
+name = "write"
+harness = false
+
+[features]
+# Times the work in zones of zonetrace.
+zones = ["dep:zonetrace"]

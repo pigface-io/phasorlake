@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1759240800000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GSH_PARTICIPANT_OPSTATE",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/gas/GSH_PARTICIPANT_OPSTATE",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -19,23 +19,23 @@
   ],
   "properties": {
     "comment": "Operating Status of Participant",
-    "utilake.declared": "true",
-    "utilake.format": "4",
-    "utilake.key": "[\"EFFECTIVEDATE\",\"MARKET_ID\",\"PARTICIPANT_ID\",\"VERSION_DATETIME\"]",
-    "utilake.load": "snapshot",
-    "utilake.market": "gas",
-    "utilake.model-types": "{\"1\":\"VARCHAR2(20)\",\"2\":\"VARCHAR2(20)\",\"3\":\"DATE\",\"4\":\"DATE\",\"5\":\"VARCHAR2(30)\",\"6\":\"DATE\",\"7\":\"DATE\"}",
-    "utilake.offset": "+10:00",
-    "utilake.reports": "[[\"GSH\",\"PARTICIPANT_OPSTATE\"]]",
-    "utilake.table": "GSH_PARTICIPANT_OPSTATE",
-    "utilake.temporal.cutoff": "LASTCHANGED",
-    "utilake.temporal.entity": "[\"MARKET_ID\",\"PARTICIPANT_ID\"]",
-    "utilake.temporal.order": "[\"VERSION_DATETIME\",\"LASTCHANGED\"]",
-    "utilake.temporal.origin": "hand",
-    "utilake.temporal.valid.column": "EFFECTIVEDATE",
-    "utilake.temporal.valid.kind": "instant",
-    "utilake.time": "EFFECTIVEDATE",
-    "utilake.visibility": "PUBLIC"
+    "phasor.declared": "true",
+    "phasor.format": "4",
+    "phasor.key": "[\"EFFECTIVEDATE\",\"MARKET_ID\",\"PARTICIPANT_ID\",\"VERSION_DATETIME\"]",
+    "phasor.load": "snapshot",
+    "phasor.market": "gas",
+    "phasor.model-types": "{\"1\":\"VARCHAR2(20)\",\"2\":\"VARCHAR2(20)\",\"3\":\"DATE\",\"4\":\"DATE\",\"5\":\"VARCHAR2(30)\",\"6\":\"DATE\",\"7\":\"DATE\"}",
+    "phasor.offset": "+10:00",
+    "phasor.reports": "[[\"GSH\",\"PARTICIPANT_OPSTATE\"]]",
+    "phasor.table": "GSH_PARTICIPANT_OPSTATE",
+    "phasor.temporal.cutoff": "LASTCHANGED",
+    "phasor.temporal.entity": "[\"MARKET_ID\",\"PARTICIPANT_ID\"]",
+    "phasor.temporal.order": "[\"VERSION_DATETIME\",\"LASTCHANGED\"]",
+    "phasor.temporal.origin": "hand",
+    "phasor.temporal.valid.column": "EFFECTIVEDATE",
+    "phasor.temporal.valid.kind": "instant",
+    "phasor.time": "EFFECTIVEDATE",
+    "phasor.visibility": "PUBLIC"
   },
   "refs": {
     "main": {
@@ -116,27 +116,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GSH_PARTICIPANT_OPSTATE/metadata/snap-6112446822976801481-1-de311d27-7ade-808c-85c8-a9b09756b610.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/gas/GSH_PARTICIPANT_OPSTATE/metadata/snap-6112446822976801481-1-2af743b5-9ba0-8587-85c0-30c838f730c6.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 6112446822976801481,
       "summary": {
         "operation": "append",
-        "utilake.files": "76",
-        "utilake.from.file": "PUBLIC_REGISTEREDPARTICIPANTS_20251001.zip",
-        "utilake.from.release": "2025-10",
-        "utilake.from.sha256": "9862f38fbe1ffa9d5c5b0817578a2358d1f6b88d770f76c6f77e6423b27338f6",
-        "utilake.from.time": "2025-10-20T00:00:00+10:00",
-        "utilake.kinds": "[\"gsh\"]",
-        "utilake.report-subtype": "PARTICIPANT_OPSTATE",
-        "utilake.report-type": "GSH",
-        "utilake.rows": "38",
-        "utilake.to.file": "PUBLIC_REGISTEREDPARTICIPANTS_20261021_0000000544029183.zip",
-        "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "554ffd0991605f3b8a909435ec5748d112faef3708bd4ee4c7638301ae76b312",
-        "utilake.to.time": "2026-09-28T00:00:00+10:00",
-        "utilake.total-rows": "38",
-        "utilake.version": "1"
+        "phasor.files": "76",
+        "phasor.from.file": "PUBLIC_REGISTEREDPARTICIPANTS_20251001.zip",
+        "phasor.from.release": "2025-10",
+        "phasor.from.sha256": "9862f38fbe1ffa9d5c5b0817578a2358d1f6b88d770f76c6f77e6423b27338f6",
+        "phasor.from.time": "2025-10-20T00:00:00+10:00",
+        "phasor.kinds": "[\"gsh\"]",
+        "phasor.report-subtype": "PARTICIPANT_OPSTATE",
+        "phasor.report-type": "GSH",
+        "phasor.rows": "38",
+        "phasor.to.file": "PUBLIC_REGISTEREDPARTICIPANTS_20261021_0000000544029183.zip",
+        "phasor.to.release": "2026-10",
+        "phasor.to.sha256": "554ffd0991605f3b8a909435ec5748d112faef3708bd4ee4c7638301ae76b312",
+        "phasor.to.time": "2026-09-28T00:00:00+10:00",
+        "phasor.total-rows": "38",
+        "phasor.version": "1"
       },
       "timestamp-ms": 1759240800000
     }
@@ -147,5 +147,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "de311d27-7ade-808c-85c8-a9b09756b610"
+  "table-uuid": "2af743b5-9ba0-8587-85c0-30c838f730c6"
 }

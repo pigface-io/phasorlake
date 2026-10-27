@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1790776800000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GBB_MISSING_ACTUAL_FLOW_AND_STORAGE",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/gas/GBB_MISSING_ACTUAL_FLOW_AND_STORAGE",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -19,24 +19,24 @@
   ],
   "properties": {
     "comment": "Provides on each gas day D, the BB facility operator’s daily gas flow data for injections and withdrawals at each connection point for gas day D-1.",
-    "utilake.declared": "true",
-    "utilake.format": "4",
-    "utilake.headers": "{\"1\":\"GasDate\",\"2\":\"FacilityName\",\"3\":\"FacilityId\",\"4\":\"ConnectionPointId\"}",
-    "utilake.key": "[]",
-    "utilake.load": "append",
-    "utilake.market": "gas",
-    "utilake.model": "[\"GAS_DAILY_FLOW_ACTUAL\",\"GAS_DAILY_STORAGE_ACTUAL\",\"GAS_FACILITY\"]",
-    "utilake.model-types": "{\"1\":\"DATE\",\"2\":\"VARCHAR2(100)\",\"3\":\"NUMBER(10,0)\",\"4\":\"NUMBER(10,0)\"}",
-    "utilake.offset": "+10:00",
-    "utilake.reports": "[[\"GBB\",\"MISSING_ACTUAL_FLOW_AND_STORAGE\"]]",
-    "utilake.table": "GBB_MISSING_ACTUAL_FLOW_AND_STORAGE",
-    "utilake.temporal.entity": "[\"FACILITYID\",\"CONNECTIONPOINTID\"]",
-    "utilake.temporal.order": "[]",
-    "utilake.temporal.origin": "hand",
-    "utilake.temporal.valid.column": "GASDATE",
-    "utilake.temporal.valid.kind": "instant",
-    "utilake.time": "GASDATE",
-    "utilake.visibility": "PUBLIC"
+    "phasor.declared": "true",
+    "phasor.format": "4",
+    "phasor.headers": "{\"1\":\"GasDate\",\"2\":\"FacilityName\",\"3\":\"FacilityId\",\"4\":\"ConnectionPointId\"}",
+    "phasor.key": "[]",
+    "phasor.load": "append",
+    "phasor.market": "gas",
+    "phasor.model": "[\"GAS_DAILY_FLOW_ACTUAL\",\"GAS_DAILY_STORAGE_ACTUAL\",\"GAS_FACILITY\"]",
+    "phasor.model-types": "{\"1\":\"DATE\",\"2\":\"VARCHAR2(100)\",\"3\":\"NUMBER(10,0)\",\"4\":\"NUMBER(10,0)\"}",
+    "phasor.offset": "+10:00",
+    "phasor.reports": "[[\"GBB\",\"MISSING_ACTUAL_FLOW_AND_STORAGE\"]]",
+    "phasor.table": "GBB_MISSING_ACTUAL_FLOW_AND_STORAGE",
+    "phasor.temporal.entity": "[\"FACILITYID\",\"CONNECTIONPOINTID\"]",
+    "phasor.temporal.order": "[]",
+    "phasor.temporal.origin": "hand",
+    "phasor.temporal.valid.column": "GASDATE",
+    "phasor.temporal.valid.kind": "instant",
+    "phasor.time": "GASDATE",
+    "phasor.visibility": "PUBLIC"
   },
   "refs": {
     "main": {
@@ -91,27 +91,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GBB_MISSING_ACTUAL_FLOW_AND_STORAGE/metadata/snap-5196489649342843398-1-64a3b50a-9748-81b8-8fcb-2334786db09a.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/gas/GBB_MISSING_ACTUAL_FLOW_AND_STORAGE/metadata/snap-5196489649342843398-1-c3242484-ecd0-88eb-93f4-ececc4a2976d.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 5196489649342843398,
       "summary": {
         "operation": "append",
-        "utilake.files": "4",
-        "utilake.from.file": "GasBBMissingActualFlowAndStorage.CSV",
-        "utilake.from.release": "2026-10",
-        "utilake.from.sha256": "c1a38bb303de3ccc13055e9465293b5c2fc72770ddba4f1b93e7ce2d9789baf1",
-        "utilake.from.time": "2025-10-19T00:00:00+10:00",
-        "utilake.kinds": "[\"gbb\"]",
-        "utilake.report-subtype": "MISSING_ACTUAL_FLOW_AND_STORAGE",
-        "utilake.report-type": "GBB",
-        "utilake.rows": "584",
-        "utilake.to.file": "GasBBMissingActualFlowAndStorage.CSV@20261023T235200+1000",
-        "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "d2f69c515ebb798af71ed07b7080211c44cdefe6a3bfd2f0ffa16aeb445b2328",
-        "utilake.to.time": "2026-10-22T00:00:00+10:00",
-        "utilake.total-rows": "584",
-        "utilake.version": "1"
+        "phasor.files": "4",
+        "phasor.from.file": "GasBBMissingActualFlowAndStorage.CSV",
+        "phasor.from.release": "2026-10",
+        "phasor.from.sha256": "c1a38bb303de3ccc13055e9465293b5c2fc72770ddba4f1b93e7ce2d9789baf1",
+        "phasor.from.time": "2025-10-19T00:00:00+10:00",
+        "phasor.kinds": "[\"gbb\"]",
+        "phasor.report-subtype": "MISSING_ACTUAL_FLOW_AND_STORAGE",
+        "phasor.report-type": "GBB",
+        "phasor.rows": "584",
+        "phasor.to.file": "GasBBMissingActualFlowAndStorage.CSV@20261023T235200+1000",
+        "phasor.to.release": "2026-10",
+        "phasor.to.sha256": "d2f69c515ebb798af71ed07b7080211c44cdefe6a3bfd2f0ffa16aeb445b2328",
+        "phasor.to.time": "2026-10-22T00:00:00+10:00",
+        "phasor.total-rows": "584",
+        "phasor.version": "1"
       },
       "timestamp-ms": 1790776800000
     }
@@ -122,5 +122,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "64a3b50a-9748-81b8-8fcb-2334786db09a"
+  "table-uuid": "c3242484-ecd0-88eb-93f4-ececc4a2976d"
 }

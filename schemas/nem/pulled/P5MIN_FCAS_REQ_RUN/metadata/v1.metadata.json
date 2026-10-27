@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1732975200000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/P5MIN_FCAS_REQ_RUN",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/P5MIN_FCAS_REQ_RUN",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -19,20 +19,20 @@
   ],
   "properties": {
     "comment": "The constraint FCAS processor run details. This enhanced output table format is established for the constraint FCAS processor release required for the Frequency Performance Payments (FPP) release. This enhanced output is hierarchical in nature, with the parent *_FCAS_REQ_RUN table holding the details about the triggering case run and time, and the child *_FCAS_REQ_CONSTRAINT table holding the constraint level details of FCAS costs / prices.",
-    "utilake.declared": "true",
-    "utilake.format": "4",
-    "utilake.key": "[]",
-    "utilake.load": "append",
-    "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(5)\",\"3\":\"TIMESTAMP(0)\"}",
-    "utilake.reports": "[[\"P5MIN\",\"FCAS_REQ_RUN\"]]",
-    "utilake.table": "P5MIN_FCAS_REQ_RUN",
-    "utilake.temporal.cutoff": "LASTCHANGED",
-    "utilake.temporal.entity": "[]",
-    "utilake.temporal.order": "[\"RUN_DATETIME\",\"RUNNO\",\"LASTCHANGED\"]",
-    "utilake.temporal.origin": "derived",
-    "utilake.temporal.valid.kind": "timeless",
-    "utilake.time": "RUN_DATETIME",
-    "utilake.visibility": "PUBLIC"
+    "phasor.declared": "true",
+    "phasor.format": "4",
+    "phasor.key": "[]",
+    "phasor.load": "append",
+    "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(5)\",\"3\":\"TIMESTAMP(0)\"}",
+    "phasor.reports": "[[\"P5MIN\",\"FCAS_REQ_RUN\"]]",
+    "phasor.table": "P5MIN_FCAS_REQ_RUN",
+    "phasor.temporal.cutoff": "LASTCHANGED",
+    "phasor.temporal.entity": "[]",
+    "phasor.temporal.order": "[\"RUN_DATETIME\",\"RUNNO\",\"LASTCHANGED\"]",
+    "phasor.temporal.origin": "derived",
+    "phasor.temporal.valid.kind": "timeless",
+    "phasor.time": "RUN_DATETIME",
+    "phasor.visibility": "PUBLIC"
   },
   "refs": {
     "main": {
@@ -80,27 +80,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/P5MIN_FCAS_REQ_RUN/metadata/snap-7289042014973123665-1-e0e9c4d1-5d5f-89e0-8fbe-9c8607f60421.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/P5MIN_FCAS_REQ_RUN/metadata/snap-7289042014973123665-1-ee8d0580-e179-869e-b2ed-e3c4fa207b35.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 7289042014973123665,
       "summary": {
         "operation": "append",
-        "utilake.files": "109698",
-        "utilake.from.file": "PUBLIC_ARCHIVE#P5MIN_FCAS_REQ_RUN#FILE01#202412010000.zip",
-        "utilake.from.release": "2024-12",
-        "utilake.from.sha256": "40e4c468005f42df1e8f0580c5740d7585f4ba8f2c3f1620825be7c8619f7354",
-        "utilake.from.time": "2024-12-09T11:10:00+10:00",
-        "utilake.kinds": "[\"archive\",\"reports\"]",
-        "utilake.report-subtype": "FCAS_REQ_RUN",
-        "utilake.report-type": "P5MIN",
-        "utilake.rows": "1972160",
-        "utilake.to.file": "PUBLIC_P5MINFCST_202610241140_0000000544595616.zip",
-        "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "b9ce21fb1bede57af7f0932181293c8ae7380a6428518fb4cf9971d677787dbf",
-        "utilake.to.time": "2026-10-24T11:45:00+10:00",
-        "utilake.total-rows": "1972160",
-        "utilake.version": "1"
+        "phasor.files": "109698",
+        "phasor.from.file": "PUBLIC_ARCHIVE#P5MIN_FCAS_REQ_RUN#FILE01#202412010000.zip",
+        "phasor.from.release": "2024-12",
+        "phasor.from.sha256": "40e4c468005f42df1e8f0580c5740d7585f4ba8f2c3f1620825be7c8619f7354",
+        "phasor.from.time": "2024-12-09T11:10:00+10:00",
+        "phasor.kinds": "[\"archive\",\"reports\"]",
+        "phasor.report-subtype": "FCAS_REQ_RUN",
+        "phasor.report-type": "P5MIN",
+        "phasor.rows": "1972160",
+        "phasor.to.file": "PUBLIC_P5MINFCST_202610241140_0000000544595616.zip",
+        "phasor.to.release": "2026-10",
+        "phasor.to.sha256": "b9ce21fb1bede57af7f0932181293c8ae7380a6428518fb4cf9971d677787dbf",
+        "phasor.to.time": "2026-10-24T11:45:00+10:00",
+        "phasor.total-rows": "1972160",
+        "phasor.version": "1"
       },
       "timestamp-ms": 1732975200000
     }
@@ -111,5 +111,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "e0e9c4d1-5d5f-89e0-8fbe-9c8607f60421"
+  "table-uuid": "ee8d0580-e179-869e-b2ed-e3c4fa207b35"
 }

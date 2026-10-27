@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1722434400000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/P5MIN_PRICESENSITIVITIES",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/P5MIN_PRICESENSITIVITIES",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -19,20 +19,20 @@
   ],
   "properties": {
     "comment": "Price Sensitivies for 5MinPD solution. New solution every 5 minutes. Current Scenarios defined in P5MIN_SCENARIODEMANDTRK/P5MIN_SCENARIODEMAND",
-    "utilake.declared": "true",
-    "utilake.format": "4",
-    "utilake.key": "[]",
-    "utilake.load": "append",
-    "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"VARCHAR(20)\",\"3\":\"TIMESTAMP(0)\",\"4\":\"NUMERIC(1,0)\",\"5\":\"NUMERIC(1,0)\",\"6\":\"NUMERIC(15,5)\",\"7\":\"NUMERIC(15,5)\",\"8\":\"NUMERIC(15,5)\",\"9\":\"NUMERIC(15,5)\",\"10\":\"NUMERIC(15,5)\",\"11\":\"NUMERIC(15,5)\",\"12\":\"NUMERIC(15,5)\",\"13\":\"NUMERIC(15,5)\",\"14\":\"NUMERIC(15,5)\",\"15\":\"NUMERIC(15,5)\",\"16\":\"NUMERIC(15,5)\",\"17\":\"NUMERIC(15,5)\",\"18\":\"NUMERIC(15,5)\",\"19\":\"NUMERIC(15,5)\",\"20\":\"NUMERIC(15,5)\",\"21\":\"NUMERIC(15,5)\",\"22\":\"NUMERIC(15,5)\",\"23\":\"NUMERIC(15,5)\",\"24\":\"NUMERIC(15,5)\",\"25\":\"NUMERIC(15,5)\",\"26\":\"NUMERIC(15,5)\",\"27\":\"NUMERIC(15,5)\",\"28\":\"NUMERIC(15,5)\",\"29\":\"NUMERIC(15,5)\",\"30\":\"NUMERIC(15,5)\",\"31\":\"NUMERIC(15,5)\",\"32\":\"NUMERIC(15,5)\",\"33\":\"NUMERIC(15,5)\",\"34\":\"NUMERIC(15,5)\",\"35\":\"NUMERIC(15,5)\",\"36\":\"NUMERIC(15,5)\",\"37\":\"NUMERIC(15,5)\",\"38\":\"NUMERIC(15,5)\",\"39\":\"NUMERIC(15,5)\",\"40\":\"NUMERIC(15,5)\",\"41\":\"NUMERIC(15,5)\",\"42\":\"NUMERIC(15,5)\",\"43\":\"NUMERIC(15,5)\",\"44\":\"NUMERIC(15,5)\",\"45\":\"NUMERIC(15,5)\",\"46\":\"NUMERIC(15,5)\",\"47\":\"NUMERIC(15,5)\",\"48\":\"NUMERIC(15,5)\",\"49\":\"TIMESTAMP(0)\"}",
-    "utilake.reports": "[[\"P5MIN\",\"PRICESENSITIVITIES\"]]",
-    "utilake.table": "P5MIN_PRICESENSITIVITIES",
-    "utilake.temporal.cutoff": "LASTCHANGED",
-    "utilake.temporal.entity": "[\"INTERVENTION\"]",
-    "utilake.temporal.order": "[\"RUN_DATETIME\",\"LASTCHANGED\"]",
-    "utilake.temporal.origin": "derived",
-    "utilake.temporal.valid.kind": "timeless",
-    "utilake.time": "INTERVAL_DATETIME",
-    "utilake.visibility": "PUBLIC"
+    "phasor.declared": "true",
+    "phasor.format": "4",
+    "phasor.key": "[]",
+    "phasor.load": "append",
+    "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"VARCHAR(20)\",\"3\":\"TIMESTAMP(0)\",\"4\":\"NUMERIC(1,0)\",\"5\":\"NUMERIC(1,0)\",\"6\":\"NUMERIC(15,5)\",\"7\":\"NUMERIC(15,5)\",\"8\":\"NUMERIC(15,5)\",\"9\":\"NUMERIC(15,5)\",\"10\":\"NUMERIC(15,5)\",\"11\":\"NUMERIC(15,5)\",\"12\":\"NUMERIC(15,5)\",\"13\":\"NUMERIC(15,5)\",\"14\":\"NUMERIC(15,5)\",\"15\":\"NUMERIC(15,5)\",\"16\":\"NUMERIC(15,5)\",\"17\":\"NUMERIC(15,5)\",\"18\":\"NUMERIC(15,5)\",\"19\":\"NUMERIC(15,5)\",\"20\":\"NUMERIC(15,5)\",\"21\":\"NUMERIC(15,5)\",\"22\":\"NUMERIC(15,5)\",\"23\":\"NUMERIC(15,5)\",\"24\":\"NUMERIC(15,5)\",\"25\":\"NUMERIC(15,5)\",\"26\":\"NUMERIC(15,5)\",\"27\":\"NUMERIC(15,5)\",\"28\":\"NUMERIC(15,5)\",\"29\":\"NUMERIC(15,5)\",\"30\":\"NUMERIC(15,5)\",\"31\":\"NUMERIC(15,5)\",\"32\":\"NUMERIC(15,5)\",\"33\":\"NUMERIC(15,5)\",\"34\":\"NUMERIC(15,5)\",\"35\":\"NUMERIC(15,5)\",\"36\":\"NUMERIC(15,5)\",\"37\":\"NUMERIC(15,5)\",\"38\":\"NUMERIC(15,5)\",\"39\":\"NUMERIC(15,5)\",\"40\":\"NUMERIC(15,5)\",\"41\":\"NUMERIC(15,5)\",\"42\":\"NUMERIC(15,5)\",\"43\":\"NUMERIC(15,5)\",\"44\":\"NUMERIC(15,5)\",\"45\":\"NUMERIC(15,5)\",\"46\":\"NUMERIC(15,5)\",\"47\":\"NUMERIC(15,5)\",\"48\":\"NUMERIC(15,5)\",\"49\":\"TIMESTAMP(0)\"}",
+    "phasor.reports": "[[\"P5MIN\",\"PRICESENSITIVITIES\"]]",
+    "phasor.table": "P5MIN_PRICESENSITIVITIES",
+    "phasor.temporal.cutoff": "LASTCHANGED",
+    "phasor.temporal.entity": "[\"INTERVENTION\"]",
+    "phasor.temporal.order": "[\"RUN_DATETIME\",\"LASTCHANGED\"]",
+    "phasor.temporal.origin": "derived",
+    "phasor.temporal.valid.kind": "timeless",
+    "phasor.time": "INTERVAL_DATETIME",
+    "phasor.visibility": "PUBLIC"
   },
   "refs": {
     "main": {
@@ -402,27 +402,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/P5MIN_PRICESENSITIVITIES/metadata/snap-2761471873981584963-1-8644bec7-a315-81c4-bb68-3e5f2b6b7b43.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/P5MIN_PRICESENSITIVITIES/metadata/snap-2761471873981584963-1-82ef6e85-eb6a-8e5a-85ba-ef3adf7c7e96.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 2761471873981584963,
       "summary": {
         "operation": "append",
-        "utilake.files": "26",
-        "utilake.from.file": "PUBLIC_ARCHIVE#P5MIN_PRICESENSITIVITIES#FILE01#202408010000.zip",
-        "utilake.from.release": "2024-08",
-        "utilake.from.sha256": "3d93d07196ffd692a1137446c97bd8da30565ea2050c490f562c25fa712ed012",
-        "utilake.from.time": "2024-08-01T00:05:00+10:00",
-        "utilake.kinds": "[\"archive\"]",
-        "utilake.report-subtype": "PRICESENSITIVITIES",
-        "utilake.report-type": "P5MIN",
-        "utilake.rows": "13667520",
-        "utilake.to.file": "PUBLIC_ARCHIVE#P5MIN_PRICESENSITIVITIES#FILE01#202609010000.zip",
-        "utilake.to.release": "2026-09",
-        "utilake.to.sha256": "018dd97f8ee2c87128d3b31a1717021293ac6832a770def774df6682cf73fb5d",
-        "utilake.to.time": "2026-10-01T00:55:00+10:00",
-        "utilake.total-rows": "13667520",
-        "utilake.version": "1"
+        "phasor.files": "26",
+        "phasor.from.file": "PUBLIC_ARCHIVE#P5MIN_PRICESENSITIVITIES#FILE01#202408010000.zip",
+        "phasor.from.release": "2024-08",
+        "phasor.from.sha256": "3d93d07196ffd692a1137446c97bd8da30565ea2050c490f562c25fa712ed012",
+        "phasor.from.time": "2024-08-01T00:05:00+10:00",
+        "phasor.kinds": "[\"archive\"]",
+        "phasor.report-subtype": "PRICESENSITIVITIES",
+        "phasor.report-type": "P5MIN",
+        "phasor.rows": "13667520",
+        "phasor.to.file": "PUBLIC_ARCHIVE#P5MIN_PRICESENSITIVITIES#FILE01#202609010000.zip",
+        "phasor.to.release": "2026-09",
+        "phasor.to.sha256": "018dd97f8ee2c87128d3b31a1717021293ac6832a770def774df6682cf73fb5d",
+        "phasor.to.time": "2026-10-01T00:55:00+10:00",
+        "phasor.total-rows": "13667520",
+        "phasor.version": "1"
       },
       "timestamp-ms": 1722434400000
     }
@@ -433,5 +433,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "8644bec7-a315-81c4-bb68-3e5f2b6b7b43"
+  "table-uuid": "82ef6e85-eb6a-8e5a-85ba-ef3adf7c7e96"
 }

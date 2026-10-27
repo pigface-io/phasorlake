@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1753970400000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DISPATCH_PRE_AP_PRICE",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/DISPATCH_PRE_AP_PRICE",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -18,9 +18,9 @@
     }
   ],
   "properties": {
-    "utilake.declared": "false",
-    "utilake.format": "4",
-    "utilake.table": "DISPATCH_PRE_AP_PRICE"
+    "phasor.declared": "false",
+    "phasor.format": "4",
+    "phasor.table": "DISPATCH_PRE_AP_PRICE"
   },
   "refs": {
     "main": {
@@ -113,27 +113,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/DISPATCH_PRE_AP_PRICE/metadata/snap-8362650096559618619-1-b1d94292-287c-8839-b685-dd708bcbf1ab.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/DISPATCH_PRE_AP_PRICE/metadata/snap-8362650096559618619-1-ec5a52e2-6993-8f0e-9034-cf03ffe4326b.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 8362650096559618619,
       "summary": {
         "operation": "append",
-        "utilake.files": "109816",
-        "utilake.from.file": "PUBLIC_DISPATCHPRICES_PRE_AP_202508121115_0000000475994494.zip",
-        "utilake.from.release": "2025-08",
-        "utilake.from.sha256": "fdf995b0c14fca3cf5fdd0f86db998d5c3c6eadc8f551f7764831cce91771490",
-        "utilake.from.time": "2025-08-12T11:15:00+10:00",
-        "utilake.kinds": "[\"reports\"]",
-        "utilake.report-subtype": "PRE_AP_PRICE",
-        "utilake.report-type": "DISPATCH",
-        "utilake.rows": "549080",
-        "utilake.to.file": "PUBLIC_DISPATCHPRICES_PRE_AP_202610241145_0000000544595549.zip",
-        "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "f1ce36d292398821b64b8b1adbe94945d60e055dca51aea0b2e5c3beb61c3e05",
-        "utilake.to.time": "2026-10-24T11:45:00+10:00",
-        "utilake.total-rows": "549080",
-        "utilake.version": "1"
+        "phasor.files": "109816",
+        "phasor.from.file": "PUBLIC_DISPATCHPRICES_PRE_AP_202508121115_0000000475994494.zip",
+        "phasor.from.release": "2025-08",
+        "phasor.from.sha256": "fdf995b0c14fca3cf5fdd0f86db998d5c3c6eadc8f551f7764831cce91771490",
+        "phasor.from.time": "2025-08-12T11:15:00+10:00",
+        "phasor.kinds": "[\"reports\"]",
+        "phasor.report-subtype": "PRE_AP_PRICE",
+        "phasor.report-type": "DISPATCH",
+        "phasor.rows": "549080",
+        "phasor.to.file": "PUBLIC_DISPATCHPRICES_PRE_AP_202610241145_0000000544595549.zip",
+        "phasor.to.release": "2026-10",
+        "phasor.to.sha256": "f1ce36d292398821b64b8b1adbe94945d60e055dca51aea0b2e5c3beb61c3e05",
+        "phasor.to.time": "2026-10-24T11:45:00+10:00",
+        "phasor.total-rows": "549080",
+        "phasor.version": "1"
       },
       "timestamp-ms": 1753970400000
     }
@@ -144,5 +144,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "b1d94292-287c-8839-b685-dd708bcbf1ab"
+  "table-uuid": "ec5a52e2-6993-8f0e-9034-cf03ffe4326b"
 }

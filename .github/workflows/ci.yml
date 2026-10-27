@@ -47,7 +47,7 @@ jobs:
           persist-credentials: false
       - uses: ./.github/actions/setup
         with:
-          schemas-key: ${{ secrets.UTILAKE_SCHEMAS_KEY }}
+          schemas-key: ${{ secrets.PHASOR_SCHEMAS_KEY }}
       - name: Install gitleaks, duckdb, prek and cargo-llvm-cov
         run: |
           scripts/fetch-tool.sh \
@@ -82,7 +82,7 @@ jobs:
           persist-credentials: false
       - uses: ./.github/actions/setup
         with:
-          schemas-key: ${{ secrets.UTILAKE_SCHEMAS_KEY }}
+          schemas-key: ${{ secrets.PHASOR_SCHEMAS_KEY }}
       - run: just bench
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         if: always()
@@ -101,7 +101,7 @@ jobs:
           persist-credentials: false
       - uses: ./.github/actions/setup
         with:
-          schemas-key: ${{ secrets.UTILAKE_SCHEMAS_KEY }}
+          schemas-key: ${{ secrets.PHASOR_SCHEMAS_KEY }}
       - run: cargo install --locked cargo-audit --version "$CARGO_AUDIT_VERSION"
       - run: just audit
 
@@ -116,6 +116,6 @@ jobs:
           persist-credentials: false
       - uses: ./.github/actions/setup
         with:
-          schemas-key: ${{ secrets.UTILAKE_SCHEMAS_KEY }}
+          schemas-key: ${{ secrets.PHASOR_SCHEMAS_KEY }}
       - run: sudo apt-get install -y zsh
       - run: just net-test

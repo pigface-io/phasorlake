@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1469973600000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/ROOFTOP_PV_FORECAST",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/ROOFTOP_PV_FORECAST",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -19,22 +19,22 @@
   ],
   "properties": {
     "comment": "Regional forecasts of Rooftop Solar generation across the half-hour intervals over 8 days. AEMO plans to remove this table in a Data Model version release after 5.6.",
-    "utilake.declared": "true",
-    "utilake.format": "4",
-    "utilake.key": "[\"VERSION_DATETIME\",\"REGIONID\",\"INTERVAL_DATETIME\"]",
-    "utilake.load": "append",
-    "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"VARCHAR(20)\",\"3\":\"TIMESTAMP(0)\",\"4\":\"NUMERIC(12,3)\",\"5\":\"NUMERIC(12,3)\",\"6\":\"NUMERIC(12,3)\",\"7\":\"NUMERIC(12,3)\",\"8\":\"TIMESTAMP(0)\"}",
-    "utilake.package": "DEMAND_FORECASTS",
-    "utilake.reports": "[[\"ROOFTOP\",\"FORECAST\"]]",
-    "utilake.table": "ROOFTOP_PV_FORECAST",
-    "utilake.temporal.cutoff": "VERSION_DATETIME",
-    "utilake.temporal.entity": "[\"REGIONID\"]",
-    "utilake.temporal.order": "[\"VERSION_DATETIME\",\"LASTCHANGED\"]",
-    "utilake.temporal.origin": "derived",
-    "utilake.temporal.valid.column": "INTERVAL_DATETIME",
-    "utilake.temporal.valid.kind": "interval_end",
-    "utilake.time": "INTERVAL_DATETIME",
-    "utilake.visibility": "PUBLIC"
+    "phasor.declared": "true",
+    "phasor.format": "4",
+    "phasor.key": "[\"VERSION_DATETIME\",\"REGIONID\",\"INTERVAL_DATETIME\"]",
+    "phasor.load": "append",
+    "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"VARCHAR(20)\",\"3\":\"TIMESTAMP(0)\",\"4\":\"NUMERIC(12,3)\",\"5\":\"NUMERIC(12,3)\",\"6\":\"NUMERIC(12,3)\",\"7\":\"NUMERIC(12,3)\",\"8\":\"TIMESTAMP(0)\"}",
+    "phasor.package": "DEMAND_FORECASTS",
+    "phasor.reports": "[[\"ROOFTOP\",\"FORECAST\"]]",
+    "phasor.table": "ROOFTOP_PV_FORECAST",
+    "phasor.temporal.cutoff": "VERSION_DATETIME",
+    "phasor.temporal.entity": "[\"REGIONID\"]",
+    "phasor.temporal.order": "[\"VERSION_DATETIME\",\"LASTCHANGED\"]",
+    "phasor.temporal.origin": "derived",
+    "phasor.temporal.valid.column": "INTERVAL_DATETIME",
+    "phasor.temporal.valid.kind": "interval_end",
+    "phasor.time": "INTERVAL_DATETIME",
+    "phasor.visibility": "PUBLIC"
   },
   "refs": {
     "main": {
@@ -121,27 +121,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/ROOFTOP_PV_FORECAST/metadata/snap-7228370417963663670-1-ad40feea-1eb3-8d35-b898-ec7741ef94e6.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/ROOFTOP_PV_FORECAST/metadata/snap-7228370417963663670-1-dffd6e74-1b9b-8071-9600-14b6ef6f41c0.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 7228370417963663670,
       "summary": {
         "operation": "append",
-        "utilake.files": "18715",
-        "utilake.from.file": "PUBLIC_DVD_ROOFTOP_PV_FORECAST_201608010000.zip",
-        "utilake.from.release": "2016-08",
-        "utilake.from.sha256": "7c15b7e00e7eeae609aafbfb500e848e05a1d4b448e968a78fb312eef5214e40",
-        "utilake.from.time": "2016-08-01T00:30:00+10:00",
-        "utilake.kinds": "[\"archive\",\"dvd\",\"reports\"]",
-        "utilake.report-subtype": "FORECAST",
-        "utilake.report-type": "ROOFTOP",
-        "utilake.rows": "366570320",
-        "utilake.to.file": "PUBLIC_ROOFTOP_PV_FORECAST_20261024113000_0000000544594224.zip",
-        "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "0c0b3d65db8ddbedf19439ccc71d76933b52cef3b1bca6ff41b2b20e74221df0",
-        "utilake.to.time": "2026-11-01T04:00:00+10:00",
-        "utilake.total-rows": "366570320",
-        "utilake.version": "1"
+        "phasor.files": "18715",
+        "phasor.from.file": "PUBLIC_DVD_ROOFTOP_PV_FORECAST_201608010000.zip",
+        "phasor.from.release": "2016-08",
+        "phasor.from.sha256": "7c15b7e00e7eeae609aafbfb500e848e05a1d4b448e968a78fb312eef5214e40",
+        "phasor.from.time": "2016-08-01T00:30:00+10:00",
+        "phasor.kinds": "[\"archive\",\"dvd\",\"reports\"]",
+        "phasor.report-subtype": "FORECAST",
+        "phasor.report-type": "ROOFTOP",
+        "phasor.rows": "366570320",
+        "phasor.to.file": "PUBLIC_ROOFTOP_PV_FORECAST_20261024113000_0000000544594224.zip",
+        "phasor.to.release": "2026-10",
+        "phasor.to.sha256": "0c0b3d65db8ddbedf19439ccc71d76933b52cef3b1bca6ff41b2b20e74221df0",
+        "phasor.to.time": "2026-11-01T04:00:00+10:00",
+        "phasor.total-rows": "366570320",
+        "phasor.version": "1"
       },
       "timestamp-ms": 1469973600000
     }
@@ -152,5 +152,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "ad40feea-1eb3-8d35-b898-ec7741ef94e6"
+  "table-uuid": "dffd6e74-1b9b-8071-9600-14b6ef6f41c0"
 }

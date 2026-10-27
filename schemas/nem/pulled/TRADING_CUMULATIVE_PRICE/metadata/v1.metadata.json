@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 2,
   "last-updated-ms": 1753970400001,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/TRADING_CUMULATIVE_PRICE",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/TRADING_CUMULATIVE_PRICE",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -18,9 +18,9 @@
     }
   ],
   "properties": {
-    "utilake.declared": "false",
-    "utilake.format": "4",
-    "utilake.table": "TRADING_CUMULATIVE_PRICE"
+    "phasor.declared": "false",
+    "phasor.format": "4",
+    "phasor.table": "TRADING_CUMULATIVE_PRICE"
   },
   "refs": {
     "main": {
@@ -214,55 +214,55 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/TRADING_CUMULATIVE_PRICE/metadata/snap-5915488307447588692-1-93858619-da67-8ac2-adbd-bc6027113b9f.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/TRADING_CUMULATIVE_PRICE/metadata/snap-5915488307447588692-1-32bafba5-8c4a-8b75-b885-2547cf613522.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 5915488307447588692,
       "summary": {
         "operation": "append",
-        "utilake.files": "1",
-        "utilake.from.file": "PUBLIC_TRADING_CUMULATIVE_PRICE_202008230200_0000000327476381.zip",
-        "utilake.from.release": "2020-08",
-        "utilake.from.sha256": "6448f09c6366d9220713a0e817ffb4bb9a67b12eb1590bf9e5ecacf7deacd98a",
-        "utilake.from.time": "2020-08-23T02:00:00+10:00",
-        "utilake.kinds": "[\"reports\"]",
-        "utilake.report-subtype": "CUMULATIVE_PRICE",
-        "utilake.report-type": "TRADING",
-        "utilake.rows": "5",
-        "utilake.to.file": "PUBLIC_TRADING_CUMULATIVE_PRICE_202008230200_0000000327476381.zip",
-        "utilake.to.release": "2020-08",
-        "utilake.to.sha256": "6448f09c6366d9220713a0e817ffb4bb9a67b12eb1590bf9e5ecacf7deacd98a",
-        "utilake.to.time": "2020-08-23T02:00:00+10:00",
-        "utilake.total-rows": "5",
-        "utilake.version": "1"
+        "phasor.files": "1",
+        "phasor.from.file": "PUBLIC_TRADING_CUMULATIVE_PRICE_202008230200_0000000327476381.zip",
+        "phasor.from.release": "2020-08",
+        "phasor.from.sha256": "6448f09c6366d9220713a0e817ffb4bb9a67b12eb1590bf9e5ecacf7deacd98a",
+        "phasor.from.time": "2020-08-23T02:00:00+10:00",
+        "phasor.kinds": "[\"reports\"]",
+        "phasor.report-subtype": "CUMULATIVE_PRICE",
+        "phasor.report-type": "TRADING",
+        "phasor.rows": "5",
+        "phasor.to.file": "PUBLIC_TRADING_CUMULATIVE_PRICE_202008230200_0000000327476381.zip",
+        "phasor.to.release": "2020-08",
+        "phasor.to.sha256": "6448f09c6366d9220713a0e817ffb4bb9a67b12eb1590bf9e5ecacf7deacd98a",
+        "phasor.to.time": "2020-08-23T02:00:00+10:00",
+        "phasor.total-rows": "5",
+        "phasor.version": "1"
       },
       "timestamp-ms": 1596204000000
     },
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/TRADING_CUMULATIVE_PRICE/metadata/snap-5083969135744928089-2-93858619-da67-8ac2-adbd-bc6027113b9f.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/TRADING_CUMULATIVE_PRICE/metadata/snap-5083969135744928089-2-32bafba5-8c4a-8b75-b885-2547cf613522.avro",
       "parent-snapshot-id": 5915488307447588692,
       "schema-id": 1,
       "sequence-number": 2,
       "snapshot-id": 5083969135744928089,
       "summary": {
         "operation": "append",
-        "utilake.files": "112728",
-        "utilake.from.file": "PUBLIC_TRADING_CUMULATIVE_PRICE_202508121115_0000000475994479.zip",
-        "utilake.from.release": "2025-08",
-        "utilake.from.sha256": "1bd4a5eba875b9301eda8536f8caff71a6b56fedc140c9c58a8102c325a4655e",
-        "utilake.from.time": "2025-08-12T11:15:00+10:00",
-        "utilake.kinds": "[\"reports\"]",
-        "utilake.report-subtype": "CUMULATIVE_PRICE",
-        "utilake.report-type": "TRADING",
-        "utilake.rows": "563640",
-        "utilake.to.file": "PUBLIC_TRADING_CUMULATIVE_PRICE_202610241145_0000000544595528.zip",
-        "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "a96f6ba46743027f2112ee9af4ae2cf1b42dd31cf3910702a691291cac4073fb",
-        "utilake.to.time": "2026-10-24T11:45:00+10:00",
-        "utilake.total-rows": "563645",
-        "utilake.version": "2"
+        "phasor.files": "112728",
+        "phasor.from.file": "PUBLIC_TRADING_CUMULATIVE_PRICE_202508121115_0000000475994479.zip",
+        "phasor.from.release": "2025-08",
+        "phasor.from.sha256": "1bd4a5eba875b9301eda8536f8caff71a6b56fedc140c9c58a8102c325a4655e",
+        "phasor.from.time": "2025-08-12T11:15:00+10:00",
+        "phasor.kinds": "[\"reports\"]",
+        "phasor.report-subtype": "CUMULATIVE_PRICE",
+        "phasor.report-type": "TRADING",
+        "phasor.rows": "563640",
+        "phasor.to.file": "PUBLIC_TRADING_CUMULATIVE_PRICE_202610241145_0000000544595528.zip",
+        "phasor.to.release": "2026-10",
+        "phasor.to.sha256": "a96f6ba46743027f2112ee9af4ae2cf1b42dd31cf3910702a691291cac4073fb",
+        "phasor.to.time": "2026-10-24T11:45:00+10:00",
+        "phasor.total-rows": "563645",
+        "phasor.version": "2"
       },
       "timestamp-ms": 1753970400001
     }
@@ -273,5 +273,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "93858619-da67-8ac2-adbd-bc6027113b9f"
+  "table-uuid": "32bafba5-8c4a-8b75-b885-2547cf613522"
 }

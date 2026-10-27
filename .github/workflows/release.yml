@@ -29,13 +29,13 @@ jobs:
           persist-credentials: false
       - uses: ./.github/actions/setup
         with:
-          schemas-key: ${{ secrets.UTILAKE_SCHEMAS_KEY }}
+          schemas-key: ${{ secrets.PHASOR_SCHEMAS_KEY }}
       - run: just build
       - name: Package
         run: |
-          name="utilake-${GITHUB_REF_NAME}-${{ matrix.target }}"
+          name="phasor-${GITHUB_REF_NAME}-${{ matrix.target }}"
           mkdir -p "dist/$name"
-          cp bin/utilake LICENSE NOTICE README.md "dist/$name/"
+          cp bin/phasor LICENSE NOTICE README.md "dist/$name/"
           tar -C dist -czf "dist/$name.tar.gz" "$name"
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:

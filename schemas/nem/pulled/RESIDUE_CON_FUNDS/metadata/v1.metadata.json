@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1251727200000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/RESIDUE_CON_FUNDS",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/RESIDUE_CON_FUNDS",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -19,21 +19,21 @@
   ],
   "properties": {
     "comment": "RESIDUE_CON_FUNDS supports the Settlement Residue Auction, by holding the fund details for each contract.",
-    "utilake.declared": "true",
-    "utilake.format": "4",
-    "utilake.key": "[\"CONTRACTID\",\"INTERCONNECTORID\",\"FROMREGIONID\"]",
-    "utilake.load": "append",
-    "utilake.model-types": "{\"1\":\"VARCHAR(30)\",\"2\":\"VARCHAR(10)\",\"3\":\"VARCHAR(10)\",\"4\":\"NUMERIC(5,0)\",\"5\":\"NUMERIC(5,0)\",\"6\":\"NUMERIC(5,0)\",\"7\":\"NUMERIC(5,0)\",\"8\":\"NUMERIC(9,2)\",\"9\":\"NUMERIC(8,5)\",\"10\":\"NUMERIC(9,2)\",\"11\":\"TIMESTAMP(0)\"}",
-    "utilake.package": "IRAUCTION",
-    "utilake.reports": "[[\"IRAUCTION\",\"RESIDUE_CON_FUNDS\"]]",
-    "utilake.table": "RESIDUE_CON_FUNDS",
-    "utilake.temporal.cutoff": "LASTCHANGED",
-    "utilake.temporal.entity": "[\"CONTRACTID\",\"INTERCONNECTORID\",\"FROMREGIONID\"]",
-    "utilake.temporal.order": "[\"LASTCHANGED\"]",
-    "utilake.temporal.origin": "derived",
-    "utilake.temporal.valid.kind": "timeless",
-    "utilake.time": "LASTCHANGED",
-    "utilake.visibility": "PUBLIC"
+    "phasor.declared": "true",
+    "phasor.format": "4",
+    "phasor.key": "[\"CONTRACTID\",\"INTERCONNECTORID\",\"FROMREGIONID\"]",
+    "phasor.load": "append",
+    "phasor.model-types": "{\"1\":\"VARCHAR(30)\",\"2\":\"VARCHAR(10)\",\"3\":\"VARCHAR(10)\",\"4\":\"NUMERIC(5,0)\",\"5\":\"NUMERIC(5,0)\",\"6\":\"NUMERIC(5,0)\",\"7\":\"NUMERIC(5,0)\",\"8\":\"NUMERIC(9,2)\",\"9\":\"NUMERIC(8,5)\",\"10\":\"NUMERIC(9,2)\",\"11\":\"TIMESTAMP(0)\"}",
+    "phasor.package": "IRAUCTION",
+    "phasor.reports": "[[\"IRAUCTION\",\"RESIDUE_CON_FUNDS\"]]",
+    "phasor.table": "RESIDUE_CON_FUNDS",
+    "phasor.temporal.cutoff": "LASTCHANGED",
+    "phasor.temporal.entity": "[\"CONTRACTID\",\"INTERCONNECTORID\",\"FROMREGIONID\"]",
+    "phasor.temporal.order": "[\"LASTCHANGED\"]",
+    "phasor.temporal.origin": "derived",
+    "phasor.temporal.valid.kind": "timeless",
+    "phasor.time": "LASTCHANGED",
+    "phasor.visibility": "PUBLIC"
   },
   "refs": {
     "main": {
@@ -141,27 +141,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/RESIDUE_CON_FUNDS/metadata/snap-6367515952061301407-1-17d55f67-f29d-84cf-b606-1155c4694690.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/RESIDUE_CON_FUNDS/metadata/snap-6367515952061301407-1-c6efde2a-df92-8bee-a074-f07e821f2a7a.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 6367515952061301407,
       "summary": {
         "operation": "append",
-        "utilake.files": "63",
-        "utilake.from.file": "PUBLIC_DVD_RESIDUE_CON_FUNDS_200909010000.zip",
-        "utilake.from.release": "2009-09",
-        "utilake.from.sha256": "9cf326f7fabd7b91220c5950a2de3fdb28d9c7b97f1a4045f8075ad7b3abaaf5",
-        "utilake.from.time": "2009-09-02T15:18:19+10:00",
-        "utilake.kinds": "[\"archive\",\"dvd\"]",
-        "utilake.report-subtype": "RESIDUE_CON_FUNDS",
-        "utilake.report-type": "IRAUCTION",
-        "utilake.rows": "10536",
-        "utilake.to.file": "PUBLIC_ARCHIVE#RESIDUE_CON_FUNDS#FILE01#202608010000.zip",
-        "utilake.to.release": "2026-08",
-        "utilake.to.sha256": "a5ffdfe8fe98dbff6458e3a0906192a1eb11f7ab7283e6084b9499d4d6dba878",
-        "utilake.to.time": "2026-08-13T10:50:07+10:00",
-        "utilake.total-rows": "10536",
-        "utilake.version": "1"
+        "phasor.files": "63",
+        "phasor.from.file": "PUBLIC_DVD_RESIDUE_CON_FUNDS_200909010000.zip",
+        "phasor.from.release": "2009-09",
+        "phasor.from.sha256": "9cf326f7fabd7b91220c5950a2de3fdb28d9c7b97f1a4045f8075ad7b3abaaf5",
+        "phasor.from.time": "2009-09-02T15:18:19+10:00",
+        "phasor.kinds": "[\"archive\",\"dvd\"]",
+        "phasor.report-subtype": "RESIDUE_CON_FUNDS",
+        "phasor.report-type": "IRAUCTION",
+        "phasor.rows": "10536",
+        "phasor.to.file": "PUBLIC_ARCHIVE#RESIDUE_CON_FUNDS#FILE01#202608010000.zip",
+        "phasor.to.release": "2026-08",
+        "phasor.to.sha256": "a5ffdfe8fe98dbff6458e3a0906192a1eb11f7ab7283e6084b9499d4d6dba878",
+        "phasor.to.time": "2026-08-13T10:50:07+10:00",
+        "phasor.total-rows": "10536",
+        "phasor.version": "1"
       },
       "timestamp-ms": 1251727200000
     }
@@ -172,5 +172,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "17d55f67-f29d-84cf-b606-1155c4694690"
+  "table-uuid": "c6efde2a-df92-8bee-a074-f07e821f2a7a"
 }

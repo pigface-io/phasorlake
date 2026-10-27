@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1246370400000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/SPDRC",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/SPDRC",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -18,9 +18,9 @@
     }
   ],
   "properties": {
-    "utilake.declared": "false",
-    "utilake.format": "4",
-    "utilake.table": "SPDRC"
+    "phasor.declared": "false",
+    "phasor.format": "4",
+    "phasor.table": "SPDRC"
   },
   "refs": {
     "main": {
@@ -89,27 +89,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/SPDRC/metadata/snap-8107832941769978096-1-caea05ac-15c2-8eef-b7c0-06a6f8ececf7.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/SPDRC/metadata/snap-8107832941769978096-1-d86c3f05-220d-8575-aec9-bb522a6ba0d3.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 8107832941769978096,
       "summary": {
         "operation": "append",
-        "utilake.files": "115",
-        "utilake.from.file": "PUBLIC_DVD_SPDREGIONCONSTRAINT_200907010000.zip",
-        "utilake.from.release": "2009-07",
-        "utilake.from.sha256": "44539eb2dbd1be88df4d0e25d3424acce148a40d2632a20dc0d5556981bbd261",
-        "utilake.from.time": "2009-07-13T00:00:00+10:00",
-        "utilake.kinds": "[\"dvd\"]",
-        "utilake.report-subtype": "",
-        "utilake.report-type": "SPDRC",
-        "utilake.rows": "31733",
-        "utilake.to.file": "PUBLIC_DVD_SPDREGIONCONSTRAINT_202407010000.zip",
-        "utilake.to.release": "2024-07",
-        "utilake.to.sha256": "0be9a6897db27453b00eb2b4b50f72d8a9daab5e08a71a5af594cad53dea3b1a",
-        "utilake.to.time": "2024-07-30T00:00:00+10:00",
-        "utilake.total-rows": "31733",
-        "utilake.version": "2"
+        "phasor.files": "115",
+        "phasor.from.file": "PUBLIC_DVD_SPDREGIONCONSTRAINT_200907010000.zip",
+        "phasor.from.release": "2009-07",
+        "phasor.from.sha256": "44539eb2dbd1be88df4d0e25d3424acce148a40d2632a20dc0d5556981bbd261",
+        "phasor.from.time": "2009-07-13T00:00:00+10:00",
+        "phasor.kinds": "[\"dvd\"]",
+        "phasor.report-subtype": "",
+        "phasor.report-type": "SPDRC",
+        "phasor.rows": "31733",
+        "phasor.to.file": "PUBLIC_DVD_SPDREGIONCONSTRAINT_202407010000.zip",
+        "phasor.to.release": "2024-07",
+        "phasor.to.sha256": "0be9a6897db27453b00eb2b4b50f72d8a9daab5e08a71a5af594cad53dea3b1a",
+        "phasor.to.time": "2024-07-30T00:00:00+10:00",
+        "phasor.total-rows": "31733",
+        "phasor.version": "2"
       },
       "timestamp-ms": 1246370400000
     }
@@ -120,5 +120,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "caea05ac-15c2-8eef-b7c0-06a6f8ececf7"
+  "table-uuid": "d86c3f05-220d-8575-aec9-bb522a6ba0d3"
 }

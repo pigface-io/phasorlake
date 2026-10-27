@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1785506400000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/DWGM_INT140_GAS_QUALITY_DATA",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/gas/DWGM_INT140_GAS_QUALITY_DATA",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -18,23 +18,23 @@
     }
   ],
   "properties": {
-    "utilake.declared": "true",
-    "utilake.format": "4",
-    "utilake.headers": "{\"1\":\"mirn\",\"2\":\"gas_date\",\"3\":\"ti\",\"4\":\"quality_type\",\"5\":\"unit\",\"6\":\"quantity\",\"7\":\"meter_no\",\"8\":\"site_company\",\"9\":\"current_date\"}",
-    "utilake.key": "[]",
-    "utilake.load": "append",
-    "utilake.market": "gas",
-    "utilake.offset": "+10:00",
-    "utilake.reports": "[[\"DWGM\",\"INT140_GAS_QUALITY_DATA_1\"]]",
-    "utilake.table": "DWGM_INT140_GAS_QUALITY_DATA",
-    "utilake.temporal.cutoff": "CURRENT_DATE",
-    "utilake.temporal.entity": "[]",
-    "utilake.temporal.order": "[\"CURRENT_DATE\"]",
-    "utilake.temporal.origin": "hand",
-    "utilake.temporal.valid.column": "GAS_DATE",
-    "utilake.temporal.valid.kind": "instant",
-    "utilake.time": "GAS_DATE",
-    "utilake.visibility": "PUBLIC"
+    "phasor.declared": "true",
+    "phasor.format": "4",
+    "phasor.headers": "{\"1\":\"mirn\",\"2\":\"gas_date\",\"3\":\"ti\",\"4\":\"quality_type\",\"5\":\"unit\",\"6\":\"quantity\",\"7\":\"meter_no\",\"8\":\"site_company\",\"9\":\"current_date\"}",
+    "phasor.key": "[]",
+    "phasor.load": "append",
+    "phasor.market": "gas",
+    "phasor.offset": "+10:00",
+    "phasor.reports": "[[\"DWGM\",\"INT140_GAS_QUALITY_DATA_1\"]]",
+    "phasor.table": "DWGM_INT140_GAS_QUALITY_DATA",
+    "phasor.temporal.cutoff": "CURRENT_DATE",
+    "phasor.temporal.entity": "[]",
+    "phasor.temporal.order": "[\"CURRENT_DATE\"]",
+    "phasor.temporal.origin": "hand",
+    "phasor.temporal.valid.column": "GAS_DATE",
+    "phasor.temporal.valid.kind": "instant",
+    "phasor.time": "GAS_DATE",
+    "phasor.visibility": "PUBLIC"
   },
   "refs": {
     "main": {
@@ -115,27 +115,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/DWGM_INT140_GAS_QUALITY_DATA/metadata/snap-3337531083952823470-1-be420c2e-ad66-8bbe-a22d-865187179419.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/gas/DWGM_INT140_GAS_QUALITY_DATA/metadata/snap-3337531083952823470-1-d084a6ec-635a-8a5b-8eda-e9c27b6f4dc9.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 3337531083952823470,
       "summary": {
         "operation": "append",
-        "utilake.files": "821",
-        "utilake.from.file": "PublicRpts31.zip",
-        "utilake.from.release": "2026-08",
-        "utilake.from.sha256": "735fad42989ef107a70ecdfc43f290c13afc957673461c78e4538d9ffcc9b0fe",
-        "utilake.from.time": "2026-08-30T00:00:00+10:00",
-        "utilake.kinds": "[\"dwgm\"]",
-        "utilake.report-subtype": "INT140_GAS_QUALITY_DATA_1",
-        "utilake.report-type": "DWGM",
-        "utilake.rows": "129574",
-        "utilake.to.file": "int140_v5_gas_quality_data_1.csv@20261024T113600+1000",
-        "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "cb45aee7a5ee69a92f17adad5841af5405028c1af84ae40fc13a111806e4bc7e",
-        "utilake.to.time": "2026-10-24T00:00:00+10:00",
-        "utilake.total-rows": "129574",
-        "utilake.version": "5"
+        "phasor.files": "821",
+        "phasor.from.file": "PublicRpts31.zip",
+        "phasor.from.release": "2026-08",
+        "phasor.from.sha256": "735fad42989ef107a70ecdfc43f290c13afc957673461c78e4538d9ffcc9b0fe",
+        "phasor.from.time": "2026-08-30T00:00:00+10:00",
+        "phasor.kinds": "[\"dwgm\"]",
+        "phasor.report-subtype": "INT140_GAS_QUALITY_DATA_1",
+        "phasor.report-type": "DWGM",
+        "phasor.rows": "129574",
+        "phasor.to.file": "int140_v5_gas_quality_data_1.csv@20261024T113600+1000",
+        "phasor.to.release": "2026-10",
+        "phasor.to.sha256": "cb45aee7a5ee69a92f17adad5841af5405028c1af84ae40fc13a111806e4bc7e",
+        "phasor.to.time": "2026-10-24T00:00:00+10:00",
+        "phasor.total-rows": "129574",
+        "phasor.version": "5"
       },
       "timestamp-ms": 1785506400000
     }
@@ -146,5 +146,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "be420c2e-ad66-8bbe-a22d-865187179419"
+  "table-uuid": "d084a6ec-635a-8a5b-8eda-e9c27b6f4dc9"
 }

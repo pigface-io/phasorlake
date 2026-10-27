@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1246370400000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/METER_DATA_INTERCONNECTOR",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/METER_DATA_INTERCONNECTOR",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -18,9 +18,9 @@
     }
   ],
   "properties": {
-    "utilake.declared": "false",
-    "utilake.format": "4",
-    "utilake.table": "METER_DATA_INTERCONNECTOR"
+    "phasor.declared": "false",
+    "phasor.format": "4",
+    "phasor.table": "METER_DATA_INTERCONNECTOR"
   },
   "refs": {
     "main": {
@@ -89,27 +89,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/METER_DATA_INTERCONNECTOR/metadata/snap-3699405612205956865-1-a2fa7f06-d470-8567-90b8-120f7c0d4d8d.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/METER_DATA_INTERCONNECTOR/metadata/snap-3699405612205956865-1-12c32086-8e66-8311-b3cb-c047df54c313.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 3699405612205956865,
       "summary": {
         "operation": "append",
-        "utilake.files": "143",
-        "utilake.from.file": "PUBLIC_DVD_INTERCONNMWFLOW_200907010000.zip",
-        "utilake.from.release": "2009-07",
-        "utilake.from.sha256": "44539eb2dbd1be88df4d0e25d3424acce148a40d2632a20dc0d5556981bbd261",
-        "utilake.from.time": "2008-12-14T00:00:00+10:00",
-        "utilake.kinds": "[\"dvd\"]",
-        "utilake.report-subtype": "INTERCONNECTOR",
-        "utilake.report-type": "METER_DATA",
-        "utilake.rows": "8357520",
-        "utilake.to.file": "PUBLIC_DVD_INTERCONNMWFLOW_202105010000.zip",
-        "utilake.to.release": "2021-05",
-        "utilake.to.sha256": "6db1d4ce3857550c53d0ef64ee754aef6bebcd792d553226adf5e1e615f4bd25",
-        "utilake.to.time": "2021-05-11T00:00:00+10:00",
-        "utilake.total-rows": "8357520",
-        "utilake.version": "1"
+        "phasor.files": "143",
+        "phasor.from.file": "PUBLIC_DVD_INTERCONNMWFLOW_200907010000.zip",
+        "phasor.from.release": "2009-07",
+        "phasor.from.sha256": "44539eb2dbd1be88df4d0e25d3424acce148a40d2632a20dc0d5556981bbd261",
+        "phasor.from.time": "2008-12-14T00:00:00+10:00",
+        "phasor.kinds": "[\"dvd\"]",
+        "phasor.report-subtype": "INTERCONNECTOR",
+        "phasor.report-type": "METER_DATA",
+        "phasor.rows": "8357520",
+        "phasor.to.file": "PUBLIC_DVD_INTERCONNMWFLOW_202105010000.zip",
+        "phasor.to.release": "2021-05",
+        "phasor.to.sha256": "6db1d4ce3857550c53d0ef64ee754aef6bebcd792d553226adf5e1e615f4bd25",
+        "phasor.to.time": "2021-05-11T00:00:00+10:00",
+        "phasor.total-rows": "8357520",
+        "phasor.version": "1"
       },
       "timestamp-ms": 1246370400000
     }
@@ -120,5 +120,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "a2fa7f06-d470-8567-90b8-120f7c0d4d8d"
+  "table-uuid": "12c32086-8e66-8311-b3cb-c047df54c313"
 }

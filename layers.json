@@ -1,125 +1,125 @@
 {
-  "utilake-acquire": [
-    "utilake-core",
-    "utilake-kit",
-    "utilake-net",
-    "utilake-plain-decode",
-    "utilake-provenance",
-    "utilake-zip"
+  "phasor-acquire": [
+    "phasor-core",
+    "phasor-kit",
+    "phasor-net",
+    "phasor-plain-decode",
+    "phasor-provenance",
+    "phasor-zip"
   ],
-  "utilake-bench": [
-    "utilake-acquire",
-    "utilake-core",
-    "utilake-kit",
-    "utilake-mms-conform",
-    "utilake-mms-decode",
-    "utilake-nem",
-    "utilake-pipeline",
-    "utilake-registry",
-    "utilake-writer",
-    "utilake-zip"
+  "phasor-bench": [
+    "phasor-acquire",
+    "phasor-core",
+    "phasor-kit",
+    "phasor-mms-conform",
+    "phasor-mms-decode",
+    "phasor-nem",
+    "phasor-pipeline",
+    "phasor-registry",
+    "phasor-writer",
+    "phasor-zip"
   ],
-  "utilake-cli": [
-    "utilake-acquire",
-    "utilake-core",
-    "utilake-gas",
-    "utilake-iceberg",
-    "utilake-kit",
-    "utilake-mms-conform",
-    "utilake-nem",
-    "utilake-pipeline",
-    "utilake-registry",
-    "utilake-wem",
-    "utilake-writer",
-    "utilake-zip"
+  "phasor-cli": [
+    "phasor-acquire",
+    "phasor-core",
+    "phasor-gas",
+    "phasor-iceberg",
+    "phasor-kit",
+    "phasor-mms-conform",
+    "phasor-nem",
+    "phasor-pipeline",
+    "phasor-registry",
+    "phasor-wem",
+    "phasor-writer",
+    "phasor-zip"
   ],
-  "utilake-core": [
-    "utilake-decode",
-    "utilake-diag",
-    "utilake-provenance"
+  "phasor-core": [
+    "phasor-decode",
+    "phasor-diag",
+    "phasor-provenance"
   ],
-  "utilake-e2e": [],
-  "utilake-gas": [
-    "utilake-acquire",
-    "utilake-core",
-    "utilake-kit",
-    "utilake-mms-conform",
-    "utilake-plain-decode",
-    "utilake-registry",
-    "utilake-zip"
+  "phasor-e2e": [],
+  "phasor-gas": [
+    "phasor-acquire",
+    "phasor-core",
+    "phasor-kit",
+    "phasor-mms-conform",
+    "phasor-plain-decode",
+    "phasor-registry",
+    "phasor-zip"
   ],
-  "utilake-iceberg-store": [
-    "utilake-core",
-    "utilake-iceberg"
+  "phasor-iceberg-store": [
+    "phasor-core",
+    "phasor-iceberg"
   ],
-  "utilake-kit": [
-    "utilake-core",
-    "utilake-net",
-    "utilake-plain-decode",
-    "utilake-zip"
+  "phasor-kit": [
+    "phasor-core",
+    "phasor-net",
+    "phasor-plain-decode",
+    "phasor-zip"
   ],
-  "utilake-mirror": [
-    "utilake-core",
-    "utilake-net",
-    "utilake-plain-decode",
-    "utilake-provenance",
-    "utilake-zip"
+  "phasor-mirror": [
+    "phasor-core",
+    "phasor-net",
+    "phasor-plain-decode",
+    "phasor-provenance",
+    "phasor-zip"
   ],
-  "utilake-mms-conform": [
-    "utilake-core",
-    "utilake-kit",
-    "utilake-mms-decode",
-    "utilake-plain-decode",
-    "utilake-registry",
-    "utilake-zip"
+  "phasor-mms-conform": [
+    "phasor-core",
+    "phasor-kit",
+    "phasor-mms-decode",
+    "phasor-plain-decode",
+    "phasor-registry",
+    "phasor-zip"
   ],
-  "utilake-nem": [
-    "utilake-acquire",
-    "utilake-core",
-    "utilake-kit",
-    "utilake-mms-conform",
-    "utilake-mms-decode",
-    "utilake-registry"
+  "phasor-nem": [
+    "phasor-acquire",
+    "phasor-core",
+    "phasor-kit",
+    "phasor-mms-conform",
+    "phasor-mms-decode",
+    "phasor-registry"
   ],
-  "utilake-net": [
-    "utilake-core",
-    "utilake-provenance"
+  "phasor-net": [
+    "phasor-core",
+    "phasor-provenance"
   ],
-  "utilake-pipeline": [
-    "utilake-acquire",
-    "utilake-core",
-    "utilake-kit",
-    "utilake-provenance",
-    "utilake-writer",
-    "utilake-zip"
+  "phasor-pipeline": [
+    "phasor-acquire",
+    "phasor-core",
+    "phasor-kit",
+    "phasor-provenance",
+    "phasor-writer",
+    "phasor-zip"
   ],
-  "utilake-registry": [
-    "utilake-core",
-    "utilake-iceberg",
-    "utilake-kit",
-    "utilake-mms-decode",
-    "utilake-plain-decode",
-    "utilake-provenance"
+  "phasor-registry": [
+    "phasor-core",
+    "phasor-iceberg",
+    "phasor-kit",
+    "phasor-mms-decode",
+    "phasor-plain-decode",
+    "phasor-provenance"
   ],
-  "utilake-wem": [
-    "utilake-acquire",
-    "utilake-core",
-    "utilake-kit",
-    "utilake-mms-conform",
-    "utilake-plain-decode",
-    "utilake-registry"
+  "phasor-wem": [
+    "phasor-acquire",
+    "phasor-core",
+    "phasor-kit",
+    "phasor-mms-conform",
+    "phasor-plain-decode",
+    "phasor-registry"
   ],
-  "utilake-writer": [
-    "utilake-core",
-    "utilake-iceberg",
-    "utilake-iceberg-store",
-    "utilake-kit"
+  "phasor-writer": [
+    "phasor-core",
+    "phasor-iceberg",
+    "phasor-iceberg-store",
+    "phasor-kit"
   ],
   "xtask": [
-    "utilake-core",
-    "utilake-gates",
-    "utilake-iceberg",
-    "utilake-mms-decode",
-    "utilake-registry"
+    "phasor-core",
+    "phasor-gates",
+    "phasor-iceberg",
+    "phasor-mms-decode",
+    "phasor-registry"
   ]
 }

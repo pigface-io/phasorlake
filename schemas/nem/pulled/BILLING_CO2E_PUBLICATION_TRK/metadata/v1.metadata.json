@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1317391200000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/BILLING_CO2E_PUBLICATION_TRK",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/BILLING_CO2E_PUBLICATION_TRK",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -19,21 +19,21 @@
   ],
   "properties": {
     "comment": "Carbon Dioxide Intensity Index publication tracking table",
-    "utilake.declared": "true",
-    "utilake.format": "4",
-    "utilake.key": "[\"CONTRACTYEAR\",\"WEEKNO\"]",
-    "utilake.load": "append",
-    "utilake.model-types": "{\"1\":\"NUMERIC(4)\",\"2\":\"NUMERIC(3)\",\"3\":\"NUMERIC(3)\",\"4\":\"TIMESTAMP(0)\"}",
-    "utilake.package": "BILLING_RUN",
-    "utilake.reports": "[[\"BILLING\",\"BILLING_CO2E_PUBLICATION_TRK\"]]",
-    "utilake.table": "BILLING_CO2E_PUBLICATION_TRK",
-    "utilake.temporal.cutoff": "LASTCHANGED",
-    "utilake.temporal.entity": "[\"CONTRACTYEAR\",\"WEEKNO\"]",
-    "utilake.temporal.order": "[\"BILLRUNNO\",\"LASTCHANGED\"]",
-    "utilake.temporal.origin": "derived",
-    "utilake.temporal.valid.kind": "timeless",
-    "utilake.time": "LASTCHANGED",
-    "utilake.visibility": "PUBLIC"
+    "phasor.declared": "true",
+    "phasor.format": "4",
+    "phasor.key": "[\"CONTRACTYEAR\",\"WEEKNO\"]",
+    "phasor.load": "append",
+    "phasor.model-types": "{\"1\":\"NUMERIC(4)\",\"2\":\"NUMERIC(3)\",\"3\":\"NUMERIC(3)\",\"4\":\"TIMESTAMP(0)\"}",
+    "phasor.package": "BILLING_RUN",
+    "phasor.reports": "[[\"BILLING\",\"BILLING_CO2E_PUBLICATION_TRK\"]]",
+    "phasor.table": "BILLING_CO2E_PUBLICATION_TRK",
+    "phasor.temporal.cutoff": "LASTCHANGED",
+    "phasor.temporal.entity": "[\"CONTRACTYEAR\",\"WEEKNO\"]",
+    "phasor.temporal.order": "[\"BILLRUNNO\",\"LASTCHANGED\"]",
+    "phasor.temporal.origin": "derived",
+    "phasor.temporal.valid.kind": "timeless",
+    "phasor.time": "LASTCHANGED",
+    "phasor.visibility": "PUBLIC"
   },
   "refs": {
     "main": {
@@ -91,27 +91,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/BILLING_CO2E_PUBLICATION_TRK/metadata/snap-8964122865261426470-1-6ccdbcb0-cec0-83ca-ad87-41c4497e10da.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/BILLING_CO2E_PUBLICATION_TRK/metadata/snap-8964122865261426470-1-2dcd52e4-a001-804a-b476-c5e7f906ddb2.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 8964122865261426470,
       "summary": {
         "operation": "append",
-        "utilake.files": "179",
-        "utilake.from.file": "PUBLIC_DVD_BILLING_CO2E_PUBLICATION_TRK_201110010000.zip",
-        "utilake.from.release": "2011-10",
-        "utilake.from.sha256": "7751def4d7617062adf8e6e096cfc2cea79698468b1a2794efd59527b8e86412",
-        "utilake.from.time": "2011-10-07T11:13:05+10:00",
-        "utilake.kinds": "[\"archive\",\"dvd\"]",
-        "utilake.report-subtype": "BILLING_CO2E_PUBLICATION_TRK",
-        "utilake.report-type": "BILLING",
-        "utilake.rows": "780",
-        "utilake.to.file": "PUBLIC_ARCHIVE#BILLING_CO2E_PUBLICATION_TRK#FILE01#202609010000.zip",
-        "utilake.to.release": "2026-09",
-        "utilake.to.sha256": "2b5a2d2fc995114d54a18ad881a1c82b85f4394d9f2334c7ae970badddf394bf",
-        "utilake.to.time": "2026-09-30T11:44:31+10:00",
-        "utilake.total-rows": "780",
-        "utilake.version": "1"
+        "phasor.files": "179",
+        "phasor.from.file": "PUBLIC_DVD_BILLING_CO2E_PUBLICATION_TRK_201110010000.zip",
+        "phasor.from.release": "2011-10",
+        "phasor.from.sha256": "7751def4d7617062adf8e6e096cfc2cea79698468b1a2794efd59527b8e86412",
+        "phasor.from.time": "2011-10-07T11:13:05+10:00",
+        "phasor.kinds": "[\"archive\",\"dvd\"]",
+        "phasor.report-subtype": "BILLING_CO2E_PUBLICATION_TRK",
+        "phasor.report-type": "BILLING",
+        "phasor.rows": "780",
+        "phasor.to.file": "PUBLIC_ARCHIVE#BILLING_CO2E_PUBLICATION_TRK#FILE01#202609010000.zip",
+        "phasor.to.release": "2026-09",
+        "phasor.to.sha256": "2b5a2d2fc995114d54a18ad881a1c82b85f4394d9f2334c7ae970badddf394bf",
+        "phasor.to.time": "2026-09-30T11:44:31+10:00",
+        "phasor.total-rows": "780",
+        "phasor.version": "1"
       },
       "timestamp-ms": 1317391200000
     }
@@ -122,5 +122,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "6ccdbcb0-cec0-83ca-ad87-41c4497e10da"
+  "table-uuid": "2dcd52e4-a001-804a-b476-c5e7f906ddb2"
 }

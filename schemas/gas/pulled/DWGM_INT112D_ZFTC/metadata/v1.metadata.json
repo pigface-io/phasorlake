@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1785506400000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/DWGM_INT112D_ZFTC",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/gas/DWGM_INT112D_ZFTC",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -18,20 +18,20 @@
     }
   ],
   "properties": {
-    "utilake.declared": "true",
-    "utilake.format": "4",
-    "utilake.headers": "{\"1\":\"zftc_name\",\"2\":\"commencement_date\",\"3\":\"termination_date\",\"4\":\"daily_max_net_inj_qty_gj\",\"5\":\"daily_max_net_wdl_qty_gj\",\"6\":\"ti\",\"7\":\"hourly_max_net_inj_qty_gj\",\"8\":\"hourly_max_net_wdl_qty_gj\",\"9\":\"mod_datetime\",\"10\":\"current_date\"}",
-    "utilake.key": "[]",
-    "utilake.load": "append",
-    "utilake.market": "gas",
-    "utilake.offset": "+10:00",
-    "utilake.reports": "[[\"DWGM\",\"INT112D_ZFTC_1\"]]",
-    "utilake.table": "DWGM_INT112D_ZFTC",
-    "utilake.temporal.entity": "[]",
-    "utilake.temporal.order": "[\"CURRENT_DATE\"]",
-    "utilake.temporal.origin": "hand",
-    "utilake.temporal.valid.kind": "timeless",
-    "utilake.visibility": "PUBLIC"
+    "phasor.declared": "true",
+    "phasor.format": "4",
+    "phasor.headers": "{\"1\":\"zftc_name\",\"2\":\"commencement_date\",\"3\":\"termination_date\",\"4\":\"daily_max_net_inj_qty_gj\",\"5\":\"daily_max_net_wdl_qty_gj\",\"6\":\"ti\",\"7\":\"hourly_max_net_inj_qty_gj\",\"8\":\"hourly_max_net_wdl_qty_gj\",\"9\":\"mod_datetime\",\"10\":\"current_date\"}",
+    "phasor.key": "[]",
+    "phasor.load": "append",
+    "phasor.market": "gas",
+    "phasor.offset": "+10:00",
+    "phasor.reports": "[[\"DWGM\",\"INT112D_ZFTC_1\"]]",
+    "phasor.table": "DWGM_INT112D_ZFTC",
+    "phasor.temporal.entity": "[]",
+    "phasor.temporal.order": "[\"CURRENT_DATE\"]",
+    "phasor.temporal.origin": "hand",
+    "phasor.temporal.valid.kind": "timeless",
+    "phasor.visibility": "PUBLIC"
   },
   "refs": {
     "main": {
@@ -118,25 +118,25 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/DWGM_INT112D_ZFTC/metadata/snap-6856195731211148448-1-fe0a4337-435b-8571-85f9-eca2fe05f1f6.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/gas/DWGM_INT112D_ZFTC/metadata/snap-6856195731211148448-1-9592702a-b0a9-8289-a07b-ceddbc631eee.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 6856195731211148448,
       "summary": {
         "operation": "append",
-        "utilake.files": "309",
-        "utilake.from.file": "PublicRpts31.zip",
-        "utilake.from.release": "2026-08",
-        "utilake.from.sha256": "735fad42989ef107a70ecdfc43f290c13afc957673461c78e4538d9ffcc9b0fe",
-        "utilake.kinds": "[\"dwgm\"]",
-        "utilake.report-subtype": "INT112D_ZFTC_1",
-        "utilake.report-type": "DWGM",
-        "utilake.rows": "0",
-        "utilake.to.file": "int112d_v4_zftc_1.csv",
-        "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "6f2955f70b3562d6495a8f029fd87283b910eb7849b7903fab7aa58249bf8d68",
-        "utilake.total-rows": "0",
-        "utilake.version": "4"
+        "phasor.files": "309",
+        "phasor.from.file": "PublicRpts31.zip",
+        "phasor.from.release": "2026-08",
+        "phasor.from.sha256": "735fad42989ef107a70ecdfc43f290c13afc957673461c78e4538d9ffcc9b0fe",
+        "phasor.kinds": "[\"dwgm\"]",
+        "phasor.report-subtype": "INT112D_ZFTC_1",
+        "phasor.report-type": "DWGM",
+        "phasor.rows": "0",
+        "phasor.to.file": "int112d_v4_zftc_1.csv",
+        "phasor.to.release": "2026-10",
+        "phasor.to.sha256": "6f2955f70b3562d6495a8f029fd87283b910eb7849b7903fab7aa58249bf8d68",
+        "phasor.total-rows": "0",
+        "phasor.version": "4"
       },
       "timestamp-ms": 1785506400000
     }
@@ -147,5 +147,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "fe0a4337-435b-8571-85f9-eca2fe05f1f6"
+  "table-uuid": "9592702a-b0a9-8289-a07b-ceddbc631eee"
 }

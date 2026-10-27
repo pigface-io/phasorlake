@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1790776800000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GBB_BASINS",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/gas/GBB_BASINS",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -19,22 +19,22 @@
   ],
   "properties": {
     "comment": "This report displays a list of all basins",
-    "utilake.declared": "true",
-    "utilake.format": "4",
-    "utilake.headers": "{\"1\":\"BasinId\",\"2\":\"BasinName\"}",
-    "utilake.key": "[\"BASINID\"]",
-    "utilake.load": "snapshot",
-    "utilake.market": "gas",
-    "utilake.model": "[\"GAS_BASIN\"]",
-    "utilake.model-types": "{\"1\":\"NUMBER(20,0)\",\"2\":\"VARCHAR2(100)\"}",
-    "utilake.offset": "+10:00",
-    "utilake.reports": "[[\"GBB\",\"BASINS\"]]",
-    "utilake.table": "GBB_BASINS",
-    "utilake.temporal.entity": "[\"BASINID\"]",
-    "utilake.temporal.order": "[]",
-    "utilake.temporal.origin": "hand",
-    "utilake.temporal.valid.kind": "timeless",
-    "utilake.visibility": "PUBLIC"
+    "phasor.declared": "true",
+    "phasor.format": "4",
+    "phasor.headers": "{\"1\":\"BasinId\",\"2\":\"BasinName\"}",
+    "phasor.key": "[\"BASINID\"]",
+    "phasor.load": "snapshot",
+    "phasor.market": "gas",
+    "phasor.model": "[\"GAS_BASIN\"]",
+    "phasor.model-types": "{\"1\":\"NUMBER(20,0)\",\"2\":\"VARCHAR2(100)\"}",
+    "phasor.offset": "+10:00",
+    "phasor.reports": "[[\"GBB\",\"BASINS\"]]",
+    "phasor.table": "GBB_BASINS",
+    "phasor.temporal.entity": "[\"BASINID\"]",
+    "phasor.temporal.order": "[]",
+    "phasor.temporal.origin": "hand",
+    "phasor.temporal.valid.kind": "timeless",
+    "phasor.visibility": "PUBLIC"
   },
   "refs": {
     "main": {
@@ -77,25 +77,25 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GBB_BASINS/metadata/snap-1485929679202523347-1-b77e3022-abb8-896f-b26d-87305f8428c6.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/gas/GBB_BASINS/metadata/snap-1485929679202523347-1-92d5ff5c-8a0c-871e-a0ff-f5186b8103cd.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 1485929679202523347,
       "summary": {
         "operation": "append",
-        "utilake.files": "1",
-        "utilake.from.file": "GasBBBasins.csv",
-        "utilake.from.release": "2026-10",
-        "utilake.from.sha256": "3b4cbc9ecc3017f3d9375f253db43159e7056c8ae130a8de3baa65f5ce8f67d7",
-        "utilake.kinds": "[\"gbb\"]",
-        "utilake.report-subtype": "BASINS",
-        "utilake.report-type": "GBB",
-        "utilake.rows": "15",
-        "utilake.to.file": "GasBBBasins.csv",
-        "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "3b4cbc9ecc3017f3d9375f253db43159e7056c8ae130a8de3baa65f5ce8f67d7",
-        "utilake.total-rows": "15",
-        "utilake.version": "1"
+        "phasor.files": "1",
+        "phasor.from.file": "GasBBBasins.csv",
+        "phasor.from.release": "2026-10",
+        "phasor.from.sha256": "3b4cbc9ecc3017f3d9375f253db43159e7056c8ae130a8de3baa65f5ce8f67d7",
+        "phasor.kinds": "[\"gbb\"]",
+        "phasor.report-subtype": "BASINS",
+        "phasor.report-type": "GBB",
+        "phasor.rows": "15",
+        "phasor.to.file": "GasBBBasins.csv",
+        "phasor.to.release": "2026-10",
+        "phasor.to.sha256": "3b4cbc9ecc3017f3d9375f253db43159e7056c8ae130a8de3baa65f5ce8f67d7",
+        "phasor.total-rows": "15",
+        "phasor.version": "1"
       },
       "timestamp-ms": 1790776800000
     }
@@ -106,5 +106,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "b77e3022-abb8-896f-b26d-87305f8428c6"
+  "table-uuid": "92d5ff5c-8a0c-871e-a0ff-f5186b8103cd"
 }

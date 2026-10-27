@@ -1,6 +1,6 @@
 # gitleaks configuration. The default rules stay on; this file only adds
 # allowlists, and each one says why it is safe.
-title = "utilake"
+title = "phasor"
 
 [extend]
 useDefault = true
@@ -11,4 +11,4 @@ paths = ['''(^|/)Cargo\.lock$''']
 
 [[allowlists]]
 description = "Fixtures are public AEMO data and scraped documentation; hashes in sidecars are not keys, and nemweb's listing pages carry its own public Application Insights key"
-paths = ['''^testdata/''', '''^crates/utilake-mirror/testdata/''']
+paths = ['''^testdata/''', '''^crates/phasor-mirror/testdata/''']

@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1722434400000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/NETWORK_RATING",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/NETWORK_RATING",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -19,23 +19,23 @@
   ],
   "properties": {
     "comment": "NETWORK_RATING defines a list of the equipment ratings that may be used as inputs to market constraints.\nIf the rating is flagged as dynamic then in real-time the rating will be dynamically determined and the static value will be used as a fallback value should the dynamic value fail.\nNote:\nIn some rare cases equipment has ratings provided from more than one TNSP. This is identified by a different SPD Id. The value used in the NEM is normally the more restrictive of the two values.",
-    "utilake.declared": "true",
-    "utilake.format": "4",
-    "utilake.key": "[\"SPD_ID\",\"VALIDFROM\"]",
-    "utilake.load": "append",
-    "utilake.model-types": "{\"1\":\"VARCHAR(21)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"TIMESTAMP(0)\",\"4\":\"VARCHAR(10)\",\"5\":\"VARCHAR(30)\",\"6\":\"VARCHAR(10)\",\"7\":\"VARCHAR(30)\",\"8\":\"VARCHAR(10)\",\"9\":\"NUMERIC(1,0)\",\"10\":\"TIMESTAMP(0)\"}",
-    "utilake.package": "NETWORK",
-    "utilake.reports": "[[\"NETWORK\",\"RATING\"]]",
-    "utilake.table": "NETWORK_RATING",
-    "utilake.temporal.cutoff": "LASTCHANGED",
-    "utilake.temporal.entity": "[\"SPD_ID\"]",
-    "utilake.temporal.order": "[\"LASTCHANGED\"]",
-    "utilake.temporal.origin": "derived",
-    "utilake.temporal.valid.column": "VALIDFROM",
-    "utilake.temporal.valid.kind": "from",
-    "utilake.temporal.valid.until": "VALIDTO",
-    "utilake.time": "LASTCHANGED",
-    "utilake.visibility": "PUBLIC"
+    "phasor.declared": "true",
+    "phasor.format": "4",
+    "phasor.key": "[\"SPD_ID\",\"VALIDFROM\"]",
+    "phasor.load": "append",
+    "phasor.model-types": "{\"1\":\"VARCHAR(21)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"TIMESTAMP(0)\",\"4\":\"VARCHAR(10)\",\"5\":\"VARCHAR(30)\",\"6\":\"VARCHAR(10)\",\"7\":\"VARCHAR(30)\",\"8\":\"VARCHAR(10)\",\"9\":\"NUMERIC(1,0)\",\"10\":\"TIMESTAMP(0)\"}",
+    "phasor.package": "NETWORK",
+    "phasor.reports": "[[\"NETWORK\",\"RATING\"]]",
+    "phasor.table": "NETWORK_RATING",
+    "phasor.temporal.cutoff": "LASTCHANGED",
+    "phasor.temporal.entity": "[\"SPD_ID\"]",
+    "phasor.temporal.order": "[\"LASTCHANGED\"]",
+    "phasor.temporal.origin": "derived",
+    "phasor.temporal.valid.column": "VALIDFROM",
+    "phasor.temporal.valid.kind": "from",
+    "phasor.temporal.valid.until": "VALIDTO",
+    "phasor.time": "LASTCHANGED",
+    "phasor.visibility": "PUBLIC"
   },
   "refs": {
     "main": {
@@ -135,27 +135,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/NETWORK_RATING/metadata/snap-1688809180377999511-1-f121d1ff-aeaa-8745-b4aa-b24dfc0dc733.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/NETWORK_RATING/metadata/snap-1688809180377999511-1-c7e0492a-a1f4-8abd-9bfb-c355d5249100.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 1688809180377999511,
       "summary": {
         "operation": "append",
-        "utilake.files": "415",
-        "utilake.from.file": "PUBLIC_ARCHIVE#NETWORK_RATING#FILE01#202408010000.zip",
-        "utilake.from.release": "2024-08",
-        "utilake.from.sha256": "3c5168180570804fe66cff03e62dcf60c0f4ee62256bff5ade3fafd304e667fa",
-        "utilake.from.time": "2007-07-09T12:00:00+10:00",
-        "utilake.kinds": "[\"archive\",\"reports\"]",
-        "utilake.report-subtype": "RATING",
-        "utilake.report-type": "NETWORK",
-        "utilake.rows": "1065636",
-        "utilake.to.file": "PUBLIC_NETWORK_20261024100005_0000000544582331.zip",
-        "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "7e73ede6593def0122b160db252f1988aa15ccb7d281429c3168ed22791bbfba",
-        "utilake.to.time": "9999-12-31T17:10:00+10:00",
-        "utilake.total-rows": "1065636",
-        "utilake.version": "1"
+        "phasor.files": "415",
+        "phasor.from.file": "PUBLIC_ARCHIVE#NETWORK_RATING#FILE01#202408010000.zip",
+        "phasor.from.release": "2024-08",
+        "phasor.from.sha256": "3c5168180570804fe66cff03e62dcf60c0f4ee62256bff5ade3fafd304e667fa",
+        "phasor.from.time": "2007-07-09T12:00:00+10:00",
+        "phasor.kinds": "[\"archive\",\"reports\"]",
+        "phasor.report-subtype": "RATING",
+        "phasor.report-type": "NETWORK",
+        "phasor.rows": "1065636",
+        "phasor.to.file": "PUBLIC_NETWORK_20261024100005_0000000544582331.zip",
+        "phasor.to.release": "2026-10",
+        "phasor.to.sha256": "7e73ede6593def0122b160db252f1988aa15ccb7d281429c3168ed22791bbfba",
+        "phasor.to.time": "9999-12-31T17:10:00+10:00",
+        "phasor.total-rows": "1065636",
+        "phasor.version": "1"
       },
       "timestamp-ms": 1722434400000
     }
@@ -166,5 +166,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "f121d1ff-aeaa-8745-b4aa-b24dfc0dc733"
+  "table-uuid": "c7e0492a-a1f4-8abd-9bfb-c355d5249100"
 }

@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1759240800000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GSH_AUCTION_CURTAIL_NOTICE",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/gas/GSH_AUCTION_CURTAIL_NOTICE",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -19,23 +19,23 @@
   ],
   "properties": {
     "comment": "Contains details of curtailment of nominations against secondary firm rights (CTP trades) for service points (receipt and delivery points).",
-    "utilake.declared": "true",
-    "utilake.format": "4",
-    "utilake.key": "[\"AUCTION_SERVICE\",\"EFFECTIVE_DATE_TIME\",\"FACILITY_ID\",\"GAS_DATE\",\"NOTICE_ID\"]",
-    "utilake.load": "append",
-    "utilake.market": "gas",
-    "utilake.model-types": "{\"1\":\"NUMBER(8,0)\",\"2\":\"NUMBER(8,0)\",\"3\":\"VARCHAR2(100)\",\"4\":\"VARCHAR2(20)\",\"5\":\"VARCHAR2(3)\",\"6\":\"VARCHAR2(3)\",\"7\":\"VARCHAR2(255)\",\"8\":\"DATE\",\"9\":\"DATE\",\"10\":\"DATE\"}",
-    "utilake.offset": "+10:00",
-    "utilake.reports": "[[\"GSH\",\"AUCTION_CURTAILMENT_NOTICE\"]]",
-    "utilake.table": "GSH_AUCTION_CURTAIL_NOTICE",
-    "utilake.temporal.cutoff": "LASTCHANGED",
-    "utilake.temporal.entity": "[\"AUCTION_SERVICE\",\"FACILITY_ID\",\"NOTICE_ID\",\"GAS_DATE\"]",
-    "utilake.temporal.order": "[\"LASTCHANGED\"]",
-    "utilake.temporal.origin": "hand",
-    "utilake.temporal.valid.column": "EFFECTIVE_DATE_TIME",
-    "utilake.temporal.valid.kind": "instant",
-    "utilake.time": "EFFECTIVE_DATE_TIME",
-    "utilake.visibility": "PUBLIC"
+    "phasor.declared": "true",
+    "phasor.format": "4",
+    "phasor.key": "[\"AUCTION_SERVICE\",\"EFFECTIVE_DATE_TIME\",\"FACILITY_ID\",\"GAS_DATE\",\"NOTICE_ID\"]",
+    "phasor.load": "append",
+    "phasor.market": "gas",
+    "phasor.model-types": "{\"1\":\"NUMBER(8,0)\",\"2\":\"NUMBER(8,0)\",\"3\":\"VARCHAR2(100)\",\"4\":\"VARCHAR2(20)\",\"5\":\"VARCHAR2(3)\",\"6\":\"VARCHAR2(3)\",\"7\":\"VARCHAR2(255)\",\"8\":\"DATE\",\"9\":\"DATE\",\"10\":\"DATE\"}",
+    "phasor.offset": "+10:00",
+    "phasor.reports": "[[\"GSH\",\"AUCTION_CURTAILMENT_NOTICE\"]]",
+    "phasor.table": "GSH_AUCTION_CURTAIL_NOTICE",
+    "phasor.temporal.cutoff": "LASTCHANGED",
+    "phasor.temporal.entity": "[\"AUCTION_SERVICE\",\"FACILITY_ID\",\"NOTICE_ID\",\"GAS_DATE\"]",
+    "phasor.temporal.order": "[\"LASTCHANGED\"]",
+    "phasor.temporal.origin": "hand",
+    "phasor.temporal.valid.column": "EFFECTIVE_DATE_TIME",
+    "phasor.temporal.valid.kind": "instant",
+    "phasor.time": "EFFECTIVE_DATE_TIME",
+    "phasor.visibility": "PUBLIC"
   },
   "refs": {
     "main": {
@@ -138,27 +138,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/gas/GSH_AUCTION_CURTAIL_NOTICE/metadata/snap-4836545937502006370-1-413ac0a7-4287-889a-aae4-112f68784319.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/gas/GSH_AUCTION_CURTAIL_NOTICE/metadata/snap-4836545937502006370-1-eaa07397-3a74-887d-8438-275157bddc36.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 4836545937502006370,
       "summary": {
         "operation": "append",
-        "utilake.files": "474",
-        "utilake.from.file": "PUBLIC_AUCTIONCURTAILMENTNOTICE _20251001.zip",
-        "utilake.from.release": "2025-10",
-        "utilake.from.sha256": "a2950aa92784afe780ac6acaff65195e97455b891085ecce355d7628c91990a4",
-        "utilake.from.time": "2025-10-05T20:31:01+10:00",
-        "utilake.kinds": "[\"gsh\"]",
-        "utilake.report-subtype": "AUCTION_CURTAILMENT_NOTICE",
-        "utilake.report-type": "GSH",
-        "utilake.rows": "1697",
-        "utilake.to.file": "PUBLIC_AUCTIONCURTAILMENTNOTICE _20260301.zip",
-        "utilake.to.release": "2026-03",
-        "utilake.to.sha256": "e50fa76736eb7cab393c1c2fb3bdf88d1e1ac2d47d8982106edefe2047db6184",
-        "utilake.to.time": "2026-03-30T22:16:01+10:00",
-        "utilake.total-rows": "1697",
-        "utilake.version": "1"
+        "phasor.files": "474",
+        "phasor.from.file": "PUBLIC_AUCTIONCURTAILMENTNOTICE _20251001.zip",
+        "phasor.from.release": "2025-10",
+        "phasor.from.sha256": "a2950aa92784afe780ac6acaff65195e97455b891085ecce355d7628c91990a4",
+        "phasor.from.time": "2025-10-05T20:31:01+10:00",
+        "phasor.kinds": "[\"gsh\"]",
+        "phasor.report-subtype": "AUCTION_CURTAILMENT_NOTICE",
+        "phasor.report-type": "GSH",
+        "phasor.rows": "1697",
+        "phasor.to.file": "PUBLIC_AUCTIONCURTAILMENTNOTICE _20260301.zip",
+        "phasor.to.release": "2026-03",
+        "phasor.to.sha256": "e50fa76736eb7cab393c1c2fb3bdf88d1e1ac2d47d8982106edefe2047db6184",
+        "phasor.to.time": "2026-03-30T22:16:01+10:00",
+        "phasor.total-rows": "1697",
+        "phasor.version": "1"
       },
       "timestamp-ms": 1759240800000
     }
@@ -169,5 +169,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "413ac0a7-4287-889a-aae4-112f68784319"
+  "table-uuid": "eaa07397-3a74-887d-8438-275157bddc36"
 }

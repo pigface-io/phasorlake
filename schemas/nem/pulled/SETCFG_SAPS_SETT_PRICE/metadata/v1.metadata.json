@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1722434400000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/SETCFG_SAPS_SETT_PRICE",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/SETCFG_SAPS_SETT_PRICE",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -19,10 +19,10 @@
   ],
   "properties": {
     "comment": "The Settlement Price for SAPS Energy in each Region",
-    "utilake.declared": "false",
-    "utilake.format": "4",
-    "utilake.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"VARCHAR(20)\",\"4\":\"TIMESTAMP(0)\",\"5\":\"NUMERIC(18,8)\",\"6\":\"NUMERIC(3,0)\",\"7\":\"TIMESTAMP(0)\"}",
-    "utilake.table": "SETCFG_SAPS_SETT_PRICE"
+    "phasor.declared": "false",
+    "phasor.format": "4",
+    "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"VARCHAR(20)\",\"4\":\"TIMESTAMP(0)\",\"5\":\"NUMERIC(18,8)\",\"6\":\"NUMERIC(3,0)\",\"7\":\"TIMESTAMP(0)\"}",
+    "phasor.table": "SETCFG_SAPS_SETT_PRICE"
   },
   "refs": {
     "main": {
@@ -98,27 +98,27 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/SETCFG_SAPS_SETT_PRICE/metadata/snap-8563443158798471302-1-193d61f1-1c20-86a5-9240-c1e1434bc621.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/SETCFG_SAPS_SETT_PRICE/metadata/snap-8563443158798471302-1-12db3cd0-1890-866a-a5af-4420c948e251.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 8563443158798471302,
       "summary": {
         "operation": "append",
-        "utilake.files": "24",
-        "utilake.from.file": "PUBLIC_ARCHIVE#SETCFG_SAPS_SETT_PRICE#FILE01#202408010000.zip",
-        "utilake.from.release": "2024-08",
-        "utilake.from.sha256": "641dd9955549429bfaef625000a1500eab5c71d6d54a1176415432ba2ab1d728",
-        "utilake.from.time": "2023-07-01T00:00:00+10:00",
-        "utilake.kinds": "[\"archive\"]",
-        "utilake.report-subtype": "SAPS_SETT_PRICE",
-        "utilake.report-type": "SETCFG",
-        "utilake.rows": "22950",
-        "utilake.to.file": "PUBLIC_ARCHIVE#SETCFG_SAPS_SETT_PRICE#FILE01#202607010000.zip",
-        "utilake.to.release": "2026-07",
-        "utilake.to.sha256": "32f277551f7a5e9e2855350aaf79f105f903c6e92a38918a42f06f0c9ac4f645",
-        "utilake.to.time": "2026-07-01T00:00:00+10:00",
-        "utilake.total-rows": "22950",
-        "utilake.version": "1"
+        "phasor.files": "24",
+        "phasor.from.file": "PUBLIC_ARCHIVE#SETCFG_SAPS_SETT_PRICE#FILE01#202408010000.zip",
+        "phasor.from.release": "2024-08",
+        "phasor.from.sha256": "641dd9955549429bfaef625000a1500eab5c71d6d54a1176415432ba2ab1d728",
+        "phasor.from.time": "2023-07-01T00:00:00+10:00",
+        "phasor.kinds": "[\"archive\"]",
+        "phasor.report-subtype": "SAPS_SETT_PRICE",
+        "phasor.report-type": "SETCFG",
+        "phasor.rows": "22950",
+        "phasor.to.file": "PUBLIC_ARCHIVE#SETCFG_SAPS_SETT_PRICE#FILE01#202607010000.zip",
+        "phasor.to.release": "2026-07",
+        "phasor.to.sha256": "32f277551f7a5e9e2855350aaf79f105f903c6e92a38918a42f06f0c9ac4f645",
+        "phasor.to.time": "2026-07-01T00:00:00+10:00",
+        "phasor.total-rows": "22950",
+        "phasor.version": "1"
       },
       "timestamp-ms": 1722434400000
     }
@@ -129,5 +129,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "193d61f1-1c20-86a5-9240-c1e1434bc621"
+  "table-uuid": "12db3cd0-1890-866a-a5af-4420c948e251"
 }

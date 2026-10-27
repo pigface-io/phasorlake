@@ -8,7 +8,7 @@
   "last-partition-id": 999,
   "last-sequence-number": 1,
   "last-updated-ms": 1756648800000,
-  "location": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PREDISPATCH_IRSR",
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/PREDISPATCH_IRSR",
   "metadata-log": [],
   "next-row-id": 0,
   "partition-specs": [
@@ -18,9 +18,9 @@
     }
   ],
   "properties": {
-    "utilake.declared": "false",
-    "utilake.format": "4",
-    "utilake.table": "PREDISPATCH_IRSR"
+    "phasor.declared": "false",
+    "phasor.format": "4",
+    "phasor.table": "PREDISPATCH_IRSR"
   },
   "refs": {
     "main": {
@@ -77,25 +77,25 @@
     {
       "added-rows": 0,
       "first-row-id": 0,
-      "manifest-list": "https://raw.githubusercontent.com/g0itb4/utilake-schemas/main/nem/PREDISPATCH_IRSR/metadata/snap-2821808946043980260-1-db96ac6b-a3a7-83ee-be4c-f8abd05b4bf7.avro",
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nem/PREDISPATCH_IRSR/metadata/snap-2821808946043980260-1-7977930e-e50e-86d8-99ca-fabaddb7685f.avro",
       "schema-id": 0,
       "sequence-number": 1,
       "snapshot-id": 2821808946043980260,
       "summary": {
         "operation": "append",
-        "utilake.files": "18793",
-        "utilake.from.file": "PUBLIC_PREDISPATCH_IRSR_20250928_20251004.zip",
-        "utilake.from.release": "2025-09",
-        "utilake.from.sha256": "6c71a6c575ee42eaa5fceab6d3b728d50b76c04e2f20b71c8bc22409f0112fe2",
-        "utilake.kinds": "[\"reports\"]",
-        "utilake.report-subtype": "IRSR",
-        "utilake.report-type": "PREDISPATCH",
-        "utilake.rows": "12641192",
-        "utilake.to.file": "PUBLIC_PREDISPATCH_IRSR_202610241200_0000000544594447.zip",
-        "utilake.to.release": "2026-10",
-        "utilake.to.sha256": "b01f9f5733832fb152b13f4f60cc86a86b446a3644d4090add2e3eeef2420b17",
-        "utilake.total-rows": "12641192",
-        "utilake.version": "2"
+        "phasor.files": "18793",
+        "phasor.from.file": "PUBLIC_PREDISPATCH_IRSR_20250928_20251004.zip",
+        "phasor.from.release": "2025-09",
+        "phasor.from.sha256": "6c71a6c575ee42eaa5fceab6d3b728d50b76c04e2f20b71c8bc22409f0112fe2",
+        "phasor.kinds": "[\"reports\"]",
+        "phasor.report-subtype": "IRSR",
+        "phasor.report-type": "PREDISPATCH",
+        "phasor.rows": "12641192",
+        "phasor.to.file": "PUBLIC_PREDISPATCH_IRSR_202610241200_0000000544594447.zip",
+        "phasor.to.release": "2026-10",
+        "phasor.to.sha256": "b01f9f5733832fb152b13f4f60cc86a86b446a3644d4090add2e3eeef2420b17",
+        "phasor.total-rows": "12641192",
+        "phasor.version": "2"
       },
       "timestamp-ms": 1756648800000
     }
@@ -106,5 +106,5 @@
       "order-id": 0
     }
   ],
-  "table-uuid": "db96ac6b-a3a7-83ee-be4c-f8abd05b4bf7"
+  "table-uuid": "7977930e-e50e-86d8-99ca-fabaddb7685f"
 }
