@@ -1,14 +1,7 @@
 # phasor
 
-AEMO market data into a local Parquet lake, from one Rust binary.
-
-`phasor` downloads AEMO's published files (the NEM's monthly archive and
-report folders, the WEM's datafiles and WEMDE documents, the east-coast gas
-feeds), parses them through a schema registry that knows every schema each
-table's files have had, and writes typed, Hive-partitioned Parquet that
-DuckDB, Polars and anything else that reads Parquet can query directly. A
-SQLite manifest records every file fetched, every ingest, every output and
-every error, so a second run is a no-op and a failure is explained.
+Downloads AEMO market data and writes it to a local Parquet lake.
+Covers the NEM, the WEM and the east-coast gas markets. One Rust binary.
 
 ## Quick start
 
@@ -17,118 +10,90 @@ cargo install --path crates/phasor-cli --locked
 phasor fetch DISPATCH_UNIT_SCADA --from 2024-01-15 --to 2024-01-18
 ```
 
-`fetch` plans the interval across the market's sources (whole published
-months from the monthly archive, the rest from the report folders a day
-or a five-minute file at a time), downloads only what it needs into the
-archive (a zip that holds more than asked is read by its directory and
-only the entries wanted are fetched), each file once, politely, and reads
-it all into the lake. `--from` and `--to` take a month, a day, a local
-time (`2024-01-15T10:00`, market time) or an RFC 3339 time; a month or a
-day as the end is included through its last interval. `--day D` is one
-trading day (04:00 to 04:00). `--no-ingest` downloads only. `--dry-run`
-shows what would be fetched. Every command's `--help` ends with examples.
-
-Files already on disk:
-
-```sh
-phasor ingest DISPATCH_UNIT_SCADA --from 2024-01 --to 2024-01
-phasor import PUBLIC_DVD_DISPATCHPRICE_202401010000.zip
-```
-
-`ingest` writes Parquet from what is archived, without the network (with
-no arguments, everything archived and not yet in the lake, and everything
-behind its rules); `import` reads files you already have, by the kit
-whose source knows each one, or every one by `--kit gas` when the name
-says nothing of its market. `ingest --source gas-sttm` names which
-archived source to read; by default it is the one that publishes the
-tables.
-
-The result lands under `~/.phasor/lake/nem/dispatch_unit_scada/data/year=2024/month=01/`.
-Query it:
-
 ```sql
-select count(*), typeof(settlementdate)
-from read_parquet('~/.phasor/lake/nem/dispatch_unit_scada/data/**/*.parquet', hive_partitioning = true);
+select count(*)
+from read_parquet('~/.phasor/lake/nem/dispatch_unit_scada/data/**/*.parquet',
+                  hive_partitioning = true);
 ```
 
-Run the same commands again and they finish in milliseconds: the archive has
-the file, and the manifest knows it is already in the lake.
+Run `fetch` again and it does nothing: the file is archived and the
+manifest knows it is in the lake.
 
-phasor writes the lake and does not read it. Every row keeps every
-revision and copy, with its source and the times that source was stamped
-with, so "latest", "every revision" and "as known at" are questions you
-ask in your own SQL: `docs/reading.md` gives each as one query, tested
-against a fixture lake. `docs/semantics.md` says what a window and a
-revision mean on each kind of table, and `phasor list T` names a table's
-roles (its entity, valid time, order and cutoff columns).
+## Pipeline
+
+```
+ AEMO hosts                   nemweb: MMSDM monthly archive, Reports/CURRENT, Reports/ARCHIVE
+     |                        WEM datafiles and WEMDE, gas feeds (GBB, GSH, STTM, DWGM)
+     |  fetch: 250 ms between requests, stop on refusal,
+     |  each file once, only the zip entries asked for
+     v
+ archive/                     bytes as served + .provenance.json (sha256, URL, ETag, time)
+     |
+     |  ingest (no network)
+     v
+ decode                       MMS CSV: C/I/D rows, one block per I row
+     |                        plain CSV and WEMDE through the same sink
+     v
+ registry                     block (type, subtype, version, columns) -> table schema
+     |                        conforms | deviates (extra columns kept as text)
+     |                        | derived (unknown table, every column text)
+     v
+ conform                      text -> typed Arrow, exact decimals, UTC microseconds
+     |                        bad value: null + {col}__raw   bad row: quarantine/
+     v
+ writer                       month partitions, write to tmp, rename when done
+     |
+     +--> lake/{market}/{table}/data/year=YYYY/month=MM/*.parquet
+     +--> lake/{market}/{table}/metadata/       Iceberg v3
+     +--> manifest.sqlite                       runs, files, ingests, outputs, errors
+```
+
+Months come from the monthly archive. Days and five-minute files come
+from the report folders. `fetch` never mixes the two within a month.
+
+phasor writes the lake and does not read it. Every revision is kept, so
+"latest" and "as known at" are your SQL. See `docs/reading.md`.
 
 ## Commands
 
-| command | what it does |
+| command | does |
 |---|---|
-| `phasor fetch T,T (--from A --to B \| --at T \| --day D) [--source auto\|monthly\|daily] [--downloads N] [--no-ingest] [--dry-run]` | the files that cover the window, into the archive, each once, and read into the lake; `--no-ingest` downloads only. Times in the market's clock |
-| `phasor fetch --documents` | AEMO's documents (the NEM Registration and Exemption List) fetched again; a version whose bytes are new is kept beside the earlier ones |
-| `phasor import <zip\|csv\|dir>...` | files you already have, into the lake; no network |
-| `phasor ingest [T,T --from A --to B] [--source ID] [--dry-run]` | archived files into the lake, no network; with no arguments, every archived file not yet in the lake and every lake file behind its rules |
-| `phasor list [T] [--market M] [--kind K] [--grep TEXT] [--coverage] [--files] [--archive] [--ingests [--failed]] [--runs]` | every table with its roles and what the lake holds; one table's columns; the months held and the gaps; the files, the archive, the manifest |
-| `phasor inspect <file>` | every block in a file, its version and how the registry resolves it |
-| `phasor errors [--last] [--table T] [--code C]` | diagnostics recorded by past runs |
-| `phasor verify [--table T] [--archive]` | every Parquet file the manifest lists exists with its size; `--archive` hashes every download again |
-| `phasor schema list\|show\|history\|validate` | the registry; `history T` lists a table's schemas, with the columns each adds or drops, and the runs of files under each (`--json`: its Iceberg history) |
-| `phasor schema plan <type> <subtype> <version> --columns A,B,C [--month YYYY-MM]` | the conformance plan a shape is read with, as JSON: where each file column goes, its cast, what is written null |
-| `phasor iceberg [--table T]` | each table's Iceberg metadata, rebuilt from the manifest's live outputs |
-| `phasor wem manifest <dataset>` | a WEM dataset's file list, as AEMO's manifest gives it |
+| `fetch T --from A --to B` | download what covers the window and ingest it. `--no-ingest`, `--dry-run`, `--day D` |
+| `fetch --documents` | AEMO's registration list, a new version kept beside the old |
+| `ingest [T --from A --to B]` | archive to lake, offline. No args: everything not yet ingested or out of date |
+| `import <zip\|csv\|dir>` | files you already have |
+| `list [T]` | tables, roles, coverage, files, manifest |
+| `inspect <file>` | blocks in a file and how each resolves |
+| `errors` | diagnostics from past runs |
+| `verify [--archive]` | lake files exist; `--archive` rehashes downloads |
+| `schema list\|show\|history\|validate\|plan` | the registry |
+| `iceberg` | rebuild Iceberg metadata from the manifest |
+| `wem manifest <dataset>` | a WEM dataset's file list |
 
-Global flags: `--home DIR` (or `PHASOR_HOME`), `--json`, `-v`, `--offline`,
-`--jobs N`, `--no-user-schemas`. Ingest flags: `--max-bad-rows N`, `--strict`,
-`--fail-fast`.
+Every `--help` ends with examples. Global flags: `--home DIR`
+(`PHASOR_HOME`), `--json`, `--offline`, `--jobs N`.
 
-## How the data is laid out
+## Layout
 
 ```
 ~/.phasor/
-  lake/nem/{table}/data/year=YYYY/month=MM/{source}-v{version}-{shape8}-{sha8}.parquet   appended tables, partitioned by market-local month
-  lake/nem/{table}/data/snapshot=YYYYMM/...                                     standing-data tables (REGION, PARTICIPANT, ...): each month's file is the whole table
-  lake/nem/{table}/metadata/                                                    the table's Iceberg metadata, written for where the lake is now
-  archive/{host}/{path of the URL}[.provenance.json]                       every download as the server sent it, with its record; a report folder's CURRENT or ARCHIVE segment dropped, so both listings are one folder
-  archive/{host}/{path of a zip}!{entry}[.provenance.json]                 one entry of a zip, fetched alone by byte range; its record says where in the zip it was
-  cache/tmp/                                                               scratch files of a running ingest, safe to delete
-  quarantine/{table}/{source}.jsonl                                        rows whose structure was wrong for their block, with the reason
-  manifest.sqlite                                                          runs, files, ingests, outputs, diagnostics; every path in it relative to the home
+  archive/{host}/{url path}                   downloads, never changed
+  archive/{host}/{zip}!{entry}                one zip entry, fetched by range
+  lake/{market}/{table}/data/year=/month=/    appended tables
+  lake/{market}/{table}/data/snapshot=YYYYMM/ standing data, whole table per month
+  lake/nem/_unregistered/{type}.{subtype}/    tables no schema declares
+  quarantine/{table}/{source}.jsonl           malformed rows
+  manifest.sqlite
+  config.toml
 ```
 
-An entry of a zip is the same source whether it was fetched alone (as
-`{zip}!{entry}`) or inside the whole zip: a read of the whole zip leaves
-the entries the lake already holds from a fetch of each alone, and an
-entry fetched alone whose zip was read whole is skipped, so `fetch` and
-`ingest` never write a row twice. Whole months come from the monthly
-archive, the settled publication; days and five-minute files from the
-report folders, the live one; `fetch` never mixes the two within a
-month, and every row names its source.
+Each Parquet footer records its source URL and sha256, the block's shape,
+and a hash of the plan used to read it. When a schema changes the plan
+hash changes, and `phasor ingest` reads that source again from the archive.
 
-Every Parquet file carries the lake schema of its table: every column the
-table has ever had, each with its id as `PARQUET:field_id` and its newest
-name (a column AEMO renamed is one column), so files of every schema read
-as one table. The table's Iceberg metadata, rebuilt by every ingest, has
-that union as its current schema and the table's roles, key and the data
-model's words as properties, so `iceberg_scan` reads every column of
-every file. Where AEMO publishes two kinds of row under one report pair
-(an area's beside a region's), each kind is a table of its own
-(`with_columns` in the table's declaration).
+## Types
 
-Nothing a file carries is skipped. A table no schema declares is ingested
-from its own header, every column as text, under
-`lake/nem/_unregistered/{report type}.{report subtype}/`; a column a table's
-schema does not have is kept beside the declared ones as text under its own
-name; a column the file lacks is null. Each case is reported
-(`schema.unknown_table`, `schema.deviates`). `--strict` refuses such files
-instead.
-
-Types are exact, one to one with Iceberg's: each column has the type its
-field has in the table's history, which the census chose from everything
-AEMO published in that column and from AEMO's declarations.
-
-| `type` | Arrow | Iceberg V3 |
+| schema | Arrow | Iceberg |
 |---|---|---|
 | `string` | `Utf8` | `string` |
 | `double` | `Float64` | `double` |
@@ -136,256 +101,41 @@ AEMO published in that column and from AEMO's declarations.
 | `boolean` | `Boolean` | `boolean` |
 | `date` | `Date32` | `date` |
 | `timestamp` | `Timestamp(µs, +10:00)` | `timestamptz` |
-| `decimal(P,S)` | `Decimal128(P, S)` | `decimal(P, S)` |
+| `decimal(P,S)` | `Decimal128(P,S)` | `decimal(P,S)` |
 
-Most numbers are `decimal(P,S)` (RRP is `decimal(15,5)`), read exactly
-and never rounded; counters such as RUNNO are `long`. AEMO writes a few
-small values in exponent form (`-3E-05`); they are read exactly too when
-the column's scale holds them. NEM time is fixed AEST.
+Times are UTC microseconds with the market offset in the type. AEMO's
+"no end" dates (`9999/12/31`) are clamped to 2262-04-11 and reported.
 
-Every timestamp in the lake is microseconds since the epoch in UTC, one unit
-with no exceptions: Iceberg's `timestamptz`, which every Iceberg reader
-reads (DuckDB's refuses `timestamptz_ns`), and AEMO's fractional seconds
-have at most three digits (see `docs/iceberg.md`). Values are clamped to the
-range nanoseconds span, 1677-09-21 to 2262-04-11. AEMO
-writes "no end" as `9999/12/31` or `2999/12/31`; such a value is stored as
-the last instant of the range,
-so `END_DATE > now()` still holds, and each column it happens in is
-reported as `parse.timestamp_clamped` with a count and an example.
+## Schemas
 
-No row is dropped for one of its values. A value its column's type cannot
-hold (a fraction in a `long` column, a month 13)
-leaves the column null in that row and is kept, as published, in a text
-column beside it named `{column}__raw`, which exists only in the files that
-need it (`parse.value_kept_raw`). An empty value in a column that does not
-allow nulls is kept as a null (`parse.null_kept`). `--strict` refuses the
-file at the first of either. Only a row whose structure is wrong for its
-block, such as more fields than the I row declares, goes to the quarantine.
-
-A source whose rows spread over more months than a worker may hold open is
-written in parts: `...-p2.parquet`, `...-p3.parquet` beside the first file
-of a month. At most 128 Parquet files are open across all workers.
-
-## How a file was made
-
-A Parquet file is a function of three things: the bytes of its source, the
-shape of the block it was read from, and the plan the shape was read by.
-All three are written into the file's footer and into the manifest:
-
-| footer key | what it says |
-|---|---|
-| `phasor.source_url`, `phasor.source_sha256`, `phasor.entry` | the source: where it came from, its hash, the CSV inside it |
-| `phasor.report_type`, `phasor.report_subtype`, `phasor.source_version`, `phasor.source_columns`, `phasor.fingerprint` | the shape: the block's I row as AEMO published it |
-| `phasor.source_period` | the month the source was released in, which picks among the runs of the table's history that fit a block |
-| `phasor.plan` | the hash of the conformance plan the shape was read by: which file column feeds which lake column, that column's id, type and nullability, how the value is parsed, the key and time columns, the load mode, the directory |
-| `phasor.shape_id` | the id the census gives the shape: the block's report pair and columns, hashed with the census's own canonical bytes, so it can be looked up in the census |
-| `phasor.schema_source` | where the table's definition came from: `registry` (built in), `user` (your own table file), `file` (nobody declared it, so the file's own header) |
-| `phasor.resolution`, `phasor.table`, `phasor.schema_version` | how the shape matched: `conforms` (a run of the table's history has its columns), `deviates` or `derived`; the table, and the schema of its history the block was read with (AEMO's version is `source_version`) |
-
-The plan hash changes when the output of that shape would: a column it
-carries gets another type, a table gets a schema where it had none, the
-schema it is read with changes. It does not
-change when a description is edited, nor when the table gains a column the
-shape does not carry: its files simply lack that column, which reads as
-null. A source whose recorded hash is no longer what the current schemas
-give is behind: the next `fetch` or
-`ingest` that covers it reads it again instead of skipping it, and
-`phasor ingest` with no arguments does that for every source in the
-manifest, straight from the archive. The Parquet files the earlier read
-wrote are replaced, and the run reports each such source as
-`manifest.rules_changed`. `phasor ingest --dry-run` lists what is behind
-and changes nothing.
-
-## The archive of downloads
-
-Every file phasor downloads is kept exactly as the server sent it, at the
-path its URL spells out:
-
-```
-~/.phasor/archive/www.nemweb.com.au/Data_Archive/Wholesale_Electricity/MMSDM/2024/MMSDM_2024_01/MMSDM_Historical_Data_SQLLoader/DATA/
-  PUBLIC_DVD_DISPATCHPRICE_202401010000.zip
-  PUBLIC_DVD_DISPATCHPRICE_202401010000.zip.provenance.json
-```
-
-The record beside it (`phasor_provenance`, shared with the mirror) says
-what the bytes are, their size, sha256 and CRC-32, and every address that
-served them: the URL it was fetched from first, with when, the listing's
-line and the server's `ETag` and `Last-Modified` (when AEMO published it),
-and every other place the same bytes were found since
-(`crates/phasor-mirror/docs/archive.md`, Provenance record).
-
-Every time phasor writes is RFC 3339 with an offset: when bytes were
-fetched in UTC, a server's `Last-Modified` in UTC, a listing's time in the
-host's clock (AEST, `+10:00`, for nemweb, which has no daylight saving).
-Where a time comes in as text it is kept as an instant; in listing output
-and the manifest's `files`, `last_modified` is the HTTP date and
-`last_modified_at` the instant, and a field whose name already ends in
-`_at` gets `{field}_utc`, the instant in UTC (the WEM manifest's
-`generated_at_utc`). A time written without an offset is a defect.
-
-A file is downloaded once; a download that breaks leaves nothing behind,
-and the next attempt fetches the file whole. Nothing in phasor replaces or deletes an
-archived file; to fetch one again, delete it and its record. Everything in
-the lake is derived from the archive, which is what `phasor ingest` does
-when a table's schema improves. `phasor verify --archive` hashes every
-file against its record.
-
-## The mirror
-
-`phasor-mirror` (`crates/phasor-mirror`) keeps a copy of every file under
-nemweb's archive folders and a catalog of it: it crawls every listing page
-under `Data_Archive/`, `Reports/ARCHIVE/` and `Reports/CURRENT/`, peeks
-into each zip's central directory before downloading, downloads every
-listed file once at a paced rate (a refusal is waited out), keeps every
-version of a file nemweb rewrites in place, watches the folders on a
-schedule of their own after the crawl, maps every zip as a folder, and
-compares each month's zip with its folder so most zips are never
-downloaded. Its home is `PHASOR_MIRROR_HOME` (default `~/.phasor-mirror`):
-the archive, with a provenance record beside every file, and its own
-records under `state/`: each folder's listing, pages and events, and the
-catalog.
-`crates/phasor-mirror/README.md` has the commands and the layout on disk;
-the census in phasor-schemas and `phasor` read what it keeps.
-
-## Our schemas: the shared histories
-
-A table's schemas are its history as an Iceberg table, which phasor-schemas
-folds from its census of every file AEMO published
-(github.com/pigface-io/phasorlake-schemas). phasor keeps a copy taken at one
-commit in `schemas/nem/pulled/`, never edited: `just schemas-pull REV` takes
-it and `just schemas-check` holds it to its manifest and to the rev in
-`Cargo.lock`. How a block resolves against the history is in
-`docs/iceberg.md`; how the copy moves is in `CONTRIBUTING.md`. A table with
-a breaking column (one name under two fields) is refused. Columns the history
-has not seen are the census's to fix; until then a table of your own reads them.
-
-## Your own tables
-
-A table of your own goes in `~/.phasor/schemas/nem/{TABLE}/`. Every command
-uses it: one named after a built-in table replaces it, any other adds a
-table. `--no-user-schemas` runs without them. What was ingested before the
-table existed is brought up to it by `phasor ingest`.
-
-It is either a `table.json` of the pulled form, such as a newer one from
-phasor-schemas, or a `table.toml` written by hand. `phasor schema show T`
-prints any table as one, a start for your own:
-
-```toml
-schema_format = 4
-name = "DISPATCH_UNIT_SCADA"
-report_pairs = [["DISPATCH", "UNIT_SCADA"]]
-load_mode = "append"
-primary_key = ["SETTLEMENTDATE", "DUID"]
-time_column = "SETTLEMENTDATE"
-
-column = [      # one per lake column, ever; an id is never reused
-    { id = 1, name = "SETTLEMENTDATE", type = "timestamp", nullable = false },
-    { id = 2, name = "DUID", type = "string", nullable = false },
-    { id = 3, name = "SCADAVALUE", type = "decimal(16,6)", nullable = true },
-    { id = 4, name = "LASTCHANGED", type = "timestamp", nullable = true },
-]
-
-[temporal]
-origin = "derived"
-entity = ["DUID"]
-valid = { kind = "interval_end", column = "SETTLEMENTDATE" }
-order = ["LASTCHANGED"]
-cutoff = "LASTCHANGED"
-
-[[schema]]      # one per column list its files carry
-id = 1
-from = "2024-10"       # the month its files start; the NEM's first if left out
-versions = [1]         # the AEMO versions they come under
-columns = ["SETTLEMENTDATE", "DUID", "SCADAVALUE", "LASTCHANGED"]   # file order
-```
-
-Its schemas become the table's history, one run per schema, report pair
-and version from `from`, and its blocks resolve through it as a pulled
-table's do. A `table.toml` of an older format, with `[[increment]]`
-lists, is refused with how to write it now.
-
-## The census of every shape
-
-The census of every file AEMO published, and each table's history folded from
-it, live in phasor-schemas. Every block phasor reads carries the census's id of
-its shape (`phasor.shape_id`); see `docs/iceberg.md`.
-
-## Which months
-
-The NEM archive begins in July 2009. From 2015 each month is a directory of
-per-table zips; before 2015 a month is one zip of 1.4 to 2.1 GB, read by its
-directory or downloaded whole. Both of AEMO's file naming schemes are read
-(`crates/phasor-nem/src/sources/mmsdm.rs` has the layouts).
-
-## Configuration
-
-AEMO's web server blocks a client that asks too fast. phasor leaves 250 ms
-between requests (`request_interval_ms` in `config.toml`), and when the
-server refuses it (HTTP 403, or 429 through every retry) it sends nothing
-more in that run and reports `net.blocked` for what is left.
-
-The lake's Parquet layout is set in `[lake]` in `config.toml`, and the
-first five keys by flags of `ingest`, `import` and `fetch`
-(`--lake-file-size-mb`, `--lake-row-group-rows`, `--lake-page-kb`,
-`--lake-compression`, `--lake-zstd-level`). The
-layout changes how files are cut, never what they hold, so changing it
-does not re-read the lake; each file records the layout it was written
-with (`phasor.write_options` in its footer).
-
-```toml
-[lake]
-file_size_mb = 128         # a file is closed for the next at about this size
-row_group_rows = 262144
-page_kb = 1024             # data pages: one range request each over HTTP
-page_rows = 20000
-dictionary_page_kb = 1024
-compression = "zstd"       # zstd, lz4, snappy or none
-zstd_level = 3
-statistics = "page"        # none, chunk or page (page keeps the page index)
-```
+Table histories come from phasor-schemas, pinned by rev and copied into
+`schemas/nem/pulled/` (`just schemas-pull REV`). Put your own table in
+`~/.phasor/schemas/nem/{TABLE}/table.toml`; `phasor schema show T` prints
+one to start from. Details: `docs/iceberg.md`.
 
 ## Errors
 
-Every error and warning carries a stable code, a full-sentence message and
-its context, printed as one JSON object a line on stderr, again in the
-summary, and in `phasor errors`. A run attempts every file; the exit code is
-0, 3 or 1 for all, some or none succeeded, 4 for a file not archived when
-offline, 5 for a schema not resolved in strict mode. `docs/errors.md` lists
-every code; `CONTRIBUTING.md` says how to add one.
+Each diagnostic has a stable code and a full sentence, one JSON line on
+stderr. Exit codes: 0 all files ok, 3 some, 1 none, 4 not archived while
+offline, 5 unresolved schema with `--strict`. Codes: `docs/errors.md`.
 
-## Measured
+## Mirror
 
-On an Apple M-series laptop, debug off: the scanner alone reads 1.5 GiB/s of
-MMS CSV; the typed path (parse into Arrow) 530 MiB/s. The January 2024
-DISPATCH_UNIT_SCADA archive (22.6 MB zip, 4.19 million rows) downloads,
-parses and writes in about 7 seconds, 11.3 MB of Parquet. Budgets that these
-numbers may not regress below live in `bench/budgets.json`.
-
-## Status
-
-Working today: the NEM monthly archive from July 2009 on and its report
-folders, the WEM and gas kits, Parquet + manifest, every table the data
-model declares (241) in the registry, each with the Iceberg history
-phasor-schemas folds from the census of every file, and a lake that can be
-read again from the archive when a schema changes. Next: compaction.
-
-## How the crates fit
-
-Each crate does one job; `CONTRIBUTING.md` draws the layers and `docs/layout.md`
-says how to add a source.
+`phasor-mirror` keeps a full copy of nemweb's archive folders, peeking
+into zips before it downloads them. See `crates/phasor-mirror/README.md`.
 
 ## Developing
 
 ```sh
-just setup      # pinned tools and git hooks
-just check      # every hook, as CI runs it
-just bench      # benchmarks against their budgets
+just setup   # pinned tools and git hooks
+just check   # every hook, as CI runs it
+just bench   # benchmarks against bench/budgets.json
 ```
 
-See `CONTRIBUTING.md`.
+Layers and rules: `CONTRIBUTING.md`. Other docs: `docs/semantics.md`,
+`docs/layout.md`.
 
 ## Licence
 
-Apache License 2.0; see `LICENSE` and `NOTICE`. The excerpts of AEMO data
-under `testdata/` are AEMO's and are not covered by it; see
-`testdata/LICENCE.md`.
+Apache 2.0, see `LICENSE` and `NOTICE`. AEMO excerpts under `testdata/`
+are AEMO's, see `testdata/LICENCE.md`.
