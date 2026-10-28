@@ -494,6 +494,13 @@ fn prune(ctx: &Context, mirror: &Mirror, yes: bool) -> Result<i32, MirrorError> 
     Ok(0)
 }
 
+/// Overwrites the progress line on stderr with `text`.
+fn progress_line(text: std::fmt::Arguments<'_>) {
+    let mut err = std::io::stderr().lock();
+    let _ = write!(err, "\r{text}   ");
+    let _ = err.flush();
+}
+
 /// A line of what a watch does: NDJSON, or for people on stderr.
 fn event(ctx: &Context, name: &str, detail: &str) {
     if ctx.json {
@@ -529,9 +536,7 @@ async fn crawl(
         if json {
             render::json_line(&serde_json::json!({ "event": "page_read", "page": p }));
         } else if progress {
-            let mut err = std::io::stderr().lock();
-            let _ = write!(err, "\r{} pages read, {} queued   ", p.pages, p.queued);
-            let _ = err.flush();
+            progress_line(format_args!("{} pages read, {} queued", p.pages, p.queued));
         }
     })
     .await?;
@@ -574,9 +579,7 @@ async fn peek(
         if json {
             render::json_line(&serde_json::json!({ "event": "zip_peeked", "zip": z }));
         } else if progress {
-            let mut err = std::io::stderr().lock();
-            let _ = write!(err, "\r{}/{} zips peeked   ", z.done, z.total);
-            let _ = err.flush();
+            progress_line(format_args!("{}/{} zips peeked", z.done, z.total));
         }
     })
     .await?;
@@ -635,9 +638,7 @@ async fn download(
         if json {
             render::json_line(&serde_json::json!({ "event": "file_done", "file": f }));
         } else if progress {
-            let mut err = std::io::stderr().lock();
-            let _ = write!(err, "\r{}/{} files   ", f.done, f.total);
-            let _ = err.flush();
+            progress_line(format_args!("{}/{} files", f.done, f.total));
         }
     })
     .await?;
@@ -695,9 +696,7 @@ fn hash(ctx: &Context, all: bool) -> Result<i32, MirrorError> {
         if json {
             render::json_line(&serde_json::json!({ "event": "file_hashed", "file": f }));
         } else if progress {
-            let mut err = std::io::stderr().lock();
-            let _ = write!(err, "\r{}/{} files read   ", f.done, f.total);
-            let _ = err.flush();
+            progress_line(format_args!("{}/{} files read", f.done, f.total));
         }
     })?;
     for d in &s.failed {
