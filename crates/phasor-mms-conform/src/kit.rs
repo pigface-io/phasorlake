@@ -79,7 +79,7 @@ impl BatchSink for Bridge<'_> {
         self.out.block_started(
             &table,
             resolved.version,
-            irow.fingerprint(),
+            resolved.fingerprint,
             &transform,
             resolved.label(),
         );

@@ -436,7 +436,7 @@ impl<B: BatchSink> Sink for ArrowSink<'_, B> {
         self.block = Some(Block {
             steps: b.steps,
             missing_required: b.missing_required,
-            fingerprint: irow.fingerprint(),
+            fingerprint: resolved.fingerprint,
             builders: b.builders,
             report_type: b.report_type,
             report_subtype: b.report_subtype,

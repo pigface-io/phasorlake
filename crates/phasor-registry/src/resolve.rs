@@ -5,7 +5,7 @@
 
 use std::sync::Arc;
 
-use phasor_core::{Category, Diagnostic, YearMonth};
+use phasor_core::{Category, Diagnostic, Fingerprint, YearMonth};
 
 use phasor_mms_decode::IRow;
 
@@ -79,6 +79,8 @@ pub struct Resolved {
     pub source: SchemaSource,
     /// Warnings raised while resolving.
     pub warnings: Vec<Diagnostic>,
+    /// The fingerprint of the I row's columns.
+    pub fingerprint: Fingerprint,
 }
 
 impl Resolved {
@@ -164,13 +166,14 @@ impl Registry {
             report_subtype: irow.report_subtype.to_owned(),
         };
         let fp = irow.fingerprint();
-        // Hot path: a column list only one schema has is read with it.
-        if let Some((id, k)) = self.pair(
+        let declared = self.pair(
             opts.market,
             irow.report_type,
             irow.report_subtype,
             Some(irow.columns),
-        ) {
+        );
+        // Hot path: a column list only one schema has is read with it.
+        if let Some((id, k)) = declared {
             let shapes = self.shapes(id.0 as usize);
             if let Some(&schema) = shapes.exact.get(&(k, fp))
                 && shapes.versions.contains(&(k, irow.version))
@@ -184,15 +187,14 @@ impl Registry {
                     plan: plan.clone(),
                     source: self.schema_source(id),
                     warnings: Vec::new(),
+                    fingerprint: fp,
                 });
             }
         }
-        let id = match self.table_for_block(
-            opts.market,
-            irow.report_type,
-            irow.report_subtype,
-            Some(irow.columns),
-        ) {
+        let id = match declared
+            .map(|(id, _)| id)
+            .or_else(|| self.derived_by_pair(opts.market, irow.report_type, irow.report_subtype))
+        {
             Some(id) => id,
             None if opts.mode == Mode::Strict => return Err(unknown()),
             // No table claims the pair: derive one from the header, skip nothing.
@@ -202,7 +204,7 @@ impl Registry {
             if opts.mode == Mode::Strict {
                 return Err(unknown());
             }
-            return Ok(self.resolve_derived(id, irow));
+            return Ok(self.resolve_derived(id, irow, fp));
         }
         let key = (id, fp, irow.version, period);
         let r = self.resolution(key, || self.resolve_block(id, irow, period));
@@ -243,6 +245,7 @@ impl Registry {
             plan: r.plan.clone(),
             source: self.schema_source(id),
             warnings: r.warnings.clone(),
+            fingerprint: fp,
         })
     }
 
@@ -355,10 +358,10 @@ impl Registry {
     }
 
     /// The plan of an I row onto a derived table: every column as text.
-    fn resolve_derived(&self, id: TableId, irow: &IRow<'_>) -> Resolved {
+    fn resolve_derived(&self, id: TableId, irow: &IRow<'_>, fp: Fingerprint) -> Resolved {
         let t = self.table(id);
         let market = self.market_of(id);
-        let d = self.resolution((id, irow.fingerprint(), irow.version, None), || {
+        let d = self.resolution((id, fp, irow.version, None), || {
             let plan = Arc::new(ConformancePlan::new(
                 t,
                 market,
@@ -395,6 +398,7 @@ impl Registry {
             plan: d.plan.clone(),
             source: self.schema_source(id),
             warnings: d.warnings.clone(),
+            fingerprint: fp,
         }
     }
 }
