@@ -406,8 +406,10 @@ async fn watch(ctx: &Context, mirror: &Mirror, plan: &WatchPlan<'_>) -> Result<i
             // Every file the archive lacks, changed this round or not, so one
             // a failed or stopped download missed is fetched next time.
             if !r.files.is_empty() {
+                let files: std::collections::HashSet<&str> =
+                    r.files.iter().map(String::as_str).collect();
                 let paired = phasor_mirror::pairs(mirror, &ctx.archive(), false)?;
-                if paired.iter().any(|p| r.files.contains(&p.zip)) {
+                if paired.iter().any(|p| files.contains(p.zip.as_str())) {
                     peek(ctx, &fetcher, mirror, true, None).await?;
                 }
             }
