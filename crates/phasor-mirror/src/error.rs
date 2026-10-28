@@ -79,14 +79,6 @@ pub enum MirrorError {
         /// The zip's URL.
         url: String,
     },
-    /// The home keeps its records in the layout before `state/`.
-    #[error(
-        "The mirror's records are at {path}, the layout before `state/`: run `phasor-mirror upgrade` first."
-    )]
-    OldLayout {
-        /// The old records' folder.
-        path: String,
-    },
     /// `prune` with no month to keep from.
     #[error("Prune needs a month to keep from: set keep_from in config.toml or pass --keep-from.")]
     NoKeepFrom,
@@ -146,9 +138,6 @@ impl Diagnose for MirrorError {
             }
             Self::NotSame { url } => {
                 Diagnostic::error("mirror.not_same", MIRROR, msg).with_url(url.clone())
-            }
-            Self::OldLayout { path } => {
-                Diagnostic::error("mirror.old_layout", MIRROR, msg).with_file(path.clone())
             }
             Self::NoKeepFrom => {
                 Diagnostic::error("config.keep_from_missing", Category::CONFIG, msg)

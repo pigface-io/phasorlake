@@ -114,19 +114,6 @@ pub async fn run_command(cli: &Cli) -> Result<i32> {
     let ctx = &Context::new(cli)?;
     let cmd = &cli.command;
     let mirror = ctx.home.records().keeping(ctx.config.keep_from);
-    if !matches!(cmd, Command::Upgrade { .. })
-        && ctx.home.old_records().exists()
-        && !mirror.dir().exists()
-    {
-        report(
-            ctx,
-            &MirrorError::OldLayout {
-                path: ctx.home.old_records().display().to_string(),
-            }
-            .diagnostic(),
-        );
-        return Ok(1);
-    }
     let result = match cmd {
         Command::Crawl { roots, fresh } => {
             let pass = async {
@@ -198,15 +185,6 @@ pub async fn run_command(cli: &Cli) -> Result<i32> {
         Command::Compare { delete, .. } => compare(ctx, &mirror, *delete),
         Command::Summary { out, check } => summary(ctx, &mirror, out, *check),
         Command::Status { roots, full } => status(ctx, &mirror, roots, *full),
-        Command::Upgrade {
-            dry_run,
-            skip_records,
-            max_entries,
-        } => upgrade(
-            ctx,
-            *dry_run,
-            (!*skip_records).then_some(max_entries.unwrap_or(usize::MAX)),
-        ),
         Command::Reindex => {
             let _lock = mirror.lock()?;
             let n = mirror.reindex(&ctx.archive())?;
@@ -217,10 +195,6 @@ pub async fn run_command(cli: &Cli) -> Result<i32> {
             }
             Ok(0)
         }
-        Command::Relayout { dry_run } => {
-            let _lock = mirror.lock()?;
-            relayout(ctx, &mirror, *dry_run)
-        }
     };
     match result {
         Ok(code) => Ok(code),
@@ -229,102 +203,6 @@ pub async fn run_command(cli: &Cli) -> Result<i32> {
             Ok(1)
         }
     }
-}
-
-/// Moves a home to the layout of `state/`.
-fn upgrade(ctx: &Context, dry_run: bool, records: Option<usize>) -> Result<i32, MirrorError> {
-    // No mirror may run while its records move: the lock of the layout it
-    // runs in, and the new one after.
-    let old = Mirror::new(ctx.home.old_records());
-    let _old_lock = old.dir().exists().then(|| old.lock()).transpose()?;
-    let _lock = (!dry_run).then(|| ctx.home.records().lock()).transpose()?;
-    let s = phasor_mirror::upgrade(&ctx.home, &ctx.archive(), dry_run, records, |step| {
-        if ctx.json {
-            render::json_line(&serde_json::json!({"event": "upgrade_step", "step": step}));
-        }
-    })?;
-    if ctx.json {
-        render::json_line(&serde_json::json!({"event": "upgrade_done", "summary": s}));
-    } else {
-        println!(
-            "{}{} records moved, {} listing files written, {} provenance records written again, {} unreadable",
-            if s.dry_run { "dry run: " } else { "" },
-            s.moved,
-            s.listings,
-            s.records,
-            s.unreadable.len()
-        );
-        for p in &s.left {
-            println!("left: {}", p.display());
-        }
-        for (dir, entries) in &s.skipped {
-            println!("skipped: {} ({entries} entries)", dir.display());
-        }
-    }
-    Ok(i32::from(!s.unreadable.is_empty()))
-}
-
-/// Moves the archive to one folder per report folder.
-fn relayout(ctx: &Context, mirror: &Mirror, dry_run: bool) -> Result<i32, MirrorError> {
-    let mut folders: std::collections::BTreeMap<String, [usize; 3]> = Default::default();
-    let s = phasor_mirror::relayout(mirror, &ctx.archive(), dry_run, |step| {
-        if ctx.json {
-            render::json_line(&serde_json::json!({"event": "relayout_step", "step": step}));
-        }
-        let folder = step
-            .to
-            .parent()
-            .map(|p| p.display().to_string())
-            .unwrap_or_default();
-        let mut n = [0usize; 3];
-        match step.action {
-            phasor_mirror::relayout::Action::Move => n[0] += 1,
-            phasor_mirror::relayout::Action::Version => {
-                n[1] += 1;
-                eprintln!(
-                    "kept as a version: {} -> {}",
-                    step.from.display(),
-                    step.to.display()
-                );
-            }
-            phasor_mirror::relayout::Action::Same => n[2] += 1,
-            phasor_mirror::relayout::Action::Folder => {
-                eprintln!(
-                    "moved whole: {} -> {}",
-                    step.from.display(),
-                    step.to.display()
-                );
-            }
-        }
-        if n != [0; 3] {
-            let kept = folders.entry(folder).or_default();
-            for (k, v) in kept.iter_mut().zip(n) {
-                *k += v;
-            }
-        }
-    })?;
-    if ctx.json {
-        render::json_line(&serde_json::json!({"event": "relayout_done", "summary": s}));
-    } else {
-        for (folder, [m, v, same]) in &folders {
-            println!("{folder}: {m} moved, {v} versions, {same} the same");
-        }
-        println!(
-            "{}{} folders moved whole, {} moved, {} kept as versions, {} the same as the file there; {} journals merged, {} held lines rewritten, {} folders removed, {} folders set aside to delete, {} swapped, {} unreadable",
-            if s.dry_run { "dry run: " } else { "" },
-            s.folders_moved,
-            s.moved,
-            s.versions,
-            s.same,
-            s.journals,
-            s.held,
-            s.folders_removed,
-            s.folders_set_aside,
-            s.folders_swapped,
-            s.unreadable.len()
-        );
-    }
-    Ok(i32::from(!s.unreadable.is_empty()))
 }
 
 /// `work`, with the run lock held; the work does not start without it.

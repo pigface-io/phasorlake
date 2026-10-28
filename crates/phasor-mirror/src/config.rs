@@ -8,7 +8,6 @@
 //! {home}/state/                    the mirror's records ([`Mirror`])
 //!   lock, crawl.json, peeks.ndjson, removals.ndjson, pruned.ndjson
 //!   folders/{host}/{folder}/       listing.ndjson, pages/{LISTING}.html, events.ndjson
-//!   migrations/                    relayout.ndjson, upgrade.ndjson
 //!   cache/                         held.ndjson, status.json, catalog.ndjson, catalog.txt
 //!   tmp/
 //! ```
@@ -61,11 +60,6 @@ impl Home {
     /// The mirror's own records: crawl, folders, peeks, removals, caches.
     pub fn state(&self) -> PathBuf {
         self.root.join("state")
-    }
-
-    /// Where the mirror kept its records before `upgrade`: `{home}/mirror`.
-    pub fn old_records(&self) -> PathBuf {
-        self.root.join("mirror")
     }
 
     /// The config file.
@@ -151,11 +145,6 @@ impl Mirror {
         self.folder_dir(folder.as_str())
             .join("pages")
             .join(format!("{name}.html"))
-    }
-
-    /// The one-time moves, logged before each is taken.
-    pub fn migrations_dir(&self) -> PathBuf {
-        self.dir.join("migrations")
     }
 
     /// What the mirror derives and can derive again: safe to delete.
@@ -377,9 +366,7 @@ mod tests {
         let h = Home::at("/h");
         let m = h.records();
         assert_eq!(m.dir(), Path::new("/h/state"));
-        assert_eq!(h.old_records(), Path::new("/h/mirror"));
         assert_eq!(m.done_path(), Path::new("/h/state/crawl.json"));
-        assert_eq!(m.migrations_dir(), Path::new("/h/state/migrations"));
         assert_eq!(m.cache_dir(), Path::new("/h/state/cache"));
         assert_eq!(m.tmp_dir(), Path::new("/h/state/tmp"));
         let page = |u: &str| m.page_path(&Url::parse(u).unwrap());

@@ -153,33 +153,6 @@ pub enum Command {
         #[arg(long)]
         check: bool,
     },
-    /// Move the archive to one folder per report folder (the CURRENT and
-    /// ARCHIVE listings of a folder, WEMDE's current and previous, held in
-    /// one place), and merge the journals likewise; offline. Nothing is
-    /// written over: the same bytes are kept once, other bytes as a
-    /// version beside them.
-    Relayout {
-        /// Say what would move, and change nothing.
-        #[arg(long)]
-        dry_run: bool,
-    },
-    /// Moves a home kept before `state/` to the layout now: the mirror's
-    /// records to their new names, the crawl record into one listing file
-    /// per folder, and every provenance record written again in format 2.
-    /// Reads and writes records only, never a downloaded file; offline.
-    Upgrade {
-        /// Say what would change, and change nothing.
-        #[arg(long)]
-        dry_run: bool,
-        /// Leave the provenance records in the archive as they are.
-        #[arg(long)]
-        skip_records: bool,
-        /// Leave the records of any folder with more entries than this:
-        /// on exFAT each name far into a large folder costs seconds to
-        /// find. Format-1 records read as well as format 2.
-        #[arg(long, value_name = "N")]
-        max_entries: Option<usize>,
-    },
     /// Writes `state/cache/held.ndjson` again from the provenance records:
     /// what a download pass takes as archived without reading a record.
     /// Reads every record once; offline.

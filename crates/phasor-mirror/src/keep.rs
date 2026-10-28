@@ -251,35 +251,17 @@ pub fn prune(mirror: &Mirror, archive: &Archive, apply: bool) -> Result<PruneSum
     f.sync_all().map_err(MirrorError::io(&register))?;
     for d in &whole {
         let path = archive.path_for(d);
-        remove_dir_retrying(&path, |p| std::fs::remove_dir_all(p))?;
+        match std::fs::remove_dir_all(&path) {
+            Err(e) if e.kind() != std::io::ErrorKind::NotFound => {
+                return Err(MirrorError::io(&path)(e));
+            }
+            _ => {}
+        }
     }
     for (dir, names) in &per_folder {
         remove_named(dir, names)?;
     }
     Ok(summary)
-}
-
-/// Removes the folder at `path` with `remove`, again while it is left
-/// not empty: on exFAT under FSKit a folder read while its entries are
-/// deleted passes some over, so each pass leaves fewer. A folder already
-/// gone is fine.
-fn remove_dir_retrying(
-    path: &Path,
-    mut remove: impl FnMut(&Path) -> std::io::Result<()>,
-) -> Result<(), MirrorError> {
-    const PASSES: usize = 50;
-    let mut pass = 1;
-    loop {
-        match remove(path) {
-            Err(e) if e.kind() == std::io::ErrorKind::DirectoryNotEmpty && pass < PASSES => {
-                pass += 1;
-            }
-            Err(e) if e.kind() != std::io::ErrorKind::NotFound => {
-                return Err(MirrorError::io(path)(e));
-            }
-            _ => return Ok(()),
-        }
-    }
 }
 
 /// Removes from `dir` each of `names` with what sits beside it: its
@@ -564,27 +546,6 @@ mod tests {
         let again = prune(&mirror, &archive, true).unwrap();
         assert_eq!(again.files, 5);
         assert!(remove_named(&home.path().join("none"), &BTreeSet::new()).is_ok());
-    }
-
-    #[test]
-    fn a_folder_left_not_empty_is_removed_again_until_it_goes() {
-        let not_empty = || std::io::Error::from(std::io::ErrorKind::DirectoryNotEmpty);
-        let path = Path::new("/nowhere");
-        let mut tries = 0;
-        remove_dir_retrying(path, |_: &Path| {
-            tries += 1;
-            if tries < 3 { Err(not_empty()) } else { Ok(()) }
-        })
-        .unwrap();
-        assert_eq!(tries, 3);
-        let mut tries = 0;
-        let e = remove_dir_retrying(path, |_: &Path| {
-            tries += 1;
-            Err(not_empty())
-        })
-        .unwrap_err();
-        assert!(matches!(e, MirrorError::Io { .. }));
-        assert_eq!(tries, 50);
     }
 
     #[test]

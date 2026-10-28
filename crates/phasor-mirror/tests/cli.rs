@@ -723,6 +723,11 @@ fn a_watch_keeps_each_version_and_what_is_new() {
     let out = cli.ok(&["--json", "watch", "--root", &root, "--rounds", "2"]);
     assert_eq!(out.matches("\"event\":\"watch_round\"").count(), 2, "{out}");
 
+    // The held cache written again from the records.
+    let out = cli.ok(&["reindex"]);
+    assert!(out.contains(" held lines written to "), "{out}");
+    assert!(cli.ok(&["--json", "reindex"]).contains("\"reindex_done\""));
+
     // An archive linked to a drive not mounted is waited for.
     let away = cli.home.path().join("archive.away");
     std::fs::rename(&archive, &away).unwrap();
@@ -783,128 +788,6 @@ fn a_watch_keeps_each_version_and_what_is_new() {
             assert!(out.contains("\"event\":\"waiting\""), "{out}");
         }
     }
-}
-
-/// Relayout moves both listings of a report folder into one, says what it
-/// would do first, and fails when a sidecar does not read.
-#[test]
-fn relayout_moves_both_listings_into_one_folder() {
-    let cli = Cli::new();
-    let archive = cli.home.path().join("archive/www.nemweb.com.au/Reports");
-    let put = |listing: &str, name: &str, bytes: &[u8]| {
-        let dir = archive.join(listing).join("X");
-        std::fs::create_dir_all(&dir).unwrap();
-        std::fs::write(dir.join(name), bytes).unwrap();
-        let url = format!("https://www.nemweb.com.au/Reports/{listing}/X/{name}");
-        let sidecar = format!(
-            "{{\"url\":\"{url}\",\"size\":{},\"sha256\":\"{}\",\"fetched_at\":\"2026-10-05T00:00:00Z\"}}",
-            bytes.len(),
-            phasor_mirror::net::archive::sha256_hex(bytes)
-        );
-        std::fs::write(dir.join(format!("{name}.json")), sidecar).unwrap();
-    };
-    put("CURRENT", "a.csv", b"a");
-    put("CURRENT", "m.zip", b"partial");
-    put("ARCHIVE", "m.zip", b"final");
-    put("ARCHIVE", "s.csv", b"s");
-    put("CURRENT", "s.csv", b"s");
-    let dry = cli.ok(&["relayout", "--dry-run"]);
-    assert!(
-        dry.contains("dry run: 1 folders moved whole, 1 moved, 1 kept as versions"),
-        "{dry}"
-    );
-    assert!(archive.join("CURRENT/X/a.csv").exists());
-    let json = cli.ok(&["--json", "relayout", "--dry-run"]);
-    assert!(
-        json.contains("\"relayout_step\"") && json.contains("\"relayout_done\""),
-        "{json}"
-    );
-    let done = cli.run(&["relayout"]);
-    assert!(done.status.success());
-    let out = String::from_utf8_lossy(&done.stdout);
-    assert!(
-        out.contains("1 folders moved whole, 1 moved, 1 kept as versions, 1 the same"),
-        "{out}"
-    );
-    assert!(String::from_utf8_lossy(&done.stderr).contains("kept as a version"));
-    assert!(archive.join("X/a.csv").exists());
-    // A sidecar that does not read: left, and the run says so.
-    std::fs::create_dir_all(archive.join("CURRENT/X")).unwrap();
-    std::fs::write(archive.join("CURRENT/X/b.csv"), b"b").unwrap();
-    std::fs::write(archive.join("CURRENT/X/b.csv.json"), b"{").unwrap();
-    let (code, out, _) = cli.code(&["relayout"]);
-    assert_eq!(code, 1, "{out}");
-    assert!(out.contains("1 unreadable"), "{out}");
-}
-
-/// A home in the layout before `state/` is refused until it is upgraded;
-/// the upgrade moves its records, says so, and leaves the bytes alone.
-#[test]
-fn a_home_before_state_is_upgraded_first() {
-    let cli = Cli::new();
-    let old = cli.home.path().join("mirror");
-    std::fs::create_dir_all(old.join("crawl")).unwrap();
-    std::fs::write(old.join("config.toml"), "request_interval_ms = 750\n").unwrap();
-    std::fs::write(old.join("peek.ndjson"), "").unwrap();
-    std::fs::write(old.join("mine.txt"), "kept").unwrap();
-    let line = r#"{"url":"https://h/A/a.zip","kind":"file","size":2,"modified":"Monday, October 12, 2026 10:45 AM","listed_on":"https://h/A/"}"#;
-    std::fs::write(old.join("crawl/remote.ndjson"), format!("{line}\n")).unwrap();
-    let data = cli.home.path().join("archive/h/A/a.zip");
-    std::fs::create_dir_all(data.parent().unwrap()).unwrap();
-    std::fs::write(&data, b"aa").unwrap();
-    let v1 = format!(
-        r#"{{"url":"https://h/A/a.zip","size":2,"sha256":"{}","fetched_at":"2026-10-20T00:00:00Z"}}"#,
-        phasor_mirror::net::archive::sha256_hex(b"aa")
-    );
-    std::fs::write(cli.home.path().join("archive/h/A/a.zip.json"), v1).unwrap();
-    std::fs::write(cli.home.path().join("archive/h/A/b.zip"), b"b").unwrap();
-    std::fs::write(cli.home.path().join("archive/h/A/b.zip.json"), "{").unwrap();
-
-    let (code, _, err) = cli.code(&["status"]);
-    assert_eq!(code, 1);
-    assert!(err.contains("mirror.old_layout"), "{err}");
-    // Exit 1 all the same: one record does not read.
-    let (code, dry, _) = cli.code(&["upgrade", "--dry-run"]);
-    assert_eq!(code, 1);
-    assert!(
-        dry.starts_with(
-            "dry run: 2 records moved, 1 listing files written, 1 provenance records written again"
-        ),
-        "{dry}"
-    );
-    let json = cli.code(&["--json", "upgrade", "--dry-run"]).1;
-    assert!(
-        json.contains("\"upgrade_step\"") && json.contains("\"upgrade_done\""),
-        "{json}"
-    );
-    // A folder past the cap keeps its records, and is named.
-    let capped = cli.code(&["upgrade", "--dry-run", "--max-entries", "1"]).1;
-    assert!(
-        capped.contains("0 provenance records written again")
-            && capped.contains("skipped: ")
-            && capped.contains("entries)"),
-        "{capped}"
-    );
-    let (code, out, _) = cli.code(&["upgrade"]);
-    assert_eq!(code, 1, "one record does not read: {out}");
-    assert!(out.contains("left: ") && out.contains("mine.txt"), "{out}");
-    assert!(cli.home.path().join("config.toml").exists());
-    assert!(
-        cli.home
-            .path()
-            .join("archive/h/A/a.zip.provenance.json")
-            .exists()
-    );
-    assert_eq!(std::fs::read(&data).unwrap(), b"aa");
-    let again = cli.code(&["upgrade", "--skip-records"]).1;
-    assert!(
-        again.starts_with("0 records moved, 0 listing files written, 0"),
-        "{again}"
-    );
-    cli.ok(&["status"]);
-    // The held cache written again from the records.
-    assert!(cli.ok(&["reindex"]).starts_with("1 held lines written"));
-    assert!(cli.ok(&["--json", "reindex"]).contains("\"reindex_done\""));
 }
 
 /// A month to keep from leaves out what is before it, and prune deletes

@@ -181,27 +181,14 @@ fn hashing_rides_out_an_interruption_and_reports_a_failure() {
 }
 
 #[test]
-fn a_batch_is_synced_file_by_file_unless_its_volume_is_slow_to() {
+fn a_batch_is_synced_file_by_file_and_names_a_bad_path() {
     let tmp = tempfile::tempdir().unwrap();
     let a = tmp.path().join("a");
     std::fs::write(&a, b"a").unwrap();
-    let gone = tmp.path().join("gone");
-    // Here, file by file: the folder of a path no longer there too.
-    let mut all = 0;
-    batch_to_disk_with([a.as_path(), gone.as_path()], |_| false, || all += 1).unwrap();
-    assert_eq!(all, 0);
-    batch_to_disk([a.as_path()]).unwrap();
+    // The folder of a path no longer there is synced too.
+    batch_to_disk([a.as_path(), tmp.path().join("gone").as_path()]).unwrap();
     batch_to_disk(std::iter::empty()).unwrap();
-    // On exFAT, one sync of every disk.
-    batch_to_disk_with([a.as_path()], |_| true, || all += 1).unwrap();
-    assert_eq!(all, 1);
-    // A path that cannot be opened is named.
     let bad = Path::new("\0");
-    let (path, _) = batch_to_disk_with([bad], |_| false, || {}).unwrap_err();
+    let (path, _) = batch_to_disk([bad]).unwrap_err();
     assert_eq!(path, bad);
-    assert!(slow_file_system(b"exfat"));
-    assert!(slow_file_system(b"msdos"));
-    assert!(!slow_file_system(b"apfs"));
-    // A temporary folder is on the system's own disk.
-    assert!(!slow_to_sync(tmp.path()));
 }

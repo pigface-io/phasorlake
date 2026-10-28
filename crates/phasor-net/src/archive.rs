@@ -32,87 +32,27 @@ pub fn to_disk(file: &std::fs::File) -> std::io::Result<()> {
     rustix::fs::fsync(file).map_err(std::io::Error::from)
 }
 
-/// Hands a batch of files written without a sync to the disk, and the
-/// folders that hold them, so their names last too; a path no longer
-/// there hands only its folder. On a volume where the sync of one file
-/// costs seconds once its folder is large (exFAT, FAT), one `sync` of
-/// every disk is cheaper than one per file; elsewhere each is synced
-/// alone, so a batch never waits on another disk's writes. An error names
-/// the path it came from.
+/// Hands a batch of files written without a sync to the disk, each file
+/// then each folder holding one, so their names last too; a path no longer
+/// there hands only its folder. An error names the path it came from.
 pub fn batch_to_disk<'p>(
     paths: impl IntoIterator<Item = &'p Path>,
 ) -> Result<(), (PathBuf, std::io::Error)> {
-    batch_to_disk_with(paths, slow_to_sync, rustix::fs::sync)
-}
-
-/// [`batch_to_disk`], with what says a volume is slow to sync file by
-/// file and what syncs every disk.
-fn batch_to_disk_with<'p>(
-    paths: impl IntoIterator<Item = &'p Path>,
-    slow: impl Fn(&Path) -> bool,
-    sync_all: impl FnOnce(),
-) -> Result<(), (PathBuf, std::io::Error)> {
-    let paths: Vec<&Path> = paths.into_iter().collect();
-    let Some(first) = paths.first() else {
-        return Ok(());
-    };
-    if slow(first.parent().unwrap_or(first)) {
-        sync_all();
-        return Ok(());
-    }
     let sync = |p: &Path| match std::fs::File::open(p) {
         Ok(f) => to_disk(&f).map_err(|e| (p.to_path_buf(), e)),
         Err(e) if e.kind() == std::io::ErrorKind::NotFound => Ok(()),
         Err(e) => Err((p.to_path_buf(), e)),
     };
     let mut folders = std::collections::BTreeSet::new();
-    for p in &paths {
+    for p in paths {
         sync(p)?;
         folders.extend(p.parent());
     }
     folders.into_iter().try_for_each(sync)
 }
 
-/// Whether the volume holding `path` is one whose files are slow to sync
-/// one by one: exFAT or FAT, by the name the system gives its file system.
-fn slow_to_sync(path: &Path) -> bool {
-    rustix::fs::statfs(path).is_ok_and(|s| slow_file_system(&fs_name(&s)))
-}
-
-/// The file system's name, as `statfs` gives it.
-#[cfg(target_vendor = "apple")]
-fn fs_name(s: &rustix::fs::StatFs) -> Vec<u8> {
-    s.f_fstypename
-        .iter()
-        .map(|c| c.to_ne_bytes()[0])
-        .take_while(|&b| b != 0)
-        .collect()
-}
-
-/// The file system's name, from the magic numbers `statfs(2)` lists.
-#[cfg(target_os = "linux")]
-fn fs_name(s: &rustix::fs::StatFs) -> Vec<u8> {
-    match i64::from(s.f_type) {
-        0x2011_BAB0 => b"exfat".to_vec(),
-        0x4d44 => b"msdos".to_vec(),
-        _ => Vec::new(),
-    }
-}
-
-/// No name: every file is synced alone.
-#[cfg(not(any(target_vendor = "apple", target_os = "linux")))]
-fn fs_name(_: &rustix::fs::StatFs) -> Vec<u8> {
-    Vec::new()
-}
-
-/// Whether a file system, by name, is exFAT or FAT.
-fn slow_file_system(name: &[u8]) -> bool {
-    matches!(name, b"exfat" | b"msdos" | b"vfat")
-}
-
-/// The names each directory holds, read once per directory. On exFAT a
-/// lookup of a name that is not there scans the whole directory, so one
-/// read of a large folder answers every miss in it.
+/// The names each directory holds, read once per directory: one read of a
+/// large folder answers every miss in it.
 #[derive(Debug, Default)]
 pub struct DirNames {
     dirs: HashMap<PathBuf, HashSet<OsString>>,
