@@ -30,14 +30,6 @@ pub struct FeedFolders {
     serves: Serves,
 }
 
-fn parse_error(url: &str, what: &'static str, e: &dyn std::fmt::Display) -> FetchError {
-    FetchError::Parse {
-        url: url.to_owned(),
-        what,
-        message: e.to_string(),
-    }
-}
-
 /// The month of an instant in the feed's clock.
 fn month_of(at: Stamp, offset_secs: i32) -> Option<YearMonth> {
     let (year, month) = local_year_month(at.secs_utc.saturating_mul(1_000_000_000), offset_secs);
@@ -52,7 +44,7 @@ impl FeedFolders {
         feed: &'static Feed,
         table_of: TableOf,
     ) -> Result<Self, FetchError> {
-        let mut base = Url::parse(base_url).map_err(|e| parse_error(base_url, "base URL", &e))?;
+        let mut base = Url::parse(base_url).map_err(FetchError::parse(base_url, "base URL"))?;
         if !base.path().ends_with('/') {
             base.set_path(&format!("{}/", base.path()));
         }
@@ -86,7 +78,7 @@ impl FeedFolders {
                 let rel = format!("{}/", r.trim_matches('/'));
                 self.base
                     .join(&rel)
-                    .map_err(|e| parse_error(&rel, "feed root", &e))
+                    .map_err(FetchError::parse(&rel, "feed root"))
             })
             .collect()
     }
@@ -184,7 +176,7 @@ impl Source for FeedFolders {
             for e in listing::parse(&body) {
                 let url = folder
                     .join(&e.href)
-                    .map_err(|er| parse_error(&e.href, "listing href", &er))?;
+                    .map_err(FetchError::parse(&e.href, "listing href"))?;
                 if e.is_dir {
                     // Down the tree only, never up or out of it.
                     if url.as_str().starts_with(folder.as_str())

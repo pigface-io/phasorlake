@@ -129,11 +129,7 @@ pub struct ReportFolders {
 impl ReportFolders {
     /// The folders under `base_url`, mapped to tables by `registry`.
     pub fn new(base_url: &str, registry: Arc<Registry>) -> Result<Self, FetchError> {
-        let mut base = Url::parse(base_url).map_err(|e| FetchError::Parse {
-            url: base_url.to_owned(),
-            what: "base URL",
-            message: e.to_string(),
-        })?;
+        let mut base = Url::parse(base_url).map_err(FetchError::parse(base_url, "base URL"))?;
         if !base.path().ends_with('/') {
             base.set_path(&format!("{}/", base.path()));
         }
@@ -144,11 +140,7 @@ impl ReportFolders {
     pub fn folder_url(&self, side: &Side) -> Result<Url, FetchError> {
         self.base
             .join(&format!("{}/", side.path))
-            .map_err(|e| FetchError::Parse {
-                url: side.path.clone(),
-                what: "folder URL",
-                message: e.to_string(),
-            })
+            .map_err(FetchError::parse(&side.path, "folder URL"))
     }
 
     /// The folders that carry the query's tables, each with its `ARCHIVE` and `CURRENT` sides.
@@ -236,11 +228,9 @@ impl ReportFolders {
                 if archived_day {
                     covered.push(name.day);
                 }
-                let file_url = url.join(&e.href).map_err(|er| FetchError::Parse {
-                    url: e.href.clone(),
-                    what: "listing href",
-                    message: er.to_string(),
-                })?;
+                let file_url = url
+                    .join(&e.href)
+                    .map_err(FetchError::parse(&e.href, "listing href"))?;
                 out.push(RemoteFile {
                     url: file_url,
                     source: REPORTS_SOURCE_ID,

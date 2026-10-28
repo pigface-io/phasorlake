@@ -67,22 +67,16 @@ pub struct MmsdmArchive {
 impl MmsdmArchive {
     /// Over `base`, normally `https://www.nemweb.com.au`.
     pub fn new(base: &str) -> Result<Self, FetchError> {
-        let base = Url::parse(base).map_err(|e| FetchError::Parse {
-            url: base.to_owned(),
-            what: "base URL",
-            message: e.to_string(),
-        })?;
+        let base = Url::parse(base).map_err(FetchError::parse(base, "base URL"))?;
         Ok(Self { base })
     }
 
     /// The year directory, e.g. `.../MMSDM/2012/`.
     pub fn year_root(&self, year: i32) -> Result<Url, FetchError> {
         let path = format!("/Data_Archive/Wholesale_Electricity/MMSDM/{year}/");
-        self.base.join(&path).map_err(|e| FetchError::Parse {
-            url: path,
-            what: "year URL",
-            message: e.to_string(),
-        })
+        self.base
+            .join(&path)
+            .map_err(FetchError::parse(path, "year URL"))
     }
 
     /// The month directory (`.../MMSDM_2024_01/MMSDM_Historical_Data_SQLLoader/`), from 2015 on.
@@ -93,11 +87,9 @@ impl MmsdmArchive {
             ym.year(),
             ym.month()
         );
-        self.base.join(&path).map_err(|e| FetchError::Parse {
-            url: path,
-            what: "month URL",
-            message: e.to_string(),
-        })
+        self.base
+            .join(&path)
+            .map_err(FetchError::parse(path, "month URL"))
     }
 
     /// Finds how a month is published by reading its year's listing.
@@ -132,11 +124,9 @@ impl MmsdmArchive {
             .iter()
             .find(|e| e.name.eq_ignore_ascii_case(&zip_name))
         {
-            let url = year_url.join(&e.href).map_err(|er| FetchError::Parse {
-                url: e.href.clone(),
-                what: "listing href",
-                message: er.to_string(),
-            })?;
+            let url = year_url
+                .join(&e.href)
+                .map_err(FetchError::parse(&e.href, "listing href"))?;
             return Ok(MonthLayout::WholeZip { url });
         }
         let mut months: Vec<&str> = entries
@@ -196,11 +186,7 @@ impl MmsdmArchive {
         let whole_url = self
             .year_root(month.year())?
             .join(&format!("MMSDM_{}_{:02}.zip", month.year(), month.month()))
-            .map_err(|e| FetchError::Parse {
-                url: month.to_string(),
-                what: "month zip URL",
-                message: e.to_string(),
-            })?;
+            .map_err(FetchError::parse(month.to_string(), "month zip URL"))?;
         let mut out: Vec<PathBuf> = phasor_acquire::archive::entries_under(archive, Some(&dir))
             .into_iter()
             .map(|e| e.path)
@@ -273,11 +259,7 @@ impl MmsdmArchive {
                 let url = dir
                     .join(&e.href)
                     .or_else(|_| self.base.join(&e.href))
-                    .map_err(|er| FetchError::Parse {
-                        url: e.href.clone(),
-                        what: "listing href",
-                        message: er.to_string(),
-                    })?;
+                    .map_err(FetchError::parse(&e.href, "listing href"))?;
                 out.push((
                     table.clone(),
                     RemoteFile {
@@ -306,11 +288,9 @@ impl MmsdmArchive {
                 if e.is_dir || !(lower.ends_with(".ctl") || lower == "readme.txt") {
                     continue;
                 }
-                let url = dir.join(&e.href).map_err(|er| FetchError::Parse {
-                    url: e.href.clone(),
-                    what: "listing href",
-                    message: er.to_string(),
-                })?;
+                let url = dir
+                    .join(&e.href)
+                    .map_err(FetchError::parse(&e.href, "listing href"))?;
                 support.push(RemoteFile {
                     url,
                     source: SOURCE_ID,

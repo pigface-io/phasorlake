@@ -192,6 +192,18 @@ impl FetchError {
             _ => false,
         }
     }
+
+    /// A [`FetchError::Parse`] of the file at `url`, not the `what` expected, for its cause.
+    pub fn parse<E: std::fmt::Display>(
+        url: impl Into<String>,
+        what: &'static str,
+    ) -> impl FnOnce(E) -> Self {
+        move |e| Self::Parse {
+            url: url.into(),
+            what,
+            message: e.to_string(),
+        }
+    }
 }
 
 impl Diagnose for FetchError {
