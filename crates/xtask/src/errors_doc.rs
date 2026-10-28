@@ -31,6 +31,9 @@ const MMS_DECODE: &str = "phasorlake-schemas/crates/phasor-mms-decode/src/diagno
 const PLAIN_DECODE: &str = "phasorlake-schemas/crates/phasor-plain-decode/src/diagnose.rs";
 const ZIP: &str = "phasorlake-schemas/crates/phasor-zip/src/diagnose.rs";
 
+/// Why every `query.*` code retired.
+const QUERY_GONE: &str = "raised by phasor's read of the lake, which is gone: phasor writes the lake and reading it is the reader's own SQL";
+
 /// Codes no longer raised; a retired code stays listed and never gets a new meaning.
 const RETIRED: [(&str, &str); 33] = [
     (
@@ -85,86 +88,26 @@ const RETIRED: [(&str, &str); 33] = [
         "schema.breaking_change",
         "a table file changed in a way the lake does not survive; tables come from the histories phasor-schemas publishes, which hold their own changes",
     ),
-    (
-        "query.at_on_interval_table",
-        "raised by phasor's read of the lake, which is gone: phasor writes the lake and reading it is the reader's own SQL",
-    ),
-    (
-        "query.bad_filter_value",
-        "raised by phasor's read of the lake, which is gone: phasor writes the lake and reading it is the reader's own SQL",
-    ),
-    (
-        "query.bad_time",
-        "raised by phasor's read of the lake, which is gone: phasor writes the lake and reading it is the reader's own SQL",
-    ),
-    (
-        "query.filter_after_resolution",
-        "raised by phasor's read of the lake, which is gone: phasor writes the lake and reading it is the reader's own SQL",
-    ),
-    (
-        "query.lake_format",
-        "raised by phasor's read of the lake, which is gone: phasor writes the lake and reading it is the reader's own SQL",
-    ),
-    (
-        "query.order_nan",
-        "raised by phasor's read of the lake, which is gone: phasor writes the lake and reading it is the reader's own SQL",
-    ),
-    (
-        "query.plan_failed",
-        "raised by phasor's read of the lake, which is gone: phasor writes the lake and reading it is the reader's own SQL",
-    ),
-    (
-        "query.raw_only",
-        "raised by phasor's read of the lake, which is gone: phasor writes the lake and reading it is the reader's own SQL",
-    ),
-    (
-        "query.read_failed",
-        "raised by phasor's read of the lake, which is gone: phasor writes the lake and reading it is the reader's own SQL",
-    ),
-    (
-        "query.role_missing",
-        "raised by phasor's read of the lake, which is gone: phasor writes the lake and reading it is the reader's own SQL",
-    ),
-    (
-        "query.role_type",
-        "raised by phasor's read of the lake, which is gone: phasor writes the lake and reading it is the reader's own SQL",
-    ),
-    (
-        "query.roles_invalid",
-        "raised by phasor's read of the lake, which is gone: phasor writes the lake and reading it is the reader's own SQL",
-    ),
-    (
-        "query.source_unknown",
-        "raised by phasor's read of the lake, which is gone: phasor writes the lake and reading it is the reader's own SQL",
-    ),
-    (
-        "query.stamp_unknown",
-        "raised by phasor's read of the lake, which is gone: phasor writes the lake and reading it is the reader's own SQL",
-    ),
-    (
-        "query.unknown_column",
-        "raised by phasor's read of the lake, which is gone: phasor writes the lake and reading it is the reader's own SQL",
-    ),
-    (
-        "query.unknown_table",
-        "raised by phasor's read of the lake, which is gone: phasor writes the lake and reading it is the reader's own SQL",
-    ),
-    (
-        "query.window_empty",
-        "raised by phasor's read of the lake, which is gone: phasor writes the lake and reading it is the reader's own SQL",
-    ),
-    (
-        "query.window_ignored",
-        "raised by phasor's read of the lake, which is gone: phasor writes the lake and reading it is the reader's own SQL",
-    ),
-    (
-        "query.window_uncovered",
-        "raised by phasor's read of the lake, which is gone: phasor writes the lake and reading it is the reader's own SQL",
-    ),
-    (
-        "query.write_failed",
-        "raised by phasor's read of the lake, which is gone: phasor writes the lake and reading it is the reader's own SQL",
-    ),
+    ("query.at_on_interval_table", QUERY_GONE),
+    ("query.bad_filter_value", QUERY_GONE),
+    ("query.bad_time", QUERY_GONE),
+    ("query.filter_after_resolution", QUERY_GONE),
+    ("query.lake_format", QUERY_GONE),
+    ("query.order_nan", QUERY_GONE),
+    ("query.plan_failed", QUERY_GONE),
+    ("query.raw_only", QUERY_GONE),
+    ("query.read_failed", QUERY_GONE),
+    ("query.role_missing", QUERY_GONE),
+    ("query.role_type", QUERY_GONE),
+    ("query.roles_invalid", QUERY_GONE),
+    ("query.source_unknown", QUERY_GONE),
+    ("query.stamp_unknown", QUERY_GONE),
+    ("query.unknown_column", QUERY_GONE),
+    ("query.unknown_table", QUERY_GONE),
+    ("query.window_empty", QUERY_GONE),
+    ("query.window_ignored", QUERY_GONE),
+    ("query.window_uncovered", QUERY_GONE),
+    ("query.write_failed", QUERY_GONE),
 ];
 
 /// The retired codes that live code raises again.
