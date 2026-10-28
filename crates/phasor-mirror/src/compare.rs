@@ -13,13 +13,12 @@ use zip::ZipArchive;
 
 use crate::crawl::{Mirror, Remote, RemoteKind};
 use crate::error::MirrorError;
+use crate::map::NESTED_IN_MEMORY;
 use crate::peek::Known;
 use crate::stamp::Stamp;
 use crate::zipdir::Entry;
 
 const READ_BUFFER: usize = 1 << 20;
-/// A nested zip up to this size is listed in memory; a bigger one is spooled.
-const NESTED_IN_MEMORY: u64 = 64 << 20;
 
 /// A zip and the folder of the same name beside it.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]

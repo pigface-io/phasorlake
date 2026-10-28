@@ -21,7 +21,7 @@ use crate::stamp::{AEST, Stamp};
 use crate::zipdir::Entry;
 
 /// A nested zip up to this size is read into memory; a bigger one is spooled.
-const NESTED_IN_MEMORY: u64 = 64 << 20;
+pub(crate) const NESTED_IN_MEMORY: u64 = 64 << 20;
 /// Zips nested deeper than this are not opened (`zip.nesting_too_deep`).
 pub const MAX_DEPTH: usize = 8;
 /// A nested zip declared bigger than this is not unpacked (`zip.too_big`).
