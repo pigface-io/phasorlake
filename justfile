@@ -13,6 +13,7 @@ setup:
     cargo install --locked cargo-audit --version 0.22.2
     command -v prek >/dev/null || brew install prek
     command -v gitleaks >/dev/null || brew install gitleaks
+    command -v shellcheck >/dev/null || brew install shellcheck
     @just duckdb
     @just hooks
 
@@ -70,6 +71,10 @@ fmt-check:
 lint:
     cargo clippy --workspace --all-targets --locked -- -D warnings
     RUSTDOCFLAGS="-D warnings" cargo doc --workspace --no-deps --locked --quiet
+
+# shellcheck over every shell script the repository tracks
+shellcheck:
+    git ls-files -z '*.sh' '*.bash' | xargs -0 shellcheck
 
 # ── tests ────────────────────────────────────────────────────────────────────
 

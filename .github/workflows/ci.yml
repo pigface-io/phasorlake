@@ -24,6 +24,8 @@ env:
   # The versions the hooks were written against, each download checked against its SHA-256.
   GITLEAKS_VERSION: "8.30.1"
   GITLEAKS_SHA256_LINUX: 551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb
+  SHELLCHECK_VERSION: "0.11.0"
+  SHELLCHECK_SHA256_LINUX: 8c3be12b05d5c177a04c29e3c78ce89ac86f1595681cab149b65b97c4e227198
   PREK_VERSION: "0.5.4"
   # The read tests run their SQL through the DuckDB CLI; the justfile's setup pins the same.
   DUCKDB_VERSION: "1.5.6"
@@ -48,12 +50,17 @@ jobs:
       - uses: ./.github/actions/setup
         with:
           schemas-key: ${{ secrets.PHASOR_SCHEMAS_KEY }}
-      - name: Install gitleaks, duckdb, prek and cargo-llvm-cov
+      - name: Install gitleaks, shellcheck, duckdb, prek and cargo-llvm-cov
         run: |
           scripts/fetch-tool.sh \
             "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz" \
             "$GITLEAKS_SHA256_LINUX" \
             "gitleaks" \
+            "$HOME/.local/bin"
+          scripts/fetch-tool.sh \
+            "https://github.com/koalaman/shellcheck/releases/download/v${SHELLCHECK_VERSION}/shellcheck-v${SHELLCHECK_VERSION}.linux.x86_64.tar.xz" \
+            "$SHELLCHECK_SHA256_LINUX" \
+            "shellcheck-v${SHELLCHECK_VERSION}/shellcheck" \
             "$HOME/.local/bin"
           scripts/fetch-tool.sh \
             "https://github.com/duckdb/duckdb/releases/download/v${DUCKDB_VERSION}/duckdb_cli-linux-amd64.zip" \

@@ -147,3 +147,13 @@ entry = "just budget-check"
 stages = ["pre-push"]
 files = '^(bench/budgets\.json|coverage\.json)$'
 pass_filenames = false
+
+# ── Shell ────────────────────────────────────────────────────────────────────
+
+[[repos.hooks]]
+id = "shellcheck"
+name = "lint: shellcheck"
+language = "system"
+entry = "just shellcheck"
+files = '\.(sh|bash)$'
+pass_filenames = false

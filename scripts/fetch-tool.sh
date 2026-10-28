@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Download a release archive (.tar.gz or .zip), check it against a SHA-256
+# Download a release archive (.tar.gz, .tar.xz or .zip), check it against a SHA-256
 # written beside the call, and install one binary from it. CI runs what it downloads with
 # the repository checked out, and what it builds is committed and shipped:
 # a tool that is not the one that was reviewed must not run.
@@ -24,7 +24,7 @@ if [ "$actual" != "$sha256" ]; then
 fi
 case "$url" in
 *.zip) unzip -q "$work/archive" "$member" -d "$work" ;;
-*) tar -xzf "$work/archive" -C "$work" "$member" ;;
+*) tar -xf "$work/archive" -C "$work" "$member" ;;
 esac
 mkdir -p "$dir"
 install -m 0755 "$work/$member" "$dir/$(basename "$member")"
