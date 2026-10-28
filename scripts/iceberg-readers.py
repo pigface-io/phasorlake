@@ -8,26 +8,24 @@
 #
 # Exits non-zero when a reader disagrees with what the store's test wrote.
 
-import glob
 import json
-import os
 import sys
+from pathlib import Path
 
 import duckdb
 import fastavro
 from pyiceberg.table import StaticTable
 
-table = sys.argv[1]
-meta_dir = os.path.join(table, "metadata")
-version = open(os.path.join(meta_dir, "version-hint.text")).read().strip()
-location = os.path.join(meta_dir, f"v{version}.metadata.json")
+meta_dir = Path(sys.argv[1]) / "metadata"
+version = (meta_dir / "version-hint.text").read_text().strip()
+location = str(meta_dir / f"v{version}.metadata.json")
 
-for path in sorted(glob.glob(os.path.join(meta_dir, "*.avro"))):
-    with open(path, "rb") as f:
+for path in sorted(meta_dir.glob("*.avro")):
+    with path.open("rb") as f:
         reader = fastavro.reader(f)
         records = list(reader)
         schema = json.loads(reader.metadata["avro.schema"])
-    print(f"fastavro {os.path.basename(path)}: {schema['name']}, {len(records)} records")
+    print(f"fastavro {path.name}: {schema['name']}, {len(records)} records")
 
 t = StaticTable.from_metadata(location)
 print("pyiceberg: format", t.metadata.format_version, "schema", t.metadata.current_schema_id)

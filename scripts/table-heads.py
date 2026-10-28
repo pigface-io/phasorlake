@@ -13,12 +13,12 @@ usage: python3 -I scripts/table-heads.py SCHEMAS ARCHIVE_HOST OUT [gas]
 
 import io
 import json
-import os
 import re
 import sys
 import zipfile
+from pathlib import Path
 
-schemas, host, out = sys.argv[1:4]
+schemas, host, out = (Path(a) for a in sys.argv[1:4])
 only = sys.argv[4] if len(sys.argv) > 4 else None
 ROWS = 5
 
@@ -26,15 +26,14 @@ ROWS = 5
 def pairs(market):
     """Report pair -> table name, from the pulled metadata."""
     m = {}
-    base = os.path.join(schemas, market, "pulled")
-    for t in sorted(os.listdir(base)):
-        md = os.path.join(base, t, "metadata")
-        if not os.path.isdir(md):
+    for md in sorted((schemas / market / "pulled").glob("*/metadata")):
+        if not md.is_dir():
             continue
-        v = sorted(f for f in os.listdir(md) if f.endswith(".metadata.json"))
+        v = sorted(md.glob("*.metadata.json"))
         if not v:
             continue
-        props = json.load(open(os.path.join(md, v[-1]))).get("properties", {})
+        props = json.loads(v[-1].read_text()).get("properties", {})
+        t = md.parent.name
         for rt, st in json.loads(props.get("phasor.reports", "[]")):
             m[(rt.upper(), st.upper())] = t
     return m
@@ -42,13 +41,13 @@ def pairs(market):
 
 def lines_of(path):
     """The text lines of a file, or of the first CSV inside a zip."""
-    if path.lower().endswith(".zip"):
+    if path.suffix.lower() == ".zip":
         z = zipfile.ZipFile(path)
         names = [n for n in z.namelist() if n.lower().endswith(".csv")]
         if not names:
             return None, None
         return names[0].rsplit("/", 1)[-1], io.TextIOWrapper(z.open(names[0]), "latin-1")
-    return os.path.basename(path), open(path, encoding="latin-1")
+    return path.name, path.open(encoding="latin-1")
 
 
 def mms_head(path, wanted):
@@ -94,62 +93,60 @@ def dvd_name(table, text):
 
 
 def write(rel, text):
-    p = os.path.join(out, rel)
-    os.makedirs(os.path.dirname(p), exist_ok=True)
-    with open(p, "w", encoding="latin-1", newline="") as w:
+    p = out / rel
+    p.parent.mkdir(parents=True, exist_ok=True)
+    with p.open("w", encoding="latin-1", newline="") as w:
         w.write(text)
 
 
 def data_files(d):
     try:
-        names = os.listdir(d)
+        entries = list(d.iterdir())
     except OSError:
         return []
     return sorted(
-        n for n in names
-        if not n.startswith("._") and not n.endswith((".json", ".part", ".resume", ".tmp"))
-        and os.path.isfile(os.path.join(d, n))
+        e.name for e in entries
+        if not e.name.startswith("._") and not e.name.endswith((".json", ".part", ".resume", ".tmp"))
+        and e.is_file()
     )
 
 
 done = {}
 # NEM: the newest MMSDM months, back until every table has a head.
 nem = pairs("nem")
-mmsdm = os.path.join(host, "Data_Archive/Wholesale_Electricity/MMSDM")
+mmsdm = host / "Data_Archive/Wholesale_Electricity/MMSDM"
 months = []
-for y in sorted(os.listdir(mmsdm), reverse=True):
-    if not y.isdigit():
+for y in sorted(mmsdm.iterdir(), reverse=True):
+    if not y.name.isdigit():
         continue
-    for m in sorted(os.listdir(os.path.join(mmsdm, y)), reverse=True):
-        months.append(os.path.join(mmsdm, y, m))
+    months.extend(sorted(y.iterdir(), reverse=True))
 want_tables = set(nem.values())
 for mdir in ([] if only == "gas" else months[:36]):
     if want_tables <= set(done):
         break
     for sub in ("DATA", "P5MIN_ALL_DATA", "PREDISP_ALL_DATA"):
-        d = os.path.join(mdir, "MMSDM_Historical_Data_SQLLoader", sub)
+        d = mdir / "MMSDM_Historical_Data_SQLLoader" / sub
         for n in data_files(d):
             m = re.match(r"PUBLIC_(?:ARCHIVE#|DVD_)([A-Z0-9_]+?)(?:#FILE\d+#|_)\d{12}", n)
             if not m or m.group(1) in done or m.group(1) not in want_tables:
                 continue
             table = m.group(1)
             wanted = {k: v for k, v in nem.items() if v == table}
-            for t, (name, text) in mms_head(os.path.join(d, n), wanted).items():
+            for t, (name, text) in mms_head(d / n, wanted).items():
                 if t not in done:
-                    write(os.path.join("nem", dvd_name(t, text)), text)
+                    write(Path("nem", dvd_name(t, text)), text)
                     done[t] = n
     print("nem", len(done), "of", len(want_tables), "after", mdir, file=sys.stderr, flush=True)
 
 # Gas: each folder the census saw, newest file per report it carried.
 gas = pairs("gas")
-folders = json.load(open(os.path.join(schemas, "gas/pulled/folders.json")))["folders"]
+folders = json.loads((schemas / "gas/pulled/folders.json").read_text())["folders"]
 gas_done = {}
 for fo in folders:
     # A folder named as its root's last part is the root itself.
-    if fo["root"].rsplit("/", 1)[-1] == fo["folder"]:
-        d = os.path.join(host, fo["root"])
-    else:
-        d = os.path.join(host, fo["root"], fo["folder"])
+    whole = fo["root"].rsplit("/", 1)[-1] == fo["folder"]
+    rel = fo["root"] if whole else f'{fo["root"]}/{fo["folder"]}'
+    d = host / rel
     files = data_files(d)
     if not files:
         continue
@@ -159,9 +156,9 @@ for fo in folders:
         for n in reversed(files):
             if not wanted:
                 break
-            heads = mms_head(os.path.join(d, n), wanted)
+            heads = mms_head(d / n, wanted)
             for t, (name, text) in heads.items():
-                write(os.path.join("gas", fo["root"], fo["folder"], name), text)
+                write(Path("gas", fo["root"], fo["folder"], name), text)
                 gas_done[t] = n
                 wanted = {k: v for k, v in wanted.items() if v != t}
     else:
@@ -170,9 +167,8 @@ for fo in folders:
         for n in files:
             stem = re.sub(r"(_\d{4,14})+(?=\.|~|$)|~.*$", "", n.rsplit(".", 1)[0]).lower()
             stems[stem] = n
-        rel = fo["root"] if d == os.path.join(host, fo["root"]) else os.path.join(fo["root"], fo["folder"])
         for stem, n in sorted(stems.items()):
-            path = os.path.join(d, n)
+            path = d / n
             # A zip of reports (DWGM's CurrentDay.zip): each CSV in it.
             if n.lower().endswith(".zip") or ".zip@" in n.lower():
                 try:
@@ -193,7 +189,7 @@ for fo in folders:
                 key = re.sub(r"(_\d{4,14})+(?=\.|~|$)|~.*$", "", name.rsplit(".", 1)[0]).lower()
                 if len(head) < 2 or (rel, key) in gas_done:
                     continue
-                write(os.path.join("gas", rel, name), "\r\n".join(head) + "\r\n")
+                write(Path("gas", rel, name), "\r\n".join(head) + "\r\n")
                 gas_done[(rel, key)] = n
     print("gas", len(gas_done), fo["folder"], file=sys.stderr, flush=True)
 
