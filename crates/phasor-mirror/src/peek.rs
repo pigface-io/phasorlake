@@ -3,7 +3,6 @@
 //! one line per zip.
 
 use std::collections::{HashMap, HashSet};
-use std::io::Write as _;
 use std::path::{Path, PathBuf};
 
 use serde::{Deserialize, Serialize};
@@ -121,21 +120,15 @@ impl Mirror {
 
 /// Every zip peeked so far, in the order peeked, each with its `_at` instants.
 pub fn read_peeks(path: &Path) -> Result<Vec<Peeked>, MirrorError> {
-    let text = match std::fs::read_to_string(path) {
-        Ok(t) => t,
-        Err(e) if e.kind() == std::io::ErrorKind::NotFound => return Ok(Vec::new()),
-        Err(e) => return Err(MirrorError::io(path)(e)),
+    let Some(text) = crate::ndjson::read(path)? else {
+        return Ok(Vec::new());
     };
     text.lines()
         .enumerate()
         .map(|(i, l)| {
             serde_json::from_str::<Peeked>(l)
                 .map(Peeked::derived)
-                .map_err(|e| MirrorError::Record {
-                    path: path.display().to_string(),
-                    line: i as u64 + 1,
-                    message: e.to_string(),
-                })
+                .map_err(MirrorError::record(path, i))
         })
         .collect()
 }
@@ -387,15 +380,7 @@ fn peek_error(e: &DirError) -> PeekError {
 fn append(path: &Path, record: &Peeked) -> Result<(), MirrorError> {
     // A time given as text is written as its instant only.
     let record = record.clone().derived();
-    let mut line = serde_json::to_vec(&record).expect("a Peeked always serialises");
-    line.push(b'\n');
-    let mut f = std::fs::OpenOptions::new()
-        .create(true)
-        .append(true)
-        .open(path)
-        .map_err(MirrorError::io(path))?;
-    f.write_all(&line).map_err(MirrorError::io(path))?;
-    crate::net::archive::to_disk(&f).map_err(MirrorError::io(path))
+    crate::ndjson::append(path, [&record], crate::net::archive::to_disk)
 }
 
 #[cfg(test)]

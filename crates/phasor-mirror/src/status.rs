@@ -161,11 +161,7 @@ impl Mirror {
         match std::fs::read(&path) {
             Ok(b) => serde_json::from_slice(&b)
                 .map(Some)
-                .map_err(|e| MirrorError::Record {
-                    path: path.display().to_string(),
-                    line: 1,
-                    message: e.to_string(),
-                }),
+                .map_err(MirrorError::record(&path, 0)),
             Err(e) if e.kind() == std::io::ErrorKind::NotFound => Ok(None),
             Err(e) => Err(MirrorError::io(&path)(e)),
         }

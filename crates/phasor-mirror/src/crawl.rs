@@ -161,10 +161,7 @@ fn listings_under(dir: &Path) -> Vec<PathBuf> {
 
 /// The lines of the listing file at `path`; none when there is none.
 fn read_listing(path: &Path) -> Result<Vec<Remote>, MirrorError> {
-    match std::fs::metadata(path) {
-        Ok(_) => read_record(path),
-        Err(_) => Ok(Vec::new()),
-    }
+    crate::ndjson::read(path)?.map_or(Ok(Vec::new()), |text| parse_record(path, &text))
 }
 
 /// An empty listing removes the file.
@@ -413,17 +410,17 @@ fn summarise(record: &[Remote]) -> CrawlSummary {
 /// The crawl record at `path`, in URL order, each link with its `modified_at`.
 pub fn read_record(path: &Path) -> Result<Vec<Remote>, MirrorError> {
     let text = std::fs::read_to_string(path).map_err(MirrorError::io(path))?;
+    parse_record(path, &text)
+}
+
+fn parse_record(path: &Path, text: &str) -> Result<Vec<Remote>, MirrorError> {
     text.lines()
         .enumerate()
         .filter(|(_, l)| !l.is_empty())
         .map(|(i, l)| {
             serde_json::from_str::<Remote>(l)
                 .map(Remote::derived)
-                .map_err(|e| MirrorError::Record {
-                    path: path.display().to_string(),
-                    line: i as u64 + 1,
-                    message: e.to_string(),
-                })
+                .map_err(MirrorError::record(path, i))
         })
         .collect()
 }

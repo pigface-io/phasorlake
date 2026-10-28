@@ -15,6 +15,7 @@ pub mod keep;
 pub mod listing;
 pub mod lock;
 pub mod map;
+mod ndjson;
 pub mod net;
 pub mod peek;
 pub mod stamp;

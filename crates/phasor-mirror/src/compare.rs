@@ -4,7 +4,7 @@
 
 use std::collections::{BTreeMap, HashMap, HashSet};
 use std::fs::File;
-use std::io::{BufReader, Cursor, Read, Seek, Write as _};
+use std::io::{BufReader, Cursor, Read, Seek};
 use std::path::{Path, PathBuf};
 
 use crate::net::{Address, Archive, Provenance, Via};
@@ -132,10 +132,8 @@ impl Mirror {
     /// Every removed duplicate, by URL.
     pub fn removed(&self) -> Result<HashMap<String, Removed>, MirrorError> {
         let path = self.removed_path();
-        let text = match std::fs::read_to_string(&path) {
-            Ok(t) => t,
-            Err(e) if e.kind() == std::io::ErrorKind::NotFound => return Ok(HashMap::new()),
-            Err(e) => return Err(MirrorError::io(&path)(e)),
+        let Some(text) = crate::ndjson::read(&path)? else {
+            return Ok(HashMap::new());
         };
         text.lines()
             .enumerate()
@@ -143,11 +141,7 @@ impl Mirror {
             .map(|(i, l)| {
                 serde_json::from_str::<Removed>(l)
                     .map(|r| (r.url.clone(), r))
-                    .map_err(|e| MirrorError::Record {
-                        path: path.display().to_string(),
-                        line: i as u64 + 1,
-                        message: e.to_string(),
-                    })
+                    .map_err(MirrorError::record(&path, i))
             })
             .collect()
     }
@@ -507,16 +501,7 @@ pub fn remove(
         };
         crate::peek::keep_listing(mirror, known, &cmp.zip, &path, offset)?;
     }
-    let record = mirror.removed_path();
-    let mut line = serde_json::to_vec(&removed).expect("a Removed always serialises");
-    line.push(b'\n');
-    let mut f = std::fs::OpenOptions::new()
-        .create(true)
-        .append(true)
-        .open(&record)
-        .map_err(MirrorError::io(&record))?;
-    f.write_all(&line).map_err(MirrorError::io(&record))?;
-    f.sync_all().map_err(MirrorError::io(&record))?;
+    crate::ndjson::append(&mirror.removed_path(), [&removed], File::sync_all)?;
     note_entries(cmp)?;
     if removed.downloaded {
         crate::net::archive::remove(&path)?;
@@ -760,6 +745,7 @@ fn percent_decoded(s: &str) -> String {
 
 #[cfg(test)]
 mod tests {
+    use std::io::Write as _;
     use std::sync::Arc;
     use std::time::Duration;
 

@@ -1,7 +1,6 @@
 //! Each folder's journal, appended and never written over: only what no
 //! provenance record holds (`same`, `repacked`, `folder_gone`).
 
-use std::io::Write as _;
 use std::path::PathBuf;
 
 use serde::{Deserialize, Serialize};
@@ -70,33 +69,23 @@ impl Mirror {
         let path = self.journal_path(folder);
         let dir = path.parent().expect("a journal is in a folder");
         std::fs::create_dir_all(dir).map_err(MirrorError::io(dir))?;
-        let mut line = serde_json::to_vec(event).expect("an Event always serialises");
-        line.push(b'\n');
-        std::fs::OpenOptions::new()
-            .create(true)
-            .append(true)
-            .open(&path)
-            .and_then(|mut f| f.write_all(&line))
-            .map_err(MirrorError::io(&path))
+        crate::ndjson::append(&path, [event], |_| Ok(()))
     }
 
     /// The journal of `folder`, oldest first; a line that does not read is passed over.
     pub fn journal(&self, folder: &str) -> Result<Vec<Event>, MirrorError> {
-        let path = self.journal_path(folder);
-        match std::fs::read_to_string(&path) {
-            Ok(text) => Ok(text
-                .lines()
-                .filter_map(|l| serde_json::from_str(l).ok())
-                .collect()),
-            Err(e) if e.kind() == std::io::ErrorKind::NotFound => Ok(Vec::new()),
-            Err(e) => Err(MirrorError::io(&path)(e)),
-        }
+        Ok(crate::ndjson::read(&self.journal_path(folder))?
+            .unwrap_or_default()
+            .lines()
+            .filter_map(|l| serde_json::from_str(l).ok())
+            .collect())
     }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+    use std::io::Write as _;
 
     #[test]
     fn a_journal_is_appended_and_read_back() {

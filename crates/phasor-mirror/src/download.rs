@@ -253,11 +253,8 @@ impl Mirror {
     /// Every held file, by URL, from its last line. A line that does not
     /// read is passed over.
     pub fn held(&self) -> Result<HashMap<String, HeldEntry>, MirrorError> {
-        let path = self.held_path();
-        let text = match std::fs::read_to_string(&path) {
-            Ok(t) => t,
-            Err(e) if e.kind() == std::io::ErrorKind::NotFound => return Ok(HashMap::new()),
-            Err(e) => return Err(MirrorError::io(&path)(e)),
+        let Some(text) = crate::ndjson::read(&self.held_path())? else {
+            return Ok(HashMap::new());
         };
         Ok(text
             .lines()
