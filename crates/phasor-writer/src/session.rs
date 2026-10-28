@@ -16,7 +16,7 @@ use crate::error::StoreError;
 use crate::manifest::EntryShare;
 use crate::parquet_hive::ParquetHive;
 use crate::partition::split_by_month;
-use crate::provenance::{Stamp, lake_schema, stamped};
+use crate::provenance::{Stamp, lake_schema, stamped_reusing};
 use crate::quarantine::QuarantineWriter;
 use crate::writer::{FileMeta, LakeWriter, Partition, PartitionKey, WriterId, WrittenFile};
 
@@ -279,10 +279,10 @@ impl IngestSession {
             let batch = fitted(&batch, &schema)?;
             let stamp = self
                 .stamp
-                .clone()
+                .as_mut()
                 .expect("an entry is begun before its rows");
             let times = stamp.times();
-            let batch = stamped(&batch, &stamp, &lake)?;
+            let batch = stamped_reusing(&batch, stamp, &lake)?;
             let stats = self.writer.write_timed(wid, &batch)?;
             let bounds = stats.map(|t| (t.min, t.max));
             let share = self.share(&shape);
@@ -405,6 +405,9 @@ impl IngestSession {
 
 /// The schema that takes both `file` and `batch`; `None` when `file` already takes `batch`.
 fn widened(file: &Schema, batch: &Schema) -> Option<Schema> {
+    if file.fields() == batch.fields() {
+        return None;
+    }
     let mut fields: Vec<Field> = file.fields().iter().map(|f| f.as_ref().clone()).collect();
     let mut wider = false;
     for b in batch.fields() {

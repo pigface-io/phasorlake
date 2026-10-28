@@ -72,6 +72,22 @@ pub fn stamped(
     RecordBatch::try_new(schema.clone(), columns)
 }
 
+/// [`stamped`], its four columns cut from ones `stamp` keeps for the most rows asked of it.
+pub(crate) fn stamped_reusing(
+    batch: &RecordBatch,
+    stamp: &mut Stamp,
+    schema: &SchemaRef,
+) -> Result<RecordBatch, ArrowError> {
+    let rows = batch.num_rows();
+    if stamp.kept.as_ref().is_none_or(|k| k[0].len() < rows) {
+        stamp.kept = Some(stamp.columns(rows));
+    }
+    let kept = stamp.kept.as_ref().expect("kept just above");
+    let mut columns = batch.columns().to_vec();
+    columns.extend(kept.iter().map(|c| c.slice(0, rows)));
+    RecordBatch::try_new(schema.clone(), columns)
+}
+
 /// Every time a source was stamped with, as found, in microseconds since 1970 UTC.
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
 pub struct Times {
@@ -100,6 +116,8 @@ pub struct Stamp {
     name: Arc<str>,
     values: ArrayRef,
     times: Times,
+    /// The columns for the most rows asked so far, which fewer are cut from.
+    kept: Option<[ArrayRef; 4]>,
 }
 
 impl Stamp {
@@ -109,6 +127,7 @@ impl Stamp {
             name: Arc::from(name),
             values: Arc::new(StringArray::from(vec![name])),
             times,
+            kept: None,
         }
     }
 
@@ -152,10 +171,16 @@ pub(crate) fn count(column: &dyn Array, counts: &mut Vec<(String, u64)>) {
     let Some(values) = dict.values().as_any().downcast_ref::<StringArray>() else {
         return;
     };
-    let mut per_key = vec![0u64; values.len()];
-    for k in dict.keys().values() {
-        per_key[usize::from(*k)] += 1;
-    }
+    // A stamp's column has one value, so every key is 0.
+    let per_key = if values.len() == 1 {
+        vec![dict.len() as u64]
+    } else {
+        let mut per_key = vec![0u64; values.len()];
+        for k in dict.keys().values() {
+            per_key[usize::from(*k)] += 1;
+        }
+        per_key
+    };
     for (k, n) in per_key.into_iter().enumerate().filter(|(_, n)| *n > 0) {
         let name = values.value(k);
         match counts.iter_mut().find(|(s, _)| s == name) {
@@ -201,6 +226,36 @@ mod tests {
         let b = stamped(&batch, &Stamp::new("s", server(5)), &lake).unwrap();
         assert_eq!((b.num_rows(), b.num_columns()), (2, 5));
         assert!(stamped(&batch, &Stamp::new("s", Times::default()), &batch.schema()).is_err());
+    }
+
+    #[test]
+    fn reused_columns_stamp_as_fresh_ones_do() {
+        let schema = Schema::new(vec![Field::new("X", DataType::Int64, true)]);
+        let lake = lake_schema(&schema);
+        let schema = Arc::new(schema);
+        let mut stamp = Stamp::new("s", server(5));
+        for rows in [3, 2, 5, 5, 1] {
+            let batch = RecordBatch::try_new(
+                schema.clone(),
+                vec![Arc::new(arrow_array::Int64Array::from(vec![1; rows]))],
+            )
+            .unwrap();
+            let fresh = stamped(&batch, &stamp, &lake).unwrap();
+            assert_eq!(stamped_reusing(&batch, &mut stamp, &lake).unwrap(), fresh);
+        }
+    }
+
+    #[test]
+    fn rows_of_several_sources_are_counted_per_key() {
+        let keys = UInt16Array::from(vec![1u16, 0, 1]);
+        let dict = DictionaryArray::<UInt16Type>::try_new(
+            keys,
+            Arc::new(StringArray::from(vec!["a", "b"])),
+        )
+        .unwrap();
+        let mut counts = Vec::new();
+        count(&dict, &mut counts);
+        assert_eq!(counts, [("a".to_owned(), 1), ("b".to_owned(), 2)]);
     }
 
     #[test]
