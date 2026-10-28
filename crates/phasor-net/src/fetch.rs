@@ -98,7 +98,7 @@ impl Requests {
     }
 
     /// The refusal a request of `url` meets, once the server refused.
-    pub fn blocked_error(&self, url: &str) -> Option<FetchError> {
+    fn blocked_error(&self, url: &str) -> Option<FetchError> {
         self.blocked
             .get()
             .map(|(status, first_url, body_head)| FetchError::Blocked {
@@ -249,10 +249,7 @@ impl Requests {
 }
 
 /// The first `limit` bytes of a body, or fewer when it ends or fails.
-pub async fn read_head(
-    mut body: BoxStream<'static, Result<Bytes, String>>,
-    limit: usize,
-) -> Vec<u8> {
+async fn read_head(mut body: BoxStream<'static, Result<Bytes, String>>, limit: usize) -> Vec<u8> {
     let mut out = Vec::with_capacity(limit);
     while out.len() < limit {
         match body.next().await {
@@ -267,7 +264,7 @@ pub async fn read_head(
 }
 
 /// A whole body into memory, held to its `Content-Length`.
-pub async fn read_all(url: &str, resp: HttpResponse) -> Result<Vec<u8>, FetchError> {
+async fn read_all(url: &str, resp: HttpResponse) -> Result<Vec<u8>, FetchError> {
     let mut body = resp.body;
     let expected = resp.content_length;
     // The server's length is only a hint: reserve at most 8 MiB and grow past it.

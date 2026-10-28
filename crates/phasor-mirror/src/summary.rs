@@ -69,11 +69,8 @@ pub fn summary(map_ndjson: &Path) -> Result<String, MirrorError> {
         if line.starts_with("{\"catalog_format\"") {
             continue;
         }
-        let node: Line<'_> = serde_json::from_str(&line).map_err(|e| MirrorError::Record {
-            path: map_ndjson.display().to_string(),
-            line: i as u64 + 1,
-            message: e.to_string(),
-        })?;
+        let node: Line<'_> =
+            serde_json::from_str(&line).map_err(MirrorError::record(map_ndjson, i))?;
         // Every name of the file's path, then of each path inside it, each
         // marked with what holds the next: `/` a folder, `!` a zip.
         key.clear();

@@ -3,7 +3,6 @@
 
 use std::collections::{BTreeMap, BTreeSet};
 use std::fmt;
-use std::io::Write as _;
 use std::path::{Path, PathBuf};
 use std::str::FromStr;
 
@@ -224,18 +223,7 @@ pub fn prune(mirror: &Mirror, archive: &Archive, apply: bool) -> Result<PruneSum
     }
     // The register first, so a cut-off prune leaves a note of what it
     // set out to delete.
-    let register = mirror.pruned_path();
-    let mut f = std::fs::OpenOptions::new()
-        .create(true)
-        .append(true)
-        .open(&register)
-        .map_err(MirrorError::io(&register))?;
-    for line in &lines {
-        let mut text = serde_json::to_vec(line).expect("a Pruned always serialises");
-        text.push(b'\n');
-        f.write_all(&text).map_err(MirrorError::io(&register))?;
-    }
-    f.sync_all().map_err(MirrorError::io(&register))?;
+    crate::ndjson::append(&mirror.pruned_path(), &lines, std::fs::File::sync_all)?;
     for d in &whole {
         let path = archive.path_for(d);
         match std::fs::remove_dir_all(&path) {

@@ -406,8 +406,10 @@ async fn watch(ctx: &Context, mirror: &Mirror, plan: &WatchPlan<'_>) -> Result<i
             // Every file the archive lacks, changed this round or not, so one
             // a failed or stopped download missed is fetched next time.
             if !r.files.is_empty() {
+                let files: std::collections::HashSet<&str> =
+                    r.files.iter().map(String::as_str).collect();
                 let paired = phasor_mirror::pairs(mirror, &ctx.archive(), false)?;
-                if paired.iter().any(|p| r.files.contains(&p.zip)) {
+                if paired.iter().any(|p| files.contains(p.zip.as_str())) {
                     peek(ctx, &fetcher, mirror, true, None).await?;
                 }
             }
@@ -492,6 +494,13 @@ fn prune(ctx: &Context, mirror: &Mirror, yes: bool) -> Result<i32, MirrorError> 
     Ok(0)
 }
 
+/// Overwrites the progress line on stderr with `text`.
+fn progress_line(text: std::fmt::Arguments<'_>) {
+    let mut err = std::io::stderr().lock();
+    let _ = write!(err, "\r{text}   ");
+    let _ = err.flush();
+}
+
 /// A line of what a watch does: NDJSON, or for people on stderr.
 fn event(ctx: &Context, name: &str, detail: &str) {
     if ctx.json {
@@ -527,9 +536,7 @@ async fn crawl(
         if json {
             render::json_line(&serde_json::json!({ "event": "page_read", "page": p }));
         } else if progress {
-            let mut err = std::io::stderr().lock();
-            let _ = write!(err, "\r{} pages read, {} queued   ", p.pages, p.queued);
-            let _ = err.flush();
+            progress_line(format_args!("{} pages read, {} queued", p.pages, p.queued));
         }
     })
     .await?;
@@ -572,9 +579,7 @@ async fn peek(
         if json {
             render::json_line(&serde_json::json!({ "event": "zip_peeked", "zip": z }));
         } else if progress {
-            let mut err = std::io::stderr().lock();
-            let _ = write!(err, "\r{}/{} zips peeked   ", z.done, z.total);
-            let _ = err.flush();
+            progress_line(format_args!("{}/{} zips peeked", z.done, z.total));
         }
     })
     .await?;
@@ -633,9 +638,7 @@ async fn download(
         if json {
             render::json_line(&serde_json::json!({ "event": "file_done", "file": f }));
         } else if progress {
-            let mut err = std::io::stderr().lock();
-            let _ = write!(err, "\r{}/{} files   ", f.done, f.total);
-            let _ = err.flush();
+            progress_line(format_args!("{}/{} files", f.done, f.total));
         }
     })
     .await?;
@@ -693,9 +696,7 @@ fn hash(ctx: &Context, all: bool) -> Result<i32, MirrorError> {
         if json {
             render::json_line(&serde_json::json!({ "event": "file_hashed", "file": f }));
         } else if progress {
-            let mut err = std::io::stderr().lock();
-            let _ = write!(err, "\r{}/{} files read   ", f.done, f.total);
-            let _ = err.flush();
+            progress_line(format_args!("{}/{} files read", f.done, f.total));
         }
     })?;
     for d in &s.failed {
@@ -759,11 +760,17 @@ fn compare(ctx: &Context, mirror: &Mirror, delete: bool) -> Result<i32, MirrorEr
     use phasor_mirror::Verdict;
     let archive = ctx.archive();
     let offsets = phasor_mirror::Offsets::of(&ctx.config.hosts()?);
-    let listings: std::collections::HashMap<String, Vec<phasor_mirror::zipdir::Entry>> =
-        phasor_mirror::peek::current(mirror)?
-            .into_values()
-            .filter_map(|p| Some((p.url, p.entries?)))
-            .collect();
+    // Read once for the whole pass: each removal keeps its zip's listing.
+    let record = mirror.record()?;
+    let current = phasor_mirror::peek::current_in(mirror, &record)?;
+    let mut known = phasor_mirror::peek::Known {
+        record,
+        peeked: current.keys().cloned().collect(),
+    };
+    let listings: std::collections::HashMap<String, Vec<phasor_mirror::zipdir::Entry>> = current
+        .into_values()
+        .filter_map(|p| Some((p.url, p.entries?)))
+        .collect();
     let tmp = mirror.tmp_dir();
     let (mut compared, mut waiting, mut freed, mut spared) = (0usize, 0usize, 0u64, 0u64);
     let mut rows = Vec::new();
@@ -778,7 +785,7 @@ fn compare(ctx: &Context, mirror: &Mirror, delete: bool) -> Result<i32, MirrorEr
         let mut action = "kept";
         if delete && cmp.verdict == Verdict::Same {
             let offset = offsets.offset_of(&cmp.zip);
-            let r = phasor_mirror::remove(mirror, &archive, &cmp, offset)?;
+            let r = phasor_mirror::remove(mirror, &archive, &cmp, offset, Some(&mut known))?;
             if r.downloaded {
                 freed += r.size;
             } else {

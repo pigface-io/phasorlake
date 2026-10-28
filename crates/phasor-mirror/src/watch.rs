@@ -207,22 +207,23 @@ pub async fn refresh(
         write_atomic(&mirror.page_path(&url), &html)?;
         let offset = fetcher.offset_of(&folder);
         let now = read_page(&url, &html, roots, Some(Stamp::now()), offset)?;
-        let before: BTreeMap<String, Remote> = record
+        let listed_before: BTreeMap<String, Listed> = record
             .values()
             .filter(|r| r.listed_on == folder)
-            .map(|r| (r.url.clone(), r.clone()))
+            .map(|r| (r.url.clone(), listed(r)))
             .collect();
-        let listed_before: BTreeMap<&String, Listed> =
-            before.iter().map(|(u, r)| (u, listed(r))).collect();
-        let listed_now: BTreeMap<&String, Listed> =
-            now.iter().map(|r| (&r.url, listed(r))).collect();
-        let changed = listed_before != listed_now;
+        let listed_now: BTreeMap<&str, Listed> =
+            now.iter().map(|r| (r.url.as_str(), listed(r))).collect();
+        let changed = !listed_before
+            .iter()
+            .map(|(u, l)| (u.as_str(), l))
+            .eq(listed_now.iter().map(|(u, l)| (*u, l)));
         if changed {
-            for (u, r) in &before {
-                if listed_now.contains_key(u) {
+            for (u, (kind, ..)) in &listed_before {
+                if listed_now.contains_key(u.as_str()) {
                     continue;
                 }
-                if r.kind == RemoteKind::Dir {
+                if *kind == RemoteKind::Dir {
                     record.retain(|v, _| !v.starts_with(u.as_str()));
                     mirror.folder_gone(u)?;
                     crate::net::archive::folder_gone(fetcher.archive(), u, Stamp::now())?;

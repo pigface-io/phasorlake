@@ -85,7 +85,7 @@ pub fn sha256_file(path: &Path) -> std::io::Result<(String, u64)> {
 }
 
 /// sha256 hex and length of everything `f` reads, in 1 MiB pieces.
-pub fn sha256_read(f: &mut impl Read) -> std::io::Result<(String, u64)> {
+fn sha256_read(f: &mut impl Read) -> std::io::Result<(String, u64)> {
     let mut hasher = Hasher::new();
     let mut buf = vec![0u8; 1 << 20];
     let mut len = 0u64;

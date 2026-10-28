@@ -103,6 +103,18 @@ impl MirrorError {
             source,
         }
     }
+
+    /// The line `i` (from 0) of the record at `path` that does not parse.
+    pub(crate) fn record(
+        path: &std::path::Path,
+        i: usize,
+    ) -> impl FnOnce(serde_json::Error) -> Self + '_ {
+        move |e| Self::Record {
+            path: path.display().to_string(),
+            line: i as u64 + 1,
+            message: e.to_string(),
+        }
+    }
 }
 
 impl Diagnose for MirrorError {

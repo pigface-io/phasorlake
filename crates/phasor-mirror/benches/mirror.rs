@@ -143,9 +143,12 @@ fn bench(c: &mut Criterion) {
     ));
     g.bench_function("zipdir_parse", |b| {
         b.iter(|| {
-            let entries =
-                futures::executor::block_on(phasor_mirror::zipdir::read_directory(&mut zip, len))
-                    .unwrap();
+            let entries = futures::executor::block_on(phasor_mirror::zipdir::read_directory_in(
+                &mut zip,
+                len,
+                phasor_mirror::stamp::AEST,
+            ))
+            .unwrap();
             black_box(entries.len())
         });
     });

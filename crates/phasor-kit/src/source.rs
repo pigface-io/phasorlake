@@ -140,11 +140,11 @@ impl RemoteFile {
         let name = self.file_name();
         let stem = name.rsplit_once('.').map_or(name.as_str(), |(s, _)| s);
         // A version of a file (a stamp as the URL's fragment) keeps its own Parquet files.
-        let stem = match self.url.fragment() {
-            Some(f) => format!("{stem}-{f}"),
-            None => stem.to_owned(),
-        };
-        stem.chars()
+        let tagged = self.url.fragment().map(|f| format!("{stem}-{f}"));
+        tagged
+            .as_deref()
+            .unwrap_or(stem)
+            .chars()
             .map(|c| {
                 let c = c.to_ascii_lowercase();
                 if c.is_ascii_alphanumeric() || matches!(c, '_' | '-' | '.') {

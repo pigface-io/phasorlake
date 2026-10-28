@@ -3,12 +3,11 @@
 //! one line per zip.
 
 use std::collections::{HashMap, HashSet};
-use std::io::Write as _;
 use std::path::{Path, PathBuf};
 
 use serde::{Deserialize, Serialize};
 
-use crate::compare::pairs;
+use crate::compare::pairs_in;
 use crate::crawl::{Mirror, Remote, RemoteKind};
 use crate::diag::Diagnose as _;
 use crate::error::MirrorError;
@@ -121,21 +120,15 @@ impl Mirror {
 
 /// Every zip peeked so far, in the order peeked, each with its `_at` instants.
 pub fn read_peeks(path: &Path) -> Result<Vec<Peeked>, MirrorError> {
-    let text = match std::fs::read_to_string(path) {
-        Ok(t) => t,
-        Err(e) if e.kind() == std::io::ErrorKind::NotFound => return Ok(Vec::new()),
-        Err(e) => return Err(MirrorError::io(path)(e)),
+    let Some(text) = crate::ndjson::read(path)? else {
+        return Ok(Vec::new());
     };
     text.lines()
         .enumerate()
         .map(|(i, l)| {
             serde_json::from_str::<Peeked>(l)
                 .map(Peeked::derived)
-                .map_err(|e| MirrorError::Record {
-                    path: path.display().to_string(),
-                    line: i as u64 + 1,
-                    message: e.to_string(),
-                })
+                .map_err(MirrorError::record(path, i))
         })
         .collect()
 }
@@ -190,14 +183,15 @@ pub async fn peek(
         });
     }
     let path = mirror.peek_path();
-    let peeked = current(mirror)?;
+    let record = mirror.record()?;
+    let peeked = current_in(mirror, &record)?;
     let removed = mirror.removed()?;
-    let paired: HashSet<String> = pairs(mirror, fetcher.archive(), false)?
+    let paired: HashSet<String> = pairs_in(&record, &removed, fetcher.archive())
         .into_iter()
         .map(|p| p.zip)
         .collect();
     let mut zips: Vec<Remote> = mirror
-        .kept()?
+        .kept_in(record)
         .into_iter()
         .filter(|r| r.kind == RemoteKind::File && is_zip_name(&r.url))
         .filter(|r| !peeked.contains_key(&r.url) && !removed.contains_key(&r.url))
@@ -267,17 +261,38 @@ pub async fn peek(
     Ok(summary)
 }
 
+/// The crawl record and the zips whose listing holds against it, read once
+/// for many [`keep_listing`]s.
+#[derive(Debug, Clone, Default)]
+pub struct Known {
+    /// The crawl record, in URL order.
+    pub record: Vec<Remote>,
+    /// The zips [`current`] holds a listing of.
+    pub peeked: HashSet<String>,
+}
+
+impl Known {
+    /// The record and the current listings as they are now.
+    pub fn read(mirror: &Mirror) -> Result<Self, MirrorError> {
+        let record = mirror.record()?;
+        let peeked = current_in(mirror, &record)?.into_keys().collect();
+        Ok(Self { record, peeked })
+    }
+}
+
 /// Records the listing of the zip `url` archived at `path`, unless the record has it already.
 pub fn keep_listing(
     mirror: &Mirror,
+    known: &mut Known,
     url: &str,
     path: &Path,
     offset: i32,
 ) -> Result<(), MirrorError> {
-    if current(mirror)?.contains_key(url) {
+    if known.peeked.contains(url) {
         return Ok(());
     }
-    let listed = mirror.record()?.into_iter().find(|r| r.url == url);
+    let at = known.record.partition_point(|r| r.url.as_str() < url);
+    let listed = known.record.get(at).filter(|r| r.url == url);
     let sidecar = crate::net::Archive::read(path)?;
     let file = std::fs::File::open(path).map_err(MirrorError::io(path))?;
     let len = file.metadata().map_err(MirrorError::io(path))?.len();
@@ -293,7 +308,7 @@ pub fn keep_listing(
     let peeked = Peeked {
         url: url.to_owned(),
         peeked_at: Some(Stamp::now()),
-        listed_size: listed.as_ref().and_then(|r| r.size),
+        listed_size: listed.and_then(|r| r.size),
         listed_modified_at: listed.and_then(|r| r.modified_at),
         listed_modified: None,
         size: Some(len),
@@ -303,19 +318,28 @@ pub fn keep_listing(
         entries,
         error,
     };
-    append(&mirror.peek_path(), &peeked)
+    append(&mirror.peek_path(), &peeked)?;
+    known.peeked.insert(url.to_owned());
+    Ok(())
 }
 
 /// The latest record of each zip peeked at the size and date the crawl lists it at.
 pub fn current(mirror: &Mirror) -> Result<HashMap<String, Peeked>, MirrorError> {
-    let listed: HashMap<String, (Option<u64>, Option<Stamp>)> = mirror
-        .record()?
-        .into_iter()
-        .map(|r| (r.url, (r.size, r.modified_at)))
+    current_in(mirror, &mirror.record()?)
+}
+
+/// [`current`] against the crawl `record` given.
+pub fn current_in(
+    mirror: &Mirror,
+    record: &[Remote],
+) -> Result<HashMap<String, Peeked>, MirrorError> {
+    let listed: HashMap<&str, (Option<u64>, Option<Stamp>)> = record
+        .iter()
+        .map(|r| (r.url.as_str(), (r.size, r.modified_at)))
         .collect();
     let mut out = HashMap::new();
     for p in read_peeks(&mirror.peek_path())? {
-        let holds = listed.get(&p.url).is_some_and(|(size, at)| {
+        let holds = listed.get(p.url.as_str()).is_some_and(|(size, at)| {
             p.listed_size == *size
                 && match (p.listed_modified_at, at) {
                     (Some(a), Some(b)) => a.same_instant(*b),
@@ -356,15 +380,7 @@ fn peek_error(e: &DirError) -> PeekError {
 fn append(path: &Path, record: &Peeked) -> Result<(), MirrorError> {
     // A time given as text is written as its instant only.
     let record = record.clone().derived();
-    let mut line = serde_json::to_vec(&record).expect("a Peeked always serialises");
-    line.push(b'\n');
-    let mut f = std::fs::OpenOptions::new()
-        .create(true)
-        .append(true)
-        .open(path)
-        .map_err(MirrorError::io(path))?;
-    f.write_all(&line).map_err(MirrorError::io(path))?;
-    crate::net::archive::to_disk(&f).map_err(MirrorError::io(path))
+    crate::ndjson::append(path, [&record], crate::net::archive::to_disk)
 }
 
 #[cfg(test)]

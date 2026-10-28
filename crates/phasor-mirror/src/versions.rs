@@ -77,7 +77,7 @@ pub async fn versions(
         summary.versions += all.len();
         let mut kept: Vec<(Held, Option<Holds>)> = Vec::new();
         for v in all {
-            let holds = crate::zipdir::contents(&v.path).await;
+            let holds = phasor_zip::zipdir::contents(&v.path);
             let same = kept.iter().find_map(|(k, k_holds)| {
                 if k.provenance.content.sha256 == v.provenance.content.sha256 {
                     Some((k, Change::Same))

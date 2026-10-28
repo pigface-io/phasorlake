@@ -268,9 +268,8 @@ async fn coverage(ctx: &Context, id: TableId) -> Result<i32> {
         *e.1.entry(side(&o.url)).or_default() += 1;
     }
     // Gaps: months between the first and the last held with nothing.
-    let keys: Vec<String> = months.keys().cloned().collect();
     let mut gaps = Vec::new();
-    if let (Some(first), Some(last)) = (keys.first(), keys.last())
+    if let (Some(first), Some(last)) = (months.keys().next(), months.keys().next_back())
         && let (Ok(a), Ok(b)) = (
             first
                 .trim_start_matches("year=")

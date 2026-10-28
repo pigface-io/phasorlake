@@ -8,13 +8,13 @@ use futures::StreamExt as _;
 use serde::{Deserialize, Serialize};
 use url::Url;
 
-use crate::compare::{Pair, Verdict, compare, pairs, remove};
-use crate::crawl::{Mirror, RemoteKind};
+use crate::compare::{Pair, Verdict, compare, pairs_in, remove};
+use crate::crawl::{Mirror, Remote, RemoteKind};
 use crate::diag::{Diagnose as _, Diagnostic};
 use crate::error::MirrorError;
 use crate::journal::{Change, Event};
 use crate::net::{Archive, FetchError, Fetchers, LocalFile, RemoteFile, Via};
-use crate::peek::{Peeked, current};
+use crate::peek::{Peeked, current_in};
 use crate::stamp::Stamp;
 
 /// One file dealt with.
@@ -76,26 +76,31 @@ pub async fn download(
         .append(true)
         .open(&held_path)
         .map_err(MirrorError::io(&held_path))?;
-    let paired: HashMap<String, Pair> = pairs(mirror, fetcher.archive(), false)?
+    let record = mirror.record()?;
+    let paired: HashMap<String, Pair> = pairs_in(&record, &removed, fetcher.archive())
         .into_iter()
         .map(|p| (p.zip.clone(), p))
         .collect();
-    let mut record = mirror.kept()?;
+    let keep_from = mirror.keep_from();
     // Only the files under the prefixes given, when any are.
-    record.retain(|r| only.is_empty() || only.iter().any(|p| r.url.starts_with(p.as_str())));
+    let mut kept: Vec<&Remote> = record
+        .iter()
+        .filter(|r| crate::keep::keeps(&r.url, keep_from))
+        .filter(|r| only.is_empty() || only.iter().any(|p| r.url.starts_with(p.as_str())))
+        .collect();
     if let Some(folders) = options.folders {
         let folders: std::collections::HashSet<&str> = folders.iter().map(String::as_str).collect();
-        record.retain(|r| folders.contains(r.listed_on.as_str()));
+        kept.retain(|r| folders.contains(r.listed_on.as_str()));
     }
-    let listed = record.iter().filter(|r| r.kind == RemoteKind::File).count();
+    let listed = kept.iter().filter(|r| r.kind == RemoteKind::File).count();
     // Each file's folder, whose journal notes what became of it.
-    let folders: HashMap<String, String> = record
+    let folders: HashMap<&str, &str> = kept
         .iter()
-        .map(|r| (r.url.clone(), r.listed_on.clone()))
+        .map(|r| (r.url.as_str(), r.listed_on.as_str()))
         .collect();
     // Stable: every other file in URL order, then the paired zips.
-    record.sort_by_key(|r| paired.contains_key(&r.url));
-    let files: Vec<RemoteFile> = record
+    kept.sort_by_key(|r| paired.contains_key(&r.url));
+    let files: Vec<RemoteFile> = kept
         .into_iter()
         .enumerate()
         .filter(|(_, r)| r.kind == RemoteKind::File && !removed.contains_key(&r.url))
@@ -107,7 +112,7 @@ pub async fn download(
                     message: format!("{}: {e}", r.url),
                 })?,
                 size: r.size,
-                modified: Some(r.modified),
+                modified: Some(r.modified.clone()),
                 modified_at: r.modified_at,
             })
         })
@@ -117,7 +122,7 @@ pub async fn download(
         removed: listed - files.len(),
         ..DownloadSummary::default()
     };
-    let (paired, held) = (&paired, &held);
+    let (paired, held, record) = (&paired, &held, &record);
     // The listings, read once, when the first paired zip comes up: peek
     // reads the paired zips' first, so by then they are there.
     let listings: std::sync::OnceLock<HashMap<String, Peeked>> = std::sync::OnceLock::new();
@@ -132,6 +137,7 @@ pub async fn download(
         mirror,
         paired,
         held,
+        record,
         listings,
         delete_duplicates: options.delete_duplicates,
     };
@@ -144,7 +150,7 @@ pub async fn download(
                 .map(task)
                 .buffer_unordered(downloads.max(1)),
         );
-    let mut done = 0;
+    let (mut done, mut line) = (0, Vec::new());
     while let Some(next) = results.next().await {
         let (remote, result) = next?;
         done += 1;
@@ -166,9 +172,10 @@ pub async fn download(
                     mirror.note(folder, event)?;
                 }
                 if let Some(held) = &local.note {
-                    let line = serde_json::to_string(held).expect("a HeldEntry always serialises");
-                    note.write_all(format!("{line}\n").as_bytes())
-                        .map_err(MirrorError::io(&held_path))?;
+                    line.clear();
+                    serde_json::to_writer(&mut line, held).expect("a HeldEntry always serialises");
+                    line.push(b'\n');
+                    note.write_all(&line).map_err(MirrorError::io(&held_path))?;
                 }
                 on_file(&FileDone {
                     url: remote.url.as_str(),
@@ -247,11 +254,8 @@ impl Mirror {
     /// Every held file, by URL, from its last line. A line that does not
     /// read is passed over.
     pub fn held(&self) -> Result<HashMap<String, HeldEntry>, MirrorError> {
-        let path = self.held_path();
-        let text = match std::fs::read_to_string(&path) {
-            Ok(t) => t,
-            Err(e) if e.kind() == std::io::ErrorKind::NotFound => return Ok(HashMap::new()),
-            Err(e) => return Err(MirrorError::io(&path)(e)),
+        let Some(text) = crate::ndjson::read(&self.held_path())? else {
+            return Ok(HashMap::new());
         };
         Ok(text
             .lines()
@@ -347,6 +351,7 @@ struct Pass<'a> {
     mirror: &'a Mirror,
     paired: &'a HashMap<String, Pair>,
     held: &'a HashMap<String, HeldEntry>,
+    record: &'a [Remote],
     listings: &'a std::sync::OnceLock<HashMap<String, Peeked>>,
     delete_duplicates: bool,
 }
@@ -362,7 +367,9 @@ impl<'a> Pass<'a> {
                 return Ok((remote, None));
             }
             let (f, offset) = (self.fetcher, self.fetcher.offset_of(&pair.zip));
-            if self.delete_duplicates && the_same(self.mirror, f, pair, self.listings, offset)? {
+            if self.delete_duplicates
+                && the_same(self.mirror, f, pair, self.record, self.listings, offset)?
+            {
                 return Ok((remote, None));
             }
         }
@@ -412,6 +419,7 @@ fn the_same(
     mirror: &Mirror,
     fetcher: &Fetchers,
     pair: &Pair,
+    record: &[Remote],
     listings: &std::sync::OnceLock<HashMap<String, Peeked>>,
     offset: i32,
 ) -> Result<bool, MirrorError> {
@@ -422,7 +430,7 @@ fn the_same(
     let listings = match listings.get() {
         Some(l) => l,
         None => {
-            let l = current(mirror)?;
+            let l = current_in(mirror, record)?;
             listings.get_or_init(|| l)
         }
     };
@@ -433,7 +441,7 @@ fn the_same(
     if cmp.verdict != Verdict::Same {
         return Ok(false);
     }
-    remove(mirror, archive, &cmp, offset)?;
+    remove(mirror, archive, &cmp, offset, None)?;
     Ok(true)
 }
 

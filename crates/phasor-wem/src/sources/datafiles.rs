@@ -71,11 +71,7 @@ where
 /// Parses a manifest's YAML.
 pub fn parse_manifest(url: &str, text: &str) -> Result<Vec<ManifestEntry>, FetchError> {
     let mut entries: Vec<ManifestEntry> =
-        serde_yaml_ng::from_str(text).map_err(|e| FetchError::Parse {
-            url: url.to_owned(),
-            what: "WEM manifest YAML",
-            message: e.to_string(),
-        })?;
+        serde_yaml_ng::from_str(text).map_err(FetchError::parse(url, "WEM manifest YAML"))?;
     for e in &mut entries {
         e.generated_at_utc = e
             .generated_at
@@ -98,11 +94,7 @@ pub struct WemDatafiles {
 impl WemDatafiles {
     /// Over `base` (normally `https://data.wa.aemo.com.au`); no table claims a file until [`Self::with_tables`].
     pub fn new(base: &str, datasets: Vec<String>) -> Result<Self, FetchError> {
-        let url = Url::parse(base).map_err(|e| FetchError::Parse {
-            url: base.to_owned(),
-            what: "base URL",
-            message: e.to_string(),
-        })?;
+        let url = Url::parse(base).map_err(FetchError::parse(base, "base URL"))?;
         let feed = feed("datafiles").expect("the feeds table names the WEM datafiles");
         let folders = FeedFolders::new(SOURCE_ID, base, feed, Arc::new(|_| None))?;
         Ok(Self {
@@ -125,11 +117,7 @@ impl WemDatafiles {
     pub fn manifest_url(&self, dataset: &str) -> Result<Url, FetchError> {
         self.base
             .join(&format!("/public/public-data/manifests/{dataset}.yaml"))
-            .map_err(|e| FetchError::Parse {
-                url: dataset.to_owned(),
-                what: "manifest URL",
-                message: e.to_string(),
-            })
+            .map_err(FetchError::parse(dataset, "manifest URL"))
     }
 }
 
@@ -205,11 +193,8 @@ impl Source for WemDatafiles {
                 if !query.range.contains(ym) {
                     continue;
                 }
-                let url = Url::parse(&e.url).map_err(|er| FetchError::Parse {
-                    url: e.url.clone(),
-                    what: "manifest entry URL",
-                    message: er.to_string(),
-                })?;
+                let url =
+                    Url::parse(&e.url).map_err(FetchError::parse(&e.url, "manifest entry URL"))?;
                 out.push(RemoteFile {
                     url,
                     source: SOURCE_ID,

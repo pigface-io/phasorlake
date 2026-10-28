@@ -12,7 +12,7 @@ publish = false
 workspace = true
 
 [dev-dependencies]
-phasor-acquire.workspace = true
+phasor-acquire = { workspace = true, features = ["test-support"] }
 phasor-core.workspace = true
 phasor-gas.workspace = true
 phasor-kit.workspace = true

@@ -16,12 +16,12 @@ use crate::compare::Removed;
 use crate::crawl::{Mirror, RemoteKind};
 use crate::error::MirrorError;
 use crate::hosts::Offsets;
-use crate::peek::{Peeked, current, latest};
+use crate::peek::{Peeked, current_in, latest};
 use crate::stamp::{AEST, Stamp};
 use crate::zipdir::Entry;
 
 /// A nested zip up to this size is read into memory; a bigger one is spooled.
-const NESTED_IN_MEMORY: u64 = 64 << 20;
+pub(crate) const NESTED_IN_MEMORY: u64 = 64 << 20;
 /// Zips nested deeper than this are not opened (`zip.nesting_too_deep`).
 pub const MAX_DEPTH: usize = 8;
 /// A nested zip declared bigger than this is not unpacked (`zip.too_big`).
@@ -271,9 +271,9 @@ fn tops(
     let mut tops = BTreeMap::new();
     let mut listed = HashSet::new();
     let removed = mirror.removed()?;
-    let mut peeks: HashMap<String, Peeked> = current(mirror)?;
-    let mut evidence: HashMap<String, Peeked> = latest(mirror)?;
     let record = mirror.record()?;
+    let mut peeks: HashMap<String, Peeked> = current_in(mirror, &record)?;
+    let mut evidence: HashMap<String, Peeked> = latest(mirror)?;
     // Paths two listed files share: each URL's file is found by its
     // sidecar there, the first file or a version beside it.
     let mut at_path: HashMap<PathBuf, usize> = HashMap::new();
@@ -764,9 +764,10 @@ fn folders(
     is_dir: bool,
 ) {
     for n in 1..parts.len() + usize::from(is_dir) {
-        let d = parts[..n].to_vec();
-        if done.insert(d.clone()) {
+        let d = &parts[..n];
+        if !done.contains(d) {
             out.push(child(at, &d.join("/"), NodeKind::Dir, n));
+            done.insert(d.to_vec());
         }
     }
 }

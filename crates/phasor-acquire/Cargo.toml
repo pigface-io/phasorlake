@@ -32,7 +32,12 @@ thiserror.workspace = true
 tokio = { workspace = true, features = ["sync", "time", "fs", "io-util"] }
 url.workspace = true
 
+[features]
+# The canned transport of phasor-net, for other crates' tests.
+test-support = ["phasor-net/test-support"]
+
 [dev-dependencies]
+phasor-net = { workspace = true, features = ["http", "fetch", "test-support"] }
 criterion.workspace = true
 tempfile.workspace = true
 zip.workspace = true

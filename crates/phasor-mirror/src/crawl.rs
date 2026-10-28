@@ -46,9 +46,13 @@ impl Mirror {
 
     /// The record less what is not kept ([`Mirror::keeping`]).
     pub fn kept(&self) -> Result<Vec<Remote>, MirrorError> {
-        let mut record = self.record()?;
+        Ok(self.kept_in(self.record()?))
+    }
+
+    /// `record` less what is not kept.
+    pub fn kept_in(&self, mut record: Vec<Remote>) -> Vec<Remote> {
         record.retain(|r| crate::keep::keeps(&r.url, self.keep_from()));
-        Ok(record)
+        record
     }
 
     /// Replaces what the listing `folder` shows with `links`. The other
@@ -157,10 +161,7 @@ fn listings_under(dir: &Path) -> Vec<PathBuf> {
 
 /// The lines of the listing file at `path`; none when there is none.
 fn read_listing(path: &Path) -> Result<Vec<Remote>, MirrorError> {
-    match std::fs::metadata(path) {
-        Ok(_) => read_record(path),
-        Err(_) => Ok(Vec::new()),
-    }
+    crate::ndjson::read(path)?.map_or(Ok(Vec::new()), |text| parse_record(path, &text))
 }
 
 /// An empty listing removes the file.
@@ -307,7 +308,9 @@ pub async fn crawl(
             if remote.kind == RemoteKind::Dir && seen.insert(remote.url.clone()) {
                 queue.push_back(Url::parse(&remote.url).expect("resolved from a URL"));
             }
-            record.entry(remote.url.clone()).or_insert(remote);
+            if !record.contains_key(&remote.url) {
+                record.insert(remote.url.clone(), remote);
+            }
         }
         on_page(&PageRead {
             url: folder.as_str(),
@@ -317,7 +320,7 @@ pub async fn crawl(
             queued: queue.len(),
         });
     }
-    let found = summarise(&record.values().cloned().collect::<Vec<_>>());
+    let found = summarise(record.values());
     mirror.write_record(record.into_values())?;
     let done = serde_json::json!({ "completed_at": Stamp::now(), "pages": summary.pages });
     write_atomic(&mirror.done_path(), done.to_string().as_bytes())?;
@@ -391,7 +394,7 @@ fn resolve(folder: &Url, link: &listing::Link, roots: &[Url]) -> Result<Remote, 
     })
 }
 
-fn summarise(record: &[Remote]) -> CrawlSummary {
+fn summarise<'a>(record: impl IntoIterator<Item = &'a Remote>) -> CrawlSummary {
     let mut s = CrawlSummary::default();
     for r in record {
         match r.kind {
@@ -409,17 +412,17 @@ fn summarise(record: &[Remote]) -> CrawlSummary {
 /// The crawl record at `path`, in URL order, each link with its `modified_at`.
 pub fn read_record(path: &Path) -> Result<Vec<Remote>, MirrorError> {
     let text = std::fs::read_to_string(path).map_err(MirrorError::io(path))?;
+    parse_record(path, &text)
+}
+
+fn parse_record(path: &Path, text: &str) -> Result<Vec<Remote>, MirrorError> {
     text.lines()
         .enumerate()
         .filter(|(_, l)| !l.is_empty())
         .map(|(i, l)| {
             serde_json::from_str::<Remote>(l)
                 .map(Remote::derived)
-                .map_err(|e| MirrorError::Record {
-                    path: path.display().to_string(),
-                    line: i as u64 + 1,
-                    message: e.to_string(),
-                })
+                .map_err(MirrorError::record(path, i))
         })
         .collect()
 }

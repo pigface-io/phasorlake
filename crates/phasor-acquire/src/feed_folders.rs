@@ -30,12 +30,13 @@ pub struct FeedFolders {
     serves: Serves,
 }
 
-fn parse_error(url: &str, what: &'static str, e: &dyn std::fmt::Display) -> FetchError {
-    FetchError::Parse {
-        url: url.to_owned(),
-        what,
-        message: e.to_string(),
+/// `url` as the base of a folder: with a `/` at the end of its path.
+pub fn base_url(url: &str) -> Result<Url, FetchError> {
+    let mut base = Url::parse(url).map_err(FetchError::parse(url, "base URL"))?;
+    if !base.path().ends_with('/') {
+        base.set_path(&format!("{}/", base.path()));
     }
+    Ok(base)
 }
 
 /// The month of an instant in the feed's clock.
@@ -52,13 +53,9 @@ impl FeedFolders {
         feed: &'static Feed,
         table_of: TableOf,
     ) -> Result<Self, FetchError> {
-        let mut base = Url::parse(base_url).map_err(|e| parse_error(base_url, "base URL", &e))?;
-        if !base.path().ends_with('/') {
-            base.set_path(&format!("{}/", base.path()));
-        }
         Ok(Self {
             id,
-            base,
+            base: self::base_url(base_url)?,
             feed,
             table_of,
             serves: Arc::new(|_| true),
@@ -86,7 +83,7 @@ impl FeedFolders {
                 let rel = format!("{}/", r.trim_matches('/'));
                 self.base
                     .join(&rel)
-                    .map_err(|e| parse_error(&rel, "feed root", &e))
+                    .map_err(FetchError::parse(&rel, "feed root"))
             })
             .collect()
     }
@@ -99,11 +96,11 @@ impl FeedFolders {
         modified: Option<String>,
         modified_at: Option<Stamp>,
     ) -> RemoteFile {
-        let path = url.path().to_owned();
-        let table = block_name(self.feed, &path).and_then(|b| (self.table_of)(&b));
+        let path = url.path();
+        let table = block_name(self.feed, path).and_then(|b| (self.table_of)(&b));
         let period = self
             .feed
-            .release_month(&path)
+            .release_month(path)
             .and_then(|m| YearMonth::new(m.year(), m.month()))
             .or_else(|| modified_at.and_then(|at| month_of(at, self.feed.offset_secs)))
             .map(Period::Month);
@@ -184,7 +181,7 @@ impl Source for FeedFolders {
             for e in listing::parse(&body) {
                 let url = folder
                     .join(&e.href)
-                    .map_err(|er| parse_error(&e.href, "listing href", &er))?;
+                    .map_err(FetchError::parse(&e.href, "listing href"))?;
                 if e.is_dir {
                     // Down the tree only, never up or out of it.
                     if url.as_str().starts_with(folder.as_str())
@@ -241,15 +238,12 @@ impl Source for FeedFolders {
                 if self.skipped(base.path()) {
                     continue;
                 }
-                versions.sort_by(|a, b| {
-                    let key = |x: &Held| {
-                        let p = &x.provenance;
-                        (
-                            p.listed(p.url()).and_then(|l| l.at).map(|s| s.secs_utc),
-                            x.path.clone(),
-                        )
-                    };
-                    key(a).cmp(&key(b))
+                versions.sort_by_cached_key(|x| {
+                    let p = &x.provenance;
+                    (
+                        p.listed(p.url()).and_then(|l| l.at).map(|s| s.secs_utc),
+                        x.path.clone(),
+                    )
                 });
                 let mut previous: Option<PathBuf> = None;
                 for (i, a) in versions.into_iter().enumerate() {
