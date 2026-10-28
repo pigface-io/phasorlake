@@ -224,7 +224,7 @@ impl Default for Config {
     fn default() -> Self {
         Self {
             downloads: 2,
-            request_interval_ms: 1000,
+            request_interval_ms: 600,
             base_url: "https://www.nemweb.com.au".to_owned(),
             user_agent_suffix: String::new(),
             jobs: 0,

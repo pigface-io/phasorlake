@@ -207,7 +207,7 @@ impl Default for Config {
         Self {
             jobs: 0,
             downloads: 4,
-            request_interval_ms: 250,
+            request_interval_ms: 600,
             max_bad_rows: 0,
             strict: false,
             user_agent_suffix: String::new(),
@@ -321,7 +321,7 @@ mod tests {
         let c = Config::parse("").unwrap();
         assert_eq!(c, Config::default());
         assert_eq!(c.downloads, 4);
-        assert_eq!(c.request_interval_ms, 250);
+        assert_eq!(c.request_interval_ms, 600);
         let c =
             Config::parse("jobs = 3\n[sources]\nnem_base_url = \"http://localhost:1\"\n").unwrap();
         assert_eq!(c.jobs, 3);

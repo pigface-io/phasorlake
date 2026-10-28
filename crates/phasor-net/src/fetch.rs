@@ -40,7 +40,7 @@ impl Default for FetcherConfig {
             attempts: 5,
             backoff: Duration::from_millis(500),
             max_backoff: Duration::from_secs(30),
-            min_interval: Duration::from_millis(250),
+            min_interval: Duration::from_millis(600),
         }
     }
 }

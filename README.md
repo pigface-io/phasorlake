@@ -24,7 +24,7 @@ manifest knows it is in the lake.
 ```
  AEMO hosts                   nemweb: MMSDM monthly archive, Reports/CURRENT, Reports/ARCHIVE
      |                        WEM datafiles and WEMDE, gas feeds (GBB, GSH, STTM, DWGM)
-     |  fetch: 250 ms between requests, stop on refusal,
+     |  fetch: 600 ms between requests, stop on refusal,
      |  each file once, only the zip entries asked for
      v
  archive/                     bytes as served + .provenance.json (sha256, URL, ETag, time)
