@@ -418,10 +418,10 @@ mod tests {
         assert_eq!(
             &last[last.len() - 4..],
             [
-                "_ul_source",
-                "_ul_server_last_modified",
-                "_ul_zip_entry_modified",
-                "_ul_filename_timestamp"
+                "_phasor_source",
+                "_phasor_server_last_modified",
+                "_phasor_zip_entry_modified",
+                "_phasor_filename_timestamp"
             ]
         );
         let snaps = &meta.snapshots;

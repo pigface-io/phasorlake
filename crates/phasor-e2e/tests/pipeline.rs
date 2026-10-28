@@ -373,6 +373,96 @@ async fn local_zip_ingests_idempotently_and_records_manifest() {
     );
 }
 
+/// FNV-1a over `bytes`: a hash whose value no toolchain changes.
+fn fnv1a(bytes: &[u8]) -> u64 {
+    bytes.iter().fold(0xcbf2_9ce4_8422_2325, |h, &b| {
+        (h ^ u64::from(b)).wrapping_mul(0x0100_0000_01b3)
+    })
+}
+
+/// How a file is laid out: each row group's rows, and a hash of its data
+/// columns' bytes, which says where their pages end and how they are
+/// encoded and compressed. The provenance columns, which name the source's
+/// path, are left out.
+fn layout(path: &str) -> (Vec<i64>, u64) {
+    use parquet::file::reader::{FileReader, SerializedFileReader};
+    let bytes = std::fs::read(path).unwrap();
+    let reader = SerializedFileReader::new(std::fs::File::open(path).unwrap()).unwrap();
+    let meta = reader.metadata();
+    let mut chunks = Vec::new();
+    for g in meta.row_groups() {
+        // The provenance columns are the ones whose names begin `_`.
+        for c in g
+            .columns()
+            .iter()
+            .filter(|c| !c.column_path().string().starts_with('_'))
+        {
+            let (start, len) = c.byte_range();
+            chunks.extend_from_slice(&bytes[start as usize..(start + len) as usize]);
+        }
+    }
+    (
+        meta.row_groups()
+            .iter()
+            .map(parquet::file::metadata::RowGroupMetaData::num_rows)
+            .collect(),
+        fnv1a(&chunks),
+    )
+}
+
+/// The same rows are written as the same bytes, wherever they are
+/// ingested: where batches, row groups and pages end follows only from the
+/// rows and the layout. A change here changes every file a re-ingest
+/// writes; review it, then pin the new value.
+#[tokio::test]
+async fn the_same_rows_are_laid_out_byte_for_byte_the_same() {
+    let e = env();
+    let fixture =
+        std::fs::read_to_string(fixtures().join("DISPATCH_UNIT_SCADA_v1_head.csv")).unwrap();
+    let mut lines = fixture.lines();
+    let (header, irow) = (lines.next().unwrap(), lines.next().unwrap());
+    let rows: Vec<&str> = lines.filter(|l| l.starts_with("D,")).collect();
+    let mut csv = format!("{header}\r\n{irow}\r\n");
+    let n = 150_000;
+    for i in 0..n {
+        let (prefix, _) = rows[i % rows.len()].rsplit_once(',').unwrap();
+        let minute = (i / rows.len()) * 5;
+        let at = format!(
+            "2024/01/{:02} {:02}:{:02}:00",
+            minute / 1440 % 28 + 1,
+            minute % 1440 / 60,
+            minute % 60
+        );
+        let prefix = prefix.replacen("2024/01/01 00:05:00", &at, 1);
+        write!(csv, "{prefix},{:.6}\r\n", (i as f64) * 0.731).unwrap();
+    }
+    write!(csv, "C,\"END OF REPORT\",{}\r\n", n + 3).unwrap();
+    let zip_path = e
+        .home
+        .root()
+        .join("PUBLIC_DVD_DISPATCH_UNIT_SCADA_202401010000.zip");
+    make_zip(
+        &zip_path,
+        &[(
+            "PUBLIC_DVD_DISPATCH_UNIT_SCADA_202401010000.CSV",
+            csv.as_bytes(),
+        )],
+    );
+    let plan = Plan {
+        request: "ingest".into(),
+        input: Input::Local(vec![zip_path]),
+        options: RunOptions::default(),
+    };
+    let (rep, _) = run_plan(&e, plan).await;
+    assert_eq!(rep.exit_code, 0, "{:?}", rep.report.summary_lines());
+    let files = walk(&e.home.lake());
+    assert_eq!(files.len(), 1, "{files:?}");
+    assert_eq!(
+        layout(&files[0]),
+        (vec![150_000], 1_031_190_125_928_677_621)
+    );
+}
+
 /// A rollup entry the mirror also holds from its own address is stamped with that address's time.
 #[tokio::test]
 async fn an_entry_held_alone_is_stamped_when_it_first_went_public() {
@@ -422,7 +512,7 @@ async fn an_entry_held_alone_is_stamped_when_it_first_went_public() {
     let b = parquet_batch(&files[0]);
     use arrow_array::Array as _;
     let source = b
-        .column_by_name("_ul_source")
+        .column_by_name("_phasor_source")
         .unwrap()
         .as_any()
         .downcast_ref::<arrow_array::DictionaryArray<arrow_array::types::UInt16Type>>()
@@ -433,7 +523,7 @@ async fn an_entry_held_alone_is_stamped_when_it_first_went_public() {
         .downcast_ref::<arrow_array::StringArray>()
         .unwrap();
     let published = b
-        .column_by_name("_ul_server_last_modified")
+        .column_by_name("_phasor_server_last_modified")
         .unwrap()
         .as_any()
         .downcast_ref::<arrow_array::TimestampMicrosecondArray>()
@@ -1124,10 +1214,10 @@ C,\"END OF REPORT\",9\n";
         &names[4..],
         [
             "SCADAVALUE__raw",
-            "_ul_source",
-            "_ul_server_last_modified",
-            "_ul_zip_entry_modified",
-            "_ul_filename_timestamp"
+            "_phasor_source",
+            "_phasor_server_last_modified",
+            "_phasor_zip_entry_modified",
+            "_phasor_filename_timestamp"
         ]
     );
     assert!(second.schema().field(1).is_nullable());
@@ -3104,10 +3194,10 @@ async fn every_table_survives_the_lake() {
             assert_eq!(
                 tail,
                 [
-                    "_ul_source",
-                    "_ul_server_last_modified",
-                    "_ul_zip_entry_modified",
-                    "_ul_filename_timestamp"
+                    "_phasor_source",
+                    "_phasor_server_last_modified",
+                    "_phasor_zip_entry_modified",
+                    "_phasor_filename_timestamp"
                 ],
                 "{name}"
             );
@@ -3129,7 +3219,7 @@ async fn every_table_survives_the_lake() {
                 assert_eq!(id_of(field), id_of(declared), "{name}.{}", field.name());
             }
             let source = b
-                .column_by_name("_ul_source")
+                .column_by_name("_phasor_source")
                 .unwrap()
                 .as_any()
                 .downcast_ref::<arrow_array::DictionaryArray<arrow_array::types::UInt16Type>>()
@@ -3337,10 +3427,10 @@ async fn every_real_head_survives_the_lake() {
         assert_eq!(
             tail,
             [
-                "_ul_source",
-                "_ul_server_last_modified",
-                "_ul_zip_entry_modified",
-                "_ul_filename_timestamp"
+                "_phasor_source",
+                "_phasor_server_last_modified",
+                "_phasor_zip_entry_modified",
+                "_phasor_filename_timestamp"
             ],
             "{f}"
         );
@@ -3364,11 +3454,11 @@ async fn every_real_head_survives_the_lake() {
         let b = parquet_batch(f);
         let column = |n: &str| b.column_by_name(n).unwrap().clone();
         assert_eq!(
-            column("_ul_zip_entry_modified").null_count(),
+            column("_phasor_zip_entry_modified").null_count(),
             b.num_rows(),
             "{f}"
         );
-        let source = column("_ul_source");
+        let source = column("_phasor_source");
         let source = source
             .as_any()
             .downcast_ref::<arrow_array::DictionaryArray<arrow_array::types::UInt16Type>>()
@@ -3378,7 +3468,7 @@ async fn every_real_head_survives_the_lake() {
             .as_any()
             .downcast_ref::<arrow_array::StringArray>()
             .unwrap();
-        let stamp = column("_ul_filename_timestamp");
+        let stamp = column("_phasor_filename_timestamp");
         for row in 0..b.num_rows() {
             let key = usize::from(source.keys().value(row));
             let name = values.value(key).rsplit('/').next().unwrap();
@@ -3467,7 +3557,7 @@ async fn each_time_a_source_was_stamped_with_is_kept_on_its_rows() {
     assert_eq!(files.len(), 1, "{files:?}");
     let b = parquet_batch(&files[0]);
     let source = b
-        .column_by_name("_ul_source")
+        .column_by_name("_phasor_source")
         .unwrap()
         .as_any()
         .downcast_ref::<arrow_array::DictionaryArray<arrow_array::types::UInt16Type>>()
@@ -3488,9 +3578,9 @@ async fn each_time_a_source_was_stamped_with_is_kept_on_its_rows() {
             .clone()
     };
     let (server, zip_entry, filename) = (
-        time("_ul_server_last_modified"),
-        time("_ul_zip_entry_modified"),
-        time("_ul_filename_timestamp"),
+        time("_phasor_server_last_modified"),
+        time("_phasor_zip_entry_modified"),
+        time("_phasor_filename_timestamp"),
     );
     // 2024-01-01 00:05:30 and 00:07:40 AEST; the name's 00:07:31 AEST.
     let (written_at, named_at, named_zip) = (

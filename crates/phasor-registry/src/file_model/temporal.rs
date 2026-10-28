@@ -8,7 +8,7 @@ use serde::{Deserialize, Serialize};
 use crate::file_model::model::{Column, ColumnId, LakeType, Table};
 
 /// The prefix of the columns phasor adds to every lake row; no table may declare one.
-pub const RESERVED_PREFIX: &str = "_UL_";
+pub const RESERVED_PREFIX: &str = "_PHASOR_";
 
 /// Who chose a table's roles.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]

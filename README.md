@@ -91,6 +91,23 @@ Each Parquet footer records its source URL and sha256, the block's shape,
 and a hash of the plan used to read it. When a schema changes the plan
 hash changes, and `phasor ingest` reads that source again from the archive.
 
+How files are cut is `[lake]` in `config.toml`; it never changes what they
+hold, and each footer records it (`phasor.write_options`). The same rows
+and layout always give the same bytes.
+
+```toml
+[lake]
+file_size_mb = 128         # a file is closed for the next at about this size
+row_group_rows = 262144
+row_group_cells = 4194304  # or this many values, so a wide table's are shorter
+page_kb = 1024
+page_rows = 100000
+dictionary_page_kb = 1024
+compression = "zstd"       # zstd, lz4, snappy or none
+zstd_level = 3
+statistics = "page"        # none, chunk or page
+```
+
 ## Types
 
 | schema | Arrow | Iceberg |

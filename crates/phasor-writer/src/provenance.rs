@@ -160,7 +160,7 @@ impl Stamp {
     }
 }
 
-/// Adds the rows of each source in a batch's `_ul_source` to `counts`, in first-seen order.
+/// Adds the rows of each source in a batch's `_phasor_source` to `counts`, in first-seen order.
 pub(crate) fn count(column: &dyn Array, counts: &mut Vec<(String, u64)>) {
     let Some(dict) = column
         .as_any()
@@ -212,10 +212,10 @@ mod tests {
             names,
             [
                 "X",
-                "_ul_source",
-                "_ul_server_last_modified",
-                "_ul_zip_entry_modified",
-                "_ul_filename_timestamp",
+                "_phasor_source",
+                "_phasor_server_last_modified",
+                "_phasor_zip_entry_modified",
+                "_phasor_filename_timestamp",
             ]
         );
         let batch = RecordBatch::try_new(

@@ -21,5 +21,3 @@ pub static COMMIT: Zone = Zone::new(306, "parquet.commit");
 pub static FIT: Zone = Zone::new(307, "session.fit");
 /// Closing every open file of a source.
 pub static SESSION_CLOSE: Zone = Zone::new(308, "session.close");
-/// A row group past its byte limit flushed to the file.
-pub static FLUSH: Zone = Zone::new(309, "parquet.flush");

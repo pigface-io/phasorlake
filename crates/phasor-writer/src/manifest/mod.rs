@@ -159,13 +159,13 @@ pub struct EntryShare {
     pub min_time: Option<i64>,
     /// Its greatest.
     pub max_time: Option<i64>,
-    /// The server's `Last-Modified`, microseconds since 1970 UTC: `_ul_server_last_modified`.
+    /// The server's `Last-Modified`, microseconds since 1970 UTC: `_phasor_server_last_modified`.
     #[serde(default)]
     pub server_last_modified: Option<i64>,
-    /// The zip central directory's modified time, packer's clock: `_ul_zip_entry_modified`.
+    /// The zip central directory's modified time, packer's clock: `_phasor_zip_entry_modified`.
     #[serde(default)]
     pub zip_entry_modified: Option<i64>,
-    /// The stamp in the entry's file name, host's clock: `_ul_filename_timestamp`.
+    /// The stamp in the entry's file name, host's clock: `_phasor_filename_timestamp`.
     #[serde(default)]
     pub filename_timestamp: Option<i64>,
 }

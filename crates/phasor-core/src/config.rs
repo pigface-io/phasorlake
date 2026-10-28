@@ -76,8 +76,11 @@ pub enum Statistics {
 pub struct Lake {
     /// A file is closed once it holds about this many megabytes.
     pub file_size_mb: u32,
-    /// Rows per row group.
+    /// Rows per row group at most.
     pub row_group_rows: usize,
+    /// Values (rows times columns) per row group at most: a wide table's
+    /// row groups hold fewer rows, as a writer holds one in memory whole.
+    pub row_group_cells: usize,
     /// A data page is closed at about this many kilobytes.
     pub page_kb: u32,
     /// Or at this many rows, whichever comes first.
@@ -97,8 +100,9 @@ impl Default for Lake {
         Self {
             file_size_mb: 128,
             row_group_rows: 262_144,
+            row_group_cells: 4_194_304,
             page_kb: 1024,
-            page_rows: 20_000,
+            page_rows: 100_000,
             dictionary_page_kb: 1024,
             compression: Codec::Zstd,
             zstd_level: 3,
@@ -110,13 +114,19 @@ impl Default for Lake {
 impl Lake {
     /// The first value out of its range: which key, the value, the range.
     pub fn invalid(&self) -> Option<ConfigError> {
-        let checks: [(&str, i64, i64, i64); 6] = [
+        let checks: [(&str, i64, i64, i64); 7] = [
             ("file_size_mb", i64::from(self.file_size_mb), 1, 4096),
             (
                 "row_group_rows",
                 self.row_group_rows as i64,
                 1024,
                 16_777_216,
+            ),
+            (
+                "row_group_cells",
+                self.row_group_cells as i64,
+                1 << 20,
+                1 << 30,
             ),
             ("page_kb", i64::from(self.page_kb), 8, 65_536),
             ("page_rows", self.page_rows as i64, 1000, 1_048_576),

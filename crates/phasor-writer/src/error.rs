@@ -76,7 +76,7 @@ pub enum StoreError {
     },
     /// A lake file was opened without each row's source and publish time.
     #[error(
-        "A lake file must end with the columns _ul_source, _ul_server_last_modified, _ul_zip_entry_modified and _ul_filename_timestamp; the batch has {observed}."
+        "A lake file must end with the columns _phasor_source, _phasor_server_last_modified, _phasor_zip_entry_modified and _phasor_filename_timestamp; the batch has {observed}."
     )]
     NoProvenance {
         /// The batch's columns.
@@ -137,7 +137,7 @@ impl Diagnose for StoreError {
             }
             Self::NoProvenance { observed } => {
                 Diagnostic::error("store.no_provenance", Category::STORE, msg)
-                    .expected_observed("…,_ul_source,_ul_server_last_modified,_ul_zip_entry_modified,_ul_filename_timestamp", observed.clone())
+                    .expected_observed("…,_phasor_source,_phasor_server_last_modified,_phasor_zip_entry_modified,_phasor_filename_timestamp", observed.clone())
             }
             Self::Arrow(source) => {
                 Diagnostic::error("store.arrow", Category::STORE, msg).caused_by(source)
