@@ -3,8 +3,8 @@
 use crate::mmstime as nemtime;
 use arrow_array::ArrayRef;
 use arrow_array::builder::{
-    ArrayBuilder, BooleanBuilder, Date32Builder, Decimal128Builder, Float64Builder, Int64Builder,
-    StringBuilder, TimestampMicrosecondBuilder,
+    BooleanBuilder, Date32Builder, Decimal128Builder, Float64Builder, Int64Builder, StringBuilder,
+    TimestampMicrosecondBuilder,
 };
 use arrow_schema::DataType;
 use phasor_core::num;
@@ -118,6 +118,25 @@ pub fn parse_field(cast: Cast, nullable: bool, index: u16, bytes: &[u8]) -> Resu
     }
 }
 
+/// Parses one field according to its cast and appends it to `b`; on a fault nothing is appended.
+///
+/// Returns whether a timestamp was clamped. Text is checked for UTF-8 once, here.
+#[inline]
+pub fn append_field(
+    b: &mut ColumnBuilder,
+    cast: Cast,
+    nullable: bool,
+    bytes: &[u8],
+) -> Result<bool, Fault> {
+    if let (Cast::Utf8, ColumnBuilder::Utf8(sb), false) = (cast, &mut *b, bytes.is_empty()) {
+        sb.append_value(std::str::from_utf8(bytes).map_err(|_| Fault::Utf8)?);
+        return Ok(false);
+    }
+    let v = parse_field(cast, nullable, 0, bytes)?;
+    b.append(v, |_| unreachable!("text is appended above"));
+    Ok(matches!(v, Parsed::Clamped(_)))
+}
+
 /// One lake column's builder.
 #[derive(Debug)]
 pub enum ColumnBuilder {
@@ -174,7 +193,7 @@ impl ColumnBuilder {
 
     /// Appends a parsed value; `text` resolves `Parsed::Str` to bytes [`parse_field`] checked.
     #[inline]
-    pub fn append(&mut self, v: Parsed, text: impl FnOnce(u16) -> &'static [u8]) {
+    pub fn append<'a>(&mut self, v: Parsed, text: impl FnOnce(u16) -> &'a [u8]) {
         match (self, v) {
             (b, Parsed::Null) => b.append_null(),
             (Self::Utf8(b), Parsed::Str(i)) => {
@@ -192,24 +211,6 @@ impl ColumnBuilder {
             (Self::Dec(b), Parsed::Dec(v)) => b.append_value(v),
             (b, v) => unreachable!("parsed {v:?} does not match builder {b:?}"),
         }
-    }
-
-    /// Rows appended so far.
-    pub fn len(&self) -> usize {
-        match self {
-            Self::Utf8(b) => b.len(),
-            Self::F64(b) => b.len(),
-            Self::I64(b) => b.len(),
-            Self::Ts(b) => b.len(),
-            Self::Date(b) => b.len(),
-            Self::Bool(b) => b.len(),
-            Self::Dec(b) => b.len(),
-        }
-    }
-
-    /// Whether nothing has been appended.
-    pub fn is_empty(&self) -> bool {
-        self.len() == 0
     }
 
     /// Finishes the array and resets the builder.
@@ -362,17 +363,47 @@ mod tests {
         ];
         for (ty, v) in types.iter().zip(values) {
             let mut b = ColumnBuilder::new(ty, 4);
-            assert!(b.is_empty());
             b.append(v, |_| b"hello");
             b.append_null();
             b.append(Parsed::Null, |_| b"");
-            assert_eq!(b.len(), 3);
             let arr = b.finish();
             assert_eq!(arr.len(), 3);
             assert_eq!(arr.null_count(), 2);
             assert_eq!(arr.data_type(), ty);
-            assert!(b.is_empty(), "finish resets");
+            assert_eq!(b.finish().len(), 0, "finish resets");
         }
+    }
+
+    #[test]
+    fn append_field_appends_or_faults() {
+        let mut b = ColumnBuilder::new(&DataType::Utf8, 4);
+        assert_eq!(append_field(&mut b, Cast::Utf8, true, b"abc"), Ok(false));
+        assert_eq!(append_field(&mut b, Cast::Utf8, true, b""), Ok(false));
+        assert_eq!(
+            append_field(&mut b, Cast::Utf8, true, b"\xff"),
+            Err(Fault::Utf8)
+        );
+        assert_eq!(
+            append_field(&mut b, Cast::Utf8, false, b""),
+            Err(Fault::Null)
+        );
+        let arr = b.finish();
+        assert_eq!((arr.len(), arr.null_count()), (2, 1));
+        let tz = DataType::Timestamp(arrow_schema::TimeUnit::Microsecond, Some("+10:00".into()));
+        let ts = Cast::TimestampNanos {
+            offset_secs: 36_000,
+        };
+        let mut b = ColumnBuilder::new(&tz, 4);
+        assert_eq!(
+            append_field(&mut b, ts, true, b"9999/12/31 00:00:00"),
+            Ok(true)
+        );
+        assert_eq!(
+            append_field(&mut b, ts, true, b"2024/01/01 00:05:00"),
+            Ok(false)
+        );
+        assert!(append_field(&mut b, ts, true, b"nope").is_err());
+        assert_eq!(b.finish().len(), 2);
     }
 
     #[test]
