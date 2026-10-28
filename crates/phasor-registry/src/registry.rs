@@ -427,9 +427,18 @@ impl Registry {
         report_subtype: &str,
         columns: Option<&[&str]>,
     ) -> Option<TableId> {
-        if let Some((id, _)) = self.pair(market, report_type, report_subtype, columns) {
-            return Some(id);
-        }
+        self.pair(market, report_type, report_subtype, columns)
+            .map(|(id, _)| id)
+            .or_else(|| self.derived_by_pair(market, report_type, report_subtype))
+    }
+
+    /// The handle of a table derived this run for an unclaimed pair of `market`.
+    pub(crate) fn derived_by_pair(
+        &self,
+        market: Market,
+        report_type: &str,
+        report_subtype: &str,
+    ) -> Option<TableId> {
         self.derived_pairs
             .lock()
             .expect("the derived-table list is never poisoned")

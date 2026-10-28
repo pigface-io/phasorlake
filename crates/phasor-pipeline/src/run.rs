@@ -23,6 +23,19 @@ fn emit(tx: &mpsc::Sender<Event>, e: Event) {
     let _ = tx.try_send(e);
 }
 
+/// A local path's `file://` URL, a mirror version `{name}@{stamp}` with the
+/// stamp as its fragment; the name without it; and the file's size.
+fn local_url(path: &std::path::Path) -> Option<(Url, String, Option<u64>)> {
+    let abs = std::path::absolute(path).ok()?;
+    let kept = abs.file_name()?.to_string_lossy().into_owned();
+    let (name, stamp) = phasor_kit::version_of(&kept);
+    let name = name.to_owned();
+    let mut url = Url::from_file_path(abs.with_file_name(&name)).ok()?;
+    url.set_fragment(stamp);
+    let size = std::fs::metadata(&abs).ok().map(|m| m.len());
+    Some((url, name, size))
+}
+
 /// A local path as a `RemoteFile` with a `file://` URL, and the kit that reads it.
 ///
 /// `None` when no kit reads such a file. A mirror version `{name}@{stamp}`
@@ -31,13 +44,7 @@ pub fn local_remote(
     kits: &KitRegistry,
     path: &std::path::Path,
 ) -> Option<(&'static str, RemoteFile)> {
-    let abs = std::path::absolute(path).ok()?;
-    let kept = abs.file_name()?.to_string_lossy().into_owned();
-    let (name, stamp) = phasor_kit::version_of(&kept);
-    let name = name.to_owned();
-    let mut url = Url::from_file_path(abs.with_file_name(&name)).ok()?;
-    url.set_fragment(stamp);
-    let size = std::fs::metadata(&abs).ok().map(|m| m.len());
+    let (url, name, size) = local_url(path)?;
     if let Some((kit, mut remote)) = kits.claim(&url) {
         remote.source = "local";
         remote.size = size;
@@ -71,17 +78,11 @@ pub fn local_remote_in(
     path: &std::path::Path,
 ) -> Option<(&'static str, RemoteFile)> {
     let k = kits.kit(kit)?;
-    let abs = std::path::absolute(path).ok()?;
-    let kept = abs.file_name()?.to_string_lossy().into_owned();
-    let (name, stamp) = phasor_kit::version_of(&kept);
-    let name = name.to_owned();
-    let mut url = Url::from_file_path(abs.with_file_name(&name)).ok()?;
-    url.set_fragment(stamp);
+    let (url, name, size) = local_url(path)?;
     let is_zip = phasor_zip::has_extension(&name, ".zip");
     if !is_zip && k.decoder_for(&name).is_none() {
         return None;
     }
-    let size = std::fs::metadata(&abs).ok().map(|m| m.len());
     let mut remote = k
         .sources
         .iter()
@@ -808,15 +809,30 @@ async fn commit(
     let mut first_ingest_id = None;
     // A failed re-read leaves the earlier read's ingests on record.
     let record = committed || previous.is_none();
-    for r in &rep.results {
+    // Each entry's rows over its shapes, before the results are handed on.
+    let totals: Vec<(u64, u64)> = rep
+        .entries
+        .iter()
+        .map(|entry| {
+            rep.results
+                .iter()
+                .flat_map(|r| &r.entries)
+                .filter(|s| s.entry == entry.entry)
+                .fold((0, 0), |(r, b), s| (r + s.rows, b + s.bad_rows))
+        })
+        .collect();
+    for r in rep.results {
+        for o in &r.outputs {
+            summary.bytes_out += o.bytes;
+        }
         if let (Some(fid), Some(run), true) = (file_id, run_id, record) {
             let start = IngestStart {
                 run_id: run,
                 file_id: fid,
-                table: r.table.clone(),
+                table: r.table,
                 schema_version: r.version,
                 fingerprint: r.fingerprint.to_string(),
-                transform: r.transform.clone(),
+                transform: r.transform,
             };
             match deps.manifest.begin_ingest(start).await {
                 Ok(iid) => {
@@ -829,9 +845,9 @@ async fn commit(
                         },
                         rows: r.rows,
                         bad_rows: r.bad_rows,
-                        quarantine_path: r.quarantine_path.clone(),
-                        outputs: r.outputs.clone(),
-                        entries: r.entries.clone(),
+                        quarantine_path: r.quarantine_path,
+                        outputs: r.outputs,
+                        entries: r.entries,
                         error_code: refused.clone(),
                     };
                     if let Err(e) = deps.manifest.finish_ingest(iid, end).await {
@@ -843,19 +859,10 @@ async fn commit(
                 }
             }
         }
-        for o in &r.outputs {
-            summary.bytes_out += o.bytes;
-        }
     }
-    for entry in rep.entries {
+    for (entry, (rows, bad_rows)) in rep.entries.into_iter().zip(totals) {
         let source_name = format!("{}!{}", local.remote.url, entry.entry);
         let mut errors = 0u32;
-        let (rows, bad_rows) = rep
-            .results
-            .iter()
-            .flat_map(|r| &r.entries)
-            .filter(|s| s.entry == entry.entry)
-            .fold((0, 0), |(r, b), s| (r + s.rows, b + s.bad_rows));
         // Row errors first, so the fault is on record before its refusal.
         for w in entry.row_errors.iter().chain(&entry.warnings) {
             if let Some(run) = run_id {

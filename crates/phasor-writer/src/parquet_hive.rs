@@ -19,7 +19,7 @@ use parquet::file::properties::{EnabledStatistics, WriterProperties, WriterVersi
 use phasor_core::config::{Codec, Lake, Statistics};
 
 use crate::error::StoreError;
-use crate::partition::{is_sorted, time_bounds};
+use crate::partition::{TimeStats, max_time, min_time, time_stats};
 use crate::writer::{FileMeta, LakeWriter, PartitionKey, WriterId, WrittenFile};
 
 struct Open {
@@ -68,6 +68,8 @@ pub const ROW_GROUP_BYTES: usize = 8 << 20;
 pub struct ParquetHive {
     lake_root: PathBuf,
     layout: Lake,
+    /// The layout as each file's footer records it.
+    layout_json: String,
     open: HashMap<u32, Open>,
     closed: Vec<Closed>,
     version: &'static str,
@@ -80,6 +82,7 @@ impl ParquetHive {
         Self {
             lake_root: lake_root.into(),
             layout: Lake::default(),
+            layout_json: layout_json(&Lake::default()),
             open: HashMap::new(),
             closed: Vec::new(),
             version: env!("CARGO_PKG_VERSION"),
@@ -91,6 +94,7 @@ impl ParquetHive {
     #[must_use]
     pub fn with_layout(mut self, layout: Lake) -> Self {
         self.layout = layout;
+        self.layout_json = layout_json(&layout);
         self
     }
 
@@ -149,10 +153,7 @@ impl ParquetHive {
             .set_created_by(format!("phasor {}", self.version))
             .set_key_value_metadata(Some(vec![
                 KeyValue::new("phasor.version".to_owned(), self.version.to_owned()),
-                KeyValue::new(
-                    "phasor.write_options".to_owned(),
-                    serde_json::to_string(&self.layout).expect("the layout is plain data"),
-                ),
+                KeyValue::new("phasor.write_options".to_owned(), self.layout_json.clone()),
                 KeyValue::new("phasor.table".to_owned(), meta.table.clone()),
                 KeyValue::new(
                     "phasor.schema_version".to_owned(),
@@ -280,14 +281,11 @@ impl LakeWriter for ParquetHive {
             path: dir.display().to_string(),
             source,
         })?;
-        let final_path = dir.join(Self::file_name(meta));
+        let name = Self::file_name(meta);
         // Unique in the process: two writers may open the same final name at once.
         let id = NEXT_TMP.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
-        let tmp = dir.join(format!(
-            ".tmp-{}-{id}-{}",
-            std::process::id(),
-            Self::file_name(meta)
-        ));
+        let tmp = dir.join(format!(".tmp-{}-{id}-{name}", std::process::id()));
+        let final_path = dir.join(name);
         let file = File::create(&tmp).map_err(|source| StoreError::Io {
             path: tmp.display().to_string(),
             source,
@@ -322,68 +320,7 @@ impl LakeWriter for ParquetHive {
     }
 
     fn write(&mut self, id: WriterId, batch: &RecordBatch) -> Result<(), StoreError> {
-        zone!(WRITE);
-        let o = self
-            .open
-            .get_mut(&id.0)
-            .ok_or(StoreError::NoSuchWriter(id.0))?;
-        if batch.schema().fields() != o.schema.fields() {
-            return Err(StoreError::SchemaMismatch {
-                path: o.final_path.display().to_string(),
-                expected: o
-                    .schema
-                    .fields()
-                    .iter()
-                    .map(|f| f.name().clone())
-                    .collect::<Vec<_>>()
-                    .join(","),
-                observed: batch
-                    .schema()
-                    .fields()
-                    .iter()
-                    .map(|f| f.name().clone())
-                    .collect::<Vec<_>>()
-                    .join(","),
-            });
-        }
-        if let Some(tc) = o.time_column {
-            zone!(BOUNDS);
-            let (mn, mx) = time_bounds(batch, tc);
-            if o.sorted
-                && (!is_sorted(batch, tc)
-                    || matches!((o.last_max, mn), (Some(prev), Some(first)) if first < prev))
-            {
-                o.sorted = false;
-            }
-            o.min = match (o.min, mn) {
-                (Some(a), Some(b)) => Some(a.min(b)),
-                (a, b) => a.or(b),
-            };
-            o.max = match (o.max, mx) {
-                (Some(a), Some(b)) => Some(a.max(b)),
-                (a, b) => a.or(b),
-            };
-            o.last_max = mx.or(o.last_max);
-        }
-        let encoded = {
-            zone!(ENCODE);
-            o.writer.write(batch)
-        };
-        encoded.map_err(|e| StoreError::Parquet {
-            path: o.tmp.display().to_string(),
-            message: e.to_string(),
-        })?;
-        if o.writer.memory_size() >= self.row_group_bytes {
-            zone!(ENCODE);
-            o.writer.flush().map_err(|e| StoreError::Parquet {
-                path: o.tmp.display().to_string(),
-                message: e.to_string(),
-            })?;
-        }
-        o.rows += batch.num_rows() as u64;
-        let source = batch.column(batch.num_columns() - crate::provenance::fields().len());
-        crate::provenance::count(source.as_ref(), &mut o.sources);
-        Ok(())
+        self.write_timed(id, batch).map(drop)
     }
 
     fn close(&mut self, id: WriterId) -> Result<WrittenFile, StoreError> {
@@ -477,6 +414,74 @@ impl LakeWriter for ParquetHive {
     }
 }
 
+impl ParquetHive {
+    /// Appends a batch in the writer's schema, as [`LakeWriter::write`]; the
+    /// stats of its time column, when the file has one.
+    pub(crate) fn write_timed(
+        &mut self,
+        id: WriterId,
+        batch: &RecordBatch,
+    ) -> Result<Option<TimeStats>, StoreError> {
+        zone!(WRITE);
+        let o = self
+            .open
+            .get_mut(&id.0)
+            .ok_or(StoreError::NoSuchWriter(id.0))?;
+        if batch.schema().fields() != o.schema.fields() {
+            return Err(StoreError::SchemaMismatch {
+                path: o.final_path.display().to_string(),
+                expected: o
+                    .schema
+                    .fields()
+                    .iter()
+                    .map(|f| f.name().clone())
+                    .collect::<Vec<_>>()
+                    .join(","),
+                observed: batch
+                    .schema()
+                    .fields()
+                    .iter()
+                    .map(|f| f.name().clone())
+                    .collect::<Vec<_>>()
+                    .join(","),
+            });
+        }
+        let stats = o.time_column.map(|tc| {
+            zone!(BOUNDS);
+            let t = time_stats(batch, tc);
+            if o.sorted
+                && (!t.sorted
+                    || matches!((o.last_max, t.min), (Some(prev), Some(first)) if first < prev))
+            {
+                o.sorted = false;
+            }
+            o.min = min_time(o.min, t.min);
+            o.max = max_time(o.max, t.max);
+            o.last_max = t.max.or(o.last_max);
+            t
+        });
+        let encoded = {
+            zone!(ENCODE);
+            o.writer.write(batch)
+        };
+        encoded.map_err(|e| StoreError::Parquet {
+            path: o.tmp.display().to_string(),
+            message: e.to_string(),
+        })?;
+        if o.writer.memory_size() >= self.row_group_bytes {
+            zone!(FLUSH);
+            o.writer.flush().map_err(|e| StoreError::Parquet {
+                path: o.tmp.display().to_string(),
+                message: e.to_string(),
+            })?;
+        }
+        o.rows += batch.num_rows() as u64;
+        let source = batch.column(batch.num_columns() - crate::provenance::fields().len());
+        crate::provenance::count(source.as_ref(), &mut o.sources);
+        Ok(stats)
+    }
+}
+
 impl Drop for ParquetHive {
     fn drop(&mut self) {
         // Remove the temp files of anything open or uncommitted.
@@ -486,6 +491,11 @@ impl Drop for ParquetHive {
         }
         self.discard(0);
     }
+}
+
+/// `layout` as JSON, for the footer.
+fn layout_json(layout: &Lake) -> String {
+    serde_json::to_string(layout).expect("the layout is plain data")
 }
 
 /// The number in each temporary file's name, unique in the process.
@@ -501,7 +511,12 @@ pub fn sweep_tmp(lake_root: &Path) -> std::io::Result<usize> {
         };
         for e in rd.filter_map(Result::ok) {
             let p = e.path();
-            if p.is_dir() {
+            // The entry's own type spares a stat; a link is followed as before.
+            let is_dir = match e.file_type() {
+                Ok(t) if !t.is_symlink() => t.is_dir(),
+                _ => p.is_dir(),
+            };
+            if is_dir {
                 stack.push(p);
             } else if p
                 .file_name()

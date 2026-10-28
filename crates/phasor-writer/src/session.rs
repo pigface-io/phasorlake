@@ -15,8 +15,8 @@ use phasor_kit::{Block, LoadMode};
 use crate::error::StoreError;
 use crate::manifest::EntryShare;
 use crate::parquet_hive::ParquetHive;
-use crate::partition::{split_by_month, time_bounds};
-use crate::provenance::{Stamp, lake_schema, stamped};
+use crate::partition::split_by_month;
+use crate::provenance::{Stamp, lake_schema, stamped_reusing};
 use crate::quarantine::QuarantineWriter;
 use crate::writer::{FileMeta, LakeWriter, Partition, PartitionKey, WriterId, WrittenFile};
 
@@ -277,15 +277,15 @@ impl IngestSession {
                 }
             };
             let batch = fitted(&batch, &schema)?;
-            let bounds = table.time_column.map(|tc| time_bounds(&batch, tc));
             let stamp = self
                 .stamp
-                .clone()
+                .as_mut()
                 .expect("an entry is begun before its rows");
-            let batch = stamped(&batch, &stamp, &lake)?;
-            self.writer.write(wid, &batch)?;
-            let share = self.share(&shape);
             let times = stamp.times();
+            let batch = stamped_reusing(&batch, stamp, &lake)?;
+            let stats = self.writer.write_timed(wid, &batch)?;
+            let bounds = stats.map(|t| (t.min, t.max));
+            let share = self.share(&shape);
             share.server_last_modified = times.server_last_modified;
             share.zip_entry_modified = times.zip_entry_modified;
             share.filename_timestamp = times.filename_timestamp;
@@ -405,6 +405,9 @@ impl IngestSession {
 
 /// The schema that takes both `file` and `batch`; `None` when `file` already takes `batch`.
 fn widened(file: &Schema, batch: &Schema) -> Option<Schema> {
+    if file.fields() == batch.fields() {
+        return None;
+    }
     let mut fields: Vec<Field> = file.fields().iter().map(|f| f.as_ref().clone()).collect();
     let mut wider = false;
     for b in batch.fields() {

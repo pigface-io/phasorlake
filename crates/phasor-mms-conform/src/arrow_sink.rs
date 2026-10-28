@@ -10,7 +10,7 @@ use arrow_array::{ArrayRef, RecordBatch};
 use arrow_schema::{DataType, Field, Schema};
 use phasor_core::{Category, Diagnose as _, Diagnostic, Fingerprint};
 use phasor_mms_decode::IRow;
-use phasor_registry::{Cast, ConformancePlan, Mode, Registry, ResolveOptions, Resolved, TableId};
+use phasor_registry::{Cast, Mode, Registry, ResolveOptions, Resolved, TableId};
 
 use crate::error::{RowError, RowFailure, SinkError, ValueError};
 use phasor_mms_decode::PREFIX_FIELDS;
@@ -18,7 +18,7 @@ use phasor_mms_decode::fields::Row;
 use phasor_mms_decode::scan::{Flow, Pos, Sink};
 use phasor_registry::arrow::RAW_OF_KEY;
 
-use crate::builders::{ColumnBuilder, Fault, Parsed, parse_field};
+use crate::builders::{ColumnBuilder, Fault, Parsed, append_field, parse_field};
 
 /// A batch of rows from one block.
 #[derive(Debug)]
@@ -27,8 +27,6 @@ pub struct BlockBatch {
     pub table: TableId,
     /// The schema of the table's history the plan was based on.
     pub version: u16,
-    /// The plan the rows were conformed with.
-    pub plan: Arc<ConformancePlan>,
     /// The observed fingerprint of the I row.
     pub fingerprint: Fingerprint,
     /// The rows, in the table's unified lake schema.
@@ -342,7 +340,6 @@ impl<'r, B: BatchSink> ArrowSink<'r, B> {
         let out = BlockBatch {
             table: block.resolved.table,
             version: block.resolved.version,
-            plan: block.resolved.plan.clone(),
             fingerprint: block.fingerprint,
             batch,
         };
@@ -436,7 +433,7 @@ impl<B: BatchSink> Sink for ArrowSink<'_, B> {
         self.block = Some(Block {
             steps: b.steps,
             missing_required: b.missing_required,
-            fingerprint: irow.fingerprint(),
+            fingerprint: resolved.fingerprint,
             builders: b.builders,
             report_type: b.report_type,
             report_subtype: b.report_subtype,
@@ -499,31 +496,26 @@ impl<B: BatchSink> Sink for ArrowSink<'_, B> {
                 .with_version(block.resolved.version);
             RowFailure::fatal(SinkError::Refused(Box::new(d)))
         };
-        // Pass 1: parse every field; nothing is appended until all are read.
-        {
-            zone!(PARSE);
-            self.parsed.fill(Parsed::Null);
-            self.misfits.clear();
-            for c in &block.steps {
-                let target = c.target;
-                let bytes = row.get(usize::from(c.field)).unwrap_or(b"");
-                let parsed = match parse_field(c.cast, c.nullable, c.field, bytes) {
-                    Ok(p) => p,
-                    Err(fault) if strict => return Err(refuse(block, target, c.field, fault)),
-                    Err(fault) => {
-                        self.misfits.push((target, c.field, fault));
-                        Parsed::Null
+        self.misfits.clear();
+        if strict {
+            // Pass 1: parse every field; nothing is appended until all are read,
+            // so a refused row leaves the builders as they were.
+            {
+                zone!(PARSE);
+                self.parsed.fill(Parsed::Null);
+                for c in &block.steps {
+                    let target = c.target;
+                    let bytes = row.get(usize::from(c.field)).unwrap_or(b"");
+                    let parsed = parse_field(c.cast, c.nullable, c.field, bytes)
+                        .map_err(|fault| refuse(block, target, c.field, fault))?;
+                    if matches!(parsed, Parsed::Clamped(_)) {
+                        block.clamped[target as usize]
+                            .note(|| String::from_utf8_lossy(bytes).into_owned(), pos.line);
                     }
-                };
-                if matches!(parsed, Parsed::Clamped(_)) {
-                    block.clamped[target as usize]
-                        .note(|| String::from_utf8_lossy(bytes).into_owned(), pos.line);
+                    self.parsed[target as usize] = parsed;
                 }
-                self.parsed[target as usize] = parsed;
             }
-        }
-        if let Some(&m) = block.missing_required.first() {
-            if strict {
+            if let Some(&m) = block.missing_required.first() {
                 let column = block.resolved.plan.arrow.field(m as usize).name();
                 let d = ValueError::NullNotAllowed {
                     column: column.clone(),
@@ -534,26 +526,34 @@ impl<B: BatchSink> Sink for ArrowSink<'_, B> {
                 .with_version(block.resolved.version);
                 return Err(RowFailure::fatal(SinkError::Refused(Box::new(d))));
             }
-            for &m in &block.missing_required {
-                block.nulls_kept[m as usize].note(String::new, pos.line);
-            }
-        }
-        // Pass 2: append.
-        {
+            // Pass 2: append.
             zone!(APPEND);
             for (b, v) in block.builders.iter_mut().zip(&self.parsed) {
-                match v {
-                    Parsed::Str(i) => {
-                        let bytes = row.get(usize::from(*i)).unwrap_or(b"");
-                        match b {
-                            ColumnBuilder::Utf8(sb) => {
-                                sb.append_value(std::str::from_utf8(bytes).unwrap_or(""));
-                            }
-                            _ => unreachable!("Str is only parsed for Utf8 columns"),
-                        }
+                b.append(*v, |i| row.get(usize::from(i)).unwrap_or(b""));
+            }
+        } else {
+            // Every row past the checks above is kept, so each field goes
+            // straight to its builder; a misfit is null.
+            zone!(PARSE);
+            for c in &block.steps {
+                let target = c.target as usize;
+                let bytes = row.get(usize::from(c.field)).unwrap_or(b"");
+                let b = &mut block.builders[target];
+                match append_field(b, c.cast, c.nullable, bytes) {
+                    Ok(false) => {}
+                    Ok(true) => block.clamped[target]
+                        .note(|| String::from_utf8_lossy(bytes).into_owned(), pos.line),
+                    Err(fault) => {
+                        b.append_null();
+                        self.misfits.push((c.target, c.field, fault));
                     }
-                    other => b.append(*other, |_| b""),
                 }
+            }
+            for &m in &block.resolved.plan.missing {
+                block.builders[m as usize].append_null();
+            }
+            for &m in &block.missing_required {
+                block.nulls_kept[m as usize].note(String::new, pos.line);
             }
         }
         if !self.misfits.is_empty() || !block.raws.is_empty() {

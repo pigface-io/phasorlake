@@ -4,24 +4,23 @@
 //! A [`Dedupe::VersionDiff`] feed skips rows its [`DecodeCtx::previous`] version
 //! already had, counted in [`DecodeStats::rows_repeated`].
 
-use std::collections::HashMap;
 use std::io::Read;
 use std::sync::Arc;
 
-use phasor_core::{Category, Diagnose, Diagnostic, Period};
-use phasor_kit::{BlockSink, DecodeCtx, DecodeStats, Decoder, Strictness};
+use phasor_core::{Category, Diagnose, Diagnostic};
+use phasor_kit::{BlockSink, DecodeCtx, DecodeStats, Decoder};
 use phasor_mms_decode::{Flow, IRow, Pos, Row, RowError, RowFailure, Sink as _};
 use phasor_plain_decode::names::block_name;
 use phasor_plain_decode::{
     BlockName, Dedupe, Feed, Format, Header, PlainOptions, PlainRowError, PlainSink, RowSet, peek,
     sniff,
 };
-use phasor_registry::{Market, Mode, Registry, ResolveOptions};
+use phasor_registry::{Market, Registry};
 use phasor_zip::has_extension;
 
 use crate::arrow_sink::ArrowSink;
 use crate::error::SinkError;
-use crate::kit::{Bridge, MmsDecoder};
+use crate::kit::{Bridge, MmsDecoder, decoded};
 
 /// A header-row CSV of one feed, resolved through the registry.
 pub struct PlainCsvDecoder {
@@ -157,26 +156,7 @@ impl<'a> PlainBridge<'a> {
         name: BlockName,
         previous: Option<RowSet>,
     ) -> Self {
-        let period = ctx.period.map(Period::month);
-        let mode = match ctx.options.strictness {
-            Strictness::Permissive => Mode::Permissive,
-            Strictness::Strict => Mode::Strict,
-        };
-        let bridge = Bridge {
-            out: sink,
-            registry,
-            period,
-            tables: HashMap::new(),
-            current: None,
-        };
-        let arrow = ArrowSink::new(
-            registry,
-            ResolveOptions { mode, market },
-            ctx.options.batch_rows,
-            bridge,
-        )
-        .with_period(period)
-        .with_prefix(0);
+        let arrow = Bridge::sink(registry, market, ctx, sink).with_prefix(0);
         Self {
             arrow,
             name,
@@ -312,19 +292,15 @@ impl Decoder for PlainCsvDecoder {
         let mut bridge = PlainBridge::new(&self.registry, self.market, ctx, sink, name, previous);
         let scanned = phasor_plain_decode::csv::scan(reader, &mut bridge, &opts);
         let (flushed, blocks, repeated, bad) = bridge.finish();
-        match (scanned, flushed) {
-            (Ok(s), Ok(())) => Ok(DecodeStats {
-                lines: s.lines,
-                bytes: s.bytes,
-                blocks,
-                rows: s.rows - repeated - bad,
-                bad_rows: s.bad_rows + bad,
-                rows_repeated: repeated,
-                footer_declared: None,
-            }),
-            (Ok(_), Err(e)) => Err(Box::new(e.diagnostic())),
-            (Err(e), _) => Err(Box::new(e.diagnostic())),
-        }
+        decoded(scanned, flushed, |s| DecodeStats {
+            lines: s.lines,
+            bytes: s.bytes,
+            blocks,
+            rows: s.rows - repeated - bad,
+            bad_rows: s.bad_rows + bad,
+            rows_repeated: repeated,
+            footer_declared: None,
+        })
     }
 }
 
@@ -349,19 +325,15 @@ impl Decoder for WemdeDecoder {
         let mut bridge = PlainBridge::new(&self.registry, self.market, ctx, sink, name, None);
         let scanned = phasor_plain_decode::json::scan(reader, &mut bridge, &opts);
         let (flushed, blocks, _, bad) = bridge.finish();
-        match (scanned, flushed) {
-            (Ok(s), Ok(())) => Ok(DecodeStats {
-                lines: 0,
-                bytes: ctx.file.size,
-                blocks,
-                rows: s.rows - bad,
-                bad_rows: bad,
-                rows_repeated: 0,
-                footer_declared: None,
-            }),
-            (Ok(_), Err(e)) => Err(Box::new(e.diagnostic())),
-            (Err(e), _) => Err(Box::new(e.diagnostic())),
-        }
+        decoded(scanned, flushed, |s| DecodeStats {
+            lines: 0,
+            bytes: ctx.file.size,
+            blocks,
+            rows: s.rows - bad,
+            bad_rows: bad,
+            rows_repeated: 0,
+            footer_declared: None,
+        })
     }
 }
 
@@ -419,7 +391,7 @@ mod tests {
 
     use arrow_array::Array as _;
     use phasor_kit::{Block, DecodeOptions, Flow as KitFlow, RowAt, TableRef, Transform};
-    use phasor_kit::{LocalFile, RemoteFile};
+    use phasor_kit::{LocalFile, RemoteFile, Strictness};
     use phasor_mms_decode::Fingerprint;
     use phasor_plain_decode::feeds::feed;
     use url::Url;

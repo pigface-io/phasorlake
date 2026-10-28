@@ -428,7 +428,8 @@ pub fn ingest_file(input: IngestInput) -> FileReport {
         events: input.events.as_ref(),
         entry: String::new(),
     };
-    if kit.decoder_for(&name).is_none() && !has_extension(&name, ".zip") {
+    let decodable = kit.decoder_for(&name).is_some();
+    if !decodable && !has_extension(&name, ".zip") {
         file_error = Some(
             Diagnostic::error(
                 "config.no_decoder",
@@ -441,7 +442,7 @@ pub fn ingest_file(input: IngestInput) -> FileReport {
             .with_file(path.display().to_string())
             .with_request(input.request.clone()),
         );
-    } else if kit.decoder_for(&name).is_some() {
+    } else if decodable {
         match std::fs::File::open(&path) {
             Ok(mut f) => entries.push(ingest_entry(
                 &input,
