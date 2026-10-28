@@ -34,6 +34,25 @@ fn is_memory_key(key: &str) -> bool {
 }
 
 /// Compares measurements to budgets; returns breaches and a table of rows.
+/// A measurement in the unit its budget is kept in: criterion's time is
+/// `max_ns` under a millisecond and `max_ms` above, so a bench that crosses
+/// that line still meets its budget.
+fn in_budget_unit<'k>(
+    budget: &BTreeMap<String, f64>,
+    key: &'k str,
+    value: f64,
+) -> (std::borrow::Cow<'k, str>, f64) {
+    match key {
+        "max_ns" if !budget.contains_key(key) && budget.contains_key("max_ms") => {
+            ("max_ms".into(), value / 1e6)
+        }
+        "max_ms" if !budget.contains_key(key) && budget.contains_key("max_ns") => {
+            ("max_ns".into(), value * 1e6)
+        }
+        _ => (key.into(), value),
+    }
+}
+
 pub fn compare(budgets: &Budgets, measured: &Measurements) -> (Vec<String>, Vec<String>) {
     let mut breaches = Vec::new();
     let mut rows = Vec::new();
@@ -43,6 +62,8 @@ pub fn compare(budgets: &Budgets, measured: &Measurements) -> (Vec<String>, Vec<
             continue;
         };
         for (key, value) in keys {
+            let (key, value) = in_budget_unit(budget, key, *value);
+            let (key, value) = (key.as_ref(), &value);
             let Some(limit) = budget.get(key) else {
                 continue;
             };
@@ -77,6 +98,8 @@ pub fn tighten(budgets: &mut Budgets, measured: &Measurements) -> usize {
     for (bench, keys) in measured {
         let b = budgets.benches.entry(bench.clone()).or_default();
         for (key, value) in keys {
+            let (key, value) = in_budget_unit(b, key, *value);
+            let (key, value) = (key.as_ref(), &value);
             let slack = if is_memory_key(key) { 1.10 } else { 1.15 };
             let proposed = if key.starts_with("min_") {
                 value / slack
@@ -89,7 +112,7 @@ pub fn tighten(budgets: &mut Budgets, measured: &Measurements) -> usize {
                     if (key.starts_with("min_") && proposed <= *cur)
                         || (!key.starts_with("min_") && proposed >= *cur) => {}
                 _ => {
-                    b.insert(key.clone(), proposed);
+                    b.insert(key.to_owned(), proposed);
                     n += 1;
                 }
             }
@@ -362,6 +385,44 @@ mod tests {
         );
         let (breaches, _) = compare(&b, &m);
         assert_eq!(breaches.len(), 3, "{breaches:?}");
+    }
+
+    #[test]
+    fn a_time_under_a_millisecond_meets_a_budget_kept_in_ms() {
+        let mut b = budgets();
+        b.benches.insert(
+            "store/split".into(),
+            [("max_ms".to_owned(), 2.0)].into_iter().collect(),
+        );
+        let mut m: Measurements = BTreeMap::new();
+        m.insert(
+            "store/split".into(),
+            [("max_ns".to_owned(), 600_000.0)].into_iter().collect(),
+        );
+        let (breaches, rows) = compare(&b, &m);
+        assert!(breaches.is_empty(), "{breaches:?}");
+        assert_eq!(rows.len(), 1, "checked, not skipped");
+        m.get_mut("store/split")
+            .unwrap()
+            .insert("max_ns".into(), 3e6);
+        assert_eq!(compare(&b, &m).0.len(), 1);
+        assert_eq!(tighten(&mut b, &m), 0);
+        m.get_mut("store/split")
+            .unwrap()
+            .insert("max_ns".into(), 1e6);
+        assert_eq!(tighten(&mut b, &m), 1);
+        assert_eq!(b.benches["store/split"]["max_ms"], 1.15);
+        assert!(!b.benches["store/split"].contains_key("max_ns"));
+        // The other way: a budget in ns, a measurement in ms.
+        b.benches.insert(
+            "parse/y".into(),
+            [("max_ns".to_owned(), 2e6)].into_iter().collect(),
+        );
+        m.insert(
+            "parse/y".into(),
+            [("max_ms".to_owned(), 1.5)].into_iter().collect(),
+        );
+        assert!(compare(&b, &m).0.is_empty());
     }
 
     #[test]
