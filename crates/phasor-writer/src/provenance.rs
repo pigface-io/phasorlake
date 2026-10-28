@@ -24,10 +24,9 @@ use phasor_iceberg::provenance::{
 };
 
 /// The format of a lake file: 5 since every footer and table key is under
-/// `phasor.`; a table's files are under its `data/` directory, as Iceberg
+/// `phasor.` and every provenance column under `_phasor_`; a table's files are under its `data/` directory, as Iceberg
 /// lays a table out, so a reader finds them in a lake moved whole, since
-/// 4; every row carries each time its source was stamped with, under the
-/// `_ul_` prefix, since 3.
+/// 4; every row carries each time its source was stamped with since 3.
 pub const LAKE_FORMAT: &str = "5";
 
 /// The names of the three time columns, in the order a file holds them.
@@ -158,7 +157,7 @@ impl Stamp {
     }
 }
 
-/// The rows of each source in `column`, a batch's `_ul_source`, added to
+/// The rows of each source in `column`, a batch's `_phasor_source`, added to
 /// `counts` in the order sources first appear.
 pub(crate) fn count(column: &dyn Array, counts: &mut Vec<(String, u64)>) {
     let Some(dict) = column
@@ -205,10 +204,10 @@ mod tests {
             names,
             [
                 "X",
-                "_ul_source",
-                "_ul_server_last_modified",
-                "_ul_zip_entry_modified",
-                "_ul_filename_timestamp",
+                "_phasor_source",
+                "_phasor_server_last_modified",
+                "_phasor_zip_entry_modified",
+                "_phasor_filename_timestamp",
             ]
         );
         let batch = RecordBatch::try_new(

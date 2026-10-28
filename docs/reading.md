@@ -61,14 +61,14 @@ column loses to any value.
 
 <!-- example: latest -->
 ```sql
-SELECT SETTLEMENTDATE, INTERVENTION, RUNNO, RRP, _ul_source
+SELECT SETTLEMENTDATE, INTERVENTION, RUNNO, RRP, _phasor_source
 FROM read_parquet('lake/nem/dispatchprice/data/**/*.parquet', hive_partitioning = true, union_by_name = true)
 WHERE SETTLEMENTDATE > TIMESTAMPTZ '2024-01-01 00:00:00+10:00'
   AND SETTLEMENTDATE <= TIMESTAMPTZ '2024-01-01 00:15:00+10:00'
 QUALIFY row_number() OVER (
     PARTITION BY REGIONID, DISPATCHINTERVAL, INTERVENTION, SETTLEMENTDATE
     ORDER BY RUNNO DESC NULLS LAST, LASTCHANGED DESC NULLS LAST,
-             _ul_server_last_modified DESC NULLS LAST, _ul_source DESC) = 1
+             _phasor_server_last_modified DESC NULLS LAST, _phasor_source DESC) = 1
 ORDER BY SETTLEMENTDATE, INTERVENTION
 ```
 
@@ -89,7 +89,7 @@ WHERE SETTLEMENTDATE > TIMESTAMPTZ '2024-01-01 00:00:00+10:00'
   AND SETTLEMENTDATE <= TIMESTAMPTZ '2024-01-01 00:15:00+10:00'
 QUALIFY row_number() OVER (
     PARTITION BY REGIONID, DISPATCHINTERVAL, INTERVENTION, SETTLEMENTDATE, RUNNO, LASTCHANGED
-    ORDER BY _ul_server_last_modified DESC NULLS LAST, _ul_source DESC) = 1
+    ORDER BY _phasor_server_last_modified DESC NULLS LAST, _phasor_source DESC) = 1
 ORDER BY SETTLEMENTDATE, INTERVENTION, RUNNO
 ```
 
@@ -103,15 +103,15 @@ as the time a source was public, nothing is ever early:
 
 <!-- example: known-at -->
 ```sql
-SELECT SETTLEMENTDATE, RRP, _ul_source
+SELECT SETTLEMENTDATE, RRP, _phasor_source
 FROM read_parquet('lake/nem/dispatchprice/data/**/*.parquet', hive_partitioning = true, union_by_name = true)
 WHERE SETTLEMENTDATE > TIMESTAMPTZ '2024-01-01 00:00:00+10:00'
   AND SETTLEMENTDATE <= TIMESTAMPTZ '2024-01-01 00:15:00+10:00'
-  AND greatest(LASTCHANGED, _ul_server_last_modified) <= TIMESTAMPTZ '2024-01-01 00:11:00+10:00'
+  AND greatest(LASTCHANGED, _phasor_server_last_modified) <= TIMESTAMPTZ '2024-01-01 00:11:00+10:00'
 QUALIFY row_number() OVER (
     PARTITION BY REGIONID, DISPATCHINTERVAL, INTERVENTION, SETTLEMENTDATE
     ORDER BY RUNNO DESC NULLS LAST, LASTCHANGED DESC NULLS LAST,
-             _ul_server_last_modified DESC NULLS LAST, _ul_source DESC) = 1
+             _phasor_server_last_modified DESC NULLS LAST, _phasor_source DESC) = 1
 ORDER BY SETTLEMENTDATE
 ```
 
@@ -127,17 +127,17 @@ the earliest of the three:
 
 <!-- example: known-at-earliest -->
 ```sql
-SELECT SETTLEMENTDATE, RRP, _ul_source
+SELECT SETTLEMENTDATE, RRP, _phasor_source
 FROM read_parquet('lake/nem/dispatchprice/data/**/*.parquet', hive_partitioning = true, union_by_name = true)
 WHERE SETTLEMENTDATE > TIMESTAMPTZ '2024-01-01 00:00:00+10:00'
   AND SETTLEMENTDATE <= TIMESTAMPTZ '2024-01-01 00:15:00+10:00'
-  AND greatest(LASTCHANGED, least(_ul_server_last_modified, _ul_zip_entry_modified,
-                                  _ul_filename_timestamp))
+  AND greatest(LASTCHANGED, least(_phasor_server_last_modified, _phasor_zip_entry_modified,
+                                  _phasor_filename_timestamp))
       <= TIMESTAMPTZ '2024-01-01 00:11:00+10:00'
 QUALIFY row_number() OVER (
     PARTITION BY REGIONID, DISPATCHINTERVAL, INTERVENTION, SETTLEMENTDATE
     ORDER BY RUNNO DESC NULLS LAST, LASTCHANGED DESC NULLS LAST,
-             _ul_server_last_modified DESC NULLS LAST, _ul_source DESC) = 1
+             _phasor_server_last_modified DESC NULLS LAST, _phasor_source DESC) = 1
 ORDER BY SETTLEMENTDATE
 ```
 
@@ -162,7 +162,7 @@ WITH versions AS (
     QUALIFY row_number() OVER (
         PARTITION BY DUID, EFFECTIVEDATE
         ORDER BY VERSIONNO DESC NULLS LAST, LASTCHANGED DESC NULLS LAST,
-                 _ul_server_last_modified DESC NULLS LAST, _ul_source DESC) = 1
+                 _phasor_server_last_modified DESC NULLS LAST, _phasor_source DESC) = 1
 ), spans AS (
     SELECT *, lead(EFFECTIVEDATE) OVER (PARTITION BY DUID ORDER BY EFFECTIVEDATE) AS valid_to
     FROM versions
@@ -193,7 +193,7 @@ WHERE VERSIONNO IS DISTINCT FROM CAST('NaN' AS DOUBLE)
 QUALIFY row_number() OVER (
     PARTITION BY DUID, BIDTYPE, SETTLEMENTDATE
     ORDER BY OFFERDATE DESC NULLS LAST, VERSIONNO DESC NULLS LAST, LASTCHANGED DESC NULLS LAST,
-             _ul_server_last_modified DESC NULLS LAST, _ul_source DESC) = 1
+             _phasor_server_last_modified DESC NULLS LAST, _phasor_source DESC) = 1
 ORDER BY SETTLEMENTDATE, DUID, BIDTYPE
 ```
 
@@ -221,8 +221,8 @@ copies with `DISTINCT` over the table's own columns:
 
 <!-- example: keyless -->
 ```sql
-SELECT DISTINCT * EXCLUDE (_ul_source, _ul_server_last_modified, _ul_zip_entry_modified,
-                           _ul_filename_timestamp)
+SELECT DISTINCT * EXCLUDE (_phasor_source, _phasor_server_last_modified, _phasor_zip_entry_modified,
+                           _phasor_filename_timestamp)
 FROM read_parquet('lake/nem/ssm_enablement_costs/data/**/*.parquet', union_by_name = true)
 ORDER BY ENABLEMENT_REASON
 ```
@@ -234,10 +234,10 @@ from and when each was public:
 
 <!-- example: sources -->
 ```sql
-SELECT _ul_source, count(*) AS rows, any_value(_ul_server_last_modified) AS public_by_server
+SELECT _phasor_source, count(*) AS rows, any_value(_phasor_server_last_modified) AS public_by_server
 FROM read_parquet('lake/nem/dispatchprice/data/**/*.parquet', hive_partitioning = true, union_by_name = true)
-GROUP BY _ul_source
-ORDER BY _ul_source
+GROUP BY _phasor_source
+ORDER BY _phasor_source
 ```
 
 ## The values of an entity column
@@ -305,7 +305,7 @@ WHERE SETTLEMENTDATE > TIMESTAMPTZ '2024-01-01 00:00:00+10:00'
 QUALIFY row_number() OVER (
     PARTITION BY REGIONID, DISPATCHINTERVAL, INTERVENTION, SETTLEMENTDATE
     ORDER BY RUNNO DESC NULLS LAST, LASTCHANGED DESC NULLS LAST,
-             _ul_server_last_modified DESC NULLS LAST, _ul_source DESC) = 1
+             _phasor_server_last_modified DESC NULLS LAST, _phasor_source DESC) = 1
 ORDER BY SETTLEMENTDATE
 ```
 
@@ -327,7 +327,7 @@ WHERE SETTLEMENTDATE > TIMESTAMPTZ '2024-01-01 00:00:00+10:00'
 QUALIFY row_number() OVER (
     PARTITION BY REGIONID, DISPATCHINTERVAL, INTERVENTION, SETTLEMENTDATE
     ORDER BY RUNNO DESC NULLS LAST, LASTCHANGED DESC NULLS LAST,
-             _ul_server_last_modified DESC NULLS LAST, _ul_source DESC) = 1
+             _phasor_server_last_modified DESC NULLS LAST, _phasor_source DESC) = 1
 ORDER BY SETTLEMENTDATE
 ```
 

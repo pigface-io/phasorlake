@@ -77,7 +77,7 @@ pub enum Origin {
 /// value that does not fit is kept. Raise it when the same plan would be
 /// written differently by a newer phasor, so that lakes written by the
 /// older one are known to be behind. 6: a lake file holds a source
-/// file's entries together, each row naming its own. 7: the `_ul_`
+/// file's entries together, each row naming its own. 7: the `_phasor_`
 /// columns, with every time a source was stamped with. 8: a block goes
 /// to the table its columns choose (an area report to its `*_AREA`
 /// table), and a renamed column is one field under its newest name.

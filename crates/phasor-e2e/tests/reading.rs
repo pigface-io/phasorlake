@@ -628,7 +628,7 @@ fn expected() -> BTreeMap<&'static str, String> {
         (
             "latest",
             lines(&[
-                "SETTLEMENTDATE,INTERVENTION,RUNNO,RRP,_ul_source",
+                "SETTLEMENTDATE,INTERVENTION,RUNNO,RRP,_phasor_source",
                 &format!("2023-12-31 14:05:00+00,0,1,101.00000,{ARCHIVE}"),
                 &format!("2023-12-31 14:10:00+00,0,2,111.00000,{DVD}"),
                 &format!("2023-12-31 14:15:00+00,0,1,120.00000,{DVD}"),
@@ -651,7 +651,7 @@ fn expected() -> BTreeMap<&'static str, String> {
         (
             "known-at",
             lines(&[
-                "SETTLEMENTDATE,RRP,_ul_source",
+                "SETTLEMENTDATE,RRP,_phasor_source",
                 &format!("2023-12-31 14:05:00+00,99.00000,{REPORT}"),
                 &format!("2023-12-31 14:10:00+00,110.00000,{REPORT}"),
             ]),
@@ -661,7 +661,7 @@ fn expected() -> BTreeMap<&'static str, String> {
         (
             "known-at-earliest",
             lines(&[
-                "SETTLEMENTDATE,RRP,_ul_source",
+                "SETTLEMENTDATE,RRP,_phasor_source",
                 &format!("2023-12-31 14:05:00+00,101.00000,{ARCHIVE}"),
                 &format!("2023-12-31 14:10:00+00,110.00000,{REPORT}"),
             ]),
@@ -723,7 +723,7 @@ fn expected() -> BTreeMap<&'static str, String> {
         (
             "sources",
             lines(&[
-                "_ul_source,rows,public_by_server",
+                "_phasor_source,rows,public_by_server",
                 &format!("{DVD},5,2024-02-05 00:00:00+00"),
                 &format!("{ARCHIVE},1,2026-04-15 00:00:00+00"),
                 &format!("{REPORT},2,2023-12-31 14:05:40+00"),
@@ -774,7 +774,7 @@ fn every_example_in_the_reading_doc_returns_its_rows() {
             let header = lines.next().unwrap();
             assert!(
                 header.starts_with("END_TRADINGDATE,ENABLEMENT_REASON,ESTIMATED_COSTS")
-                    && !header.contains("_ul_"),
+                    && !header.contains("_phasor_"),
                 "{header}"
             );
             let reasons: Vec<&str> = lines.map(|l| l.split(',').nth(1).unwrap()).collect();

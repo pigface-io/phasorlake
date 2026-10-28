@@ -163,15 +163,15 @@ pub struct EntryShare {
     pub max_time: Option<i64>,
     /// The HTTP `Last-Modified` the web server gave for the entry's bytes,
     /// microseconds since 1970 (UTC): what its rows carry as
-    /// `_ul_server_last_modified`.
+    /// `_phasor_server_last_modified`.
     #[serde(default)]
     pub server_last_modified: Option<i64>,
     /// The entry's modified time in its zip's central directory, read in
-    /// the packer's clock: its rows' `_ul_zip_entry_modified`.
+    /// the packer's clock: its rows' `_phasor_zip_entry_modified`.
     #[serde(default)]
     pub zip_entry_modified: Option<i64>,
     /// The fourteen-digit stamp in the entry's file name, read in the
-    /// host's clock: its rows' `_ul_filename_timestamp`.
+    /// host's clock: its rows' `_phasor_filename_timestamp`.
     #[serde(default)]
     pub filename_timestamp: Option<i64>,
 }
@@ -214,7 +214,7 @@ pub struct LiveOutput {
     /// The source file.
     pub url: String,
     /// The entries of the source file its ingest read, with when each
-    /// went public; each row of the file names its own in `_ul_source`.
+    /// went public; each row of the file names its own in `_phasor_source`.
     pub entries: Vec<EntryShare>,
     /// Its least time value, nanoseconds since 1970.
     pub min_time: Option<i64>,

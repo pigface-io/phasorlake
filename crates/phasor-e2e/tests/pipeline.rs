@@ -522,7 +522,7 @@ async fn an_entry_held_alone_is_stamped_when_it_first_went_public() {
     let b = parquet_batch(&files[0]);
     use arrow_array::Array as _;
     let source = b
-        .column_by_name("_ul_source")
+        .column_by_name("_phasor_source")
         .unwrap()
         .as_any()
         .downcast_ref::<arrow_array::DictionaryArray<arrow_array::types::UInt16Type>>()
@@ -533,7 +533,7 @@ async fn an_entry_held_alone_is_stamped_when_it_first_went_public() {
         .downcast_ref::<arrow_array::StringArray>()
         .unwrap();
     let published = b
-        .column_by_name("_ul_server_last_modified")
+        .column_by_name("_phasor_server_last_modified")
         .unwrap()
         .as_any()
         .downcast_ref::<arrow_array::TimestampMicrosecondArray>()
@@ -1236,10 +1236,10 @@ C,\"END OF REPORT\",9\n";
         &names[4..],
         [
             "SCADAVALUE__raw",
-            "_ul_source",
-            "_ul_server_last_modified",
-            "_ul_zip_entry_modified",
-            "_ul_filename_timestamp"
+            "_phasor_source",
+            "_phasor_server_last_modified",
+            "_phasor_zip_entry_modified",
+            "_phasor_filename_timestamp"
         ]
     );
     assert!(second.schema().field(1).is_nullable());
@@ -3243,10 +3243,10 @@ async fn every_table_survives_the_lake() {
             assert_eq!(
                 tail,
                 [
-                    "_ul_source",
-                    "_ul_server_last_modified",
-                    "_ul_zip_entry_modified",
-                    "_ul_filename_timestamp"
+                    "_phasor_source",
+                    "_phasor_server_last_modified",
+                    "_phasor_zip_entry_modified",
+                    "_phasor_filename_timestamp"
                 ],
                 "{name}"
             );
@@ -3268,7 +3268,7 @@ async fn every_table_survives_the_lake() {
                 assert_eq!(id_of(field), id_of(declared), "{name}.{}", field.name());
             }
             let source = b
-                .column_by_name("_ul_source")
+                .column_by_name("_phasor_source")
                 .unwrap()
                 .as_any()
                 .downcast_ref::<arrow_array::DictionaryArray<arrow_array::types::UInt16Type>>()
@@ -3483,10 +3483,10 @@ async fn every_real_head_survives_the_lake() {
         assert_eq!(
             tail,
             [
-                "_ul_source",
-                "_ul_server_last_modified",
-                "_ul_zip_entry_modified",
-                "_ul_filename_timestamp"
+                "_phasor_source",
+                "_phasor_server_last_modified",
+                "_phasor_zip_entry_modified",
+                "_phasor_filename_timestamp"
             ],
             "{f}"
         );
@@ -3510,11 +3510,11 @@ async fn every_real_head_survives_the_lake() {
         let b = parquet_batch(f);
         let column = |n: &str| b.column_by_name(n).unwrap().clone();
         assert_eq!(
-            column("_ul_zip_entry_modified").null_count(),
+            column("_phasor_zip_entry_modified").null_count(),
             b.num_rows(),
             "{f}"
         );
-        let source = column("_ul_source");
+        let source = column("_phasor_source");
         let source = source
             .as_any()
             .downcast_ref::<arrow_array::DictionaryArray<arrow_array::types::UInt16Type>>()
@@ -3524,7 +3524,7 @@ async fn every_real_head_survives_the_lake() {
             .as_any()
             .downcast_ref::<arrow_array::StringArray>()
             .unwrap();
-        let stamp = column("_ul_filename_timestamp");
+        let stamp = column("_phasor_filename_timestamp");
         for row in 0..b.num_rows() {
             let key = usize::from(source.keys().value(row));
             let name = values.value(key).rsplit('/').next().unwrap();
@@ -3617,7 +3617,7 @@ async fn each_time_a_source_was_stamped_with_is_kept_on_its_rows() {
     assert_eq!(files.len(), 1, "{files:?}");
     let b = parquet_batch(&files[0]);
     let source = b
-        .column_by_name("_ul_source")
+        .column_by_name("_phasor_source")
         .unwrap()
         .as_any()
         .downcast_ref::<arrow_array::DictionaryArray<arrow_array::types::UInt16Type>>()
@@ -3638,9 +3638,9 @@ async fn each_time_a_source_was_stamped_with_is_kept_on_its_rows() {
             .clone()
     };
     let (server, zip_entry, filename) = (
-        time("_ul_server_last_modified"),
-        time("_ul_zip_entry_modified"),
-        time("_ul_filename_timestamp"),
+        time("_phasor_server_last_modified"),
+        time("_phasor_zip_entry_modified"),
+        time("_phasor_filename_timestamp"),
     );
     // 2024-01-01 00:05:30 and 00:07:40 AEST; the name's 00:07:31 AEST.
     let (written_at, named_at, named_zip) = (

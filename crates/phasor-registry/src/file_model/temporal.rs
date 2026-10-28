@@ -19,9 +19,9 @@ use serde::{Deserialize, Serialize};
 use crate::file_model::model::{Column, ColumnId, LakeType, Table};
 
 /// Column names reserved for what phasor adds to every lake row
-/// (`_ul_source` and the times its source was stamped with); no table may
+/// (`_phasor_source` and the times its source was stamped with); no table may
 /// declare one.
-pub const RESERVED_PREFIX: &str = "_UL_";
+pub const RESERVED_PREFIX: &str = "_PHASOR_";
 
 /// Who chose a table's roles.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]

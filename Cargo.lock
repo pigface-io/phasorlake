@@ -1905,7 +1905,7 @@ dependencies = [
 [[package]]
 name = "phasor-decode"
 version = "0.1.0"
-source = "git+ssh://git@github.com/pigface-io/phasorlake-schemas.git?rev=93dbff1b61541c64064fdf6e6a07cbdcdddd7edd#93dbff1b61541c64064fdf6e6a07cbdcdddd7edd"
+source = "git+ssh://git@github.com/pigface-io/phasorlake-schemas.git?rev=10d0cc809b009e380e0c7b32001dc9b7c8f28adf#10d0cc809b009e380e0c7b32001dc9b7c8f28adf"
 dependencies = [
  "phasor-diag",
  "serde",
@@ -1916,7 +1916,7 @@ dependencies = [
 [[package]]
 name = "phasor-diag"
 version = "0.1.0"
-source = "git+ssh://git@github.com/pigface-io/phasorlake-schemas.git?rev=93dbff1b61541c64064fdf6e6a07cbdcdddd7edd#93dbff1b61541c64064fdf6e6a07cbdcdddd7edd"
+source = "git+ssh://git@github.com/pigface-io/phasorlake-schemas.git?rev=10d0cc809b009e380e0c7b32001dc9b7c8f28adf#10d0cc809b009e380e0c7b32001dc9b7c8f28adf"
 dependencies = [
  "serde",
 ]
@@ -1974,7 +1974,7 @@ dependencies = [
 [[package]]
 name = "phasor-gates"
 version = "0.1.0"
-source = "git+ssh://git@github.com/pigface-io/phasorlake-schemas.git?rev=93dbff1b61541c64064fdf6e6a07cbdcdddd7edd#93dbff1b61541c64064fdf6e6a07cbdcdddd7edd"
+source = "git+ssh://git@github.com/pigface-io/phasorlake-schemas.git?rev=10d0cc809b009e380e0c7b32001dc9b7c8f28adf#10d0cc809b009e380e0c7b32001dc9b7c8f28adf"
 dependencies = [
  "anyhow",
  "serde",
@@ -1984,7 +1984,7 @@ dependencies = [
 [[package]]
 name = "phasor-iceberg"
 version = "0.1.0"
-source = "git+ssh://git@github.com/pigface-io/phasorlake-schemas.git?rev=93dbff1b61541c64064fdf6e6a07cbdcdddd7edd#93dbff1b61541c64064fdf6e6a07cbdcdddd7edd"
+source = "git+ssh://git@github.com/pigface-io/phasorlake-schemas.git?rev=10d0cc809b009e380e0c7b32001dc9b7c8f28adf#10d0cc809b009e380e0c7b32001dc9b7c8f28adf"
 dependencies = [
  "phasor-diag",
  "serde",
@@ -2078,7 +2078,7 @@ dependencies = [
 [[package]]
 name = "phasor-mms-decode"
 version = "0.1.0"
-source = "git+ssh://git@github.com/pigface-io/phasorlake-schemas.git?rev=93dbff1b61541c64064fdf6e6a07cbdcdddd7edd#93dbff1b61541c64064fdf6e6a07cbdcdddd7edd"
+source = "git+ssh://git@github.com/pigface-io/phasorlake-schemas.git?rev=10d0cc809b009e380e0c7b32001dc9b7c8f28adf#10d0cc809b009e380e0c7b32001dc9b7c8f28adf"
 dependencies = [
  "memchr",
  "phasor-decode",
@@ -2151,7 +2151,7 @@ dependencies = [
 [[package]]
 name = "phasor-plain-decode"
 version = "0.1.0"
-source = "git+ssh://git@github.com/pigface-io/phasorlake-schemas.git?rev=93dbff1b61541c64064fdf6e6a07cbdcdddd7edd#93dbff1b61541c64064fdf6e6a07cbdcdddd7edd"
+source = "git+ssh://git@github.com/pigface-io/phasorlake-schemas.git?rev=10d0cc809b009e380e0c7b32001dc9b7c8f28adf#10d0cc809b009e380e0c7b32001dc9b7c8f28adf"
 dependencies = [
  "memchr",
  "phasor-decode",
@@ -2165,7 +2165,7 @@ dependencies = [
 [[package]]
 name = "phasor-provenance"
 version = "0.1.0"
-source = "git+ssh://git@github.com/pigface-io/phasorlake-schemas.git?rev=93dbff1b61541c64064fdf6e6a07cbdcdddd7edd#93dbff1b61541c64064fdf6e6a07cbdcdddd7edd"
+source = "git+ssh://git@github.com/pigface-io/phasorlake-schemas.git?rev=10d0cc809b009e380e0c7b32001dc9b7c8f28adf#10d0cc809b009e380e0c7b32001dc9b7c8f28adf"
 dependencies = [
  "crc32fast",
  "phasor-diag",
@@ -2245,7 +2245,7 @@ dependencies = [
 [[package]]
 name = "phasor-zip"
 version = "0.1.0"
-source = "git+ssh://git@github.com/pigface-io/phasorlake-schemas.git?rev=93dbff1b61541c64064fdf6e6a07cbdcdddd7edd#93dbff1b61541c64064fdf6e6a07cbdcdddd7edd"
+source = "git+ssh://git@github.com/pigface-io/phasorlake-schemas.git?rev=10d0cc809b009e380e0c7b32001dc9b7c8f28adf#10d0cc809b009e380e0c7b32001dc9b7c8f28adf"
 dependencies = [
  "flate2",
  "phasor-diag",

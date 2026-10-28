@@ -15,7 +15,7 @@ AEMO's data has two clocks:
 - **Valid time**: when a fact applies. `SETTLEMENTDATE`,
   `INTERVAL_DATETIME`, `EFFECTIVEDATE`, `TRADINGDATE`.
 - **Knowledge time**: when a row could be read. Never before its source
-  went public (`_ul_server_last_modified`, or the earlier evidence a
+  went public (`_phasor_server_last_modified`, or the earlier evidence a
   reader trusts), and no earlier than `LASTCHANGED` or `RUN_DATETIME`
   say where those are later.
 
@@ -108,15 +108,15 @@ a question for the read.
 
 | column | type | holds |
 |---|---|---|
-| `_ul_source` | dictionary of text | the source, `url!entry` (the URL alone for a file read whole) |
-| `_ul_server_last_modified` | timestamp, UTC | the HTTP `Last-Modified` the web server gave for the source's bytes; null when no server gave one (a local file) |
-| `_ul_zip_entry_modified` | timestamp, UTC | the entry's modified time in its zip's central directory (DOS date and time, 2 s resolution), read in the market's clock; null for a file read whole or a zip entry with no date |
-| `_ul_filename_timestamp` | timestamp, UTC | the first run of exactly fourteen digits (`YYYYMMDDHHMMSS`) in the source's file name, read in the market's clock; null when the name has none |
+| `_phasor_source` | dictionary of text | the source, `url!entry` (the URL alone for a file read whole) |
+| `_phasor_server_last_modified` | timestamp, UTC | the HTTP `Last-Modified` the web server gave for the source's bytes; null when no server gave one (a local file) |
+| `_phasor_zip_entry_modified` | timestamp, UTC | the entry's modified time in its zip's central directory (DOS date and time, 2 s resolution), read in the market's clock; null for a file read whole or a zip entry with no date |
+| `_phasor_filename_timestamp` | timestamp, UTC | the first run of exactly fourteen digits (`YYYYMMDDHHMMSS`) in the source's file name, read in the market's clock; null when the name has none |
 
 What each one is, and how far from the moment the row went public it can
 be:
 
-- **`_ul_server_last_modified`** is the proof that the bytes were public:
+- **`_phasor_server_last_modified`** is the proof that the bytes were public:
   the server served them with this time. For the entry of a rollup that
   the mirror also holds from its own address (the record beside it names
   the rollup's entry as the same bytes), it is the entry's own
@@ -124,12 +124,12 @@ be:
   be very late: a monthly DVD is weeks after the rows it holds, and AEMO
   re-touched most of its archive in April 2026, so an archived file of
   2016 says 2026.
-- **`_ul_zip_entry_modified`** is when AEMO's packer wrote the entry,
+- **`_phasor_zip_entry_modified`** is when AEMO's packer wrote the entry,
   seconds before the zip was uploaded. It is at or before the moment the
   row was public, usually by seconds. The zip format stores it without a
   time zone; it is read in the market's clock (AEST for the NEM's site,
   AWST for the WEM's), the clock of every AEMO time in the lake.
-- **`_ul_filename_timestamp`** is AEMO's creation time to the second, as
+- **`_phasor_filename_timestamp`** is AEMO's creation time to the second, as
   in `PUBLIC_YESTBID_201612220000_20161223040519.zip` or gas
   `int651_…~20261023113222.csv`, read in the market's clock. The twelve
   digit stamp most names carry is the interval the report is about, not
