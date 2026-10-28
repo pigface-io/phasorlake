@@ -495,7 +495,7 @@ impl Manifest {
     /// The tables a run began an ingest of, by name.
     pub fn tables_of_run(&self, run_id: i64) -> Result<Vec<String>, ManifestError> {
         let r = (|| {
-            let mut st = self.conn.prepare(
+            let mut st = self.conn.prepare_cached(
                 "SELECT DISTINCT table_name FROM ingests WHERE run_id = ?1 ORDER BY table_name",
             )?;
             let rows = st.query_map([run_id], |r| r.get(0))?;
@@ -524,19 +524,15 @@ impl Manifest {
 
     /// Records (or updates) a fetched file; returns its id.
     pub fn record_file(&mut self, f: &FileRecord) -> Result<i64, ManifestError> {
-        let r = self.conn.execute(
+        let r = self.conn.query_row(
             "INSERT INTO files (source, url, cache_path, sha256, size, etag, last_modified, last_modified_at, fetched_at)
              VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9)
              ON CONFLICT(url) DO UPDATE SET cache_path = excluded.cache_path, sha256 = excluded.sha256, size = excluded.size,
-                 etag = excluded.etag, last_modified = excluded.last_modified, last_modified_at = excluded.last_modified_at, fetched_at = excluded.fetched_at",
+                 etag = excluded.etag, last_modified = excluded.last_modified, last_modified_at = excluded.last_modified_at, fetched_at = excluded.fetched_at
+             RETURNING id",
             params![f.source, f.url, self.stored(&f.cache_path), f.sha256, f.size as i64, f.etag, f.last_modified, f.last_modified_at, f.fetched_at.clone().unwrap_or_else(now)],
+            |r| r.get::<_, i64>(0),
         );
-        self.sql(r)?;
-        let r = self
-            .conn
-            .query_row("SELECT id FROM files WHERE url = ?1", [&f.url], |r| {
-                r.get::<_, i64>(0)
-            });
         self.sql(r)
     }
 
@@ -569,7 +565,7 @@ impl Manifest {
 
     /// Every file the manifest has recorded, in first-seen order.
     pub fn list_files(&self) -> Result<Vec<FileRecord>, ManifestError> {
-        let mut stmt = self.sql(self.conn.prepare(
+        let mut stmt = self.sql(self.conn.prepare_cached(
             "SELECT source, url, cache_path, sha256, size, etag, last_modified, last_modified_at, fetched_at FROM files ORDER BY id",
         ))?;
         self.sql(
@@ -614,7 +610,7 @@ impl Manifest {
         if rec.sha256 != sha256 {
             return Ok(None);
         }
-        let mut stmt = self.sql(self.conn.prepare(
+        let mut stmt = self.sql(self.conn.prepare_cached(
             "SELECT status, table_name, report_type, report_subtype, source_version, source_columns, plan_hash, schema_source, resolution, source_period, shape_id, schema_id
              FROM ingests WHERE file_id = ?1 AND status != 'superseded' ORDER BY id",
         ))?;
@@ -633,12 +629,8 @@ impl Manifest {
         if rows.is_empty() || rows.iter().any(|(s, _)| s != "ok") {
             return Ok(None);
         }
-        let mut stmt = self.sql(self.conn.prepare("SELECT o.parquet_path FROM outputs o JOIN ingests i ON o.ingest_id = i.id WHERE i.file_id = ?1"))?;
-        let paths: Vec<String> = self.sql(
-            stmt.query_map([file_id], |r| r.get(0))
-                .and_then(Iterator::collect),
-        )?;
-        if !paths
+        if !self
+            .stored_outputs(file_id)?
             .into_iter()
             .all(|p| Path::new(&self.resolved(p)).is_file())
         {
@@ -650,14 +642,8 @@ impl Manifest {
     /// Every entry fetched alone out of the zip at `url`, as its path within the zip.
     pub fn entries_ingested_under(&self, url: &str) -> Result<Vec<String>, ManifestError> {
         let prefix = format!("{url}!");
-        let pattern = format!(
-            "{}%",
-            prefix
-                .replace('\\', "\\\\")
-                .replace('%', "\\%")
-                .replace('_', "\\_")
-        );
-        let mut stmt = self.sql(self.conn.prepare(
+        let pattern = format!("{}%", like_escaped(&prefix));
+        let mut stmt = self.sql(self.conn.prepare_cached(
             "SELECT DISTINCT f.url, e.entry FROM ingest_entries e JOIN ingests i ON e.ingest_id = i.id JOIN files f ON i.file_id = f.id
              WHERE i.status = 'ok' AND f.url LIKE ?1 ESCAPE '\\' ORDER BY f.url, e.entry",
         ))?;
@@ -673,13 +659,7 @@ impl Manifest {
 
     /// Whether a read of the whole zip at `url` put `entry`, or anything nested in it, in the lake.
     pub fn is_ingested_from(&self, url: &str, entry: &str) -> Result<bool, ManifestError> {
-        let nested = format!(
-            "{}!%",
-            entry
-                .replace('\\', "\\\\")
-                .replace('%', "\\%")
-                .replace('_', "\\_")
-        );
+        let nested = format!("{}!%", like_escaped(entry));
         let r = self.conn.query_row(
             "SELECT COUNT(*) FROM ingest_entries e JOIN ingests i ON e.ingest_id = i.id JOIN files f ON i.file_id = f.id
              WHERE i.status = 'ok' AND f.url = ?1 AND (e.entry = ?2 OR e.entry LIKE ?3 ESCAPE '\\')",
@@ -691,17 +671,22 @@ impl Manifest {
 
     /// Paths of every output a file's ingests wrote, for superseding.
     pub fn outputs_of_file(&self, file_id: i64) -> Result<Vec<String>, ManifestError> {
-        let mut stmt = self.sql(self.conn.prepare("SELECT o.parquet_path FROM outputs o JOIN ingests i ON o.ingest_id = i.id WHERE i.file_id = ?1"))?;
-        let paths: Vec<String> = self.sql(
+        let paths = self.stored_outputs(file_id)?;
+        Ok(paths.into_iter().map(|p| self.resolved(p)).collect())
+    }
+
+    /// Paths of every output a file's ingests wrote, as stored.
+    fn stored_outputs(&self, file_id: i64) -> Result<Vec<String>, ManifestError> {
+        let mut stmt = self.sql(self.conn.prepare_cached("SELECT o.parquet_path FROM outputs o JOIN ingests i ON o.ingest_id = i.id WHERE i.file_id = ?1"))?;
+        self.sql(
             stmt.query_map([file_id], |r| r.get(0))
                 .and_then(Iterator::collect),
-        )?;
-        Ok(paths.into_iter().map(|p| self.resolved(p)).collect())
+        )
     }
 
     /// Paths of the quarantine files a file's current ingests wrote.
     pub fn quarantine_of_file(&self, file_id: i64) -> Result<Vec<String>, ManifestError> {
-        let mut stmt = self.sql(self.conn.prepare("SELECT DISTINCT quarantine_path FROM ingests WHERE file_id = ?1 AND quarantine_path IS NOT NULL AND status != 'superseded' ORDER BY quarantine_path"))?;
+        let mut stmt = self.sql(self.conn.prepare_cached("SELECT DISTINCT quarantine_path FROM ingests WHERE file_id = ?1 AND quarantine_path IS NOT NULL AND status != 'superseded' ORDER BY quarantine_path"))?;
         let paths: Vec<String> = self.sql(
             stmt.query_map([file_id], |r| r.get(0))
                 .and_then(Iterator::collect),
@@ -711,7 +696,7 @@ impl Manifest {
 
     /// Paths of every quarantine file a current ingest recorded.
     pub fn live_quarantine(&self) -> Result<Vec<String>, ManifestError> {
-        let mut stmt = self.sql(self.conn.prepare("SELECT DISTINCT quarantine_path FROM ingests WHERE quarantine_path IS NOT NULL AND status != 'superseded' ORDER BY quarantine_path"))?;
+        let mut stmt = self.sql(self.conn.prepare_cached("SELECT DISTINCT quarantine_path FROM ingests WHERE quarantine_path IS NOT NULL AND status != 'superseded' ORDER BY quarantine_path"))?;
         let paths: Vec<String> =
             self.sql(stmt.query_map([], |r| r.get(0)).and_then(Iterator::collect))?;
         Ok(paths.into_iter().map(|p| self.resolved(p)).collect())
@@ -721,7 +706,7 @@ impl Manifest {
         &self,
         table: Option<&str>,
     ) -> Result<std::collections::HashMap<i64, Vec<EntryShare>>, ManifestError> {
-        let mut stmt = self.sql(self.conn.prepare(
+        let mut stmt = self.sql(self.conn.prepare_cached(
             "SELECT e.ingest_id, e.entry, e.rows, e.bad_rows, e.min_time, e.max_time, e.server_last_modified, e.zip_entry_modified, e.filename_timestamp
              FROM ingest_entries e JOIN ingests i ON e.ingest_id = i.id
              WHERE ?1 IS NULL OR i.table_name = ?1 ORDER BY e.ingest_id, e.entry",
@@ -755,7 +740,7 @@ impl Manifest {
     /// Every output of an `ok` ingest, of one table or all, in Iceberg commit order.
     pub fn live_outputs(&self, table: Option<&str>) -> Result<Vec<LiveOutput>, ManifestError> {
         let entries = self.entries_by_ingest(table)?;
-        let mut stmt = self.sql(self.conn.prepare(
+        let mut stmt = self.sql(self.conn.prepare_cached(
             "SELECT i.table_name, o.parquet_path, o.rows, o.bytes, i.schema_id, i.source_version, i.source_period, f.url, i.id, o.min_time, o.max_time, o.partition, f.last_modified_at
              FROM outputs o JOIN ingests i ON o.ingest_id = i.id JOIN files f ON i.file_id = f.id
              WHERE i.status = 'ok' AND (?1 IS NULL OR i.table_name = ?1)
@@ -828,13 +813,19 @@ impl Manifest {
 
     /// Starts an ingest; a previous row for the same key is replaced.
     pub fn begin_ingest(&mut self, s: &IngestStart) -> Result<i64, ManifestError> {
-        let r = self.conn.execute(
+        let path = self.path.clone();
+        let err = |er: rusqlite::Error| ManifestError::Sqlite {
+            path: path.clone(),
+            message: er.to_string(),
+        };
+        let tx = self.conn.transaction().map_err(err)?;
+        tx.execute(
             "DELETE FROM ingests WHERE file_id = ?1 AND table_name = ?2 AND schema_version = ?3 AND fingerprint = ?4",
             params![s.file_id, s.table, i64::from(s.schema_version), s.fingerprint],
-        );
-        self.sql(r)?;
+        )
+        .map_err(err)?;
         let t = &s.transform;
-        let r = self.conn.execute(
+        tx.execute(
             "INSERT INTO ingests (run_id, file_id, table_name, schema_version, fingerprint, status, started_at,
                                   report_type, report_subtype, source_version, source_columns, plan_hash, schema_source, resolution, source_period, shape_id, schema_id)
              VALUES (?1, ?2, ?3, ?4, ?5, 'running', ?6, ?7, ?8, ?9, ?10, ?11, ?12, ?13, ?14, ?15, ?16)",
@@ -856,9 +847,11 @@ impl Manifest {
                 t.shape_id,
                 t.schema_id
             ],
-        );
-        self.sql(r)?;
-        Ok(self.conn.last_insert_rowid())
+        )
+        .map_err(err)?;
+        let id = tx.last_insert_rowid();
+        tx.commit().map_err(err)?;
+        Ok(id)
     }
 
     /// Finishes an ingest and records its outputs in one transaction.
@@ -973,7 +966,7 @@ impl Manifest {
             })
             .and_then(Iterator::collect),
         )?;
-        let mut stmt = self.sql(self.conn.prepare("SELECT parquet_path, partition, rows, bytes, min_time, max_time FROM outputs WHERE ingest_id = ?1 ORDER BY id"))?;
+        let mut stmt = self.sql(self.conn.prepare_cached("SELECT parquet_path, partition, rows, bytes, min_time, max_time FROM outputs WHERE ingest_id = ?1 ORDER BY id"))?;
         let mut entries = self.entries_by_ingest(table)?;
         for rec in &mut recs {
             rec.entries = entries.remove(&rec.id).unwrap_or_default();
@@ -1042,6 +1035,13 @@ pub struct IngestShape {
 }
 
 /// Reads the transform columns of an `ingests` row, starting at `at`.
+/// `s` as a LIKE pattern matches it literally, with `\\` as the escape.
+fn like_escaped(s: &str) -> String {
+    s.replace('\\', "\\\\")
+        .replace('%', "\\%")
+        .replace('_', "\\_")
+}
+
 fn transform_from_row(r: &rusqlite::Row<'_>, at: usize) -> rusqlite::Result<Transform> {
     let columns: String = r.get(at + 3)?;
     Ok(Transform {
