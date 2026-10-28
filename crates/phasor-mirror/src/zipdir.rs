@@ -70,12 +70,6 @@ impl Spans for OnDisk {
     }
 }
 
-/// Each file's name, CRC-32 and size in the zip at `path`, in name order;
-/// none when it is not a zip that reads.
-pub async fn contents(path: &std::path::Path) -> Option<Vec<(String, u32, u64)>> {
-    phasor_zip::zipdir::contents(path)
-}
-
 /// Something byte spans of a file can be read from.
 pub trait Spans {
     /// Why a read failed.
@@ -84,12 +78,8 @@ pub trait Spans {
     fn read(&mut self, start: u64, end: u64) -> impl Future<Output = Result<Vec<u8>, Self::Error>>;
 }
 
-/// Every entry of the zip of `len` bytes, in at most three reads, times in AEST.
-pub async fn read_directory<S: Spans>(src: &mut S, len: u64) -> Result<Vec<Entry>, S::Error> {
-    read_directory_in(src, len, AEST).await
-}
-
-/// [`read_directory`], with times read `offset` seconds east of UTC.
+/// Every entry of the zip of `len` bytes, in at most three reads, with
+/// times read `offset` seconds east of UTC.
 pub async fn read_directory_in<S: Spans>(
     src: &mut S,
     len: u64,
@@ -149,7 +139,7 @@ mod tests {
     async fn read(bytes: Vec<u8>) -> (Result<Vec<Entry>, DirError>, usize) {
         let len = bytes.len() as u64;
         let mut m = Mem(bytes, 0);
-        let r = read_directory(&mut m, len).await;
+        let r = read_directory_in(&mut m, len, AEST).await;
         (r, m.1)
     }
 
@@ -235,9 +225,11 @@ mod tests {
         std::fs::write(&path, zip("")).unwrap();
         let file = std::fs::File::open(&path).unwrap();
         let len = file.metadata().unwrap().len();
-        let e = read_directory(&mut OnDisk(file), len).await.unwrap();
+        let e = read_directory_in(&mut OnDisk(file), len, AEST)
+            .await
+            .unwrap();
         assert_eq!(e.len(), 3);
-        assert_eq!(contents(&path).await.unwrap().len(), 2);
+        assert_eq!(phasor_zip::zipdir::contents(&path).unwrap().len(), 2);
         // A span past the file fails as the disk.
         let mut short = OnDisk(std::fs::File::open(&path).unwrap());
         assert_eq!(
@@ -245,7 +237,7 @@ mod tests {
             Err(DirError::Damaged("the file could not be read"))
         );
         std::fs::write(&path, b"text").unwrap();
-        assert!(contents(&path).await.is_none());
+        assert!(phasor_zip::zipdir::contents(&path).is_none());
     }
 
     #[tokio::test]

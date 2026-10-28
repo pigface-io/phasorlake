@@ -271,11 +271,11 @@ impl Fetcher {
         if let Some(v) = held.iter().find(|v| v.provenance.content.sha256 == *sha256) {
             return Ok(Some((v.clone(), false)));
         }
-        let Some(holds) = crate::zipdir::contents(part).await else {
+        let Some(holds) = phasor_zip::zipdir::contents(part) else {
             return Ok(None);
         };
         for v in held.iter().filter(|v| v.provenance.names(url)) {
-            if crate::zipdir::contents(&v.path).await.as_ref() == Some(&holds) {
+            if phasor_zip::zipdir::contents(&v.path).as_ref() == Some(&holds) {
                 return Ok(Some((v.clone(), true)));
             }
         }
