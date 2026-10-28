@@ -471,7 +471,7 @@ impl ParquetHive {
             message: e.to_string(),
         })?;
         if o.writer.memory_size() >= self.row_group_bytes {
-            zone!(ENCODE);
+            zone!(FLUSH);
             o.writer.flush().map_err(|e| StoreError::Parquet {
                 path: o.tmp.display().to_string(),
                 message: e.to_string(),
