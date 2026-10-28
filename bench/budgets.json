@@ -12,10 +12,10 @@
       "min_rows_per_s": 3707749.565
     },
     "fetch/download": {
-      "min_mb_per_s": 974.333
+      "min_mb_per_s": 996.165
     },
     "fetch/listing_parse": {
-      "min_mb_per_s": 1025.53
+      "min_mb_per_s": 1042.241
     },
     "mirror/listing_parse": {
       "min_mb_per_s": 720.0
@@ -30,19 +30,19 @@
       "min_mb_per_s": 5551.326
     },
     "parse/scan_many_blocks": {
-      "min_mb_per_s": 105.0
+      "min_mb_per_s": 108.991
     },
     "parse/scan_split_only": {
-      "min_mb_per_s": 1426.723
+      "min_mb_per_s": 1462.361
     },
     "parse/scan_typed_arrow": {
-      "min_mb_per_s": 474.192
+      "min_mb_per_s": 540.55
     },
     "parse_values/decimal": {
-      "max_ns": 21.541
+      "max_ns": 10.418
     },
     "parse_values/float_long": {
-      "max_ns": 37.719
+      "max_ns": 37.465
     },
     "parse_values/float_short": {
       "max_ns": 6.274
@@ -54,10 +54,10 @@
       "max_ns": 8.908
     },
     "plain/gbb_csv": {
-      "min_mb_per_s": 114.07
+      "min_mb_per_s": 127.605
     },
     "plain/wemde_json": {
-      "min_mb_per_s": 39.73
+      "min_mb_per_s": 40.417
     },
     "query/resolve_from_table": {
       "min_rows_per_s": 6500000.0
@@ -76,19 +76,19 @@
       "max_ns": 2000000.0
     },
     "registry/resolve_drift_cached": {
-      "max_ns": 299.836
+      "max_ns": 278.555
     },
     "registry/resolve_exact": {
-      "max_ns": 45.891
+      "max_ns": 43.614
     },
     "store/parquet_write": {
-      "min_mb_per_s": 418.713
+      "min_mb_per_s": 516.511
     },
     "store/partition_split_one_month": {
-      "max_ms": 2.554
+      "max_ms": 0.694
     },
     "store/partition_split_two_months": {
-      "max_ms": 5.05
+      "max_ms": 0.688
     }
   }
 }
