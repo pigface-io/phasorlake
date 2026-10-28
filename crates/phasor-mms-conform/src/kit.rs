@@ -7,7 +7,7 @@ use std::sync::Arc;
 
 use phasor_core::{Diagnose, Diagnostic, Period, YearMonth};
 
-use crate::error::{RowError, RowFailure, SinkError};
+use crate::error::{RowError, SinkError};
 use phasor_kit::{
     Block, BlockSink, DecodeCtx, DecodeStats, Decoder, Flow, RowAt, Strictness, TableRef, Transform,
 };
@@ -47,6 +47,47 @@ pub(crate) struct Bridge<'a> {
     pub(crate) period: Option<YearMonth>,
     pub(crate) tables: HashMap<TableId, Arc<TableRef>>,
     pub(crate) current: Option<(Arc<TableRef>, Arc<Transform>)>,
+}
+
+impl<'a> Bridge<'a> {
+    /// The typed sink of one entry of `market`, its blocks handed to `out`.
+    pub(crate) fn sink(
+        registry: &'a Registry,
+        market: Market,
+        ctx: &DecodeCtx<'_>,
+        out: &'a mut dyn BlockSink,
+    ) -> ArrowSink<'a, Self> {
+        let period = ctx.period.map(Period::month);
+        let mode = match ctx.options.strictness {
+            Strictness::Permissive => Mode::Permissive,
+            Strictness::Strict => Mode::Strict,
+        };
+        let bridge = Self {
+            out,
+            registry,
+            period,
+            tables: HashMap::new(),
+            current: None,
+        };
+        ArrowSink::new(
+            registry,
+            ResolveOptions { mode, market },
+            ctx.options.batch_rows,
+            bridge,
+        )
+        .with_period(period)
+    }
+}
+
+/// A decode's result: the scan's error first, then the final flush's.
+pub(crate) fn decoded<S, E: Diagnose>(
+    scanned: Result<S, E>,
+    flushed: Result<(), SinkError>,
+    stats: impl FnOnce(S) -> DecodeStats,
+) -> Result<DecodeStats, Box<Diagnostic>> {
+    let s = scanned.map_err(|e| Box::new(e.diagnostic()))?;
+    flushed.map_err(|e| Box::new(e.diagnostic()))?;
+    Ok(stats(s))
 }
 
 impl BatchSink for Bridge<'_> {
@@ -149,45 +190,16 @@ impl Decoder for MmsDecoder {
         sink: &mut dyn BlockSink,
         scratch: &mut Vec<u8>,
     ) -> Result<DecodeStats, Box<Diagnostic>> {
-        let period = ctx.period.map(Period::month);
-        let mode = match ctx.options.strictness {
-            Strictness::Permissive => Mode::Permissive,
-            Strictness::Strict => Mode::Strict,
-        };
-        let bridge = Bridge {
-            out: sink,
-            registry: &self.registry,
-            period,
-            tables: HashMap::new(),
-            current: None,
-        };
-        let mut arrow = ArrowSink::new(
-            &self.registry,
-            ResolveOptions {
-                mode,
-                market: self.market,
-            },
-            ctx.options.batch_rows,
-            bridge,
-        )
-        .with_period(period);
+        let mut arrow = Bridge::sink(&self.registry, self.market, ctx, sink);
         let opts = ScanOptions {
             max_bad_rows: ctx.options.max_bad_rows,
             ..Default::default()
         };
         let scanned = scan_with(reader, &mut arrow, &opts, scratch);
         let (_, flushed) = arrow.finish();
-        match (scanned, flushed) {
-            (Ok(s), Ok(())) => Ok(stats(&s)),
-            (Ok(_), Err(e)) => Err(Box::new(e.diagnostic())),
-            (Err(e), _) => Err(Box::new(e.diagnostic())),
-        }
+        decoded(scanned, flushed, |s| stats(&s))
     }
 }
-
-/// A row failure as the bridge reports it; kept for the row loop's use.
-#[allow(dead_code)]
-fn _row_failure(_: RowFailure) {}
 
 #[cfg(test)]
 mod tests {

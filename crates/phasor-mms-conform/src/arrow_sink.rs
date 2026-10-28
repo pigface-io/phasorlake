@@ -10,7 +10,7 @@ use arrow_array::{ArrayRef, RecordBatch};
 use arrow_schema::{DataType, Field, Schema};
 use phasor_core::{Category, Diagnose as _, Diagnostic, Fingerprint};
 use phasor_mms_decode::IRow;
-use phasor_registry::{Cast, ConformancePlan, Mode, Registry, ResolveOptions, Resolved, TableId};
+use phasor_registry::{Cast, Mode, Registry, ResolveOptions, Resolved, TableId};
 
 use crate::error::{RowError, RowFailure, SinkError, ValueError};
 use phasor_mms_decode::PREFIX_FIELDS;
@@ -27,8 +27,6 @@ pub struct BlockBatch {
     pub table: TableId,
     /// The schema of the table's history the plan was based on.
     pub version: u16,
-    /// The plan the rows were conformed with.
-    pub plan: Arc<ConformancePlan>,
     /// The observed fingerprint of the I row.
     pub fingerprint: Fingerprint,
     /// The rows, in the table's unified lake schema.
@@ -342,7 +340,6 @@ impl<'r, B: BatchSink> ArrowSink<'r, B> {
         let out = BlockBatch {
             table: block.resolved.table,
             version: block.resolved.version,
-            plan: block.resolved.plan.clone(),
             fingerprint: block.fingerprint,
             batch,
         };
