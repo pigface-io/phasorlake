@@ -308,7 +308,9 @@ pub async fn crawl(
             if remote.kind == RemoteKind::Dir && seen.insert(remote.url.clone()) {
                 queue.push_back(Url::parse(&remote.url).expect("resolved from a URL"));
             }
-            record.entry(remote.url.clone()).or_insert(remote);
+            if !record.contains_key(&remote.url) {
+                record.insert(remote.url.clone(), remote);
+            }
         }
         on_page(&PageRead {
             url: folder.as_str(),
@@ -318,7 +320,7 @@ pub async fn crawl(
             queued: queue.len(),
         });
     }
-    let found = summarise(&record.values().cloned().collect::<Vec<_>>());
+    let found = summarise(record.values());
     mirror.write_record(record.into_values())?;
     let done = serde_json::json!({ "completed_at": Stamp::now(), "pages": summary.pages });
     write_atomic(&mirror.done_path(), done.to_string().as_bytes())?;
@@ -392,7 +394,7 @@ fn resolve(folder: &Url, link: &listing::Link, roots: &[Url]) -> Result<Remote, 
     })
 }
 
-fn summarise(record: &[Remote]) -> CrawlSummary {
+fn summarise<'a>(record: impl IntoIterator<Item = &'a Remote>) -> CrawlSummary {
     let mut s = CrawlSummary::default();
     for r in record {
         match r.kind {

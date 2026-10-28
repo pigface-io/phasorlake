@@ -764,9 +764,10 @@ fn folders(
     is_dir: bool,
 ) {
     for n in 1..parts.len() + usize::from(is_dir) {
-        let d = parts[..n].to_vec();
-        if done.insert(d.clone()) {
+        let d = &parts[..n];
+        if !done.contains(d) {
             out.push(child(at, &d.join("/"), NodeKind::Dir, n));
+            done.insert(d.to_vec());
         }
     }
 }

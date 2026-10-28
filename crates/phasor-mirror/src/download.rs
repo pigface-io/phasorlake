@@ -150,7 +150,7 @@ pub async fn download(
                 .map(task)
                 .buffer_unordered(downloads.max(1)),
         );
-    let mut done = 0;
+    let (mut done, mut line) = (0, Vec::new());
     while let Some(next) = results.next().await {
         let (remote, result) = next?;
         done += 1;
@@ -172,9 +172,10 @@ pub async fn download(
                     mirror.note(folder, event)?;
                 }
                 if let Some(held) = &local.note {
-                    let line = serde_json::to_string(held).expect("a HeldEntry always serialises");
-                    note.write_all(format!("{line}\n").as_bytes())
-                        .map_err(MirrorError::io(&held_path))?;
+                    line.clear();
+                    serde_json::to_writer(&mut line, held).expect("a HeldEntry always serialises");
+                    line.push(b'\n');
+                    note.write_all(&line).map_err(MirrorError::io(&held_path))?;
                 }
                 on_file(&FileDone {
                     url: remote.url.as_str(),
