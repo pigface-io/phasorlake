@@ -25,7 +25,7 @@ what the data means, this knows what exists.
   directory, read by ranged requests from the end of the file. Nothing is
   decompressed.
 - **Download**: every listed file, once, paced (one request per
-  `request_interval_ms`), stopping when nemweb refuses (HTTP 403/429) and
+  `request_interval_ms`, never less than 300 ms to an AEMO host), stopping when nemweb refuses (HTTP 403/429) and
   waiting it out. Each file is checked against its `Content-Length` and kept
   with its provenance record, `{name}.provenance.json`: its size, sha256
   and CRC-32, and every address that served those bytes, the one it was

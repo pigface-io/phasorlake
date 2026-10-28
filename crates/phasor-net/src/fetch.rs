@@ -21,6 +21,31 @@ use crate::archive::{Sha256, to_disk};
 use crate::error::FetchError;
 use crate::transport::{HttpResponse, Span, Transport};
 
+/// The least gap between two requests to an AEMO host, whatever the config asks:
+/// AEMO's servers refuse clients that ask faster, and every client of this tool
+/// shares its `User-Agent`.
+pub const AEMO_LEAST_INTERVAL: Duration = Duration::from_millis(300);
+
+/// The gap before a request of `url`: `asked`, but never less than
+/// [`AEMO_LEAST_INTERVAL`] when `url` is on an AEMO host.
+pub fn least_interval(url: &str, asked: Duration) -> Duration {
+    let host = url
+        .split_once("://")
+        .map_or(url, |(_, rest)| rest)
+        .split(['/', ':', '?'])
+        .next()
+        .unwrap_or_default()
+        .to_ascii_lowercase();
+    let aemo = ["nemweb.com.au", "aemo.com.au"]
+        .iter()
+        .any(|d| host == *d || host.ends_with(&format!(".{d}")));
+    if aemo {
+        asked.max(AEMO_LEAST_INTERVAL)
+    } else {
+        asked
+    }
+}
+
 /// Knobs.
 #[derive(Debug, Clone)]
 pub struct FetcherConfig {
@@ -131,12 +156,13 @@ impl Requests {
         Ok(())
     }
 
-    async fn pace(&self) {
+    async fn pace(&self, url: &str) {
+        let gap = least_interval(url, self.config.min_interval);
         let mut last = self.last_request.lock().await;
         if let Some(t) = *last {
             let since = t.elapsed();
-            if since < self.config.min_interval {
-                tokio::time::sleep(self.config.min_interval - since).await;
+            if since < gap {
+                tokio::time::sleep(gap - since).await;
             }
         }
         *last = Some(Instant::now());
@@ -196,7 +222,7 @@ impl Requests {
             if let Some(e) = self.blocked_error(url) {
                 return Err(e);
             }
-            self.pace().await;
+            self.pace(url).await;
             let answered = if span.is_some() { 206 } else { 200 };
             let sent = match span {
                 Some(s) => self.transport.get_range(url, s).await,
@@ -494,6 +520,28 @@ pub async fn stream_to_file(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn aemo_hosts_are_asked_no_faster_than_the_least_interval() {
+        let ms = Duration::from_millis;
+        for url in [
+            "https://www.nemweb.com.au/Reports/CURRENT/",
+            "https://nemweb.com.au/x.zip",
+            "https://data.wa.aemo.com.au:443/public/",
+            "HTTPS://WWW.AEMO.COM.AU",
+        ] {
+            assert_eq!(least_interval(url, ms(0)), AEMO_LEAST_INTERVAL, "{url}");
+            assert_eq!(least_interval(url, ms(900)), ms(900), "{url}");
+        }
+        for url in [
+            "http://127.0.0.1:8080/Reports/",
+            "https://notaemo.com.au/x",
+            "https://example.com/nemweb.com.au/x",
+            "localhost",
+        ] {
+            assert_eq!(least_interval(url, ms(0)), ms(0), "{url}");
+        }
+    }
 
     #[tokio::test]
     async fn streaming_to_a_file_reports_progress_and_a_writer_that_stopped() {

@@ -15,7 +15,8 @@ pub struct Config {
     pub jobs: usize,
     /// Concurrent downloads.
     pub downloads: usize,
-    /// Minimum gap between two requests to a server, in milliseconds (AEMO blocks fast clients).
+    /// Minimum gap between two requests to a server, in milliseconds (AEMO blocks fast
+    /// clients). An AEMO host is never asked faster than every 300 ms.
     pub request_interval_ms: u64,
     /// Bad rows tolerated per source before it fails.
     pub max_bad_rows: u64,
