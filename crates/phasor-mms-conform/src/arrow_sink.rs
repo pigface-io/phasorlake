@@ -192,10 +192,19 @@ pub const DEFAULT_BATCH_ROWS: usize = 65_536;
 /// batch holds, not its row count.
 pub const BATCH_CELLS: usize = 1 << 20;
 
+/// Rows the Parquet writer takes at a time. A batch of a multiple of it
+/// leaves where pages end to the data alone, not to where batches end.
+const WRITE_BATCH_ROWS: usize = 1024;
+
 /// Rows per batch for a table `width` columns wide: `batch_rows` at most,
-/// and no fewer than [`FIRST_ROWS`] (or `batch_rows`, when that is less).
+/// fewer to hold at most [`BATCH_CELLS`] values, in whole multiples of
+/// [`WRITE_BATCH_ROWS`] when `batch_rows` is.
 fn rows_for(width: usize, batch_rows: usize) -> usize {
-    (BATCH_CELLS / width.max(1)).clamp(FIRST_ROWS.min(batch_rows), batch_rows)
+    let rows = (BATCH_CELLS / width.max(1)).min(batch_rows);
+    if batch_rows < WRITE_BATCH_ROWS {
+        return rows.max(1);
+    }
+    (rows / WRITE_BATCH_ROWS).max(1) * WRITE_BATCH_ROWS
 }
 
 /// What a column of `ty` expects, in words.
@@ -1343,8 +1352,10 @@ D,DISPATCH,UNIT_SCADA,1,\"2024/01/01 00:05:00\",,1\n";
     fn a_wide_table_has_fewer_rows_per_batch() {
         assert_eq!(rows_for(6, DEFAULT_BATCH_ROWS), DEFAULT_BATCH_ROWS);
         assert_eq!(rows_for(128, DEFAULT_BATCH_ROWS), BATCH_CELLS / 128);
-        assert_eq!(rows_for(1 << 16, DEFAULT_BATCH_ROWS), FIRST_ROWS);
+        assert_eq!(rows_for(123, DEFAULT_BATCH_ROWS), 8 * WRITE_BATCH_ROWS);
+        assert_eq!(rows_for(1 << 16, DEFAULT_BATCH_ROWS), WRITE_BATCH_ROWS);
         assert_eq!(rows_for(1 << 16, 16), 16);
+        assert_eq!(rows_for(4, 16), 16);
         assert_eq!(rows_for(0, 1024), 1024);
     }
 

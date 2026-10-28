@@ -69,11 +69,20 @@ pub fn compression(codec: Codec, zstd_level: i32) -> Compression {
 /// The directory under a table's that holds its data files.
 pub const DATA: &str = "data";
 
-/// Bytes of a row group in memory, as the writer counts them, past which it
-/// ends short of its row count. The writer's count is low: a table of 100
-/// columns holds about five times as much, so 8 MiB keeps a wide table's
-/// ingest near 50 MB of heap where its row count alone let it reach 340.
-pub const ROW_GROUP_BYTES: usize = 8 << 20;
+/// Rows the writer takes at a time, checking after each whether a page is
+/// full: set, not left to the library's default, as where pages end
+/// depends on it. Batches and row groups hold a multiple of it.
+pub const WRITE_BATCH_ROWS: usize = 1024;
+
+/// Rows per row group of a table `width` columns wide: `row_group_rows`, or
+/// fewer to hold at most `row_group_cells` values, in whole multiples of
+/// [`WRITE_BATCH_ROWS`].
+pub fn row_group_rows(layout: &Lake, width: usize) -> usize {
+    let rows = layout
+        .row_group_rows
+        .min(layout.row_group_cells / width.max(1));
+    (rows / WRITE_BATCH_ROWS).max(1) * WRITE_BATCH_ROWS
+}
 
 /// The production lake writer.
 pub struct ParquetHive {
@@ -82,7 +91,6 @@ pub struct ParquetHive {
     open: HashMap<u32, Open>,
     closed: Vec<Closed>,
     version: &'static str,
-    row_group_bytes: usize,
 }
 
 impl ParquetHive {
@@ -94,7 +102,6 @@ impl ParquetHive {
             open: HashMap::new(),
             closed: Vec::new(),
             version: env!("CARGO_PKG_VERSION"),
-            row_group_bytes: ROW_GROUP_BYTES,
         }
     }
 
@@ -153,7 +160,8 @@ impl ParquetHive {
             // a writer has open, and zstd after PLAIN does as well here.
             .set_encoding(Encoding::PLAIN)
             .set_compression(compression(l.compression, l.zstd_level))
-            .set_max_row_group_row_count(Some(l.row_group_rows))
+            .set_max_row_group_row_count(Some(row_group_rows(l, schema.fields().len())))
+            .set_write_batch_size(WRITE_BATCH_ROWS)
             .set_data_page_size_limit(l.page_kb as usize * 1024)
             .set_data_page_row_count_limit(l.page_rows)
             .set_dictionary_page_size_limit(l.dictionary_page_kb as usize * 1024)
@@ -397,15 +405,6 @@ impl LakeWriter for ParquetHive {
             path: o.tmp.display().to_string(),
             message: e.to_string(),
         })?;
-        // The writer holds a row group in memory until it ends: a wide
-        // table's ends at a size too, not only at its row count.
-        if o.writer.memory_size() >= self.row_group_bytes {
-            zone!(ENCODE);
-            o.writer.flush().map_err(|e| StoreError::Parquet {
-                path: o.tmp.display().to_string(),
-                message: e.to_string(),
-            })?;
-        }
         o.rows += batch.num_rows() as u64;
         let source = batch.column(batch.num_columns() - crate::provenance::fields().len());
         crate::provenance::count(source.as_ref(), &mut o.sources);
@@ -635,19 +634,13 @@ mod tests {
     }
 
     #[test]
-    fn a_row_group_ends_at_its_size_before_its_row_count() {
-        let dir = tempfile::tempdir().unwrap();
-        let mut w = ParquetHive::new(dir.path());
-        w.row_group_bytes = 1;
-        let id = w.open(&key(1), schema(), &meta()).unwrap();
-        for t in ["2024/01/01 00:05:00", "2024/01/01 00:10:00"] {
-            w.write(id, &batch(&[t], &["A"], &[Some(1.0)])).unwrap();
-        }
-        let f = w.close(id).unwrap();
-        w.commit().unwrap();
-        let file = File::open(&f.path).unwrap();
-        let b = ParquetRecordBatchReaderBuilder::try_new(file).unwrap();
-        assert_eq!(b.metadata().num_row_groups(), 2);
+    fn a_wide_table_has_fewer_rows_per_row_group_in_whole_write_batches() {
+        let l = Lake::default();
+        assert_eq!(row_group_rows(&l, 8), l.row_group_rows);
+        assert_eq!(row_group_rows(&l, 128), 32 * WRITE_BATCH_ROWS);
+        assert_eq!(row_group_rows(&l, 123), 33 * WRITE_BATCH_ROWS);
+        assert_eq!(row_group_rows(&l, 1 << 30), WRITE_BATCH_ROWS);
+        assert_eq!(row_group_rows(&l, 0), l.row_group_rows);
     }
 
     fn key(month: u8) -> PartitionKey {

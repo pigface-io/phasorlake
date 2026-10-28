@@ -384,8 +384,9 @@ with (`phasor.write_options` in its footer).
 [lake]
 file_size_mb = 128         # a file is closed for the next at about this size
 row_group_rows = 262144
+row_group_cells = 4194304  # or this many values (rows times columns), so a wide table's are shorter
 page_kb = 1024             # data pages: one range request each over HTTP
-page_rows = 20000
+page_rows = 100000         # or this many rows
 dictionary_page_kb = 1024
 compression = "zstd"       # zstd, lz4, snappy or none
 zstd_level = 3
