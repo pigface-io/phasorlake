@@ -51,6 +51,9 @@ impl Picked {
     }
 }
 
+/// What a provenance record names as the program that fetched the file.
+const AGENT: &str = concat!("phasor/", env!("CARGO_PKG_VERSION"));
+
 /// Bytes read past an entry's data, so its extra field and an adjacent pick come in one request.
 const SLACK: u64 = 256;
 
@@ -119,8 +122,10 @@ impl Fetcher {
         pick: &(dyn Fn(&[Entry]) -> Picks + Sync),
     ) -> Result<Picked, FetchError> {
         let url = remote.url.as_str();
-        if self.archive.lookup(url)?.is_some() {
-            return self.fetch(remote).await.map(|l| Picked::Whole(Box::new(l)));
+        if let Some(found) = self.archive.lookup(url)? {
+            return Ok(Picked::Whole(Box::new(LocalFile::from_held(
+                remote, found, true,
+            ))));
         }
         self.ensure_online(url)?;
         let corrupt = |entry: &str, message: String| FetchError::EntryCorrupt {
@@ -132,12 +137,12 @@ impl Fetcher {
         let tail = match self.fetch_range(url, Span::Last(TAIL)).await {
             Ok(t) => t,
             Err(FetchError::RangeIgnored { .. }) => {
-                return self.fetch(remote).await.map(|l| Picked::Whole(Box::new(l)));
+                return self.whole(remote).await;
             }
             Err(e) => return Err(e),
         };
         let Some(total) = tail.total_size else {
-            return self.fetch(remote).await.map(|l| Picked::Whole(Box::new(l)));
+            return self.whole(remote).await;
         };
         let (etag, last_modified) = (tail.etag, tail.last_modified);
         let mut reader = DirectoryReader::new(total);
@@ -156,7 +161,7 @@ impl Fetcher {
             }
         };
         let picks = match pick(&entries) {
-            Picks::Whole => return self.fetch(remote).await.map(|l| Picked::Whole(Box::new(l))),
+            Picks::Whole => return self.whole(remote).await,
             Picks::Entries(p) => p,
         };
         let entry_of = |p: &Pick| {
@@ -170,7 +175,7 @@ impl Fetcher {
         }
         // Most of the zip: one request for the whole beats many for parts.
         if wanted.saturating_mul(2) > total {
-            return self.fetch(remote).await.map(|l| Picked::Whole(Box::new(l)));
+            return self.whole(remote).await;
         }
         // Indexed so each pick keeps its place whatever order the requests take.
         let mut out: Vec<(usize, LocalFile)> = Vec::with_capacity(picks.len());
@@ -248,6 +253,11 @@ impl Fetcher {
         Ok(Picked::Entries(out.into_iter().map(|(_, l)| l).collect()))
     }
 
+    /// The zip `remote`, fetched whole.
+    async fn whole(&self, remote: &RemoteFile) -> Result<Picked, FetchError> {
+        self.fetch(remote).await.map(|l| Picked::Whole(Box::new(l)))
+    }
+
     /// Archives one entry of `zip` as `remote`, its sidecar saying where in the zip it was.
     fn keep_entry(
         &self,
@@ -272,7 +282,7 @@ impl Fetcher {
                 crc32: Some(e.crc32),
                 ..Content::of(bytes)
             },
-            format!("phasor/{}", env!("CARGO_PKG_VERSION")),
+            AGENT.to_owned(),
             Address {
                 url: remote.url.to_string(),
                 seen: Stamp::now(),
@@ -374,7 +384,7 @@ impl Fetcher {
                 sha256: streamed.sha256,
                 crc32: Some(streamed.crc32),
             },
-            format!("phasor/{}", env!("CARGO_PKG_VERSION")),
+            AGENT.to_owned(),
             Address {
                 url: url.to_owned(),
                 seen: Stamp::now(),
@@ -499,7 +509,7 @@ mod tests {
         let sc = Archive::read(&local.path).unwrap().unwrap();
         assert_eq!(sc.url(), url);
         assert_eq!(sc.content.sha256.hex(), local.sha256);
-        assert_eq!(sc.tool, format!("phasor/{}", env!("CARGO_PKG_VERSION")));
+        assert_eq!(sc.tool, AGENT);
         assert_eq!(
             sc.modified().map(|s| s.rfc3339()).as_deref(),
             Some("2024-02-13T08:27:00Z"),
