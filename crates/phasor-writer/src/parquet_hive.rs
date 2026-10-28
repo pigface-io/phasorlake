@@ -68,6 +68,8 @@ pub const ROW_GROUP_BYTES: usize = 8 << 20;
 pub struct ParquetHive {
     lake_root: PathBuf,
     layout: Lake,
+    /// The layout as each file's footer records it.
+    layout_json: String,
     open: HashMap<u32, Open>,
     closed: Vec<Closed>,
     version: &'static str,
@@ -80,6 +82,7 @@ impl ParquetHive {
         Self {
             lake_root: lake_root.into(),
             layout: Lake::default(),
+            layout_json: layout_json(&Lake::default()),
             open: HashMap::new(),
             closed: Vec::new(),
             version: env!("CARGO_PKG_VERSION"),
@@ -91,6 +94,7 @@ impl ParquetHive {
     #[must_use]
     pub fn with_layout(mut self, layout: Lake) -> Self {
         self.layout = layout;
+        self.layout_json = layout_json(&layout);
         self
     }
 
@@ -149,10 +153,7 @@ impl ParquetHive {
             .set_created_by(format!("phasor {}", self.version))
             .set_key_value_metadata(Some(vec![
                 KeyValue::new("phasor.version".to_owned(), self.version.to_owned()),
-                KeyValue::new(
-                    "phasor.write_options".to_owned(),
-                    serde_json::to_string(&self.layout).expect("the layout is plain data"),
-                ),
+                KeyValue::new("phasor.write_options".to_owned(), self.layout_json.clone()),
                 KeyValue::new("phasor.table".to_owned(), meta.table.clone()),
                 KeyValue::new(
                     "phasor.schema_version".to_owned(),
@@ -280,14 +281,11 @@ impl LakeWriter for ParquetHive {
             path: dir.display().to_string(),
             source,
         })?;
-        let final_path = dir.join(Self::file_name(meta));
+        let name = Self::file_name(meta);
         // Unique in the process: two writers may open the same final name at once.
         let id = NEXT_TMP.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
-        let tmp = dir.join(format!(
-            ".tmp-{}-{id}-{}",
-            std::process::id(),
-            Self::file_name(meta)
-        ));
+        let tmp = dir.join(format!(".tmp-{}-{id}-{name}", std::process::id()));
+        let final_path = dir.join(name);
         let file = File::create(&tmp).map_err(|source| StoreError::Io {
             path: tmp.display().to_string(),
             source,
@@ -495,6 +493,11 @@ impl Drop for ParquetHive {
     }
 }
 
+/// `layout` as JSON, for the footer.
+fn layout_json(layout: &Lake) -> String {
+    serde_json::to_string(layout).expect("the layout is plain data")
+}
+
 /// The number in each temporary file's name, unique in the process.
 static NEXT_TMP: std::sync::atomic::AtomicU32 = std::sync::atomic::AtomicU32::new(1);
 
@@ -508,7 +511,12 @@ pub fn sweep_tmp(lake_root: &Path) -> std::io::Result<usize> {
         };
         for e in rd.filter_map(Result::ok) {
             let p = e.path();
-            if p.is_dir() {
+            // The entry's own type spares a stat; a link is followed as before.
+            let is_dir = match e.file_type() {
+                Ok(t) if !t.is_symlink() => t.is_dir(),
+                _ => p.is_dir(),
+            };
+            if is_dir {
                 stack.push(p);
             } else if p
                 .file_name()
