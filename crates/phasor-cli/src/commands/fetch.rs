@@ -1,5 +1,4 @@
-//! `fetch`: the files that cover an interval, into the archive, politely,
-//! and read into the lake unless `--no-ingest`.
+//! `fetch`: the files covering an interval into the archive, ingested unless `--no-ingest`.
 
 use anyhow::{Result, bail};
 use phasor_pipeline::{GetRequest, RunOptions, SourceChoice};
@@ -10,8 +9,7 @@ use crate::render;
 
 use super::common;
 
-/// `phasor fetch --documents`: every document, fetched again; a version
-/// whose bytes are new is kept, one already held is noted as seen.
+/// `phasor fetch --documents`: every document fetched again, a new version kept.
 async fn documents(ctx: &Context) -> Result<i32> {
     let fetcher = ctx.fetcher(None)?;
     let mut code = 0;

@@ -1,13 +1,6 @@
-//! One source file written into the lake: every entry's batches to Parquet
-//! files by table, shape and partition, each row stamped with its source,
-//! and the rows a decoder refused to the quarantine. The files are
-//! committed together once the whole file is read, or discarded together:
-//! a file goes into the lake whole or not at all.
-//!
-//! The caller says which entry it reads and what its rows are stamped with,
-//! and hands over each block as decoded; how the lake is laid out (which
-//! partition a row goes to, when a file is full, what columns a file
-//! holds) is this module's alone.
+//! One source file written into the lake: batches to Parquet by table, shape
+//! and partition, refused rows to the quarantine. The files are committed or
+//! discarded together; the lake layout is this module's alone.
 
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
@@ -27,9 +20,7 @@ use crate::provenance::{Stamp, lake_schema, stamped};
 use crate::quarantine::QuarantineWriter;
 use crate::writer::{FileMeta, LakeWriter, Partition, PartitionKey, WriterId, WrittenFile};
 
-/// The source file a session writes: what every file it writes records of
-/// where its rows came from, and the period its rows are of when they carry
-/// no time of their own.
+/// The source file a session writes, as its files record it.
 #[derive(Debug, Clone)]
 pub struct Source {
     /// Its URL.
@@ -40,13 +31,11 @@ pub struct Source {
     pub stem: String,
     /// The month it covers, when it is of one.
     pub period: Option<YearMonth>,
-    /// The day it covers, when the source cuts its files by day: a
-    /// snapshot it carries is the day's.
+    /// The day it covers, when the source cuts its files by day.
     pub day: Option<CivilDay>,
 }
 
-/// A shape: a table, the version it was read against and the fingerprint
-/// of its header. Two column lists of one version are two shapes.
+/// A shape: a table, the version it was read against and its header fingerprint.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub struct Shape {
     /// The table.
@@ -99,8 +88,7 @@ impl SessionOutput {
 /// What tells one open writer from another: its shape and partition.
 type WriterKey = (Shape, Partition);
 
-/// A writer that is open: its id, when it was last written to (in
-/// batches), and the schema of its file.
+/// An open writer: its id, last write (in batches), and its file's schema.
 struct OpenWriter {
     id: WriterId,
     used: u64,
@@ -117,11 +105,9 @@ pub struct IngestSession {
     file_bytes: u64,
     /// Open writers by shape and partition.
     writers: HashMap<WriterKey, OpenWriter>,
-    /// How many files each key has had opened, so a further file of a
-    /// partition gets a name of its own.
+    /// How many files each key has had opened, for unique part names.
     parts: HashMap<WriterKey, u32>,
-    /// The schema a key's next file starts with, when its last file was
-    /// finished for being too narrow.
+    /// The schema a key's next file starts with, when its last was too narrow.
     next_schema: HashMap<WriterKey, SchemaRef>,
     /// At most this many writers are open at once.
     max_open: usize,
@@ -138,9 +124,7 @@ pub struct IngestSession {
 }
 
 impl IngestSession {
-    /// A session writing `source` into the lake at `lake_root` laid out by
-    /// `layout`, its refused rows under `quarantine_root`, with at most
-    /// `max_open` Parquet files open at once.
+    /// A session writing `source` under `lake_root`, with at most `max_open` files open at once.
     pub fn new(
         lake_root: &Path,
         quarantine_root: &Path,
@@ -165,8 +149,7 @@ impl IngestSession {
         }
     }
 
-    /// Begins entry `entry` (empty for a file read whole), whose rows are
-    /// stamped with `stamp`.
+    /// Begins entry `entry` (empty for a file read whole), its rows stamped with `stamp`.
     pub fn begin_entry(&mut self, entry: &str, stamp: Stamp) {
         entry.clone_into(&mut self.entry);
         self.stamp = Some(stamp);
@@ -229,9 +212,7 @@ impl IngestSession {
         for (partition, batch) in self.partitions(b)? {
             let key: WriterKey = (shape.clone(), partition);
             self.tick += 1;
-            // A batch with a column, or a null, its file has no room for
-            // finishes that file; the partition goes on in a further one
-            // whose schema takes both.
+            // A batch its file's schema cannot take finishes it; a wider file follows.
             let open = match self.writers.get_mut(&key) {
                 Some(w) => match widened(&w.schema, &batch.schema()) {
                     None => {
@@ -251,9 +232,7 @@ impl IngestSession {
             let (wid, schema, lake) = match open {
                 Some(o) => o,
                 None => {
-                    // Every open writer holds a file and a row group in
-                    // memory. A source whose rows wander over hundreds of
-                    // months would hold hundreds of both.
+                    // Each open writer holds a file and a row group in memory.
                     if self.writers.len() >= self.max_open {
                         self.close_least_recent()?;
                     }
@@ -278,8 +257,7 @@ impl IngestSession {
                         source_sha256: self.source.sha256.clone(),
                         time_column: table.time_column,
                     };
-                    // A further file of a key starts as wide as the one
-                    // before it ended.
+                    // A further file starts as wide as the one before it ended.
                     let schema = match self.next_schema.remove(&key) {
                         Some(s) => widened(&s, &batch.schema()).map_or(s, Arc::new),
                         None => batch.schema(),
@@ -312,8 +290,6 @@ impl IngestSession {
             share.zip_entry_modified = times.zip_entry_modified;
             share.filename_timestamp = times.filename_timestamp;
             share.add(batch.num_rows() as u64, bounds);
-            // A file that has grown to its size is closed; the partition
-            // goes on in a further one.
             if self.writer.bytes_in_file(wid) >= self.file_bytes {
                 self.writers.remove(&key);
                 self.close_one(&key, wid)?;
@@ -322,9 +298,7 @@ impl IngestSession {
         Ok(())
     }
 
-    /// Keeps a row the decoder refused, `raw` as read, with what was wrong
-    /// with it, in its table's quarantine file; `shape` is the one it was
-    /// read as, when its block resolved to one.
+    /// Keeps a refused row, `raw` as read, in its table's quarantine file.
     pub fn quarantine(
         &mut self,
         table: &str,
@@ -357,9 +331,7 @@ impl IngestSession {
         Ok(())
     }
 
-    /// Finishes the writer that was written to longest ago, to make room
-    /// for another. Its file is complete; rows that come for its partition
-    /// later go to a further file.
+    /// Finishes the least recently written writer, to make room for another.
     fn close_least_recent(&mut self) -> Result<(), StoreError> {
         let Some((key, wid)) = self
             .writers
@@ -395,8 +367,7 @@ impl IngestSession {
             .collect()
     }
 
-    /// Puts every file the session wrote in place at once; none is in
-    /// place if one is not, and then the output holds no files.
+    /// Puts every file the session wrote in place; on failure none is, and the output has no files.
     pub fn commit(mut self) -> (SessionOutput, Result<(), StoreError>) {
         let quarantine = self.finish_quarantine();
         let committed = self.writer.commit();
@@ -414,9 +385,7 @@ impl IngestSession {
         (out, committed)
     }
 
-    /// Discards every Parquet file the session wrote: the files still
-    /// open, and the ones closed and not yet committed. What it
-    /// quarantined stays, to show why.
+    /// Discards every Parquet file the session wrote; the quarantine stays.
     pub fn abort(mut self) -> SessionOutput {
         let ids: Vec<WriterId> = self.writers.drain().map(|(_, w)| w.id).collect();
         for w in ids {
@@ -434,10 +403,7 @@ impl IngestSession {
     }
 }
 
-/// The schema a file must have to take `batch` as well as what it took so
-/// far, when `file` is not it: `file`'s columns, nullable where either is,
-/// then the columns only `batch` has (a column of values kept as text
-/// appears in the batches that need it). `None` when `file` takes `batch`.
+/// The schema that takes both `file` and `batch`; `None` when `file` already takes `batch`.
 fn widened(file: &Schema, batch: &Schema) -> Option<Schema> {
     let mut fields: Vec<Field> = file.fields().iter().map(|f| f.as_ref().clone()).collect();
     let mut wider = false;
@@ -457,8 +423,7 @@ fn widened(file: &Schema, batch: &Schema) -> Option<Schema> {
     wider.then(|| Schema::new_with_metadata(fields, file.metadata().clone()))
 }
 
-/// `batch` in `schema`, which has every column of `batch` and maybe more:
-/// those are null.
+/// `batch` in the wider `schema`, its extra columns null.
 fn fitted(batch: &RecordBatch, schema: &SchemaRef) -> Result<RecordBatch, ArrowError> {
     zone!(FIT);
     if batch.schema().fields() == schema.fields() {

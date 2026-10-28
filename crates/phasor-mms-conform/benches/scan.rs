@@ -46,8 +46,7 @@ fn synthetic() -> Vec<u8> {
     out.into_bytes()
 }
 
-/// The blocks of a multi-table DISPATCHIS file (seven I rows, about three
-/// D rows each) repeated to `MANY_BLOCKS_BYTES`: an I row every few rows.
+/// Size of the many-short-blocks file, a DISPATCHIS file's blocks repeated.
 const MANY_BLOCKS_BYTES: usize = 8 << 20;
 
 fn many_blocks() -> Vec<u8> {

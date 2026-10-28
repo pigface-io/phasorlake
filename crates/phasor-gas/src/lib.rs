@@ -1,13 +1,6 @@
-//! AEMO's east-coast gas markets as one kit.
-//!
-//! The Gas Bulletin Board, the Gas Supply Hub, the Short Term Trading
-//! Market and the Declared Wholesale Gas Market are published under
-//! nemweb's report folders (`Reports/CURRENT/{GBB,GSH,STTM,VicGas}/` and
-//! `Reports/ARCHIVE/GSH/`), each a feed of the shared feeds table. The kit
-//! lists each feed's folders as a source of its own ([`FeedFolders`]),
-//! reads a `.csv` by what its first bytes say it is (the GSH files are MMS
-//! rows, the rest header-row CSV) and serves the registry's gas tables as
-//! its catalog.
+//! AEMO's east-coast gas markets (GBB, GSH, STTM, DWGM) as one kit: each feed's
+//! nemweb report folders a [`FeedFolders`] source, a `.csv` read by what its first
+//! bytes say it is, the registry's gas tables as the catalog.
 
 pub mod config;
 pub mod decoder;

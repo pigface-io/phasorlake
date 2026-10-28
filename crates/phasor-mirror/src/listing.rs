@@ -6,10 +6,8 @@
 //!     Monday, October 12, 2026 10:45 AM        &lt;dir&gt; <A HREF="/x/y/sub/">sub</A><br></pre>
 //! ```
 //!
-//! Every line of the `<pre>` block must be the parent link, a folder or a
-//! file, and no link may stand outside the block. Anything else is an
-//! [`Unparsed`] error rather than a link quietly passed over, so a change
-//! in how AEMO lists its folders stops the crawl instead of losing files.
+//! Any line that is not the parent link, a folder or a file is an
+//! [`Unparsed`] error, so a change in the format stops the crawl.
 
 use crate::stamp::Stamp;
 
@@ -59,15 +57,12 @@ impl Unparsed {
     }
 }
 
-/// Every folder and file a listing page links to, in page order; the
-/// listed times read in AEST, nemweb's clock.
+/// Every folder and file a listing page links to, in page order, times in AEST.
 pub fn parse(html: &[u8]) -> Result<Vec<Link>, Unparsed> {
     parse_in(html, crate::stamp::AEST)
 }
 
-/// Every folder and file a listing page links to, in page order, the
-/// listed times read in the clock of the host that served it (`offset`
-/// seconds east of UTC).
+/// As `parse`, with times read `offset` seconds east of UTC.
 pub fn parse_in(html: &[u8], offset: i32) -> Result<Vec<Link>, Unparsed> {
     let open = find_ci(html, b"<pre>", 0)
         .ok_or_else(|| Unparsed::new("the page has no <pre> listing", html))?;
@@ -106,9 +101,7 @@ enum Line {
     Link(Link),
 }
 
-/// One `<br>`-separated line: `{date} {size|<dir>} <A HREF="{href}">{name}</A>`,
-/// or the parent link alone. `last_date` is the date text read before and
-/// its instant, reused when this line's is the same.
+/// One `<br>`-separated line; `last_date` caches the previous date's instant.
 fn parse_line(
     line: &[u8],
     last_date: &mut Option<(String, Stamp)>,
@@ -234,10 +227,8 @@ fn trim(b: &[u8]) -> &[u8] {
     b.trim_ascii()
 }
 
-/// An href with its HTML character references decoded, as a browser reads
-/// it: the five named ones and numeric ones (`&#x2B;` is `+`), so a `#`
-/// written as a reference is not taken for a fragment. A reference that
-/// is not one of these, or not a character, is kept as written.
+/// An href with its named and numeric HTML character references decoded;
+/// an unknown reference is kept as written.
 pub fn href_text(href: &str) -> String {
     if !href.contains('&') {
         return href.to_owned();

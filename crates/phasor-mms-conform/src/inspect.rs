@@ -33,8 +33,7 @@ pub struct BlockSummary {
     pub rows: u64,
     /// `conforms`, `deviates`, `derived`, or the resolve error's code.
     pub status: String,
-    /// The table that claims the report pair, whether or not this shape
-    /// of it resolved; `None` when no table does.
+    /// The table that claims the report pair, whether or not this shape resolved.
     pub table: Option<String>,
 }
 
@@ -43,8 +42,7 @@ pub struct BlockSummary {
 pub struct Inspection {
     /// Every block of every CSV, in order, with the entry it came from.
     pub blocks: Vec<(String, BlockSummary)>,
-    /// The entries whose footer disagrees with the lines read: the entry,
-    /// the lines the footer declares, the lines read.
+    /// Entries whose footer disagrees: entry, lines declared, lines read.
     pub footers: Vec<(String, u64, u64)>,
     /// The entries of a zip that are not CSVs.
     pub skipped: Vec<String>,
@@ -63,10 +61,7 @@ pub enum InspectError {
     Archive(ArchiveError),
 }
 
-/// Every block of every CSV in `path` (a CSV, or a zip walked through
-/// nested zips, spooled under `tmp`), each resolved strictly against
-/// `registry`, so a status other than `conforms` names what the registry
-/// lacks.
+/// Every block of every CSV in `path` (a CSV or zip), each resolved strictly against `registry`.
 pub fn file(registry: &Registry, path: &Path, tmp: &Path) -> Result<Inspection, InspectError> {
     let opts = ResolveOptions {
         mode: Mode::Strict,
@@ -158,8 +153,6 @@ impl Sink for InspectSink<'_> {
 
     fn header(&mut self, irow: &IRow<'_>, pos: Pos) -> Result<(), SinkError> {
         use phasor_core::Diagnose as _;
-        // The table is known whenever its report pair is, also when this
-        // shape of it does not resolve.
         let table = self
             .registry
             .declared_by_pair(self.opts.market, irow.report_type, irow.report_subtype)

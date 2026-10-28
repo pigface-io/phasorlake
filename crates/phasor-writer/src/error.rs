@@ -64,10 +64,7 @@ pub enum StoreError {
         /// Its Arrow type.
         observed: String,
     },
-    /// A schema offered to the writer has a timestamp without a zone, or
-    /// in a unit other than nanoseconds. The lake holds one kind of
-    /// timestamp: nanoseconds since the epoch in UTC, with the market
-    /// offset in the type.
+    /// A schema offered to the writer has a timestamp without a zone, or not in microseconds.
     #[error(
         "Column {column} has type {observed}; the lake writes a timestamp only as nanoseconds with its market offset."
     )]

@@ -9,8 +9,7 @@ use crate::file_model::{Column, LakeType, MarketDef, Table};
 
 /// Parquet's field-id metadata key; Iceberg reads the same key.
 pub const FIELD_ID_KEY: &str = "PARQUET:field_id";
-/// On a column of values kept as text: the id (or, for a column of the
-/// file only, the name) of the column whose values it holds.
+/// On a raw text column: the id (or name) of the column whose values it holds.
 pub const RAW_OF_KEY: &str = "phasor:raw-of";
 
 impl LakeType {
@@ -39,9 +38,7 @@ pub fn field(c: &Column, market: &MarketDef) -> Field {
     Field::new(&c.name, c.ty.arrow(market), c.nullable).with_metadata(md)
 }
 
-/// The lake schema of a table: every column it ever had, by id, each with
-/// its id as `PARQUET:field_id`. Files of every schema share it; a file
-/// that lacks a column writes nulls.
+/// The lake schema of a table: every column it ever had, each with its `PARQUET:field_id`.
 pub fn lake_schema(t: &Table, market: &MarketDef) -> SchemaRef {
     let fields: Vec<Field> = t.columns.iter().map(|c| field(c, market)).collect();
     let md: HashMap<String, String> = [
@@ -95,9 +92,7 @@ mod tests {
         assert_eq!(s.metadata()["phasor:market"], "nem");
     }
 
-    /// Every timestamp of every schema the registry can produce carries
-    /// its market's offset, in nanoseconds. A timestamp without a zone is
-    /// a defect, and so is any other time type Arrow has.
+    /// Every timestamp the registry produces is microseconds with its market's offset.
     #[test]
     fn every_timestamp_of_every_table_carries_its_market_offset() {
         let reg = crate::Registry::load_embedded();

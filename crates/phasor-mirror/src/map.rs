@@ -1,12 +1,6 @@
-//! A map of every file of the mirror: every folder and file the crawl
-//! listed, every archived file nemweb no longer lists, and inside every zip
-//! (zips within zips too) every folder and file, as one tree.
-//!
-//! The map is built offline from the crawl record and the archive. It is
-//! written twice: `cache/catalog.ndjson`, one node per line, and `cache/catalog.txt`,
-//! the same nodes indented as a tree. Both are in tree order (a folder
-//! before what it holds, names in byte order), so two maps of the same
-//! archive are the same bytes.
+//! A map of every folder and file of the mirror, inside zips too, as one tree,
+//! built offline into `cache/catalog.ndjson` and `cache/catalog.txt`. Both are
+//! in tree order, so two maps of the same archive are the same bytes.
 
 use std::collections::{BTreeMap, HashMap, HashSet};
 use std::fs::File;
@@ -26,23 +20,19 @@ use crate::peek::{Peeked, current, latest};
 use crate::stamp::{AEST, Stamp};
 use crate::zipdir::Entry;
 
-/// A nested zip up to this size is read into memory; a bigger one is
-/// spooled to a temporary file.
+/// A nested zip up to this size is read into memory; a bigger one is spooled.
 const NESTED_IN_MEMORY: u64 = 64 << 20;
 /// Zips nested deeper than this are not opened (`zip.nesting_too_deep`).
 pub const MAX_DEPTH: usize = 8;
-/// A zip inside a zip bigger than this, as declared, is not unpacked
-/// (`zip.too_big`).
+/// A nested zip declared bigger than this is not unpacked (`zip.too_big`).
 pub const MAX_NESTED: u64 = 16 << 30;
-/// Entries listed per archived file, zips within it included; a zip that
-/// would pass it is not listed (`zip.too_many_entries`).
+/// Most entries listed per archived file, nested zips included (`zip.too_many_entries`).
 pub const MAX_ENTRIES: u64 = 10_000_000;
 /// The version of the catalog's format, on its first line.
 pub const CATALOG_FORMAT: u32 = 3;
 /// The bytes every zip with at least one entry starts with, and an empty one.
 const ZIP_MAGIC: [&[u8; 4]; 2] = [b"PK\x03\x04", b"PK\x05\x06"];
-/// The buffer of a zip read from disk, which is read by seeking: small,
-/// since every seek drops it.
+/// Small, since every seek drops the buffer.
 const SEEK_BUFFER: usize = 64 << 10;
 /// The buffer of each map file written.
 const WRITE_BUFFER: usize = 1 << 20;
@@ -71,8 +61,7 @@ pub enum State {
     GoneUpstream,
     /// Removed from the archive: a zip found the same as its folder.
     Removed,
-    /// Another version of a file nemweb rewrote in place, kept beside it
-    /// as `{name}@{at}` (`docs/archive.md`).
+    /// Another version of a file nemweb rewrote, kept beside it as `{name}@{at}`.
     Version,
 }
 
@@ -88,15 +77,12 @@ pub struct NodeError {
 /// One folder or file.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize)]
 pub struct Node {
-    /// The file or folder nemweb lists, at its path under the archive
-    /// (`docs/archive.md`); for an entry inside a zip, the zip's.
+    /// The archive path of the file or folder; for an entry inside a zip, the zip's.
     pub file: String,
-    /// The exact URL of `file`, as crawled or as its sidecar records it;
-    /// none only for the folders above the roots.
+    /// The exact URL of `file`; none only for the folders above the roots.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub url: Option<String>,
-    /// Where inside `file` it is: one path per zip, outermost first, each
-    /// with folders separated by `/`; empty for `file` itself.
+    /// Its path inside each zip, outermost first; empty for `file` itself.
     #[serde(skip_serializing_if = "Vec::is_empty")]
     pub inside: Vec<String>,
     /// Folder, file or zip.
@@ -107,15 +93,13 @@ pub struct Node {
     /// Compressed size, inside a zip.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub compressed: Option<u64>,
-    /// CRC-32: as the zip records it for an entry; from its sidecar for a
-    /// downloaded file, when recorded there.
+    /// CRC-32, from the zip for an entry or from the sidecar for a file.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub crc32: Option<u32>,
     /// sha256 hex of a downloaded file, from its sidecar.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub sha256: Option<String>,
-    /// The server's `ETag`: from the sidecar, or from the peek of a zip not
-    /// downloaded.
+    /// The server's `ETag`, from the sidecar or the peek.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub etag: Option<String>,
     /// The server's `Last-Modified`, from the same.
@@ -127,19 +111,16 @@ pub struct Node {
     /// When a zip not downloaded had its listing read (UTC).
     #[serde(skip_serializing_if = "Option::is_none")]
     pub peeked_at: Option<Stamp>,
-    /// For a removed zip: how many of its files were found the same as the
-    /// folder's, each listed under it with its CRC-32.
+    /// For a removed zip: how many of its files were found the same as the folder's.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub matched: Option<usize>,
     /// For a removed zip: when it was found the same (UTC).
     #[serde(skip_serializing_if = "Option::is_none")]
     pub removed_at: Option<Stamp>,
-    /// Date and time as nemweb lists it, or as the zip records it; for a
-    /// file nemweb no longer lists, the server's `Last-Modified`.
+    /// Date and time as listed, as the zip records it, or as `Last-Modified`.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub modified: Option<String>,
-    /// `modified` as an instant: AEST for a listing's or a zip's time, UTC
-    /// for a `Last-Modified`.
+    /// `modified` as an instant: AEST for a listed or zip time, UTC for `Last-Modified`.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub modified_at: Option<Stamp>,
     /// For a file nemweb lists or listed: archived or not.
@@ -148,8 +129,7 @@ pub struct Node {
     /// For a removed zip, the folder that holds the same files.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub same_as: Option<String>,
-    /// `needs_download`: a zip inside a zip known only from its listing,
-    /// whose own entries need the outer zip downloaded.
+    /// `needs_download` for a nested zip known only from the outer zip's listing.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub contents: Option<&'static str>,
     /// Why it could not be read, when it could not.
@@ -228,13 +208,10 @@ struct Top {
     removed: Option<Removed>,
 }
 
-/// A node's place in the tree: its archive path components, and, for a
-/// file, its URL, since two URLs can share one path (both listings of a
-/// report folder are one folder) and neither may replace the other.
+/// Archive path components and URL, since two URLs can share one path.
 type TopKey = (Vec<String>, String);
 
-/// Writes the map of the crawl record and the archive under `roots`,
-/// reading zips on `workers` threads.
+/// Writes the map of the crawl record and the archive under `roots`.
 pub fn map(
     mirror: &Mirror,
     archive: &Archive,
@@ -277,9 +254,7 @@ pub fn map(
     Ok(summary)
 }
 
-/// Every folder and file of the crawl under the roots, every archived file
-/// under the roots the crawl no longer lists, and every folder above them,
-/// keyed by archive path components, which orders them as a tree.
+/// Every listed, archived and ancestor node under the roots, in tree order.
 fn tops(
     mirror: &Mirror,
     archive: &Archive,
@@ -440,8 +415,7 @@ fn tops(
     Ok(tops)
 }
 
-/// The nodes of each item of a batch, in batch order; the archived files
-/// are read on the listers' threads.
+/// The nodes of each item of a batch, in batch order.
 fn list_batch(
     archive: &Archive,
     batch: &[(TopKey, Top)],
@@ -486,8 +460,7 @@ struct Lister {
     max_entries: u64,
     /// Entries this archived file may still list.
     entries_left: u64,
-    /// Seconds east of UTC of the DOS times in the zip being read: its
-    /// host's clock.
+    /// Seconds east of UTC of the DOS times in the zip being read.
     offset: i32,
 }
 
@@ -504,8 +477,7 @@ impl Lister {
         }
     }
 
-    /// The buffer for a zip's bytes `level` zips deep: 0 for an archived
-    /// file, 1 for a zip inside it, and so on.
+    /// The buffer for a zip's bytes `level` zips deep, 0 for an archived file.
     fn level(&mut self, level: usize) -> &mut Vec<u8> {
         if self.levels.len() <= level {
             self.levels.resize_with(level + 1, Vec::new);
@@ -513,8 +485,6 @@ impl Lister {
         &mut self.levels[level]
     }
 
-    /// The node of a folder or file nemweb lists and, for an archived zip,
-    /// the nodes of what it holds.
     fn top(&mut self, archive: &Archive, key: &[String], top: &Top) -> Vec<Node> {
         let mut node = Node::new(key.join("/"), top.kind, key.len() - 1);
         node.url.clone_from(&top.url);
@@ -545,10 +515,8 @@ impl Lister {
         self.entries_left = self.max_entries;
         let file = archive.root().join(key.iter().collect::<PathBuf>());
         let mut out = vec![node];
-        // A zip is read by seeking to each entry, and a `BufReader` drops
-        // its buffer on every seek: a file up to the in-memory limit is read
-        // once into the lister's top-level buffer instead, a bigger one
-        // through a small buffer.
+        // A `BufReader` drops its buffer on every seek: a small file is read
+        // into memory whole, a bigger one through a small buffer.
         let opened = File::open(&file).and_then(|mut f| {
             let size = f.metadata()?.len();
             if size <= self.in_memory {
@@ -606,8 +574,6 @@ impl Lister {
         out
     }
 
-    /// Appends every folder and file of the zip `r`, whose node is `at`,
-    /// `level` zips deep.
     fn zip<R: Read + Seek>(
         &mut self,
         r: R,
@@ -702,8 +668,7 @@ impl Lister {
         Ok(())
     }
 
-    /// The node of entry `i` and, when it is a zip itself, its bytes: in
-    /// `self.levels[level]`, or spooled to a temporary file.
+    /// The node of entry `i` and, for a zip, its bytes in `self.levels[level]` or spooled.
     fn entry<R: Read + Seek>(
         &mut self,
         z: &mut ZipArchive<R>,
@@ -780,8 +745,6 @@ impl Lister {
     }
 }
 
-/// A node inside the zip whose node is `at`: at `rel` within it, `deeper`
-/// levels below it in the tree.
 fn child(at: &Node, rel: &str, kind: NodeKind, deeper: usize) -> Node {
     let mut inside = at.inside.clone();
     inside.push(rel.to_owned());
@@ -792,8 +755,7 @@ fn child(at: &Node, rel: &str, kind: NodeKind, deeper: usize) -> Node {
     }
 }
 
-/// The folder nodes above an entry `parts` of the zip whose node is `at`,
-/// each once; the entry's own when it is a folder.
+/// The folder nodes above entry `parts`, each once; its own when it is a folder.
 fn folders(
     out: &mut Vec<Node>,
     done: &mut HashSet<Vec<String>>,
@@ -809,9 +771,7 @@ fn folders(
     }
 }
 
-/// What a zip not downloaded holds, from its listing, under its node
-/// `out[0]`: its folders and files, a zip inside it marked as needing the
-/// download to list further.
+/// What a zip not downloaded holds, from its listing, under its node `out[0]`.
 fn listed(out: &mut Vec<Node>, peek: &Peeked) {
     let Some(entries) = &peek.entries else {
         if let Some(e) = peek.error.as_ref().filter(|e| e.code != "zip.not_a_zip") {
@@ -900,8 +860,7 @@ fn read_up_to(r: &mut impl Read, buf: &mut [u8]) -> std::io::Result<usize> {
     Ok(got)
 }
 
-/// The two map files, written beside their final names and renamed when
-/// complete.
+/// The two map files, written beside their final names and renamed when complete.
 struct Output {
     ndjson: BufWriter<File>,
     tree: BufWriter<File>,
@@ -1725,7 +1684,7 @@ h/
                 ("h/w.zip!M/S/t.csv".to_owned(), NodeKind::File),
             ]
         );
-        // A listing recorded before names were read with slashes.
+        // A listing with Windows separators in its names.
         let entry = |name: &str| crate::zipdir::Entry {
             name: name.into(),
             size: 1,

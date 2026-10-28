@@ -1,15 +1,8 @@
 //! `phasor get`: an interval of some tables, planned across a market's
 //! sources, fetched and read into the lake.
 //!
-//! A kit may publish a table two ways: a monthly archive (settled, a month
-//! at a time, some weeks after the month) and report folders (live, a day
-//! or a five-minute file at a time). The plan takes each whole month the
-//! interval covers from the monthly source where that month is published,
-//! and every other day from the daily source: the months the archive has
-//! not published yet, and the partial months at either end. A table no
-//! report folder carries comes from the archive whole months. `--source`
-//! forces one side. The plan lists each source once; the runs read what it
-//! listed.
+//! Whole published months come from the monthly archive, every other day
+//! from the daily source; `--source` forces one side.
 
 use std::sync::Arc;
 
@@ -76,8 +69,7 @@ impl Step {
 pub struct GetPlan {
     /// The steps, monthly first.
     pub steps: Vec<Step>,
-    /// What decided the cut: months the archive has not published, tables
-    /// no report folder carries, a side forced.
+    /// What decided the cut between the monthly and daily sources.
     pub notes: Vec<String>,
 }
 
@@ -147,10 +139,8 @@ fn no_source(req: &GetRequest, side: &str) -> Box<Diagnostic> {
     )
 }
 
-/// Lists `months` from the monthly source, dropping trailing months the
-/// archive has not published (`listing.month_missing`) until it answers.
-/// Returns the step, when any month is published, and the first month
-/// that is not.
+/// Lists `months` from the monthly source, dropping unpublished trailing months
+/// (`listing.month_missing`); returns the step and the first unpublished month.
 async fn list_months(
     req: &GetRequest,
     source: &Arc<dyn Source>,
@@ -174,10 +164,8 @@ async fn list_months(
                 ));
             }
             Err(FetchError::MonthMissing { period, .. }) => {
-                // The archive publishes months in order: this one and the
-                // ones after it are not out yet.
-                // A month the request did not ask for, or no month at all:
-                // not the archive's way of saying "not yet"; reported.
+                // Months publish in order, so this and later ones are not out yet;
+                // a month outside the request is a real error.
                 let missing = period
                     .parse::<YearMonth>()
                     .ok()
@@ -207,8 +195,7 @@ async fn list_months(
     }
 }
 
-/// The tables of a request that one pair of sources serves: the monthly
-/// source and the daily source each of them is read from.
+/// The tables of a request that one pair of monthly and daily sources serves.
 #[derive(Clone)]
 pub struct SourceGroup {
     /// The source cut by month that serves every table of the group.
@@ -219,11 +206,9 @@ pub struct SourceGroup {
     pub tables: Vec<String>,
 }
 
-/// Splits a request's tables by the sources that serve them: each table
-/// goes with the first source of each granularity that serves it, and
-/// tables with the same pair are read together. With no tables, a kit of
-/// one source of each granularity (NEM) is one group, and a kit of several
-/// feeds (gas, WEM) is one group per source, so every feed is read.
+/// Splits a request's tables by the first source of each granularity that serves them.
+///
+/// With no tables, every feed of the kit is read.
 pub fn source_groups(sources: &[Arc<dyn Source>], tables: &[String]) -> Vec<SourceGroup> {
     let of = |g: Granularity| sources.iter().filter(move |s| s.granularity() == g);
     if tables.is_empty() {
@@ -267,8 +252,7 @@ pub fn source_groups(sources: &[Arc<dyn Source>], tables: &[String]) -> Vec<Sour
     groups
 }
 
-/// Plans the request over the kit's sources, listing each once: each
-/// group of tables from the sources that serve it.
+/// Plans the request over the kit's sources, listing each once.
 pub async fn plan_get(req: &GetRequest, deps: &Deps) -> Result<GetPlan, Box<Diagnostic>> {
     let kit = deps.kits.kit(&req.kit).ok_or_else(|| no_kit(req))?;
     let mut plan = GetPlan::default();
@@ -341,8 +325,7 @@ async fn plan_group(
         return Ok(plan);
     }
     let Some(daily) = daily else {
-        // No daily source (a forced daily side was refused above): the
-        // archive's whole months cover those days.
+        // No daily source: the archive's whole months cover those days.
         return monthly_fallback(
             req,
             deps,
@@ -440,8 +423,7 @@ pub struct GetReport {
     pub exit_code: i32,
 }
 
-/// Plans and runs the request: each step a run over the files its source
-/// listed, into the lake.
+/// Plans and runs the request, one run per step.
 pub async fn run_get(
     req: GetRequest,
     deps: Deps,
@@ -481,8 +463,7 @@ pub async fn run_get(
     })
 }
 
-/// The days a request touches, from its instants in a market's clock:
-/// the day of `from` to the day holding the last instant before `to`.
+/// The market-clock days from the day of `from` to the day before `to` ends.
 pub fn days_of(instants: (i64, i64), offset_secs: i32) -> TimeRange {
     let day_of = |us: i64| {
         let local = us.div_euclid(1_000_000) + i64::from(offset_secs);

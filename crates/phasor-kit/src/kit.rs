@@ -1,5 +1,4 @@
-//! A kit bundles what one market or format needs; the registry holds every
-//! kit a binary was assembled with.
+//! A kit bundles what one market or format needs; the registry holds every assembled kit.
 
 use std::sync::Arc;
 
@@ -9,8 +8,7 @@ use url::Url;
 use crate::catalog::Catalog;
 use crate::decoder::Decoder;
 
-/// Everything one market brings: where its files are, how they are read,
-/// and what tables they hold.
+/// Everything one market brings: its sources, decoder and catalog.
 pub struct SourceKit {
     /// The kit's id: `nem`, `wem`.
     pub id: &'static str,
@@ -51,10 +49,8 @@ impl KitRegistry {
         self.kits.iter().find(|k| k.id == id)
     }
 
-    /// The kit a file no source claims is read with: the last one
-    /// assembled, whose decoder reads a file by its own rows (the MMS
-    /// kit); the kits whose sources know a file by its path come before
-    /// it.
+    /// The kit for a file no source claims: the last one assembled (the MMS kit),
+    /// whose decoder reads a file by its own rows.
     pub fn fallback(&self) -> Option<&SourceKit> {
         self.kits.last()
     }
@@ -69,8 +65,7 @@ impl KitRegistry {
         })
     }
 
-    /// The kit whose source recognises a file by its URL, with what the
-    /// source says of it. The first kit to claim it wins.
+    /// The first kit whose source claims `url`, with what the source says of it.
     pub fn claim(&self, url: &Url) -> Option<(&SourceKit, RemoteFile)> {
         self.kits.iter().find_map(|k| {
             k.sources

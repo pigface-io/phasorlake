@@ -23,8 +23,7 @@ impl Default for NemConfig {
 }
 
 impl NemConfig {
-    /// The `[sources.nem]` table, else the `nem_base_url` key the file held
-    /// under the tool's earlier name, else the defaults.
+    /// The `[sources.nem]` table, else the legacy `nem_base_url` key, else the defaults.
     pub fn from_sources(sources: &Sources) -> Result<Self, SourcesError> {
         if let Some(c) = sources.kit::<Self>("nem")? {
             return Ok(c);

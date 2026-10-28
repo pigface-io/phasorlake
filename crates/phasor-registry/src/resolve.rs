@@ -1,13 +1,7 @@
-//! Resolving an I row to a conformance plan: which lake column each I-row
-//! field feeds and how to cast it (see [`crate::plan`]).
+//! Resolving an I row to a conformance plan (see [`crate::plan`]).
 //!
-//! A block is read with the schema of its table's history that
-//! `History::resolve` names for its report pair, AEMO version, columns in
-//! order and the month its source was released in (with no month known,
-//! the latest run's). Such a block conforms. A block no run of the history
-//! fits deviates: it is compared with the schema in force for its pair
-//! then, a column the table has not is kept as text, and a lake column the
-//! file lacks is null; strict mode refuses it.
+//! A block no run of the history fits deviates: unknown columns are kept as
+//! text and missing ones are null; strict mode refuses it.
 
 use std::sync::Arc;
 
@@ -23,11 +17,9 @@ use crate::registry::{Registry, Resolution, SchemaSource, TableId};
 /// Strictness of resolution.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
 pub enum Mode {
-    /// Only blocks the table's history reads; a deviation or an unknown
-    /// table is an error.
+    /// A deviation or an unknown table is an error.
     Strict,
-    /// A deviation is a warning and an unknown table is derived from the
-    /// file; nothing the file carries is lost.
+    /// A deviation is a warning and an unknown table is derived from the file.
     #[default]
     Permissive,
 }
@@ -37,8 +29,7 @@ pub enum Mode {
 pub struct ResolveOptions {
     /// Strictness.
     pub mode: Mode,
-    /// The market the file belongs to: its pairs are looked up there, and
-    /// a pair no table claims is derived there.
+    /// The market the file belongs to, where its pairs are looked up.
     pub market: Market,
 }
 
@@ -47,19 +38,16 @@ pub struct ResolveOptions {
 pub enum Status {
     /// A run of the table's history fits the block.
     Conforms,
-    /// No run fits: the block's columns differ from those of the schema in
-    /// force for its pair.
+    /// No run fits: the columns differ from the schema in force for the pair.
     Deviates {
         /// Columns of that schema the I row lacks (written null).
         missing: Vec<String>,
-        /// I-row columns the schema does not list: a column of the table
-        /// feeds it, any other is kept as text.
+        /// I-row columns the schema does not list.
         extra: Vec<String>,
         /// The columns both have come in another order.
         reordered: bool,
     },
-    /// No table claims the report pair; the table was derived from the
-    /// file's own header, every column as text.
+    /// No table claims the report pair; one was derived from the header.
     Derived,
 }
 
@@ -79,11 +67,9 @@ impl Status {
 pub struct Resolved {
     /// The table.
     pub table: TableId,
-    /// The schema of the table's history the block was read against: the
-    /// one it resolved to, or for a deviation the one in force.
+    /// The schema the block was read against (for a deviation, the one in force).
     pub version: u16,
-    /// The Iceberg schema of the table's history the block resolved to;
-    /// none when it deviates.
+    /// The Iceberg schema the block resolved to; none when it deviates.
     pub schema: Option<u32>,
     /// How it matched.
     pub status: Status,
@@ -107,8 +93,7 @@ impl Resolved {
     }
 }
 
-/// The columns of `want` that `have` lacks, those of `have` that `want`
-/// lacks, and whether the columns both have come in another order.
+/// Columns missing from each side, and whether the shared ones are reordered.
 fn compare(want: &[String], have: &[&str]) -> (Vec<String>, Vec<String>, bool) {
     let missing = want
         .iter()
@@ -131,17 +116,14 @@ fn compare(want: &[String], have: &[&str]) -> (Vec<String>, Vec<String>, bool) {
 pub(crate) const LATEST: &str = "9999-12";
 
 impl Registry {
-    /// Resolves an I row of a source whose month is not known: against the
-    /// latest run of the table's history that fits it.
+    /// Resolves an I row of a source whose month is not known, against the latest fitting run.
     pub fn resolve(&self, irow: &IRow<'_>, opts: ResolveOptions) -> Result<Resolved, ResolveError> {
         self.resolve_in(irow, opts, None)
     }
 
-    /// Resolves a block given by name, as a person types it: its report
-    /// type, subtype and version, and its columns, each normalised as the
-    /// decoder normalises a header's names; a column that is no name is
-    /// left out. `None` when the type or subtype is no name (empty, or with
-    /// control characters).
+    /// Resolves a block given by name, as a person types it, normalised as a header.
+    ///
+    /// `None` when the type or subtype is empty or has control characters.
     pub fn resolve_names(
         &self,
         report_type: &str,
@@ -182,8 +164,7 @@ impl Registry {
             report_subtype: irow.report_subtype.to_owned(),
         };
         let fp = irow.fingerprint();
-        // The hot path: a column list one schema of the history has, of a
-        // version the history has, is read with that schema.
+        // Hot path: a column list only one schema has is read with it.
         if let Some((id, k)) = self.pair(
             opts.market,
             irow.report_type,
@@ -214,8 +195,7 @@ impl Registry {
         ) {
             Some(id) => id,
             None if opts.mode == Mode::Strict => return Err(unknown()),
-            // No table claims the pair. The rows are not skipped: the file's
-            // own header says what they are, and that is what is kept.
+            // No table claims the pair: derive one from the header, skip nothing.
             None => self.derive(opts.market, irow).ok_or_else(unknown)?,
         };
         if self.is_derived(id) {
@@ -274,8 +254,7 @@ impl Registry {
             .unwrap_or_default()
     }
 
-    /// What a block of a table of the registry resolves to, the first
-    /// time its shape is seen.
+    /// What a block of a registry table resolves to, the first time its shape is seen.
     fn resolve_block(&self, id: TableId, irow: &IRow<'_>, period: Option<YearMonth>) -> Resolution {
         let t = self.table(id);
         let shapes = self.shapes(id.0 as usize);
@@ -375,9 +354,7 @@ impl Registry {
         }
     }
 
-    /// The plan of an I row onto a table derived from the file: every
-    /// column as text. A later block of the same pair with another column
-    /// list keeps its extra columns under their own names.
+    /// The plan of an I row onto a derived table: every column as text.
     fn resolve_derived(&self, id: TableId, irow: &IRow<'_>) -> Resolved {
         let t = self.table(id);
         let market = self.market_of(id);
@@ -433,8 +410,7 @@ mod tests {
         (r.target, r.cast, r.nullable)
     }
 
-    /// A registry of DISPATCH_UNIT_SCADA alone: three columns from
-    /// 2024-01, four from 2026-08.
+    /// A registry of DISPATCH_UNIT_SCADA alone: three columns, then four from 2026-08.
     fn reg() -> Registry {
         Registry::from_set(SchemaSet {
             tables: vec![unit_scada()],
@@ -733,8 +709,7 @@ mod tests {
         );
     }
 
-    /// Every run of every embedded table resolves, in its own release
-    /// month, to its own schema's plan: what the census saw conforms.
+    /// Every run of every embedded table resolves, in its own month, to its own schema.
     #[test]
     fn every_run_of_the_embedded_histories_conforms() {
         let r = Registry::load_embedded();

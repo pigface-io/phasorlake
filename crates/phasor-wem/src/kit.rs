@@ -1,5 +1,4 @@
-//! The WEM as one kit: its datafiles and WEMDE documents as sources, read
-//! by the plain decoders, over the registry's WEM tables.
+//! The WEM as one kit: its datafiles and WEMDE documents, read by the plain decoders.
 
 use std::sync::Arc;
 
@@ -21,9 +20,8 @@ pub const KIT_ID: &str = "wem";
 /// The source id of the WEMDE documents.
 pub const WEMDE_SOURCE_ID: &str = "wem-wemde";
 
-/// The WEM kit over `config` and `registry`: the datafiles (listed by
-/// their manifests) and the WEMDE `previous/` zips as sources, the plain
-/// CSV and WEMDE decoders, and the registry's WEM tables as the catalog.
+/// The WEM kit: datafiles and WEMDE `previous/` zips as sources, the plain CSV and
+/// WEMDE decoders, the registry's WEM tables as the catalog.
 pub fn kit(config: &WemConfig, registry: Arc<Registry>) -> Result<SourceKit, FetchError> {
     let table_of: TableOf = catalog::table_of(registry.clone(), Market::Wem);
     let datafiles = feed("datafiles").expect("the feeds table names the WEM datafiles");

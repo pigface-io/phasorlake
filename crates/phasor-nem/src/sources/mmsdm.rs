@@ -1,26 +1,20 @@
-//! The monthly NEM archive on nemweb.
+//! The monthly NEM archive on nemweb. Directories are listed rather than URLs
+//! guessed, because split tables and renamed files only show up in the listing.
+//! From 2015 each month is a directory of per-table zips, plus `CTL/` and
+//! `DOCUMENTATION/`:
 //!
 //! ```text
 //! {base}/Data_Archive/Wholesale_Electricity/MMSDM/{YYYY}/MMSDM_{YYYY}_{MM}/MMSDM_Historical_Data_SQLLoader/DATA/
 //!     PUBLIC_DVD_{TABLE}_{YYYYMM}010000.zip     one per table; big tables split: BIDPEROFFER1, BIDPEROFFER2
 //! ```
 //!
-//! Directories are listed rather than URLs guessed, because split tables
-//! and renamed files only show up in the listing.
-//!
-//! Months from 2015 on have that directory. July 2009 to December 2014 are
-//! published only as one zip per month of 1.4 to 2.1 GB:
+//! July 2009 to December 2014 is one zip per month of 1.4 to 2.1 GB, read by its
+//! directory or whole. Where a month has both, the directory is used.
 //!
 //! ```text
 //! {base}/Data_Archive/Wholesale_Electricity/MMSDM/{YYYY}/MMSDM_{YYYY}_{MM}.zip
 //!     {MM}/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_{TABLE}_{YYYYMM}010000.zip
 //! ```
-//!
-//! phasor downloads everything once, so such a month is one file: the
-//! whole zip, read locally with its per-table zips nested inside. Where a
-//! month has both a directory and a whole-month zip, the directory is used.
-//! A directory month also lists its control files (`CTL/`) and its README
-//! (`DOCUMENTATION/`), which the census and the schema tools read.
 
 use std::path::PathBuf;
 
@@ -34,8 +28,7 @@ use phasor_kit::{Entry, Listings, LocalFile, Pick, Picks, Query, RemoteFile, Sou
 /// The source id.
 pub const SOURCE_ID: &str = "nem-mmsdm";
 
-/// The first year whose months are published as directories of per-table
-/// zips. Earlier months exist only as one whole-month zip.
+/// The first year published as directories of per-table zips.
 const FIRST_DIRECTORY_YEAR: i32 = 2015;
 
 /// The sub-directories of a month that hold per-table data zips.
@@ -49,16 +42,14 @@ const SUPPORT_DIRS: [&str; 2] = ["CTL/", "DOCUMENTATION/"];
 pub enum MonthLayout {
     /// A directory of per-table zips (`MMSDM_2024_01/.../DATA/`).
     Directory,
-    /// Only one zip of the whole month (`MMSDM_2012_01.zip`) holding the
-    /// per-table zips, the control files and the README.
+    /// Only one whole-month zip (`MMSDM_2012_01.zip`) holding the per-table zips, control files and README.
     WholeZip {
         /// The zip.
         url: Url,
     },
 }
 
-/// The files of one month: its per-table data files with the table each
-/// carries, or its whole zip; and its control files and README.
+/// The files of one month: per-table data files or its whole zip, plus control files and README.
 struct MonthFiles {
     /// The URL listed, for a message about a table not found.
     listed_url: String,
@@ -94,9 +85,7 @@ impl MmsdmArchive {
         })
     }
 
-    /// The month directory, e.g. `.../MMSDM/2024/MMSDM_2024_01/MMSDM_Historical_Data_SQLLoader/`.
-    /// It exists from 2015 on; earlier months are only published as one zip
-    /// (see [`MonthLayout`]).
+    /// The month directory (`.../MMSDM_2024_01/MMSDM_Historical_Data_SQLLoader/`), from 2015 on.
     pub fn month_root(&self, ym: YearMonth) -> Result<Url, FetchError> {
         let path = format!(
             "/Data_Archive/Wholesale_Electricity/MMSDM/{}/MMSDM_{}_{:02}/MMSDM_Historical_Data_SQLLoader/",
@@ -170,8 +159,7 @@ impl MmsdmArchive {
         ym: YearMonth,
         fetcher: &dyn Listings,
     ) -> Result<MonthFiles, FetchError> {
-        // From 2015 the month has a directory; try it first and fall back to
-        // the year listing when it is not there.
+        // From 2015 try the month directory first, falling back to the year listing.
         if ym.year() >= FIRST_DIRECTORY_YEAR {
             match self.directory_files(ym, fetcher).await {
                 Err(FetchError::HttpStatus { status: 404, .. }) => {}
@@ -197,10 +185,8 @@ impl MmsdmArchive {
         }
     }
 
-    /// Every archived file of `month`, sorted: under the month's directory
-    /// (2015 on) and the month's whole zip (before): data zips and CSVs,
-    /// control files and the README. Sidecars and partial downloads are
-    /// left out.
+    /// Every archived file of `month`, sorted, from its directory or whole zip;
+    /// sidecars and partial downloads left out.
     pub fn archived_files(
         &self,
         archive: &Archive,
@@ -219,9 +205,7 @@ impl MmsdmArchive {
             .into_iter()
             .map(|e| e.path)
             .collect();
-        // Entries fetched alone out of the month's zip (a month published as
-        // one zip, before 2015) are kept beside it, under folders named for
-        // the zip and the entry: `MMSDM_2012_01.zip!01/…`.
+        // Entries fetched alone out of a whole-month zip sit beside it: `MMSDM_2012_01.zip!01/…`.
         let whole_path = archive.path_for(whole_url.as_str());
         if let (Some(year_dir), Some(zip_name)) = (
             whole_path.parent(),
@@ -278,9 +262,7 @@ impl MmsdmArchive {
                 });
             }
             for e in entries {
-                // A zip whose name follows neither scheme is still a file
-                // of the month: it is listed, under its own name, and its
-                // tables are whatever its I rows say.
+                // A zip named by neither scheme is still listed; its I rows say its tables.
                 let (table, named) = match Self::parse_name(&e.name) {
                     Some(table) => (table, true),
                     None if e.name.to_ascii_lowercase().ends_with(".zip") => {
@@ -354,11 +336,9 @@ impl MmsdmArchive {
         Ok(DATA_DIRS.iter().filter_map(|d| root.join(d).ok()).collect())
     }
 
-    /// The table a data zip carries, for either naming scheme (see
-    /// [`crate::names`]):
+    /// The table a data zip carries under either naming scheme ([`crate::names`]):
     /// `PUBLIC_DVD_BIDPEROFFER1_202401010000.zip` and
-    /// `PUBLIC_ARCHIVE#BIDPEROFFER#FILE01#202608010000.zip` are both
-    /// `BIDPEROFFER`.
+    /// `PUBLIC_ARCHIVE#BIDPEROFFER#FILE01#202608010000.zip` are both `BIDPEROFFER`.
     pub fn parse_name(name: &str) -> Option<String> {
         if !name.to_ascii_lowercase().ends_with(".zip") {
             return None;
@@ -376,11 +356,9 @@ pub fn period_of_name(name: &str) -> Option<YearMonth> {
     crate::names::parse(name).map(|n| n.month)
 }
 
-/// What a data file's name says: its table and month, as a file of this
-/// source. `None` when the name follows neither scheme.
+/// The table and month a data file's name says; `None` when it follows neither scheme.
 pub fn describe_name(url: Url) -> Option<RemoteFile> {
-    // An entry fetched alone out of a zip is named `{zip}!{entry}`: the
-    // entry's own name is what says its table and month.
+    // An entry fetched alone is named `{zip}!{entry}`: the entry's name says its table and month.
     let name = url
         .path_segments()
         .and_then(|mut s| s.next_back())
@@ -415,10 +393,8 @@ impl Source for MmsdmArchive {
         SOURCE_ID
     }
 
-    /// The archived data files (zips and CSVs) of the query's months, as
-    /// files to read: what their sidecars say, so nothing is hashed again.
-    /// A table filter applies to files named for one table; a whole-month
-    /// zip holds every table and is kept.
+    /// The archived data files of the query's months, from their sidecars. A table
+    /// filter applies to one-table files; a whole-month zip is always kept.
     fn archived(&self, archive: &Archive, query: &Query) -> Result<Vec<LocalFile>, FetchError> {
         let mut out = Vec::new();
         for month in query.range.months_iter() {
@@ -468,8 +444,7 @@ impl Source for MmsdmArchive {
         describe_name(url.clone())
     }
 
-    /// A whole-month zip (July 2009 to December 2014) holds every table's
-    /// zip: read by its directory when tables are named.
+    /// A whole-month zip is read by its directory when tables are named.
     fn wants_ranged(&self, remote: &RemoteFile, query: &Query) -> bool {
         !query.tables.is_empty()
             && remote.table.is_none()
@@ -482,8 +457,7 @@ impl Source for MmsdmArchive {
                 })
     }
 
-    /// The nested zips of the tables asked for; the whole zip when none
-    /// are, or when a wanted table has no zip of its own in it.
+    /// The nested zips of the tables asked for; the whole zip when none are, or one has no zip of its own.
     fn pick(&self, remote: &RemoteFile, entries: &[Entry], query: &Query) -> Picks {
         if query.tables.is_empty() {
             return Picks::Whole;
@@ -537,9 +511,7 @@ impl Source for MmsdmArchive {
         };
         let wanted = upper(&query.tables);
         let excluded = upper(&query.exclude);
-        // Tables come and go over the years, so a table asked for by name
-        // may be missing from some months of a range. It is an error only
-        // when no month of the range has it: then the name is likely wrong.
+        // Tables come and go, so a named table is an error only when no month of the range has it.
         let mut found = vec![false; wanted.len()];
         let mut last_listing: Option<(String, Vec<String>)> = None;
         for ym in query.range.months_iter() {
@@ -704,9 +676,7 @@ mod tests {
         );
     }
 
-    /// The big-table directories of the newer scheme put `ALL` in the
-    /// name, and a zip named by neither scheme is still a file of the
-    /// month: both are listed, nothing is passed over in silence.
+    /// Newer-scheme `ALL` directories and zips named by neither scheme are both listed.
     #[tokio::test]
     async fn every_zip_of_a_month_is_listed_whatever_its_name() {
         let dir = tempfile::tempdir().unwrap();
@@ -1082,8 +1052,7 @@ mod tests {
         )
     }
 
-    /// A directory month lists its control files and its README beside
-    /// its data, whatever tables are asked for: the census reads them.
+    /// A directory month lists its control files and README whatever tables are asked for.
     #[tokio::test]
     async fn a_month_lists_its_control_files_and_readme() {
         let dir = tempfile::tempdir().unwrap();
@@ -1148,8 +1117,7 @@ mod tests {
         );
     }
 
-    /// Before 2015 a month is one zip: it is listed as one file, whatever
-    /// tables are asked for, and downloaded whole.
+    /// Before 2015 a month is one zip, listed as one file and downloaded whole.
     #[tokio::test]
     async fn a_whole_month_zip_is_one_file() {
         let dir = tempfile::tempdir().unwrap();

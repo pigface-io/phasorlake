@@ -31,8 +31,7 @@ fn fixture(name: &str) -> String {
     .unwrap()
 }
 
-/// The GBB fixture's rows repeated, a value varied so the number parser
-/// sees different digits.
+/// The GBB fixture's rows repeated, a value varied per row.
 fn gbb() -> Vec<u8> {
     let text = fixture("gbb_actual_flow_storage_last31.csv");
     let mut lines = text.lines();
@@ -60,8 +59,7 @@ fn gbb() -> Vec<u8> {
     out.into_bytes()
 }
 
-/// A WEMDE reference trading price document with as many intervals as
-/// fill `JSON_BYTES`.
+/// A WEMDE reference trading price document of about `JSON_BYTES`.
 fn wemde() -> Vec<u8> {
     let mut out = String::with_capacity(JSON_BYTES + 1024);
     out.push_str(

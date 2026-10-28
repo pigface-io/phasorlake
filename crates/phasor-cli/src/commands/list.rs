@@ -1,6 +1,5 @@
-//! `list`: what there is, for a consumer. Every table with its roles and
-//! what the lake holds of it; one table's columns; the months held and
-//! the gaps; the files, the archive, the manifest's ingests and runs.
+//! `list`: tables with their roles and holdings, one table's columns, months and
+//! gaps, files, the archive, ingests and runs.
 
 use std::collections::BTreeMap;
 
@@ -192,8 +191,7 @@ async fn tables(ctx: &Context, args: &ListCmd) -> Result<i32> {
 fn columns(ctx: &Context, id: TableId) -> Result<i32> {
     let r = &ctx.registry;
     let t = r.table(id);
-    // The data model's words for each column, as phasor-schemas
-    // publishes them.
+    // The data model's words for each column, as phasor-schemas publishes them.
     let docs: BTreeMap<u32, String> = t.published().docs;
     let role = |name: &str| -> &'static str {
         let tp = &t.temporal;
@@ -517,8 +515,7 @@ async fn ingests(ctx: &Context, args: &ListCmd) -> Result<i32> {
     Ok(0)
 }
 
-/// A source file's name and what of it was read: its one entry, or how
-/// many entries.
+/// A source file's name with its one entry read, or how many.
 fn sources_text(url: &str, entries: &[phasor_writer::manifest::EntryShare]) -> String {
     let name = url.rsplit('/').next().unwrap_or(url);
     match entries {

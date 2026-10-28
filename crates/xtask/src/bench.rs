@@ -1,15 +1,5 @@
-//! Benchmarks held to `bench/budgets.json`.
-//!
-//! Micro benchmarks are criterion benches in the crates; their medians are
-//! read from `target/criterion/*/new/estimates.json`. The end-to-end case
-//! runs the `phasor-bench` harness, which ingests the fixture zip with a
-//! counting allocator and reports wall time, peak heap and allocations, under
-//! `/usr/bin/time` for the peak resident set size.
-//!
-//! A budget is `max_*` (lower is better) or `min_*` (higher is better). A
-//! measurement outside its budget by more than the tolerance fails. With
-//! `--tighten`, budgets move to the measurement when that is tighter, never
-//! the other way.
+//! Benchmarks held to `bench/budgets.json`: criterion medians and the `phasor-bench`
+//! harness under `/usr/bin/time`. `--tighten` moves a budget only tighter.
 
 use std::collections::BTreeMap;
 use std::path::Path;
@@ -183,10 +173,7 @@ pub fn read_criterion(target: &Path) -> Result<Measurements> {
     Ok(out)
 }
 
-/// Runs the end-to-end harness; returns its measurements.
-/// Runs of the end-to-end benchmark, each in its own process; each metric
-/// keeps its best value, so one run slowed by the machine (a benchmark
-/// just before it, a cold page cache) does not fail the gate.
+/// Runs of the end-to-end benchmark; each metric keeps its best, so one slow run does not fail.
 const E2E_RUNS: usize = 3;
 
 fn run_e2e(root: &Path) -> Result<Measurements> {
@@ -270,8 +257,7 @@ pub fn run(set: &str, do_tighten: bool) -> Result<bool> {
     let mut budgets: Budgets = serde_json::from_str(
         &std::fs::read_to_string(&budgets_path).context("reading bench/budgets.json")?,
     )?;
-    // (package, bench target). Named explicitly: `--benches` would also run the
-    // library's unit tests as a benchmark harness, which rejects criterion flags.
+    // Named explicitly: `--benches` would also run unit tests, which reject criterion flags.
     let targets: &[(&str, &str)] = match set {
         "fast" => &[
             ("phasor-mms-conform", "scan"),

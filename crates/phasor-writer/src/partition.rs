@@ -9,15 +9,12 @@ use phasor_core::calendar::local_year_month;
 use crate::error::StoreError;
 use crate::writer::Partition;
 
-/// Whether a type is the one timestamp the lake holds: microseconds with a
-/// zone (Iceberg's `timestamptz`). Anything that is not a timestamp passes.
+/// Whether a type is not a timestamp, or the lake's one: microseconds with a zone.
 fn is_lake_timestamp_or_other(ty: &DataType) -> bool {
     !matches!(ty, DataType::Timestamp(unit, tz) if *unit != TimeUnit::Microsecond || tz.is_none())
 }
 
-/// The first field of `schema`, at any depth, whose type is a timestamp
-/// without a zone or in a unit other than microseconds: what the lake never
-/// writes.
+/// The first field of `schema`, at any depth, with a timestamp the lake never writes.
 pub fn naive_timestamp(schema: &Schema) -> Option<&Field> {
     fn find(field: &Field) -> Option<&Field> {
         if !is_lake_timestamp_or_other(field.data_type()) {
@@ -36,11 +33,9 @@ pub fn naive_timestamp(schema: &Schema) -> Option<&Field> {
     schema.fields().iter().find_map(|f| find(f))
 }
 
-/// Splits `batch` into one batch per month of `time_col`: UTC microseconds
-/// in a column that carries the market offset, partitioned in market time,
-/// or a date (a gas day, which has no clock). The common case, every row
-/// in one month, returns the batch itself without copying. Null time
-/// values go to [`Partition::Unknown`].
+/// Splits `batch` into one batch per market-time month of `time_col`.
+///
+/// One month returns the batch uncopied; nulls go to [`Partition::Unknown`].
 pub fn split_by_month(
     batch: &RecordBatch,
     time_col: usize,
@@ -98,8 +93,7 @@ pub fn split_by_month(
     if all_same {
         return Ok(vec![(first, batch.clone())]);
     }
-    // A file spanning months, in time order: each month is one run of
-    // rows, and a slice of the batch, without copying.
+    // Rows in time order: each month is one slice, without copying.
     let mut runs: Vec<(Partition, usize, usize)> = Vec::new();
     let mut in_order = true;
     for (i, &p) in parts.iter().enumerate() {
@@ -143,8 +137,7 @@ pub fn split_by_month(
     Ok(out)
 }
 
-/// Minimum and maximum of a timestamp column, ignoring nulls, in
-/// nanoseconds as the manifest records them.
+/// Minimum and maximum of a timestamp column, ignoring nulls, in nanoseconds.
 pub fn time_bounds(batch: &RecordBatch, time_col: usize) -> (Option<i64>, Option<i64>) {
     let col = batch.column(time_col);
     let Some(ts) = col.as_primitive_opt::<TimestampMicrosecondType>() else {

@@ -1,5 +1,4 @@
-//! `errors`: the diagnostics the manifest recorded; and `wem`, a dataset's
-//! file list.
+//! `errors`: the manifest's diagnostics; and `wem`, a dataset's file list.
 
 use anyhow::Result;
 use phasor_core::{Diagnose, Severity, YearMonth};
@@ -41,8 +40,7 @@ pub async fn errors(
     };
     let diags = m.list_diagnostics(filter).await.map_err(|e| fail(&e))?;
     drop(thread);
-    // Diagnostics are JSON either way: one object a line, newest first
-    // with `--json`, oldest first without, where an empty list says so.
+    // JSON lines either way: newest first with `--json`, oldest first without.
     if ctx.json {
         for (run, ingest, d) in &diags {
             render::json_line(

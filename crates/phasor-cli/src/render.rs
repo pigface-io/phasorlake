@@ -66,8 +66,7 @@ pub fn summary_text(s: &Summary, report: &Report) -> String {
         out.push_str(&table(&["source", "code"], &rows));
         out.push('\n');
     }
-    // Each code with its count, then up to three of its diagnostics, each
-    // a JSON object on a line of its own.
+    // Each code with its count, then up to three of its diagnostics, one JSON object a line.
     for (code, bucket) in &report.by_code {
         let severity = bucket
             .examples
@@ -99,11 +98,7 @@ pub fn summary_text(s: &Summary, report: &Report) -> String {
     out
 }
 
-/// Renders one diagnostic: a JSON object on one line, with every field
-/// the diagnostic has (code, severity, message, where it happened, the
-/// column, what was expected and what was found, a sample, the causes).
-/// Errors are structured data wherever they are printed, so they can be
-/// read by eye and by a program alike.
+/// Renders one diagnostic as a one-line JSON object with every field it has.
 pub fn diagnostic_text(d: &Diagnostic) -> String {
     serde_json::to_string(d).unwrap_or_else(|_| d.render())
 }

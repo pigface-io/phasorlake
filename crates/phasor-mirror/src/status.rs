@@ -41,8 +41,7 @@ pub struct PeekCount {
 /// The state of the mirror.
 #[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Status {
-    /// When a run wrote these counts, kept up to date as it goes; none
-    /// when they were counted just now.
+    /// When a run wrote these counts; none when they were counted just now.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub as_of: Option<Stamp>,
     /// Zips peeked, when a run counts them.
@@ -64,10 +63,7 @@ pub struct Status {
 }
 
 /// Counts the kept pages and, once the crawl is done, the files listed
-/// against the files in the archive in the version listed: a file
-/// `held.ndjson` lists at that size and listed time without a look at the
-/// disk (`HeldEntry::is_listed_as`), any other at its listed size only when its
-/// directory holds its name.
+/// against the files archived in the version listed.
 pub fn status(mirror: &Mirror, archive: &Archive, roots: &[Url]) -> Result<Status, MirrorError> {
     let mut status = Status {
         as_of: None,
@@ -146,8 +142,7 @@ impl Mirror {
         self.cache_dir().join("status.json")
     }
 
-    /// Writes a run's counts, stamped now, beside their final name and
-    /// renamed into place.
+    /// Writes a run's counts, stamped now, beside their final name and renames them.
     pub fn write_progress(&self, status: &Status) -> Result<(), MirrorError> {
         let mut status = status.clone();
         status.as_of = Some(Stamp::now());

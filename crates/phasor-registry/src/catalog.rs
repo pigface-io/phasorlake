@@ -39,8 +39,7 @@ pub fn table_ref(
     }
 }
 
-/// The table of `market` that claims a block, by its family and name, when
-/// the registry declares one.
+/// The declared table of `market` that claims a block, by its family and name.
 pub fn table_of(registry: Arc<Registry>, market: Market) -> TableOf {
     Arc::new(move |b: &BlockName| {
         registry
@@ -49,8 +48,7 @@ pub fn table_of(registry: Arc<Registry>, market: Market) -> TableOf {
     })
 }
 
-/// Whether a table is one the census saw in the folders of `feed`
-/// (folders.json): a table seen in none is served by no feed.
+/// Whether the census saw a table in the folders of `feed` (folders.json).
 pub fn serves_feed(registry: Arc<Registry>, feed: &'static str) -> Serves {
     Arc::new(move |table: &str| {
         registry
@@ -113,13 +111,7 @@ impl Catalog for RegistryCatalog {
             .map(|id| self.table_of(id))
     }
 
-    /// Whether every shape that was read from a source would be read by
-    /// the same rules today. The answer comes from the recorded transforms
-    /// alone; the source is not opened.
-    ///
-    /// Strictness is not part of the question: a shape the registry would
-    /// refuse in strict mode is current when the permissive rules that
-    /// wrote it have not changed.
+    /// Whether every recorded shape would be read by the same rules today, ignoring strictness.
     fn plans_current(&self, transforms: &[Transform]) -> bool {
         transforms.iter().all(|t| {
             if t.plan_hash.is_empty() {
@@ -132,8 +124,6 @@ impl Catalog for RegistryCatalog {
                 version: t.source_version,
                 columns: &columns,
             };
-            // The month the source was read as: it picks among the runs
-            // of the table's history that fit the block.
             let period = t.source_period.as_deref().and_then(|p| p.parse().ok());
             self.registry
                 .resolve_in(

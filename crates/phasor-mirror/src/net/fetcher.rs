@@ -1,10 +1,6 @@
 //! Downloading: paced, retried, stopped for good when refused, and kept in
-//! the archive.
-//!
-//! A file is downloaded whole, once. Its bytes go from the transport to
-//! disk without a copy: each chunk is handed as it arrived to a writer on a
-//! blocking thread, which hashes it and writes it through a 1 MiB buffer,
-//! so no hashing or file I/O runs on the async runtime.
+//! the archive. Chunks are hashed and written on a blocking thread, so no
+//! file I/O runs on the async runtime.
 
 use std::path::{Path, PathBuf};
 use std::sync::Arc;
@@ -33,23 +29,20 @@ pub struct LocalFile {
     pub sha256: String,
     /// Bytes.
     pub size: u64,
-    /// Whether the archive held these bytes already: with no request, or,
-    /// for a file nemweb listed anew, with the same bytes as before.
+    /// Whether the archive held these bytes already.
     pub cached: bool,
     /// ETag.
     pub etag: Option<String>,
     /// Last-Modified.
     pub last_modified: Option<String>,
-    /// When the bytes downloaded were not kept: how they are the same as
-    /// the version archived already that `path` is.
+    /// When the bytes downloaded were not kept: how they match the version at `path`.
     pub same_as: Option<Same>,
 }
 
 /// A download the same as a version archived already, not kept.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Same {
-    /// A zip that holds the same files (names, CRC-32 and sizes) packed
-    /// again, rather than the same bytes.
+    /// A zip that holds the same files packed again, rather than the same bytes.
     pub repacked: bool,
     /// sha256 hex of the bytes downloaded.
     pub sha256: String,
@@ -129,23 +122,17 @@ impl Fetcher {
         self.requests.fetch_listing(url).await
     }
 
-    /// Bytes `range` of a file, by a ranged request, into memory, with what
-    /// the server said of the whole file; not archived. Paced, retried and
-    /// refused like every request.
+    /// Bytes `range` of a file into memory, not archived.
     pub async fn fetch_range(&self, url: &str, range: Span) -> Result<RangeRead, FetchError> {
         self.requests.fetch_range(url, range).await
     }
 
     /// The archived copy of a remote file, or the file downloaded into the
-    /// archive whole, with a sidecar that says where it came from.
+    /// archive whole, with its sidecar.
     ///
-    /// nemweb rewrites some files in place under the same name. When the
-    /// archived copy is not the version the listing gives (another size or
-    /// listed time, `Sidecar::is_listed_as`), that version is downloaded
-    /// beside it (`Archive::version_path`) and the first is kept as it
-    /// is. A download that is the same as a version archived already, by
-    /// its bytes or, for a zip, by what it holds, is not kept: that
-    /// version is the file, as `cached`, with `same_as` saying how.
+    /// When the archived copy is not the version listed
+    /// (`Provenance::listed_as`), that version is downloaded beside it. A
+    /// download the same as a version archived already is not kept.
     pub async fn fetch(&self, remote: &RemoteFile) -> Result<LocalFile, FetchError> {
         let url = remote.url.as_str();
         let base = self.archive.path_for(url);
@@ -273,9 +260,7 @@ impl Fetcher {
         })
     }
 
-    /// The file held at the download's path that the download at `part`
-    /// is the same as: by its bytes, from any URL, or, for a zip of the
-    /// same URL, by what it holds.
+    /// The file held at the download's path that the download at `part` matches.
     async fn held_as(
         &self,
         url: &str,
@@ -297,11 +282,8 @@ impl Fetcher {
         Ok(None)
     }
 
-    /// The rest of a download a run before left in `part`: asked for from
-    /// where it stops, appended when the server answers with that range of
-    /// the same file (its size, ETag and Last-Modified as when the part was
-    /// begun). None when there is no part, or it cannot be continued: then
-    /// the file is downloaded from the start.
+    /// The rest of a download left in `part`, appended when the server still
+    /// serves the same file. None when it cannot be continued.
     async fn resume(&self, url: &str, part: &Path) -> Result<Option<Streamed>, FetchError> {
         let from = std::fs::metadata(part).map_or(0, |m| m.len());
         let begun: Option<PartMeta> = std::fs::read(part_meta(part))

@@ -16,9 +16,7 @@ use crate::decoder::GasCsv;
 /// The kit's id, as a command names it.
 pub const KIT_ID: &str = "gas";
 
-/// The source ids, as the manifest records them, by feed: the Gas
-/// Bulletin Board, the Gas Supply Hub, the Short Term Trading Market and
-/// the Declared Wholesale Gas Market.
+/// The manifest's source ids by feed: GBB, GSH, STTM and DWGM.
 pub const SOURCE_IDS: [(&str, &str); 4] = [
     ("gbb", "gas-gbb"),
     ("gsh", "gas-gsh"),
@@ -34,16 +32,13 @@ pub fn source_id(feed: &str) -> Option<&'static str> {
         .map(|(_, id)| *id)
 }
 
-/// The gas kit over `registry`, listing nemweb at `config.base_url`: one
-/// source per feed, the feed-aware `.csv` reader, and the registry's gas
-/// tables as the catalog.
+/// The gas kit over `registry`: a source per feed, the feed-aware `.csv` reader, the gas tables.
 pub fn kit(registry: Arc<Registry>, config: &GasConfig) -> Result<SourceKit, FetchError> {
     let table_of: TableOf = catalog::table_of(registry.clone(), Market::Gas);
     let mut sources: Vec<Arc<dyn Source>> = Vec::new();
     for feed in feeds_of("gas") {
         let id = source_id(feed.id).expect("every gas feed has a source id");
-        // A feed serves the tables the census saw in its folders
-        // (folders.json): a table seen in none is served by no feed.
+        // A feed serves the tables the census saw in its folders (folders.json).
         let serves: Serves = catalog::serves_feed(registry.clone(), feed.id);
         sources.push(Arc::new(
             FeedFolders::new(id, &config.base_url, feed, table_of.clone())?

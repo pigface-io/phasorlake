@@ -1,10 +1,6 @@
-//! The map folded into patterns, small enough to commit and read.
-//!
-//! Every run of digits in a name becomes `{n}`, n its length, so the 207
-//! month folders of the archive are one line `MMSDM_{4}_{2}/`, and the
-//! files of a table across every month are one line too. Each pattern
-//! shows how many names it stands for, their bytes, and the first and last
-//! of them.
+//! The map folded into patterns, small enough to commit and read: every run
+//! of digits in a name becomes `{n}`, n its length (`MMSDM_{4}_{2}/`). Each
+//! pattern shows its count, bytes, and first and last names.
 
 use std::borrow::Cow;
 use std::collections::BTreeMap;

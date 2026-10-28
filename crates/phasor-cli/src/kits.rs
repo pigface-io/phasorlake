@@ -7,11 +7,8 @@ use phasor_core::config::Config;
 use phasor_kit::KitRegistry;
 use phasor_registry::Registry;
 
-/// Every kit, each over its own settings from the config file. The kits
-/// whose sources know a file by its path (gas, WEM) come before the NEM,
-/// whose archive source knows a file by its name alone, so a claim is
-/// never taken by the wrong market; the NEM, last, is the kit a file no
-/// source claims is read with.
+/// Every kit over its settings. Kits that know a file by its path (gas, WEM) come
+/// first; the NEM, last, also reads a file no source claims.
 pub fn assemble(config: &Config, registry: Arc<Registry>) -> Result<Arc<KitRegistry>> {
     let settings =
         |e: phasor_core::config::SourcesError| anyhow::anyhow!("{e} (in the config file)");

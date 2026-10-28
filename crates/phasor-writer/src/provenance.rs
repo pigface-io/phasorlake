@@ -1,14 +1,6 @@
-//! The four columns every lake file ends with (see
-//! [`phasor_iceberg::provenance`]): each row's source, `url!entry`, and
-//! every time that source was stamped with, each transcribed from where it
-//! was found and named for that place: the web server's `Last-Modified`,
-//! the zip entry's modified time in its zip's central directory, and the
-//! fourteen-digit timestamp in its file name. Nothing is combined here: a
-//! reader chooses which time to be known by.
-//!
-//! The columns are built once per source and filled per batch with no
-//! string copied: a dictionary of one value and keys of zero, and each time
-//! repeated.
+//! The four columns every lake file ends with (see [`phasor_iceberg::provenance`]):
+//! each row's source and every time it was stamped with, none combined.
+//! Built once per source, filled per batch with no string copied.
 
 use std::collections::HashMap;
 use std::sync::Arc;
@@ -23,11 +15,7 @@ use phasor_iceberg::provenance::{
     FILENAME_TIMESTAMP, SERVER_LAST_MODIFIED, SOURCE, ZIP_ENTRY_MODIFIED,
 };
 
-/// The format of a lake file: 5 since every footer and table key is under
-/// `phasor.`; a table's files are under its `data/` directory, as Iceberg
-/// lays a table out, so a reader finds them in a lake moved whole, since
-/// 4; every row carries each time its source was stamped with, under the
-/// `_ul_` prefix, since 3.
+/// The format of a lake file.
 pub const LAKE_FORMAT: &str = "5";
 
 /// The names of the three time columns, in the order a file holds them.
@@ -73,8 +61,7 @@ pub fn lake_schema(schema: &Schema) -> SchemaRef {
     Arc::new(Schema::new_with_metadata(fields, schema.metadata().clone()))
 }
 
-/// `batch` with `stamp`'s four columns after its own, in `schema`, the
-/// batch's [`lake_schema`].
+/// `batch` with `stamp`'s four columns after its own, in `schema` (its [`lake_schema`]).
 pub fn stamped(
     batch: &RecordBatch,
     stamp: &Stamp,
@@ -85,17 +72,14 @@ pub fn stamped(
     RecordBatch::try_new(schema.clone(), columns)
 }
 
-/// Every time a source was stamped with, each as found, in microseconds
-/// since 1970 (UTC); none where the source carries no such stamp.
+/// Every time a source was stamped with, as found, in microseconds since 1970 UTC.
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
 pub struct Times {
     /// The HTTP `Last-Modified` the web server gave for the source's bytes.
     pub server_last_modified: Option<i64>,
-    /// The entry's modified time in its zip's central directory, read in
-    /// the packer's clock.
+    /// The entry's modified time in its zip's central directory, packer's clock.
     pub zip_entry_modified: Option<i64>,
-    /// The fourteen-digit `YYYYMMDDHHMMSS` stamp in the source's file
-    /// name, read in the host's clock.
+    /// The `YYYYMMDDHHMMSS` stamp in the source's file name, host's clock.
     pub filename_timestamp: Option<i64>,
 }
 
@@ -119,8 +103,7 @@ pub struct Stamp {
 }
 
 impl Stamp {
-    /// The stamp of source `name` (`url!entry`) with the times it was
-    /// stamped with.
+    /// The stamp of source `name` (`url!entry`) with its times.
     pub fn new(name: &str, times: Times) -> Self {
         Self {
             name: Arc::from(name),
@@ -158,8 +141,7 @@ impl Stamp {
     }
 }
 
-/// The rows of each source in `column`, a batch's `_ul_source`, added to
-/// `counts` in the order sources first appear.
+/// Adds the rows of each source in a batch's `_ul_source` to `counts`, in first-seen order.
 pub(crate) fn count(column: &dyn Array, counts: &mut Vec<(String, u64)>) {
     let Some(dict) = column
         .as_any()

@@ -1,8 +1,4 @@
-//! `llm/index.md` is the map an agent reads when it needs to find where
-//! something lives; `CLAUDE.md` points at it without loading it, so it must
-//! stay short enough to read on demand, and every pointer in it has to be
-//! true: a path that has moved sends an agent to the wrong place with
-//! confidence.
+//! Holds `llm/index.md` short and true: within its size limit, every path and recipe real.
 
 use std::collections::BTreeSet;
 use std::process::Command;

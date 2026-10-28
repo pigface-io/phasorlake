@@ -63,8 +63,7 @@ pub enum Input {
         /// The query.
         query: Query,
     },
-    /// Files a source listed already, for a query: fetched and read as
-    /// [`Input::Remote`]'s are, listed again by no one.
+    /// Files a source listed already, fetched and read as [`Input::Remote`]'s are.
     Listed {
         /// The source that listed them.
         source: Arc<dyn Source>,
@@ -73,8 +72,7 @@ pub enum Input {
         /// The files.
         files: Vec<phasor_kit::RemoteFile>,
     },
-    /// The archived files of a source for a query: what `fetch`
-    /// downloaded, read from disk, never from the network.
+    /// The archived files of a source for a query, read from disk, never the network.
     Archive {
         /// The source whose archive is read.
         source: Arc<dyn Source>,
@@ -83,20 +81,14 @@ pub enum Input {
     },
     /// Local zips or CSVs.
     Local(Vec<PathBuf>),
-    /// Local zips or CSVs, every one read by the kit named, whatever source
-    /// would claim it by its name: for a file whose name or place says
-    /// nothing of its market (a renamed download, a copy outside the
-    /// mirror's folders).
+    /// Local zips or CSVs, every one read by the kit named, whatever its name says.
     LocalIn {
         /// The kit's id, e.g. `gas`.
         kit: String,
         /// The files.
         paths: Vec<PathBuf>,
     },
-    /// Every source the manifest has recorded that is not wholly in the
-    /// lake by the current rules: its rules have changed since it was
-    /// read, an earlier read failed, or a Parquet file is gone. Each is
-    /// read again from where it is kept on disk; nothing is downloaded.
+    /// Every recorded source not wholly in the lake by the current rules, re-read from disk.
     Stale,
 }
 

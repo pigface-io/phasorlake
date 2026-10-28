@@ -1,13 +1,5 @@
-//! Each folder's journal: what became of its files, one line per event,
-//! appended and never written over (`docs/archive.md`, Journal).
-//!
-//! The journal keeps only what no provenance record holds: a file listed
-//! again with the bytes of a version archived already (`same`), a zip
-//! listed again and packed again with the same entries (`repacked`, its
-//! other bytes not kept), and a folder nemweb stops serving
-//! (`folder_gone`). A download's address, and a listing that stops naming
-//! a file, are in the file's record (`seen`, `gone`). Lines written before
-//! keep their other events and fields; they still read.
+//! Each folder's journal, appended and never written over: only what no
+//! provenance record holds (`same`, `repacked`, `folder_gone`).
 
 use std::io::Write as _;
 use std::path::PathBuf;
@@ -28,8 +20,7 @@ pub enum Change {
     Version,
     /// Listed again with the bytes of `file`, a version archived already.
     Same,
-    /// A zip listed again, packed again: other bytes (`sha256`), the same
-    /// files as `file` (names, CRC-32 and sizes).
+    /// A zip listed again, packed again: other bytes, the same files as `file`.
     Repacked,
     /// No longer listed.
     Dropped,
@@ -47,12 +38,10 @@ pub struct Event {
     pub url: String,
     /// What became of it.
     pub event: Change,
-    /// The archived file that holds its bytes or its files: its name,
-    /// `{name}` or `{name}@{at}` (`docs/archive.md`, Versions).
+    /// The name of the archived file that holds its bytes, `{name}` or `{name}@{at}`.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub file: Option<String>,
-    /// sha256 hex of bytes no record keeps: a zip packed again, which
-    /// was not kept.
+    /// sha256 hex of a repacked zip's bytes, which were not kept.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub sha256: Option<String>,
 }
@@ -71,8 +60,7 @@ impl Event {
 }
 
 impl Mirror {
-    /// The journal of the folder `folder` (a URL ending in `/`): its local
-    /// folder's `events.ndjson`, both listings of a report folder in one.
+    /// The journal of the folder URL `folder`: its local folder's `events.ndjson`.
     pub fn journal_path(&self, folder: &str) -> PathBuf {
         self.folder_dir(folder).join("events.ndjson")
     }
@@ -92,8 +80,7 @@ impl Mirror {
             .map_err(MirrorError::io(&path))
     }
 
-    /// The journal of `folder`, oldest first; empty when it has none. A
-    /// line that does not read (the last, cut short) is passed over.
+    /// The journal of `folder`, oldest first; a line that does not read is passed over.
     pub fn journal(&self, folder: &str) -> Result<Vec<Event>, MirrorError> {
         let path = self.journal_path(folder);
         match std::fs::read_to_string(&path) {

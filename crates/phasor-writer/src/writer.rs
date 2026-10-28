@@ -27,8 +27,7 @@ pub enum Partition {
         /// Month 1..=12.
         month: u8,
     },
-    /// A snapshot table's full copy from a file of one day (a registry a
-    /// feed publishes daily): `snapshot=YYYYMMDD`.
+    /// A snapshot table's full copy from a file of one day: `snapshot=YYYYMMDD`.
     SnapshotDay {
         /// Year.
         year: i32,
@@ -79,9 +78,7 @@ pub struct PartitionKey {
 pub struct FileMeta {
     /// Table name as in the registry.
     pub table: String,
-    /// The source file's stem (lower-case), the first part of the file
-    /// name: a file holds rows of the source file's entries, each row
-    /// naming its own.
+    /// The source file's stem (lower-case), the first part of the file name.
     pub source_stem: String,
     /// Schema version of the block.
     pub schema_version: u16,
@@ -94,9 +91,6 @@ pub struct FileMeta {
     /// Index of the time column in the schema, when the table has one.
     pub time_column: Option<usize>,
     /// Which file of this source, shape and partition this is, from 1.
-    /// A source whose rows wander over more partitions than may be open
-    /// at once has an earlier file of a partition closed, and writes a
-    /// further one when rows for it come again.
     pub part: u32,
     /// The shape that was read and the rules it was read with.
     pub transform: Transform,
@@ -139,8 +133,7 @@ pub trait LakeWriter: Send {
     fn write(&mut self, id: WriterId, batch: &RecordBatch) -> Result<(), StoreError>;
     /// Finishes the file; it is visible once committed.
     fn close(&mut self, id: WriterId) -> Result<WrittenFile, StoreError>;
-    /// Makes every file closed since the last commit durable and visible.
-    /// Dropped uncommitted, they are removed.
+    /// Makes every file closed since the last commit durable and visible; drop removes them.
     fn commit(&mut self) -> Result<(), StoreError>;
     /// Discards the file.
     fn abort(&mut self, id: WriterId);

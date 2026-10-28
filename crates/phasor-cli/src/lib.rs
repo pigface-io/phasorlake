@@ -1,6 +1,4 @@
-//! The command: parse flags, assemble dependencies, call the pipeline or the
-//! registry, render. Nothing here decides what a table means or where a row
-//! goes; those decisions live in the library crates.
+//! The command: parse flags, assemble dependencies, call the library crates, render.
 
 pub mod cli;
 pub mod commands;

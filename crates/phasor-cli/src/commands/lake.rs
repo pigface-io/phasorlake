@@ -1,5 +1,4 @@
-//! `import`, `ingest`, `verify`, `iceberg`: the pipeline over local and
-//! archived files, and the lake's checks.
+//! `import`, `ingest`, `verify`, `iceberg`: the pipeline over local and archived files, and checks.
 
 use std::path::PathBuf;
 
@@ -107,8 +106,7 @@ async fn run_plan(cli: &Cli, ctx: &Context, plan: Plan) -> Result<i32> {
     Ok(report.exit_code)
 }
 
-/// `phasor import <paths> [--kit K]`: zips or CSVs from disk, straight
-/// into the lake; with `--kit`, every file read by that kit.
+/// `phasor import <paths> [--kit K]`: zips or CSVs from disk into the lake.
 pub async fn import(cli: &Cli, ctx: &Context, cmd: &crate::cli::ImportCmd) -> Result<i32> {
     let (paths, args) = (&cmd.paths, &cmd.ingest);
     if let Some(k) = &cmd.kit
@@ -165,10 +163,8 @@ pub async fn import(cli: &Cli, ctx: &Context, cmd: &crate::cli::ImportCmd) -> Re
     run_plan(cli, ctx, plan).await
 }
 
-/// `phasor ingest [TABLES] [--from A --to B]`: archived files into the
-/// lake, no network. With a window, the archived files of the market's
-/// source over it; without, every recorded source whose lake files are
-/// behind the current rules, read again from where it is kept.
+/// `phasor ingest`: archived files into the lake, no network. With a window, the
+/// market's archived files over it; without, every source behind the current rules.
 pub async fn ingest(cli: &Cli, ctx: &Context, args: &IngestCmd) -> Result<i32> {
     if args.tables.tables.is_empty() && args.tables.market.is_none() && !args.window.is_set() {
         if args.source.is_some() {
@@ -189,10 +185,8 @@ pub async fn ingest(cli: &Cli, ctx: &Context, args: &IngestCmd) -> Result<i32> {
         .kits
         .kit(&sel.kit)
         .ok_or_else(|| anyhow::anyhow!("This binary was assembled without the {} kit.", sel.kit))?;
-    // Which archived source each table is read from: the one named, else
-    // the monthly source that publishes it, else the first that does. A
-    // kit of several feeds (gas) reads each table from its own, and with
-    // no tables, every feed.
+    // Each table is read from the named source, else the monthly one that publishes it,
+    // else the first that does; with no tables, every feed.
     let reads: Vec<(std::sync::Arc<dyn phasor_kit::Source>, Vec<String>)> = match &args.source {
         Some(id) => vec![(
             kit.sources
@@ -285,8 +279,7 @@ pub async fn iceberg(ctx: &Context, table: Option<&str>) -> Result<i32> {
     Ok(code)
 }
 
-/// Each table's Iceberg metadata from its live lake files: one row per
-/// table (name, snapshots, files, rows), and 1 when a table has no history.
+/// Each table's Iceberg metadata from its live files: a row per table; 1 when one has no history.
 fn build_iceberg(
     ctx: &Context,
     outputs: &[phasor_writer::manifest::LiveOutput],
@@ -342,9 +335,7 @@ fn build_iceberg(
     Ok((rows, code))
 }
 
-/// After a run, the Iceberg metadata of every table it ingested, so a
-/// reader of the lake by field id never sees it lag the files. A table
-/// with no history (derived from a file) has none to build.
+/// After a run, rebuilds the Iceberg metadata of every table it ingested.
 pub async fn refresh_iceberg(ctx: &Context, run_id: Option<i64>) -> Result<()> {
     let Some(run_id) = run_id else {
         return Ok(());
@@ -376,8 +367,7 @@ pub async fn refresh_iceberg(ctx: &Context, run_id: Option<i64>) -> Result<()> {
     Ok(())
 }
 
-/// `phasor verify --archive`: every archived file hashed again against
-/// its record.
+/// `phasor verify --archive`: every archived file hashed again against its record.
 pub fn verify_archive(ctx: &Context) -> Result<i32> {
     let store = ctx.archive();
     let entries = phasor_acquire::archive::entries_under(&store, None);
@@ -402,8 +392,7 @@ pub fn verify_archive(ctx: &Context) -> Result<i32> {
     Ok(i32::from(bad > 0))
 }
 
-/// `phasor verify`: every output the manifest lists exists with its size,
-/// and every quarantine file belongs to a current ingest.
+/// `phasor verify`: every manifest output exists with its size; every quarantine file is current.
 pub async fn verify(ctx: &Context, table: Option<&str>) -> Result<i32> {
     let (manifest, thread) = ctx.manifest()?;
     let report = phasor_writer::verify_lake(&manifest, &ctx.home.quarantine(), table)

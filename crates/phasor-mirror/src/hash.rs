@@ -1,6 +1,5 @@
-//! A CRC-32 for every downloaded file: files downloaded before downloads
-//! recorded one are read once, their sha256 checked against their sidecar
-//! on the way, and the CRC-32 recorded in the record.
+//! A CRC-32 for every downloaded file whose record lacks one, its sha256
+//! checked against the sidecar on the way.
 
 use serde::Serialize;
 
@@ -30,14 +29,12 @@ pub struct HashSummary {
     pub read: usize,
     /// Of those read, CRC-32s recorded.
     pub recorded: usize,
-    /// Files that are not the bytes their sidecar records, or could not be
-    /// read; their sidecars are left as they are.
+    /// Files that do not match their sidecar or could not be read; sidecars left as they are.
     pub failed: Vec<Diagnostic>,
 }
 
-/// Reads every downloaded file whose sidecar has no CRC-32 (with `all`,
-/// every downloaded file), checks its sha256 and size against the sidecar,
-/// and records its CRC-32 there. One file at a time: they share one disk.
+/// Reads every downloaded file whose sidecar has no CRC-32 (with `all`, every
+/// one), checks its sha256 and size, and records its CRC-32 there.
 pub fn hash(
     archive: &Archive,
     all: bool,

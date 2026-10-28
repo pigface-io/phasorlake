@@ -1,14 +1,6 @@
-//! The archive: every downloaded file, kept as the server sent it.
-//!
-//! A file lives at a path named for its URL
-//! (`{archive}/www.nemweb.com.au/Data_Archive/.../PUBLIC_DVD_X_202401010000.zip`,
-//! one folder per report folder) beside its provenance record,
-//! `{name}.provenance.json`: what its bytes are and every place nemweb
-//! served them ([`phasor_provenance`]). A file is downloaded once; nothing
-//! in the family replaces an archived file, which is the untransformed
-//! record the census and the lake are derived from. Only its record grows.
-//! The store itself is the family's ([`Archive`]); this module adds what
-//! the hashing, checks and record edits the lake and the mirror make.
+//! The archive: every downloaded file kept as the server sent it, at a path named
+//! for its URL beside its `{name}.provenance.json` record. An archived file is never
+//! replaced; only its record grows. This module adds hashing, checks and record edits.
 
 use std::collections::{HashMap, HashSet};
 use std::ffi::OsString;
@@ -23,18 +15,13 @@ pub use phasor_provenance::{Address, Content, Listed, Provenance, Served, Sha256
 use crate::error::FetchError;
 use phasor_provenance::stamp::Stamp;
 
-/// Hands a file's writes to the disk with `fsync`. On macOS
-/// `File::sync_all` and `sync_data` also flush the drive's own cache
-/// (`F_FULLFSYNC`), which on a USB disk costs most of a second per small
-/// file. What that flush adds guards only against a power cut, after which
-/// a file's bytes may not match the sha256 in its record.
+/// Syncs a file's writes with `fsync`, not macOS `F_FULLFSYNC`, which costs most of a
+/// second per small file on a USB disk and guards only against a power cut.
 pub fn to_disk(file: &std::fs::File) -> std::io::Result<()> {
     rustix::fs::fsync(file).map_err(std::io::Error::from)
 }
 
-/// Hands a batch of files written without a sync to the disk, each file
-/// then each folder holding one, so their names last too; a path no longer
-/// there hands only its folder. An error names the path it came from.
+/// Syncs a batch of files written unsynced, then each folder holding one, so their names last too.
 pub fn batch_to_disk<'p>(
     paths: impl IntoIterator<Item = &'p Path>,
 ) -> Result<(), (PathBuf, std::io::Error)> {
@@ -51,16 +38,14 @@ pub fn batch_to_disk<'p>(
     folders.into_iter().try_for_each(sync)
 }
 
-/// The names each directory holds, read once per directory: one read of a
-/// large folder answers every miss in it.
+/// The names each directory holds, read once per directory.
 #[derive(Debug, Default)]
 pub struct DirNames {
     dirs: HashMap<PathBuf, HashSet<OsString>>,
 }
 
 impl DirNames {
-    /// Whether `path`'s directory holds its name. A directory that cannot
-    /// be read holds nothing.
+    /// Whether `path`'s directory holds its name; an unreadable directory holds nothing.
     pub fn holds(&mut self, path: &Path) -> bool {
         let (Some(dir), Some(name)) = (path.parent(), path.file_name()) else {
             return false;
@@ -94,9 +79,7 @@ pub fn sha256_hex(bytes: &[u8]) -> String {
     Sha256::of(bytes).hex()
 }
 
-/// sha256 hex and length of the file at `path`, read in 1 MiB pieces so a
-/// file of any size takes the same memory. Blocking: call it off the
-/// async runtime.
+/// sha256 hex and length of the file at `path`, read in 1 MiB pieces. Blocking.
 pub fn sha256_file(path: &Path) -> std::io::Result<(String, u64)> {
     sha256_read(&mut std::fs::File::open(path)?)
 }
@@ -119,8 +102,7 @@ pub fn sha256_read(f: &mut impl Read) -> std::io::Result<(String, u64)> {
     Ok((Sha256(hasher.finalize().into()).hex(), len))
 }
 
-/// The content of the file at `path`, from one read of it in 1 MiB
-/// pieces. Blocking: call it off the async runtime.
+/// The content of the file at `path`, from one read. Blocking.
 pub fn content_of(path: &Path) -> Result<Content, FetchError> {
     Content::of_file(path).map_err(|source| FetchError::CacheIo {
         path: path.display().to_string(),
@@ -128,17 +110,13 @@ pub fn content_of(path: &Path) -> Result<Content, FetchError> {
     })
 }
 
-/// Whether `path` names a macOS AppleDouble file (`._name`), which the
-/// system writes beside a file on a volume without extended attributes.
-/// It is not a download: every walk of the archive skips it.
+/// Whether `path` names a macOS AppleDouble file (`._name`), which every walk skips.
 pub fn is_apple_double(path: &Path) -> bool {
     path.file_name()
         .is_some_and(|n| n.to_string_lossy().starts_with("._"))
 }
 
-/// Every version of `url` archived: the files at `path` and each
-/// `{name}@{at}` beside it whose record names `url`, in name order, so in
-/// the order nemweb listed them.
+/// Every version of `url` archived (the file at `path` and each `{name}@{at}`), in name order.
 pub fn versions(path: &Path, url: &str) -> Result<Vec<Held>, FetchError> {
     Ok(Archive::held_at(path)?
         .into_iter()
@@ -146,8 +124,7 @@ pub fn versions(path: &Path, url: &str) -> Result<Vec<Held>, FetchError> {
         .collect())
 }
 
-/// The file at `path` itself (not a version beside it) with its record,
-/// when it is archived from `url`.
+/// The file at `path` itself, not a version beside it, when archived from `url`.
 pub fn lookup_at(path: &Path, url: &str) -> Result<Option<Held>, FetchError> {
     Ok(Archive::held_at(path)?
         .into_iter()
@@ -168,9 +145,8 @@ pub fn verify(held: &Held) -> Result<(), FetchError> {
     Ok(())
 }
 
-/// Adds `address` to the record of the file at `path`, when its URL is
-/// not an address of it already. Whether the record changed. A record
-/// written not `durable` is left for the caller to sync, once for a batch.
+/// Adds `address` to the record at `path` unless present; whether it changed.
+/// A record written not `durable` is left for the caller to sync.
 pub fn add_address(path: &Path, address: Address, durable: bool) -> Result<bool, FetchError> {
     let Some(mut p) = Archive::read(path)? else {
         return Ok(false);
@@ -186,8 +162,7 @@ pub fn add_address(path: &Path, address: Address, durable: bool) -> Result<bool,
     Ok(true)
 }
 
-/// Notes, in every record under the folder `folder` (a URL ending in
-/// `/`), that each address under it is gone. How many records changed.
+/// Marks every address under `folder` (a URL ending in `/`) gone; how many records changed.
 pub fn folder_gone(archive: &Archive, folder: &str, at: Stamp) -> Result<usize, FetchError> {
     let mut n = 0;
     for h in entries_under(archive, Some(&archive.path_for(folder))) {
@@ -205,8 +180,7 @@ pub fn folder_gone(archive: &Archive, folder: &str, at: Stamp) -> Result<usize, 
     Ok(n)
 }
 
-/// Removes an archived file and its record, whichever name the record has
-/// (`{name}.provenance.json`, or format 1's `{name}.json`).
+/// Removes an archived file and its record (`{name}.provenance.json`, or format 1's `{name}.json`).
 pub fn remove(path: &Path) -> Result<(), FetchError> {
     let io = |p: &Path| {
         let p = p.display().to_string();
@@ -223,9 +197,8 @@ pub fn remove(path: &Path) -> Result<(), FetchError> {
     std::fs::remove_file(path).map_err(io(path))
 }
 
-/// Every archived file under `dir` (the archive itself by default), with
-/// its record, in path order. A folder that cannot be read, or a record
-/// that does not read, is passed over.
+/// Every archived file under `dir` (default the archive) with its record, in path order;
+/// unreadable folders and records are passed over.
 pub fn entries_under(archive: &Archive, dir: Option<&Path>) -> Vec<Held> {
     let dir = dir.unwrap_or(archive.root());
     let Ok(paths) = Archive::walk_records(dir) else {
@@ -240,8 +213,7 @@ pub fn entries_under(archive: &Archive, dir: Option<&Path>) -> Vec<Held> {
         .collect()
 }
 
-/// A record of `bytes` fetched from `url`, as the tests write one: no
-/// listing, no response, no CRC-32 yet.
+/// A test record of `bytes` fetched from `url`: no listing, no response, no CRC-32.
 #[cfg(any(test, feature = "test-support"))]
 pub fn test_record(url: &str, bytes: &[u8]) -> Provenance {
     Provenance::new(

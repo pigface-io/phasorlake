@@ -1,18 +1,8 @@
-//! The files that are not MMS rows, through the same registry and sink: a
-//! header-row CSV, whose name names the block it carries, and a WEMDE JSON
-//! document, whose arrays under `data` each carry one.
+//! Files that are not MMS rows (header-row CSV, WEMDE JSON), read by the
+//! census's plain decoder and resolved through the same registry and sink.
 //!
-//! Both are read by the plain decoder of phasor-schemas, the one the
-//! census reads them with, so a block's name, its columns and every date
-//! are exactly what the census recorded, and each block resolves through
-//! the registry like an MMS block: a shape the history has conforms, a
-//! new one is derived. A row has no prefix: its block is the header that
-//! opened it ([`ArrowSink::with_prefix`]).
-//!
-//! A feed whose files restate the one before ([`Dedupe::VersionDiff`]) is
-//! read against the previous version the source names
-//! ([`DecodeCtx::previous`]): a row the previous version already had is
-//! not ingested again, and [`DecodeStats::rows_repeated`] counts it.
+//! A [`Dedupe::VersionDiff`] feed skips rows its [`DecodeCtx::previous`] version
+//! already had, counted in [`DecodeStats::rows_repeated`].
 
 use std::collections::HashMap;
 use std::io::Read;
@@ -56,8 +46,7 @@ impl PlainCsvDecoder {
     }
 }
 
-/// A WEMDE JSON document of one feed: each array under `data` a block,
-/// resolved through the registry.
+/// A WEMDE JSON document of one feed: each array under `data` a block.
 pub struct WemdeDecoder {
     registry: Arc<Registry>,
     market: Market,
@@ -75,10 +64,7 @@ impl WemdeDecoder {
     }
 }
 
-/// A `.csv` of a feed whose folders hold more than one kind, read by what
-/// its first bytes say it is: MMS rows (the GSH files among the GBB
-/// reports) through the MMS decoder, a header row through the plain one,
-/// and markup (a page saved as `.csv`) skipped with a warning.
+/// A `.csv` read as MMS, plain or skipped markup by what its first bytes say it is.
 pub struct SniffedCsv {
     mms: MmsDecoder,
     plain: PlainCsvDecoder,
@@ -99,8 +85,7 @@ fn market_of(feed: &Feed) -> Market {
     Market::parse(feed.market).unwrap_or_default()
 }
 
-/// The path the block-naming rule reads: the file's path on its host, with
-/// a zip entry's name after `!` when the entry is not the file itself.
+/// The path the block-naming rule reads: the host path, then `!entry` for a zip entry.
 fn path_of(ctx: &DecodeCtx<'_>) -> String {
     let path = ctx.file.remote.url.path();
     let file_name = path.rsplit('/').next().unwrap_or(path);
@@ -121,8 +106,7 @@ fn options<'a>(feed: &'a Feed, ctx: &DecodeCtx<'_>, name: &str) -> PlainOptions<
     }
 }
 
-/// The block a file carries, or the diagnostic saying its name reads as
-/// none under its feed.
+/// The block a file carries, or why its name names none.
 fn name_of(
     feed: &Feed,
     ctx: &DecodeCtx<'_>,
@@ -145,9 +129,7 @@ fn name_of(
     })
 }
 
-/// Hands a plain file's blocks and rows to an [`ArrowSink`] as the MMS
-/// scanner would: each header as an I row named by the file, each row
-/// with no prefix.
+/// Hands a plain file's blocks and rows to an [`ArrowSink`] as the MMS scanner would.
 struct PlainBridge<'a> {
     arrow: ArrowSink<'a, Bridge<'a>>,
     /// The block the file carries; a document's arrays append to its name.
@@ -279,8 +261,7 @@ impl PlainSink for PlainBridge<'_> {
     }
 }
 
-/// The rows of the previous version of the file, when the feed restates
-/// its files and the source named one.
+/// The rows of the file's previous version, when the feed restates its files.
 fn previous_rows(
     feed: &Feed,
     ctx: &DecodeCtx<'_>,

@@ -21,9 +21,7 @@ use crate::plan::ConformancePlan;
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)]
 pub struct TableId(pub u32);
 
-/// An owned `(market, report_type, report_subtype)` key that can be looked
-/// up with borrowed strings and no allocation. A pair names a table within
-/// its market: two markets may publish the same pair.
+/// An owned `(market, report_type, report_subtype)` key, looked up with borrowed strings.
 #[derive(Debug, Clone, PartialEq, Eq, Hash)]
 pub struct PairKey(pub Market, pub String, pub String);
 
@@ -40,8 +38,7 @@ impl Equivalent<PairKey> for PairRef<'_> {
 /// Where the definition of a table came from.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
 pub enum SchemaSource {
-    /// The registry phasor was built with, or a schemas directory loaded
-    /// in its place.
+    /// The registry phasor was built with, or a schemas directory loaded in its place.
     Registry,
     /// A user's own table file, laid over the registry.
     User,
@@ -76,23 +73,14 @@ pub struct Registry {
     /// Whether each table came from a user's overlay.
     from_user: Vec<bool>,
     by_name: HashMap<String, TableId>,
-    /// Each report pair's table, and the pair's place in its list.
-    /// The tables of each pair with the pair's place in each one's list,
-    /// the most `with_columns` first.
+    /// Each pair's tables with the pair's place in their lists, most `with_columns` first.
     by_pair: hashbrown::HashMap<PairKey, Vec<(TableId, u16)>>,
-    /// The lake schema, the history and the plans of each table's schemas,
-    /// built the first time the table is used. A run reads a handful of
-    /// tables; building them for every table the registry knows would cost
-    /// each run the memory and the time of all of them.
+    /// Each table's lake schema, history and plans, built lazily on first use.
     shapes: Vec<OnceLock<TableShapes>>,
-    /// What each block shape resolved to, worked out when first seen: the
-    /// table, the fingerprint of its columns, its I-row version and the
-    /// month of its source decide it.
+    /// What each block shape resolved to, worked out when first seen.
     resolutions: RwLock<hashbrown::HashMap<ResolutionKey, Arc<Resolution>>>,
-    /// Tables derived at run time from the header of a file whose report
-    /// pair no table claims. Slots are written once and never moved, so a
-    /// reference to one lives as long as the registry. Each is boxed: an
-    /// empty slot costs a pointer, not a table.
+    /// Tables derived from unclaimed headers; slots are written once and never
+    /// moved, so a reference lives as long as the registry.
     derived: Vec<OnceLock<Box<Derived>>>,
     /// The market and report pair of each derived table, in slot order.
     derived_pairs: Mutex<Vec<(Market, String, String)>>,
@@ -105,12 +93,9 @@ pub(crate) struct TableShapes {
     pub(crate) lake: SchemaRef,
     /// The table's history as an Iceberg table, which resolution reads.
     pub(crate) history: phasor_iceberg::History,
-    /// Per schema of the history: its id and the plan of a block of its
-    /// columns.
+    /// Per schema of the history: its id and its plan.
     pub(crate) plans: Vec<(u16, Arc<ConformancePlan>)>,
-    /// What `History::resolve` names, worked out ahead, for each column
-    /// list (by report pair's place and fingerprint) that only one schema
-    /// has: whatever the month and version, the block reads with it.
+    /// Column lists only one schema has, resolved ahead.
     pub(crate) exact: ExactAnswers,
     /// The AEMO versions of each report pair's runs, by the pair's place.
     pub(crate) versions: Vec<(u16, u16)>,
@@ -123,8 +108,7 @@ impl TableShapes {
     }
 }
 
-/// A block shape: its table, the fingerprint of its columns, its I-row
-/// version and the month of its source.
+/// A block shape: table, column fingerprint, I-row version, source month.
 pub(crate) type ResolutionKey = (TableId, Fingerprint, u16, Option<YearMonth>);
 
 /// What resolving a block shape gives, every time.
@@ -142,20 +126,17 @@ pub(crate) struct Resolution {
     pub(crate) warnings: Vec<phasor_core::Diagnostic>,
 }
 
-/// A table that is not in the registry: its definition, built from an I
-/// row, and the schema its files are written with.
+/// A table built from an I row, with the schema its files are written with.
 #[derive(Debug)]
 struct Derived {
     table: Table,
     lake: SchemaRef,
 }
 
-/// How many tables one run may derive. The whole archive has a few hundred
-/// tables; a file that asks for more than this is not an MMS file.
+/// How many tables one run may derive; a file that asks for more is not an MMS file.
 const DERIVED_SLOTS: usize = 4096;
 
-/// The definition of a market no file defines: fixed market time, AEMO's
-/// timestamp format, the trading day's start.
+/// The definition of a market no file defines.
 fn default_market(market: Market) -> MarketDef {
     let wem = market == Market::Wem;
     MarketDef {
@@ -202,9 +183,9 @@ impl Registry {
         Ok(Self::from_set(set))
     }
 
-    /// Lays `overlay` (a user's own tables, laid out like `schemas/`) over
-    /// this registry: a table of the same name replaces the embedded one,
-    /// other tables are added. The result is validated as a set.
+    /// Lays a user's `schemas/`-style `overlay` over this registry, replacing tables by name.
+    ///
+    /// The result is validated as a set.
     pub fn with_overlay(&self, overlay: &Path) -> Result<Registry, SchemaFileError> {
         let over = SchemaSet::read_dir(overlay)?;
         let mut tables: Vec<Table> = self
@@ -267,7 +248,6 @@ impl Registry {
                 });
             }
         }
-        // A market no file defines gets the definition its name implies.
         for m in Market::ALL {
             if !markets.iter().any(|d| d.market == m) {
                 markets.push(default_market(m));
@@ -296,9 +276,7 @@ impl Registry {
         &self.folders
     }
 
-    /// The report folders that carried blocks of this table, by its report
-    /// pairs; empty for a table only the monthly archive publishes, or
-    /// when no folders were pulled.
+    /// The report folders that carried blocks of this table; empty when none were pulled.
     pub fn folders_of(&self, id: TableId) -> Vec<&Folder> {
         let t = self.table(id);
         self.folders
@@ -307,15 +285,13 @@ impl Registry {
             .collect()
     }
 
-    /// The history of a table of the registry as an Iceberg table; none
-    /// for a table derived from a file.
+    /// A registry table's history as an Iceberg table; none for a derived table.
     pub fn history(&self, id: TableId) -> Option<&phasor_iceberg::History> {
         let i = id.0 as usize;
         (i < self.tables.len()).then(|| &self.shapes(i).history)
     }
 
-    /// The lake schema, history and schema plans of a table of the
-    /// registry, built on first use.
+    /// A registry table's shapes, built on first use.
     pub(crate) fn shapes(&self, index: usize) -> &TableShapes {
         self.shapes[index].get_or_init(|| {
             let t = &self.tables[index];
@@ -347,8 +323,7 @@ impl Registry {
         })
     }
 
-    /// The table behind a handle: one of the registry's, or one derived
-    /// from a file during this run.
+    /// The table behind a handle, declared or derived.
     pub fn table(&self, id: TableId) -> &Table {
         let i = id.0 as usize;
         match self.tables.get(i) {
@@ -363,8 +338,7 @@ impl Registry {
             .expect("a handle beyond the registry's tables names a derived table")
     }
 
-    /// Whether the table was derived from a file rather than declared in
-    /// the registry.
+    /// Whether the table was derived from a file rather than declared.
     pub fn is_derived(&self, id: TableId) -> bool {
         id.0 as usize >= self.tables.len()
     }
@@ -378,10 +352,9 @@ impl Registry {
         }
     }
 
-    /// The directory, under a market's lake, that a table's files go to. A
-    /// derived table is kept apart under `_unregistered/` and named by its
-    /// report pair, so its text columns never mix with the typed files of a
-    /// table the registry declares, now or later.
+    /// The directory under a market's lake that a table's files go to.
+    ///
+    /// A derived table goes under `_unregistered/`, apart from declared tables.
     pub fn table_dir(&self, id: TableId) -> String {
         let t = self.table(id);
         if self.is_derived(id) {
@@ -397,11 +370,9 @@ impl Registry {
         }
     }
 
-    /// The table for a report pair no table claims, derived from the I row
-    /// that first showed it: every column of the row, as nullable text,
-    /// which is exactly what the file says and nothing it does not. The
-    /// same pair gives the same table for the rest of the run. `None` when
-    /// more tables were derived than a run has room for.
+    /// The table for an unclaimed report pair, every column nullable text, the same all run.
+    ///
+    /// `None` when more tables were derived than a run has room for.
     pub fn derive(&self, market: Market, irow: &IRow<'_>) -> Option<TableId> {
         let mut pairs = self
             .derived_pairs
@@ -438,10 +409,7 @@ impl Registry {
             .or_else(|| self.by_name.get(&name.to_ascii_uppercase()).copied())
     }
 
-    /// The handle for a report pair of `market`, without allocating: the
-    /// registry's table that takes every block of the pair (else its
-    /// first), or failing that one derived earlier in this run. A block's
-    /// own table depends on its columns: [`Registry::table_for_block`].
+    /// The handle for a report pair of `market`; a block's own is [`Registry::table_for_block`].
     pub fn table_by_pair(
         &self,
         market: Market,
@@ -451,10 +419,7 @@ impl Registry {
         self.table_for_block(market, report_type, report_subtype, None)
     }
 
-    /// The handle for a block of a report pair of `market` with
-    /// `columns`: the most specific of the pair's tables whose
-    /// `with_columns` the block holds (with no columns given, the one that
-    /// takes every block), or failing that one derived earlier in this run.
+    /// The most specific table of the pair whose `with_columns` a block of `columns` holds.
     pub fn table_for_block(
         &self,
         market: Market,
@@ -473,8 +438,7 @@ impl Registry {
             .map(|i| TableId((self.tables.len() + i) as u32))
     }
 
-    /// The handle for a report pair of `market` the registry itself
-    /// declares.
+    /// The handle for a report pair of `market` the registry itself declares.
     pub fn declared_by_pair(
         &self,
         market: Market,
@@ -485,9 +449,7 @@ impl Registry {
             .map(|(id, _)| id)
     }
 
-    /// The table the registry declares for a report pair of `market` and
-    /// a block of `columns` (see [`Registry::table_for_block`]), and the
-    /// pair's place in the table's list.
+    /// The declared table for a block of `columns`, and the pair's place in its list.
     pub(crate) fn pair(
         &self,
         market: Market,
@@ -568,13 +530,10 @@ impl Registry {
     }
 }
 
-/// The schema of each column list one schema alone has, by the report
-/// pair's place and the list's fingerprint.
+/// The schema of each column list one schema alone has, by pair place and fingerprint.
 pub(crate) type ExactAnswers = hashbrown::HashMap<(u16, Fingerprint), u16>;
 
-/// The schema `History::resolve` names for each column list of a report
-/// pair that one schema alone has, which it names whatever the month and
-/// version; and the versions each pair's runs came under.
+/// The `ExactAnswers` of a table, and the versions each pair's runs came under.
 fn exact_answers(t: &Table, history: &phasor_iceberg::History) -> (ExactAnswers, Vec<(u16, u16)>) {
     let mut seen: hashbrown::HashMap<(u16, Fingerprint), Vec<u16>> = hashbrown::HashMap::new();
     let mut versions = Vec::new();
@@ -612,8 +571,7 @@ fn exact_answers(t: &Table, history: &phasor_iceberg::History) -> (ExactAnswers,
     (exact, versions)
 }
 
-/// The table a file's I row says, when no table claims its report pair:
-/// every column nullable text, one schema of exactly these columns.
+/// The table an unclaimed I row says: every column nullable text, one schema.
 fn derived_table(market: Market, irow: &IRow<'_>) -> Table {
     // Some tables publish no subtype: the pair (GENCONDATA, "") is GENCONDATA.
     let name = if irow.report_subtype.is_empty() {

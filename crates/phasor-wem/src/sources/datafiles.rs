@@ -6,10 +6,6 @@
 //!   month: 10
 //!   generatedAt: "Thu Nov 02 2023 11:35:00Z"
 //! ```
-//!
-//! The manifests list what the host publishes; the archive is read by the
-//! feed's folders (`public/public-data/datafiles/{dataset}/`), every
-//! version the mirror kept of a rewritten month in order.
 
 use std::sync::Arc;
 
@@ -38,18 +34,14 @@ pub struct ManifestEntry {
     /// Year.
     #[serde(deserialize_with = "int_or_str")]
     pub year: i32,
-    /// Month. AEMO writes `09`, which YAML 1.2 reads as a string, so both
-    /// forms are accepted.
+    /// Month. AEMO writes `09`, which YAML 1.2 reads as a string, so both forms are accepted.
     #[serde(deserialize_with = "int_or_str")]
     pub month: u8,
-    /// When AEMO generated it, as the manifest wrote it: `Thu Nov 02 2023
-    /// 11:35:00Z`.
+    /// When AEMO generated it, as written: `Thu Nov 02 2023 11:35:00Z`.
     #[serde(default)]
     pub generated_at: Option<String>,
-    /// `generated_at` as an instant in UTC, set by [`parse_manifest`]; the
-    /// field already ends in `_at`, so its twin is `_utc`. A value AEMO
-    /// wrote without an offset is read as WEM time first. `None` when the
-    /// text is not a time.
+    /// `generated_at` in UTC, set by [`parse_manifest`]; text without an offset is read
+    /// in WEM time. `None` when not a time.
     #[serde(default, skip)]
     pub generated_at_utc: Option<Stamp>,
 }
@@ -104,8 +96,7 @@ pub struct WemDatafiles {
 }
 
 impl WemDatafiles {
-    /// Over `base`, normally `https://data.wa.aemo.com.au`; no table
-    /// claims a file until [`Self::with_tables`].
+    /// Over `base` (normally `https://data.wa.aemo.com.au`); no table claims a file until [`Self::with_tables`].
     pub fn new(base: &str, datasets: Vec<String>) -> Result<Self, FetchError> {
         let url = Url::parse(base).map_err(|e| FetchError::Parse {
             url: base.to_owned(),
@@ -142,9 +133,7 @@ impl WemDatafiles {
     }
 }
 
-/// What a datafile's name says: `{dataset}-YYYY-MM.csv` (a month) or
-/// `{dataset}-YYYY.csv` (a year, whose period no month names), as AEMO
-/// names them. `None` for any other name.
+/// What a datafile's name says: `{dataset}-YYYY-MM.csv` or `{dataset}-YYYY.csv`; `None` otherwise.
 pub fn describe_name(url: Url) -> Option<RemoteFile> {
     let name = url
         .path_segments()
@@ -184,8 +173,7 @@ impl Source for WemDatafiles {
         SOURCE_ID
     }
 
-    /// A datafile by its name, with the table the registry gives its block
-    /// when the URL lies under the feed's folders.
+    /// A datafile by its name, with its table when the URL lies under the feed's folders.
     fn describe(&self, url: &Url) -> Option<RemoteFile> {
         let mut r = describe_name(url.clone())?;
         if let Some(f) = self.folders.describe(url) {
@@ -195,8 +183,7 @@ impl Source for WemDatafiles {
         Some(r)
     }
 
-    /// The archived datafiles, every version the mirror kept of a
-    /// rewritten month in order, each naming the one before it.
+    /// Every archived version of each datafile, in order, each naming the one before it.
     fn archived(&self, archive: &Archive, query: &Query) -> Result<Vec<LocalFile>, FetchError> {
         self.folders.archived(archive, query)
     }

@@ -1,11 +1,6 @@
-//! Reading every listing page under the roots into the record of every
-//! folder and file: each local folder's `listing.ndjson`, its pages kept
-//! beside it.
-//!
-//! The crawl follows every folder link under a root and records every file
-//! link, with no filter of names, extensions or known folders. Each page is
-//! kept as served, so a crawl that was cut off picks up from the pages it
-//! already has, without asking nemweb for them again.
+//! Reading every listing page under the roots into each local folder's
+//! `listing.ndjson`, unfiltered. Pages are kept as served, so a cut-off
+//! crawl picks up from the pages it already has.
 
 use std::collections::{BTreeMap, HashSet, VecDeque};
 use std::io::Write as _;
@@ -20,9 +15,7 @@ use crate::error::MirrorError;
 use crate::listing::{self, LinkKind, Unparsed};
 use crate::stamp::Stamp;
 
-/// The folders mirrored, under `base`: the long-term archive, the dated
-/// archive of the last year or so of reports, and the current reports,
-/// which nemweb rewrites daily and drops after a few days or weeks.
+/// The folders mirrored under `base`: the long-term archive and the reports.
 pub fn default_roots(base: &str) -> Result<Vec<Url>, MirrorError> {
     let base = base.trim_end_matches('/');
     ["Data_Archive/", "Reports/ARCHIVE/", "Reports/CURRENT/"]
@@ -41,8 +34,7 @@ pub fn root(s: &str) -> Result<Url, MirrorError> {
 }
 
 impl Mirror {
-    /// What every listing showed when last read: each local folder's
-    /// `listing.ndjson`, in URL order.
+    /// What every listing showed when last read, in URL order.
     pub fn record(&self) -> Result<Vec<Remote>, MirrorError> {
         let mut record = Vec::new();
         for path in listings_under(self.folders().root()) {
@@ -52,17 +44,15 @@ impl Mirror {
         Ok(record)
     }
 
-    /// The record less what is not kept ([`Mirror::keeping`]): what
-    /// download, peek, watch and status go by.
+    /// The record less what is not kept ([`Mirror::keeping`]).
     pub fn kept(&self) -> Result<Vec<Remote>, MirrorError> {
         let mut record = self.record()?;
         record.retain(|r| crate::keep::keeps(&r.url, self.keep_from()));
         Ok(record)
     }
 
-    /// Records `links` as what the listing `folder` shows now, in place of
-    /// what it showed before. The other listing of its local folder keeps
-    /// its lines.
+    /// Replaces what the listing `folder` shows with `links`. The other
+    /// listing of its local folder keeps its lines.
     pub fn put_folder(&self, folder: &str, links: Vec<Remote>) -> Result<(), MirrorError> {
         let path = self.listing_path(folder);
         let mut lines = read_listing(&path)?;
@@ -71,9 +61,7 @@ impl Mirror {
         write_listing(&path, lines)
     }
 
-    /// Records `folder` gone from nemweb, with all under it: its lines and
-    /// those of every folder under it leave their listings. The folder's
-    /// own link, on the page above it, stays.
+    /// Records `folder` and all under it gone; its own link on the page above stays.
     pub fn folder_gone(&self, folder: &str) -> Result<(), MirrorError> {
         for path in listings_under(&self.folder_dir(folder)) {
             let mut lines = read_listing(&path)?;
@@ -83,8 +71,7 @@ impl Mirror {
         Ok(())
     }
 
-    /// Writes `record` as the listings it came from, one file per local
-    /// folder, each replacing what was there.
+    /// Writes `record` as the listings it came from, one file per local folder.
     pub fn write_record(
         &self,
         record: impl IntoIterator<Item = Remote>,
@@ -102,8 +89,7 @@ impl Mirror {
         Ok(())
     }
 
-    /// Forgets every listing and page a crawl read, so the next crawl reads
-    /// every page again. The folders' events stay.
+    /// Forgets every listing and page a crawl read; the folders' events stay.
     pub fn forget_crawl(&self) -> Result<(), MirrorError> {
         let done = self.done_path();
         if done.exists() {
@@ -129,8 +115,7 @@ impl Mirror {
 
 #[cfg(test)]
 impl Mirror {
-    /// Writes the record an NDJSON text of links gives, as a test sets one
-    /// up. A line that does not read is the panic.
+    /// Writes the record from NDJSON text, for tests. Panics on a bad line.
     pub fn set_record_text(&self, text: impl AsRef<str>) {
         let lines: Vec<Remote> = text
             .as_ref()
@@ -155,8 +140,6 @@ impl Mirror {
 /// A local folder's record of what its listings show.
 const LISTING: &str = "listing.ndjson";
 
-/// Every listing file under `dir`, at any depth; none when `dir` is not
-/// there.
 fn listings_under(dir: &Path) -> Vec<PathBuf> {
     let mut out = Vec::new();
     let mut stack = vec![dir.to_path_buf()];
@@ -180,8 +163,7 @@ fn read_listing(path: &Path) -> Result<Vec<Remote>, MirrorError> {
     }
 }
 
-/// Writes `lines` as the listing file at `path`, in URL order; an empty
-/// listing removes the file.
+/// An empty listing removes the file.
 fn write_listing(path: &Path, mut lines: Vec<Remote>) -> Result<(), MirrorError> {
     if lines.is_empty() {
         return match std::fs::remove_file(path) {
@@ -222,9 +204,8 @@ pub struct Remote {
     pub size: Option<u64>,
     /// The date and time, as listed.
     pub modified: String,
-    /// The listed date and time as an instant, in the host's clock (AEST
-    /// for nemweb). Derived from `modified`, as AEST, when a record written
-    /// before it was kept is read: every such record is nemweb's.
+    /// The listed date and time as an instant, in the host's clock; derived
+    /// from `modified` as AEST when absent.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub modified_at: Option<Stamp>,
     /// The folder whose page listed it.
@@ -235,8 +216,7 @@ pub struct Remote {
 }
 
 impl Remote {
-    /// The record with `modified_at` derived from `modified` when it lacks
-    /// it.
+    /// The record with `modified_at` derived from `modified` when it lacks it.
     pub fn derived(mut self) -> Self {
         if self.modified_at.is_none() {
             self.modified_at = Stamp::from_listing(&self.modified, crate::stamp::AEST);
@@ -280,10 +260,8 @@ pub struct PageRead<'a> {
 }
 
 /// Reads every listing page under `roots` and writes the crawl record.
-///
-/// With `fresh`, the current crawl is first moved aside so that every page
-/// is asked of nemweb again. Without it, a finished crawl is left as it is
-/// and an unfinished one carries on from the pages it kept.
+/// With `fresh`, every page is read again; without it, a finished crawl is
+/// left as it is.
 pub async fn crawl(
     fetcher: &Fetchers,
     mirror: &Mirror,
@@ -350,9 +328,7 @@ pub async fn crawl(
     })
 }
 
-/// Every link of `folder`'s listing page as a record, read at
-/// `crawled_at`, the listed times in the host's clock (`offset` seconds
-/// east of UTC).
+/// Every link of `folder`'s listing page as a record (`offset` seconds east of UTC).
 pub(crate) fn read_page(
     folder: &Url,
     html: &[u8],
@@ -375,8 +351,6 @@ pub(crate) fn read_page(
         .collect()
 }
 
-/// A listed link as a record: its absolute URL, and whether it is a folder
-/// to read, a file to download or a link out of the roots.
 fn resolve(folder: &Url, link: &listing::Link, roots: &[Url]) -> Result<Remote, Unparsed> {
     let bad = |reason| Unparsed {
         reason,
@@ -432,8 +406,7 @@ fn summarise(record: &[Remote]) -> CrawlSummary {
     s
 }
 
-/// The crawl record at `path`, in URL order, each link with its
-/// `modified_at`.
+/// The crawl record at `path`, in URL order, each link with its `modified_at`.
 pub fn read_record(path: &Path) -> Result<Vec<Remote>, MirrorError> {
     let text = std::fs::read_to_string(path).map_err(MirrorError::io(path))?;
     text.lines()
@@ -451,8 +424,7 @@ pub fn read_record(path: &Path) -> Result<Vec<Remote>, MirrorError> {
         .collect()
 }
 
-/// Writes `bytes` beside `path` and renames it into place, so a cut-off
-/// write never leaves a partial file under the final name.
+/// Writes `bytes` beside `path` and renames it into place.
 pub(crate) fn write_atomic(path: &Path, bytes: &[u8]) -> Result<(), MirrorError> {
     let parent = path.parent().unwrap_or(Path::new("."));
     std::fs::create_dir_all(parent).map_err(MirrorError::io(parent))?;

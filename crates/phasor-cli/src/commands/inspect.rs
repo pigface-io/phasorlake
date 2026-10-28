@@ -9,8 +9,7 @@ use phasor_mms_conform::inspect::{self, BlockSummary, InspectError};
 use crate::context::Context;
 use crate::render;
 
-/// Every block of every CSV in `path`, each with the entry it came from;
-/// what could not be read is reported on stderr.
+/// Every block of every CSV in `path` with its entry; unreadable ones reported on stderr.
 fn scan_blocks(ctx: &Context, path: &Path) -> Result<Vec<(String, BlockSummary)>> {
     let found = inspect::file(&ctx.registry, path, &ctx.home.tmp()).map_err(|e| match e {
         InspectError::Open(e) => anyhow::Error::from(e),

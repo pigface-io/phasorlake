@@ -1,5 +1,4 @@
-//! Periods: the calendar month AEMO cuts its archives in, the day other
-//! sources publish by, and a range of either.
+//! Periods: the calendar month AEMO cuts its archives in, the day, and a range of either.
 
 use std::fmt;
 use std::str::FromStr;
@@ -18,8 +17,7 @@ pub struct CivilDay {
 }
 
 impl CivilDay {
-    /// Builds a day, rejecting a month outside 1..=12 or a day the month
-    /// does not have.
+    /// Builds a day; `None` for a month outside 1..=12 or a day the month lacks.
     pub fn new(year: i32, month: u8, day: u8) -> Option<Self> {
         let ym = YearMonth::new(year, month)?;
         let days = crate::calendar::days_in_month(ym.year(), u32::from(ym.month()));
@@ -56,8 +54,7 @@ impl CivilDay {
         Self::from_days(self.days_since_epoch() + 1)
     }
 
-    /// Midnight at the start of the day in a market at `offset_secs` from
-    /// UTC, as microseconds since the epoch.
+    /// Midnight starting the day at `offset_secs` from UTC, in microseconds since the epoch.
     pub fn start_micros(self, offset_secs: i32) -> i64 {
         crate::calendar::utc_nanos(
             self.year,
@@ -106,9 +103,7 @@ impl From<CivilDay> for String {
     }
 }
 
-/// The span of time one published file covers: a month for AEMO's monthly
-/// archives, a day for sources published daily. Written as its text,
-/// `YYYY-MM` or `YYYY-MM-DD`, so a month reads back as it always did.
+/// The span one published file covers: a month or a day, written `YYYY-MM` or `YYYY-MM-DD`.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]
 #[serde(try_from = "String", into = "String")]
 pub enum Period {
@@ -230,8 +225,7 @@ impl TimeRange {
         self.to.month()
     }
 
-    /// Every month the range touches, in order; empty when `to` is earlier
-    /// than `from`.
+    /// Every month the range touches, in order; empty when `to` is before `from`.
     pub fn months_iter(&self) -> impl Iterator<Item = YearMonth> {
         self.first_month().range_inclusive(self.last_month())
     }
@@ -244,16 +238,14 @@ impl TimeRange {
         }
     }
 
-    /// Every day the range touches, in order: a month's every day; empty
-    /// when `to` is earlier than `from`.
+    /// Every day the range touches, in order; empty when `to` is before `from`.
     pub fn days_iter(&self) -> impl Iterator<Item = CivilDay> {
         let first = self.from.first_day().days_since_epoch();
         let last = self.to.last_day().days_since_epoch();
         (first..=last).map(CivilDay::from_days)
     }
 
-    /// The instants the range spans in a market at `offset_secs` from UTC:
-    /// `[start of from, end of to)` as microseconds since the epoch.
+    /// `[start of from, end of to)` at `offset_secs` from UTC, in microseconds since the epoch.
     pub fn as_interval(&self, offset_secs: i32) -> (i64, i64) {
         (
             self.from.first_day().start_micros(offset_secs),

@@ -1,12 +1,5 @@
-//! The MMS timestamp format, `yyyy/mm/dd hh24:mi:ss`, parsed without a
-//! calendar library.
-//!
-//! AEMO writes every timestamp in market time. The lake stores every
-//! instant as nanoseconds since the Unix epoch in UTC, with the market
-//! offset recorded in the Arrow type. One unit everywhere means no value
-//! has to be asked which unit it is in; the price is a range that ends in
-//! 2262, so the far-future dates AEMO uses for "no end" are clamped and
-//! reported.
+//! The MMS timestamp format, `yyyy/mm/dd hh24:mi:ss`, in market time, parsed
+//! to UTC without a calendar library.
 //!
 //! This module is on the hot path: no allocation, no `chrono`, no `jiff`.
 
@@ -72,12 +65,9 @@ fn four(s: &[u8]) -> Option<u32> {
     Some(two(&s[0..2])? * 100 + two(&s[2..4])?)
 }
 
-/// Parses `yyyy/mm/dd` (10 bytes) or `yyyy/mm/dd hh:mm:ss` (19 bytes) as local
-/// seconds since the epoch, before any offset is applied.
+/// Parses `yyyy/mm/dd` or `yyyy/mm/dd hh:mm:ss` as local seconds since the epoch.
 ///
-/// AEMO sometimes writes a bare date for a DATE column whose time is midnight;
-/// both shapes are accepted. The `/` separators are what MMS uses; `-` is not
-/// accepted so a mislabelled ISO column is caught rather than silently read.
+/// `-` separators are refused so a mislabelled ISO column is caught.
 pub fn parse_local_seconds(s: &[u8]) -> Result<i64, TimestampError> {
     let (date, time) = match s.len() {
         19 => {
@@ -107,8 +97,7 @@ pub fn parse_local_seconds(s: &[u8]) -> Result<i64, TimestampError> {
         let hh = two(&t[0..2]).ok_or(TimestampError::Shape)?;
         let mm = two(&t[3..5]).ok_or(TimestampError::Shape)?;
         let ss = two(&t[6..8]).ok_or(TimestampError::Shape)?;
-        // AEMO writes "24:00:00" nowhere in the MMS feeds; it is rejected so a
-        // bad row is reported rather than rolled into the next day silently.
+        // "24:00:00" is rejected rather than rolled silently into the next day.
         if hh > 23 {
             return Err(TimestampError::Hour(hh as u8));
         }
@@ -123,15 +112,10 @@ pub fn parse_local_seconds(s: &[u8]) -> Result<i64, TimestampError> {
     Ok(secs)
 }
 
-/// Parses an MMS timestamp in a market with the given UTC offset into
-/// whole seconds since the Unix epoch, UTC, and the nanoseconds within
-/// that second.
+/// Parses an MMS timestamp into UTC seconds since the epoch and the nanoseconds within.
 ///
-/// This is the full reading of the text: a fractional second of one to
-/// nine digits is padded with zeros to nanoseconds, so nothing published
-/// is lost here. The two parts are kept apart because a single `i64` of
-/// nanoseconds ends in April 2262 and AEMO's data carries dates such as
-/// `9999/12/31 00:00:00` as "no end".
+/// Kept apart because an `i64` of nanoseconds ends in 2262 and AEMO writes
+/// `9999/12/31` as "no end".
 #[inline]
 pub fn parse_seconds_nanos(s: &[u8], offset_secs: i32) -> Result<(i64, u32), TimestampError> {
     // The plain 19-byte form first: it is nearly every value.
@@ -143,16 +127,10 @@ pub fn parse_seconds_nanos(s: &[u8], offset_secs: i32) -> Result<(i64, u32), Tim
     Ok((parse_local_seconds(s)? - i64::from(offset_secs), 0))
 }
 
-/// Parses an MMS timestamp in a market with the given UTC offset into
-/// nanoseconds since the Unix epoch, UTC: the one unit of every timestamp
-/// in the lake. Every digit of a fractional second is kept.
+/// Parses an MMS timestamp into UTC nanoseconds since the epoch.
 ///
-/// An `i64` of nanoseconds spans 1677-09-21 to 2262-04-11. AEMO writes
-/// "no end" as `9999/12/31` or `2999/12/31`; such a value is clamped to the
-/// nearest end of the range and the flag returned is `true`, so the caller
-/// can report it. Clamping keeps `end > now` true, which a null would not.
-/// The clamped value is an instant like any other in its column, UTC
-/// nanoseconds under the market offset the column's type carries.
+/// A value outside 1677-09-21 to 2262-04-11 is clamped to the nearest end and
+/// the flag is `true`; clamping keeps `end > now` true, which a null would not.
 #[inline]
 pub fn parse_nanos(s: &[u8], offset_secs: i32) -> Result<(i64, bool), TimestampError> {
     let (secs, nanos) = parse_seconds_nanos(s, offset_secs)?;
@@ -166,8 +144,7 @@ pub fn parse_nanos(s: &[u8], offset_secs: i32) -> Result<(i64, bool), TimestampE
     }
 }
 
-/// The digits after the decimal point of a second, padded with zeros to
-/// nanoseconds.
+/// The digits after the decimal point, padded to nanoseconds.
 fn fraction_nanos(digits: &[u8]) -> Result<u32, TimestampError> {
     if digits.is_empty() || digits.len() > 9 {
         return Err(TimestampError::Fraction);
@@ -183,22 +160,19 @@ fn fraction_nanos(digits: &[u8]) -> Result<u32, TimestampError> {
     Ok(nanos)
 }
 
-/// Whether `s` is an MMS timestamp or date, with or without a fractional
-/// second: what a sampler asks of a value.
+/// Whether `s` is an MMS timestamp or date, with or without a fractional second.
 #[must_use]
 pub fn is_timestamp(s: &[u8]) -> bool {
     parse_seconds_nanos(s, 0).is_ok()
 }
 
-/// Parses `yyyy/mm/dd` (or the date part of a timestamp) as days since the
-/// epoch, for Arrow `Date32`.
+/// Parses `yyyy/mm/dd` (or a timestamp's date part) as days since the epoch.
 pub fn parse_days(s: &[u8]) -> Result<i32, TimestampError> {
     let local = parse_local_seconds(s)?;
     Ok((local.div_euclid(86_400)) as i32)
 }
 
-/// Formats a UTC instant in nanoseconds as the MMS string in market time,
-/// to the second.
+/// Formats UTC nanoseconds as the MMS string in market time, to the second.
 #[cfg(test)]
 pub(crate) fn format_local(nanos_utc: i64, offset_secs: i32) -> String {
     phasor_core::calendar::format_local_seconds(nanos_utc.div_euclid(NANOS_PER_SECOND), offset_secs)

@@ -1,5 +1,4 @@
-//! Wall-clock time as RFC 3339 UTC text, for manifests and sidecars. Never
-//! used on the hot path.
+//! Wall-clock time as RFC 3339 UTC text, for manifests and sidecars; off the hot path.
 
 /// Now, as `YYYY-MM-DDTHH:MM:SSZ`.
 pub fn now_utc_rfc3339() -> String {

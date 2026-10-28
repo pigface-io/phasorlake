@@ -45,8 +45,7 @@ impl std::fmt::Display for NumberError {
 
 impl std::error::Error for NumberError {}
 
-/// Parses an `f64`. AEMO writes plain decimals and occasionally exponent
-/// forms such as `6E-05`; both are accepted. Leading `+` is accepted.
+/// Parses an `f64`, plain or exponent form (`6E-05`), with an optional leading `+`.
 #[inline]
 pub fn parse_f64(s: &[u8]) -> Result<f64, NumberError> {
     match fast_float2::parse_partial::<f64, _>(s) {
@@ -55,11 +54,8 @@ pub fn parse_f64(s: &[u8]) -> Result<f64, NumberError> {
     }
 }
 
-/// Parses an `i64` from an optionally signed run of ASCII digits.
-///
-/// A trailing `.0`-style fraction is accepted when it is all zeros, because an
-/// Oracle `NUMBER(n,0)` is sometimes exported with a decimal point; any other
-/// fraction is an error so a true decimal is never truncated silently.
+/// Parses an `i64` from optionally signed ASCII digits. An all-zero fraction
+/// (`12.0`) is accepted; any other fraction is an error, never truncated.
 pub fn parse_i64(s: &[u8]) -> Result<i64, NumberError> {
     let (neg, body) = match s.first() {
         Some(b'-') => (true, &s[1..]),
@@ -73,8 +69,7 @@ pub fn parse_i64(s: &[u8]) -> Result<i64, NumberError> {
     if int.is_empty() {
         return Err(NumberError::Integer);
     }
-    // Accumulated toward the sign, checked, so i64::MIN reads and nothing
-    // wraps.
+    // Accumulated toward the sign, checked, so `i64::MIN` reads and nothing wraps.
     let mut v: i64 = 0;
     for &b in int {
         let d = b.wrapping_sub(b'0');
@@ -102,12 +97,8 @@ pub fn parse_i64(s: &[u8]) -> Result<i64, NumberError> {
 }
 
 /// Parses a decimal literal into the unscaled `i128` of `Decimal128(precision, scale)`.
-///
-/// `123.45` with scale 5 becomes `12_345_000`. Fewer fractional digits than
-/// the scale are padded; more are an error (never rounded, so the lake holds
-/// exactly what AEMO published or refuses the row). AEMO writes a few small
-/// numbers in exponent form (`-3E-05`); such a value is read exactly too,
-/// when the column's scale holds it.
+/// Fewer fractional digits are padded; significant extra ones are an error, never
+/// rounded. Exponent forms (`-3E-05`) are read exactly when the scale holds them.
 pub fn parse_decimal(s: &[u8], precision: u8, scale: u8) -> Result<i128, NumberError> {
     let (neg, body) = match s.first() {
         Some(b'-') => (true, &s[1..]),
@@ -122,8 +113,7 @@ pub fn parse_decimal(s: &[u8], precision: u8, scale: u8) -> Result<i128, NumberE
         return Err(NumberError::DecimalShape);
     }
     if frac.len() > usize::from(scale) {
-        // Trailing zeros beyond the scale carry no information; only
-        // significant extra digits are an error.
+        // Trailing zeros beyond the scale carry no information; only significant ones are an error.
         if frac[usize::from(scale)..].iter().any(|&b| b != b'0') {
             if frac.iter().any(|&b| b == b'e' || b == b'E') {
                 return exponent_form(s, precision, scale);
@@ -161,8 +151,7 @@ fn long_decimal(
         if v != 0 || d != 0 {
             digits += 1;
         }
-        // Checked: a run of digits longer than `i128` holds is refused,
-        // never wrapped into another value.
+        // Checked: a run longer than `i128` holds is refused, never wrapped.
         v = v
             .checked_mul(10)
             .and_then(|v| v.checked_add(i128::from(d)))
@@ -180,8 +169,7 @@ fn long_decimal(
     Ok(if neg { -v } else { v })
 }
 
-/// [`parse_decimal`] for at most 18 digits, which a `u64` holds: almost
-/// every value AEMO writes. `None` when a byte is not a digit.
+/// [`parse_decimal`] for at most 18 digits; `None` when a byte is not a digit.
 #[inline]
 fn short_decimal(
     neg: bool,
@@ -240,9 +228,7 @@ fn digits_of(s: &[u8]) -> Option<(i128, u32)> {
     Some((v, s.len() as u32))
 }
 
-/// A decimal written `<mantissa>E<exponent>`, as `-3E-05`: exact, or an
-/// error as [`parse_decimal`] gives one. Off the hot path: only a field
-/// that is not plain digits comes here.
+/// A decimal written `<mantissa>E<exponent>` (`-3E-05`), exact or an error as [`parse_decimal`].
 #[cold]
 fn exponent_form(s: &[u8], precision: u8, scale: u8) -> Result<i128, NumberError> {
     let Some(e) = s.iter().position(|&b| b == b'e' || b == b'E') else {

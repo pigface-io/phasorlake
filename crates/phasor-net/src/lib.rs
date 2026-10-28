@@ -1,14 +1,6 @@
-//! Moving AEMO's files over HTTP into the archive, for the lake and the
-//! mirror alike.
-//!
-//! A [`Transport`] moves bytes: [`ReqwestTransport`] (feature `http`) to a
-//! real server, [`OfflineTransport`] to none, and the canned
-//! [`transport::StaticTransport`] in tests. Every failure is a
-//! [`FetchError`] with a stable code. [`fetch`] (feature `fetch`) paces,
-//! retries and stops requests for good when refused, and streams a body to
-//! disk. [`archive`] adds hashing, checks and
-//! the record edits to the family's archive store, where each URL's bytes
-//! are kept at its path beside their provenance record.
+//! Moving AEMO's files over HTTP into the archive, for the lake and the mirror.
+//! [`transport`] moves bytes, [`fetch`] paces and retries requests, [`archive`]
+//! keeps each URL's bytes beside their provenance record; every failure is a [`FetchError`].
 
 pub mod archive;
 pub mod error;

@@ -1,8 +1,5 @@
-//! Which report folder of nemweb carries each block: `folders.json`, as
-//! phasor-schemas exports it from its census of the report folders and
-//! `just schemas-pull` copies it beside the tables. A source that reads an
-//! interval of a table from the report folders rather than the monthly
-//! archive asks it which folders carry the table's report pairs.
+//! Which report folder of nemweb carries each block: `folders.json`, from
+//! phasor-schemas' census, copied beside the tables by `just schemas-pull`.
 
 use std::path::Path;
 
@@ -13,8 +10,7 @@ use crate::file_model::error::SchemaFileError;
 /// The file's name under a market's `pulled/` directory.
 pub const FOLDERS_FILE: &str = "folders.json";
 
-/// One report folder of one feed, as the archive keeps it: one local
-/// folder whichever listing AEMO showed its files under.
+/// One report folder of one feed, one local folder whatever its listings.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Folder {
     /// The feed: `reports` for the NEM's report folders.
@@ -23,8 +19,7 @@ pub struct Folder {
     pub root: String,
     /// The folder under the root: `Dispatch_SCADA`.
     pub folder: String,
-    /// The listings AEMO showed its files under (`ARCHIVE`, `CURRENT`);
-    /// none for a folder listed once.
+    /// The listings AEMO showed its files under (`ARCHIVE`, `CURRENT`); none if listed once.
     #[serde(default)]
     pub listings: Vec<String>,
     /// The blocks its files carried.
@@ -34,8 +29,7 @@ pub struct Folder {
 /// One place a folder is listed on its host.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Side {
-    /// The listing, upper-case (`ARCHIVE`, `CURRENT`); empty for a host
-    /// that lists the folder once.
+    /// The listing, upper-case (`ARCHIVE`, `CURRENT`); empty if listed once.
     pub label: String,
     /// Its path under the host: `Reports/ARCHIVE/Dispatch_SCADA`.
     pub path: String,
@@ -64,10 +58,7 @@ impl Folder {
         format!("{}/{}", self.root.trim_end_matches('/'), self.folder)
     }
 
-    /// Where its host lists it: one side per listing, as
-    /// `phasor_provenance::layout::listed_path` puts the listing back;
-    /// a folder of no listing is listed at its own path, under the listing
-    /// that path names, if any.
+    /// Where its host lists it: one side per listing, or its own path when it has none.
     pub fn sides(&self) -> Vec<Side> {
         use phasor_provenance::layout;
         let host =

@@ -1,7 +1,5 @@
-//! Moving bytes from nemweb and the other hosts into the archive:
-//! transports, the paced fetcher with its refusal breaker, one per host,
-//! and the archive that keeps each URL's
-//! bytes at its path with its provenance record.
+//! Moving bytes from nemweb and the other hosts into the archive: transports,
+//! the paced fetcher per host, and the archive with its provenance records.
 
 pub mod archive;
 pub mod error;

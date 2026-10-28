@@ -49,18 +49,11 @@ pub struct DownloadSummary {
     pub failed: Vec<Diagnostic>,
 }
 
-/// Downloads every file of the finished crawl, `downloads` at a time,
-/// through the fetcher, which skips a file the archive already holds.
+/// Downloads every file of the finished crawl not already archived; a zip
+/// beside a folder of the same name comes after its folder.
 ///
-/// With `only`, just the files whose URL starts with one of its prefixes.
-///
-/// A zip published beside a folder of the same name (a whole-month zip)
-/// comes last, after its folder, and is skipped when `compare --delete`
-/// has found it the same as the folder by the time its turn comes.
-///
-/// A file that fails is reported and the rest carry on. Two failures stop
-/// the pass, since every later file would fail the same way: a refusal by
-/// nemweb (`net.blocked`), and a full disk.
+/// A file that fails is reported and the rest carry on, except a refusal by
+/// nemweb (`net.blocked`) or a full disk, which stop the pass.
 pub async fn download(
     fetcher: &Fetchers,
     mirror: &Mirror,
@@ -129,9 +122,8 @@ pub async fn download(
     // reads the paired zips' first, so by then they are there.
     let listings: std::sync::OnceLock<HashMap<String, Peeked>> = std::sync::OnceLock::new();
     let listings = &listings;
-    // Every other file lands before any paired zip is compared with its
-    // folder: the zips come in a second pass, after the first has drained,
-    // so a zip is never held against a folder still downloading.
+    // Paired zips come in a second pass, so a zip is never held against a
+    // folder still downloading.
     let (zips, plain): (Vec<&RemoteFile>, Vec<&RemoteFile>) = files
         .iter()
         .partition(|r| paired.contains_key(r.url.as_str()));
@@ -193,24 +185,20 @@ pub async fn download(
     Ok(summary)
 }
 
-/// One file a download pass found in the archive, or put there: the
-/// version nemweb listed when it did.
+/// One file a download pass found in the archive, or put there.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct HeldEntry {
     /// The file's URL.
     pub url: String,
     /// Its bytes.
     pub size: u64,
-    /// The size nemweb listed it with, when not `size`: a zip packed again
-    /// whose files are those of the version archived.
+    /// The size nemweb listed it with, when not `size` (a zip packed again).
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub listed_size: Option<u64>,
-    /// The time nemweb listed it with. A line written before lines kept it
-    /// has none.
+    /// The time nemweb listed it with, when the line holds one.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub modified_at: Option<Stamp>,
-    /// The name of the version beside the URL's path that holds it
-    /// (`Archive::version_path`), when not the first.
+    /// The name of the version file that holds it, when not the first.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub file: Option<String>,
 }
@@ -225,11 +213,9 @@ impl HeldEntry {
         }
     }
 
-    /// Whether it is the version nemweb lists at `size` and `modified_at`:
-    /// the same size, and the same listed time when both have one. A line
-    /// without the listed time is that version when its file on disk was
-    /// written at or after that time; nemweb lists a time no later than
-    /// it serves the file.
+    /// Whether it is the version nemweb lists at `size` and `modified_at`.
+    /// A line without the listed time matches when its file on disk was
+    /// written at or after that time.
     pub fn is_listed_as(
         &self,
         archive: &Archive,
@@ -252,18 +238,14 @@ impl HeldEntry {
 }
 
 impl Mirror {
-    /// The files download passes found in the archive or put there, one
-    /// line each. A later pass takes a file whose size on disk matches its
-    /// line as archived without reading its sidecar, which on a large
-    /// archive is most of the time a restart spends before downloading.
+    /// The files download passes found in the archive or put there, one line
+    /// each, so a restart need not read every sidecar.
     pub fn held_path(&self) -> PathBuf {
         self.cache_dir().join("held.ndjson")
     }
 
-    /// Every held file, by URL: its last line, the version found or put
-    /// there last. A line that does not read (the last one, cut short when
-    /// a pass was killed) is passed over: that file's sidecar is read
-    /// instead.
+    /// Every held file, by URL, from its last line. A line that does not
+    /// read is passed over.
     pub fn held(&self) -> Result<HashMap<String, HeldEntry>, MirrorError> {
         let path = self.held_path();
         let text = match std::fs::read_to_string(&path) {
@@ -280,11 +262,8 @@ impl Mirror {
 }
 
 impl Mirror {
-    /// Writes `held.ndjson` again from the provenance records in
-    /// `archive`: a line for every address a listing named (downloaded
-    /// there, or found the same there), the latest listed version of each
-    /// URL. It is a cache: a pass reads the records of what it lacks. How
-    /// many lines were written.
+    /// Writes `held.ndjson` again from the provenance records in `archive`.
+    /// Returns how many lines were written.
     pub fn reindex(&self, archive: &Archive) -> Result<usize, MirrorError> {
         let mut lines: BTreeMap<String, HeldEntry> = BTreeMap::new();
         for held in crate::net::archive::entries_under(archive, None) {
@@ -335,9 +314,7 @@ struct Got {
     event: Option<Event>,
 }
 
-/// The journal's line of a file downloaded: bytes found the same as a
-/// version archived already, or a zip packed again and not kept. A
-/// download itself is in its record, not the journal.
+/// The journal line of a download whose bytes were not kept; none otherwise.
 fn event_of(remote: &RemoteFile, l: &LocalFile, file: Option<String>) -> Option<Event> {
     let (event, sha256) = match &l.same_as {
         Some(s) if s.repacked => (Change::Repacked, Some(s.sha256.clone())),
@@ -360,9 +337,7 @@ pub struct DownloadOptions<'a> {
     pub only: &'a [String],
     /// Only the files listed on one of these folders, when given.
     pub folders: Option<&'a [String]>,
-    /// Just before each zip beside a folder of the same name, compare its
-    /// listing with the folder and, when they are the same, record it
-    /// removed and do not download it.
+    /// Skip, and record removed, each paired zip whose listing matches its folder.
     pub delete_duplicates: bool,
 }
 
@@ -377,8 +352,6 @@ struct Pass<'a> {
 }
 
 impl<'a> Pass<'a> {
-    /// Fetches `remote`, or finds it held already, or finds it a zip the
-    /// same as its folder (none to fetch).
     async fn one(
         &self,
         remote: &'a RemoteFile,
@@ -399,8 +372,7 @@ impl<'a> Pass<'a> {
             && h.is_listed_as(archive, remote.size, remote.modified_at)
             && std::fs::metadata(h.path(archive)).is_ok_and(|m| m.len() == h.size)
         {
-            // A line written before lines kept the listed time is
-            // written again with it.
+            // A line without the listed time is written again with it.
             let note =
                 (h.modified_at.is_none() && remote.modified_at.is_some()).then(|| HeldEntry {
                     modified_at: remote.modified_at,
@@ -435,8 +407,7 @@ impl<'a> Pass<'a> {
     }
 }
 
-/// Whether the zip of `pair`, not downloaded, is found the same as its
-/// folder from its listing, and so recorded removed.
+/// Whether the zip of `pair` matches its folder from its listing, and so is recorded removed.
 fn the_same(
     mirror: &Mirror,
     fetcher: &Fetchers,
@@ -745,8 +716,8 @@ mod tests {
         };
         download(&f, &mirror, &options, ignore).await.unwrap();
 
-        // Lines written before they kept the listed time hold a file
-        // written since that time, and are written again with it.
+        // Lines without the listed time hold a file written since that
+        // time, and are written again with it.
         let old = "{\"url\":\"https://h/A/x.zip\",\"size\":3}\n{\"url\":\"https://h/A/y.zip\",\"size\":4}\n";
         std::fs::write(mirror.held_path(), old).unwrap();
         let s = download(&f, &mirror, &options, ignore).await.unwrap();

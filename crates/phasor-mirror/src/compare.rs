@@ -1,15 +1,6 @@
-//! Whether a zip nemweb publishes beside a folder of the same name holds
-//! the same files, and removing it from the archive when it does.
-//!
-//! The archive publishes each month from 2015 on twice: as a folder of
-//! per-table zips, and as one zip of the whole month. A pair is any file
-//! `X.zip` the crawl lists beside a folder `X/`. Each file in the zip is
-//! matched to the folder's file at the same path (the zip may put the
-//! month's own folder, or something else, in front), first by size and
-//! CRC-32, then, for a zip packed again, by the files it holds. A web page
-//! in the zip (`Readme.htm`, `disclaimer.htm`, `Index.htm`) is not data:
-//! one the folder lacks, or holds with other bytes, does not make the zip
-//! differ; it is listed in the comparison and in the removal record.
+//! Whether a zip `X.zip` listed beside a folder `X/` holds the same files,
+//! and removing it from the archive when it does. Files are matched by size
+//! and CRC-32, then, for a zip packed again, by the files inside it.
 
 use std::collections::{BTreeMap, HashMap, HashSet};
 use std::fs::File;
@@ -26,8 +17,7 @@ use crate::stamp::Stamp;
 use crate::zipdir::Entry;
 
 const READ_BUFFER: usize = 1 << 20;
-/// A zip inside the zip up to this size is read into memory to list it; a
-/// bigger one is spooled to a temporary file.
+/// A nested zip up to this size is listed in memory; a bigger one is spooled.
 const NESTED_IN_MEMORY: u64 = 64 << 20;
 
 /// A zip and the folder of the same name beside it.
@@ -39,12 +29,9 @@ pub struct Pair {
     pub folder: String,
     /// The zip's listed size.
     pub zip_size: u64,
-    /// The folder's files: URL and listed size (0 for a rollup's, which
-    /// come from the archive, not a listing).
+    /// The folder's files: URL and listed size (0 for a rollup's).
     pub files: Vec<(String, u64)>,
-    /// Whether the zip is a rollup: a daily zip of a report folder's
-    /// `ARCHIVE` listing, whose entries are the folder's files of that day
-    /// as `CURRENT` listed them.
+    /// Whether the zip is a daily `ARCHIVE` zip of files `CURRENT` listed.
     #[serde(skip_serializing_if = "std::ops::Not::not")]
     pub rollup: bool,
 }
@@ -57,11 +44,9 @@ pub enum Verdict {
     Same,
     /// The zip holds files the folder lacks, or files that differ.
     Differs,
-    /// Known only from the zip's listing, a file of it is not byte for byte
-    /// the folder's: whether it is packed again needs the zip itself.
+    /// From the listing alone a file differs; only the zip itself can tell more.
     NeedsDownload,
-    /// Some file of the folder is not archived yet, or the zip is neither
-    /// archived nor peeked.
+    /// A folder file is not archived yet, or the zip is neither archived nor peeked.
     NotArchived,
 }
 
@@ -84,11 +69,9 @@ pub struct Comparison {
     pub only_in_zip: Vec<String>,
     /// Files of the zip whose content differs from the folder's.
     pub different: Vec<String>,
-    /// Web pages of the zip (`.htm`, `.html`) that the folder lacks or
-    /// holds with other bytes: not data, so not counted either way.
+    /// Web pages of the zip the folder lacks or holds with other bytes; not counted.
     pub ancillary: Vec<String>,
-    /// Files of the zip, known from its listing, that are not byte for byte
-    /// the folder's; the zip is needed to tell more.
+    /// Files of the zip, known from its listing, that are not byte for byte the folder's.
     pub unsure: Vec<String>,
     /// Whether the zip was ruled on from its listing alone.
     pub from_listing: bool,
@@ -99,14 +82,12 @@ pub struct Comparison {
     /// Whether the zip is a rollup (`Pair::rollup`).
     #[serde(skip_serializing_if = "std::ops::Not::not")]
     pub rollup: bool,
-    /// The zip's files found byte for byte in the folder: the entry's
-    /// name and the folder file's path.
+    /// The zip's entries found byte for byte in the folder, with the folder file's path.
     #[serde(skip)]
     pub held: Vec<(String, PathBuf)>,
 }
 
-/// One removed duplicate: kept so the download does not fetch it again,
-/// and so the map can still show it.
+/// One removed duplicate, kept so the download does not fetch it again.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Removed {
     /// The URL of the removed file.
@@ -121,20 +102,16 @@ pub struct Removed {
     pub downloaded: bool,
     /// The folder that holds the same files.
     pub same_as: String,
-    /// How many files of the zip were found the same as the folder's; each
-    /// is in the catalog on both sides, with its size and CRC-32.
+    /// How many files of the zip were found the same as the folder's.
     #[serde(default)]
     pub files: usize,
-    /// Web pages of the zip that the folder lacks or holds with other
-    /// bytes, left out of the comparison as not data.
+    /// Web pages of the zip left out of the comparison as not data.
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub ancillary: Vec<String>,
     /// When it was removed (UTC).
     pub removed_at: Stamp,
 }
 
-/// Whether a file of a zip is a web page rather than data: its name ends
-/// in `.htm` or `.html`, in any case.
 fn is_ancillary(name: &str) -> bool {
     let file = name.rsplit('/').next().unwrap_or(name);
     let lower = file.to_ascii_lowercase();
@@ -176,8 +153,7 @@ impl Mirror {
 }
 
 /// Every zip of the crawl with a folder of the same name beside it, then
-/// every rollup (`rollups`). With `with_removed` false, a zip recorded
-/// removed is left out.
+/// every rollup. With `with_removed` false, a removed zip is left out.
 pub fn pairs(
     mirror: &Mirror,
     archive: &Archive,
@@ -233,11 +209,8 @@ pub fn pairs(
     Ok(out)
 }
 
-/// Every rollup the crawl lists: a zip `{prefix}{YYYYMMDD}.zip` of a
-/// report folder's `ARCHIVE` listing, paired with the folder's files of
-/// that day and the next held from its `CURRENT` listing. Those files come
-/// from the archive on disk, since `CURRENT` lists a file for about four
-/// days only. The folder (both listings are one, `layout`) is read once.
+/// Every rollup, paired with the folder's files of that day and the next,
+/// read from the archive since `CURRENT` lists a file for a few days only.
 fn rollups(
     archive: &Archive,
     record: &[crate::crawl::Remote],
@@ -297,8 +270,7 @@ fn rollups(
     out
 }
 
-/// Of a daily zip of an `ARCHIVE` listing: the folder's URL under the
-/// `CURRENT` listing, the name before the date, and the date.
+/// Of a daily `ARCHIVE` zip: the `CURRENT` folder URL, the name prefix, and the date.
 fn rollup_of(url: &str) -> Option<(String, String, String)> {
     const ARCHIVE: &str = "/Reports/ARCHIVE/";
     let at = url.find(ARCHIVE)?;
@@ -318,7 +290,6 @@ fn rollup_of(url: &str) -> Option<(String, String, String)> {
     Some((current, prefix.to_owned(), day.to_owned()))
 }
 
-/// The day after `YYYYMMDD`, as `YYYYMMDD`.
 fn next_day(day: &str) -> Option<String> {
     let n = |r: std::ops::Range<usize>| day.get(r)?.parse::<u32>().ok();
     let (y, m, d) = (n(0..4)?, n(4..6)?, n(6..8)?);
@@ -338,24 +309,21 @@ fn next_day(day: &str) -> Option<String> {
     Some(format!("{y:04}{m:02}{d:02}"))
 }
 
-/// A file's size and CRC-32, or what a zip says of an entry.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 struct Sum {
     size: u64,
     crc32: u32,
 }
 
-/// One file of the zip: its name, size and CRC-32, and its index when the
-/// zip itself is at hand.
+/// One file of the zip; `index` is set when the zip itself is at hand.
 struct ZipFile {
     name: String,
     sum: Sum,
     index: Option<usize>,
 }
 
-/// Compares the zip of `pair` with its folder. The folder's files come
-/// from the archive; the zip's from the archive when it is there, else
-/// from its peeked listing (`listing`).
+/// Compares the zip of `pair` with its folder, using the peeked `listing`
+/// when the zip is not archived.
 pub fn compare(
     archive: &Archive,
     pair: &Pair,
@@ -490,10 +458,8 @@ pub fn compare(
     Ok(cmp)
 }
 
-/// Removes the zip of a comparison that found it the same as its folder,
-/// recording it first: from the archive when it was downloaded, and from
-/// the download to come when it was ruled on from its listing. Refuses any
-/// other comparison.
+/// Records and removes the zip of a comparison that found it the same as its
+/// folder. Refuses any other comparison.
 pub fn remove(
     mirror: &Mirror,
     archive: &Archive,
@@ -545,10 +511,7 @@ pub fn remove(
 }
 
 /// Adds the address `{zip}!{entry}` to the sidecar of each folder file a
-/// rollup holds byte for byte (`how = "entry"`): where the file can still
-/// be fetched once `CURRENT` stops listing it. The data files are not
-/// touched. How many sidecars gained the address; none for a zip that is
-/// not a rollup.
+/// rollup holds byte for byte. Returns how many sidecars gained it.
 pub fn note_entries(cmp: &Comparison) -> Result<usize, MirrorError> {
     if !cmp.rollup {
         return Ok(0);
@@ -569,8 +532,7 @@ pub fn note_entries(cmp: &Comparison) -> Result<usize, MirrorError> {
             written.push(Archive::record_path(path));
         }
     }
-    // One sync for the batch: on the volume, a sync per record costs
-    // seconds once its folder is large.
+    // One sync for the batch: a sync per record is slow in a large folder.
     crate::net::archive::batch_to_disk(written.iter().map(PathBuf::as_path))
         .map_err(|(p, e)| MirrorError::io(&p)(e))?;
     Ok(n)
@@ -589,8 +551,7 @@ pub struct Verified {
     pub changed: Vec<String>,
     /// Folder files that are no longer in the archive.
     pub missing: Vec<String>,
-    /// Whether the zip's listing is not in the record, so nothing could be
-    /// checked.
+    /// Whether the zip's listing is not in the record, so nothing was checked.
     pub no_listing: bool,
 }
 
@@ -601,9 +562,8 @@ impl Verified {
     }
 }
 
-/// Reads every removed zip's folder files again, in full, and checks each
-/// is still what the comparison saw: the CRC-32 recorded in its sidecar, or
-/// the zip's for its file. The zip's listing says which files to check.
+/// Reads every removed zip's folder files again, in full, and checks each is
+/// still what the comparison saw.
 pub fn verify(mirror: &Mirror, archive: &Archive) -> Result<Vec<Verified>, MirrorError> {
     let removed = mirror.removed()?;
     let listings: HashMap<String, Vec<Entry>> = crate::peek::read_peeks(&mirror.peek_path())?
@@ -682,8 +642,7 @@ fn suffix_in(name: &str, folder: &BTreeMap<String, PathBuf>) -> Option<String> {
     }
 }
 
-/// The size and CRC-32 of an archived file: from its sidecar when it holds
-/// them, else read in full and recorded there, so a file is read once.
+/// The size and CRC-32 of an archived file, read once and kept in its sidecar.
 fn known_sum(path: &Path) -> Result<Sum, MirrorError> {
     let sidecar = Archive::read(path)?;
     let len = std::fs::metadata(path)
@@ -703,7 +662,6 @@ fn known_sum(path: &Path) -> Result<Sum, MirrorError> {
     Ok(sum)
 }
 
-/// The size and CRC-32 of a file, read in full.
 fn sum_of(path: &Path) -> std::io::Result<Sum> {
     let mut f = File::open(path)?;
     let mut buf = vec![0u8; READ_BUFFER];
@@ -741,7 +699,6 @@ fn list<R: Read + Seek>(r: R) -> zip::result::ZipResult<Listing> {
     Ok(out)
 }
 
-/// The listing of entry `i` of `z`, itself a zip.
 fn list_entry<R: Read + Seek>(
     z: &mut ZipArchive<R>,
     i: usize,
@@ -1407,7 +1364,7 @@ mod tests {
         crate::stamp::check::assert_aware_lines(
             &std::fs::read_to_string(f.mirror.removed_path()).unwrap(),
         );
-        // A record written before this field existed was of a downloaded zip.
+        // A record without the field is of a downloaded zip.
         std::fs::write(
             f.mirror.removed_path(),
             "{\"url\":\"u\",\"size\":1,\"sha256\":\"s\",\"same_as\":\"f\",\"removed_at\":\"2026-10-15T00:59:33Z\"}\n",

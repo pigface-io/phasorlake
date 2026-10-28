@@ -1,11 +1,6 @@
-//! The hosts the mirror reads: nemweb, and any other site the config
-//! names, each with its own roots, clock and pace.
-//!
-//! AEMO publishes the NEM on `www.nemweb.com.au`, whose listings and zips
-//! carry AEST times, and the WEM on `data.wa.aemo.com.au`, whose carry
-//! AWST (UTC+8). A record's `_at` instant is right only when the time is
-//! read in its host's clock, so every place a listed or packed time is read
-//! asks [`Offsets`] for the URL's offset.
+//! The hosts the mirror reads: nemweb, and any other site the config names,
+//! each with its own roots, clock and pace. Every listed or packed time is
+//! read in its host's clock, from [`Offsets`].
 
 use std::time::Duration;
 
@@ -15,8 +10,7 @@ use crate::crawl::{default_roots, root};
 use crate::error::MirrorError;
 use crate::stamp::AEST;
 
-/// One host, resolved from the config: its base URL without a trailing
-/// slash, its roots as absolute folder URLs, its clock and its pace.
+/// One host, resolved from the config.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Host {
     /// `https://www.nemweb.com.au`, no trailing slash.
@@ -34,8 +28,7 @@ pub struct Host {
 }
 
 impl Host {
-    /// nemweb, from the config's top-level keys: the long-term archive and
-    /// the report folders, in AEST.
+    /// nemweb, from the config's top-level keys, in AEST.
     pub fn nemweb(
         base_url: &str,
         request_interval_ms: u64,
@@ -53,8 +46,7 @@ impl Host {
         })
     }
 
-    /// A further host from its `[[hosts]]` table, its roots given as paths
-    /// under its base.
+    /// A further host from its `[[hosts]]` table.
     pub fn from_config(
         c: &crate::config::HostConfig,
         request_interval_ms: u64,
@@ -91,8 +83,7 @@ fn under(base: &str, paths: &[String]) -> Vec<String> {
         .collect()
 }
 
-/// Which clock each host's times are in, by URL: the first host that
-/// serves the URL, else AEST, nemweb's.
+/// Which clock each URL's times are in: the first host that serves it, else AEST.
 #[derive(Debug, Clone, Default, PartialEq, Eq)]
 pub struct Offsets {
     hosts: Vec<(String, i32)>,
@@ -114,8 +105,7 @@ impl Offsets {
         Self::from_bases(vec![(String::new(), offset)])
     }
 
-    /// The offsets of hosts given as base URL and offset, asked in order;
-    /// an empty base serves every URL.
+    /// The offsets of hosts by base URL, asked in order; an empty base serves every URL.
     pub fn from_bases(hosts: Vec<(String, i32)>) -> Self {
         Self { hosts }
     }

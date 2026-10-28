@@ -1,11 +1,5 @@
-//! The gas feeds' `.csv` files, each read as its feed's.
-//!
-//! One kit has one list of decoders, tried by an entry's name, and every
-//! gas feed's files are `.csv`; which feed a file belongs to, and so how
-//! its block is named, its folder says. This decoder finds the feed by the
-//! roots in the file's URL and hands the entry to that feed's sniffing
-//! decoder: MMS rows (the GSH files) through the MMS reader, a header row
-//! through the plain one, a page saved as `.csv` skipped.
+//! The gas feeds' `.csv` files, each read as its feed's: the feed is found by the
+//! roots in the URL, then its sniffing decoder reads MMS rows, a header row, or skips a page.
 
 use std::io::Read;
 use std::sync::Arc;

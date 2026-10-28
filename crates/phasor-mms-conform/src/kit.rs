@@ -20,8 +20,7 @@ use phasor_zip::has_extension;
 
 use crate::arrow_sink::{ArrowSink, BatchSink, BlockBatch};
 
-/// The MMS decoder: C/I/D rows, resolved through the registry within one
-/// market.
+/// The MMS decoder: C/I/D rows, resolved through the registry within one market.
 pub struct MmsDecoder {
     registry: Arc<Registry>,
     market: Market,
@@ -34,8 +33,7 @@ impl MmsDecoder {
     }
 }
 
-/// The census's id of a block's shape, from its header: the same
-/// canonical bytes the census gives every block it sees.
+/// The census's id of a block's shape, from its header.
 fn shape_id(irow: &IRow<'_>) -> String {
     phasor_registry::CanonicalShape::of(irow.report_type, irow.report_subtype, irow.columns)
         .id()

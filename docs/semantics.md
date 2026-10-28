@@ -150,6 +150,4 @@ server's word and one known by the earliest of the three.
 
 Each file's footer counts its rows of each source (`phasor.sources`),
 and the manifest keeps what each entry gave (`ingest_entries`); `phasor
-verify` holds the two to each other. A file without the four columns was
-written before lake format 3 (`PLAN_FORMAT` 7), and `phasor ingest`
-writes it again.
+verify` holds the two to each other.

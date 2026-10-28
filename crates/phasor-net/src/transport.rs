@@ -1,5 +1,4 @@
-//! Moving bytes over HTTP, behind a trait so tests and `--offline` need no
-//! network.
+//! Moving bytes over HTTP, behind a trait so tests and `--offline` need no network.
 
 use std::collections::HashMap;
 use std::sync::Arc;
@@ -40,14 +39,12 @@ impl Span {
     }
 }
 
-/// The whole file's size from a `Content-Range` header,
-/// `bytes 0-99/1234`; none when the server wrote `*` or nothing readable.
+/// The whole file's size from a `Content-Range` header (`bytes 0-99/1234`); none for `*`.
 pub fn total_of(content_range: &str) -> Option<u64> {
     content_range.rsplit_once('/')?.1.trim().parse().ok()
 }
 
-/// A response with a streaming body. Chunks are passed on as the transport
-/// received them, never copied.
+/// A response with a streaming body; chunks are passed on uncopied.
 pub struct HttpResponse {
     /// Status code.
     pub status: u16,
@@ -66,13 +63,10 @@ pub struct HttpResponse {
 /// Moves bytes.
 #[async_trait]
 pub trait Transport: Send + Sync {
-    /// Performs a GET of `url` and returns the response with its body
-    /// streaming.
+    /// GETs `url`, the body streaming.
     async fn get(&self, url: &str) -> Result<HttpResponse, FetchError>;
-    /// Performs a GET of one span of `url`. A server that honours the
-    /// range answers 206 with the span; one that does not answers 200 with
-    /// the whole file, which the caller treats as the range ignored. A
-    /// transport that cannot ask for a span asks for the file.
+    /// GETs one span of `url`: 206 when honoured, 200 with the whole file when not.
+    /// By default a transport asks for the whole file.
     async fn get_range(&self, url: &str, span: Span) -> Result<HttpResponse, FetchError> {
         let _ = span;
         self.get(url).await
@@ -169,8 +163,7 @@ impl Transport for ReqwestTransport {
     }
 }
 
-/// What a body that failed says: a stall names the timeout and the URL,
-/// anything else is the transport's own words.
+/// What a failed body says: a stall names the timeout and URL, else the transport's words.
 #[cfg(feature = "http")]
 fn body_error(timed_out: bool, message: &str, timeout_secs: u64, url: &str) -> String {
     if timed_out {
@@ -213,8 +206,7 @@ pub struct Canned {
     pub fail_after: Option<usize>,
     /// Fail at connect with this message.
     pub connect_error: Option<String>,
-    /// Whether a ranged request is honoured (a 206 of the span) or ignored
-    /// (the whole body, 200), as a server may do either.
+    /// Whether ranged requests are honoured (206) or ignored (200 with the whole body).
     pub ranges: bool,
 }
 
@@ -548,8 +540,7 @@ mod ranged_tests {
         ));
     }
 
-    /// A server on a local port that answers each connection with `reply`
-    /// after reading the request, then closes; the request lines it saw.
+    /// A local server answering each connection with the next reply; the request lines it saw.
     async fn serve(replies: Vec<Vec<u8>>) -> (String, tokio::task::JoinHandle<Vec<String>>) {
         use tokio::io::{AsyncReadExt as _, AsyncWriteExt as _};
         let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();

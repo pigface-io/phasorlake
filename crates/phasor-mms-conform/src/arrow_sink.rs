@@ -47,29 +47,21 @@ pub trait BatchSink {
     fn bad_row(&mut self, raw: &[u8], pos: Pos, err: &RowError) -> Flow;
 }
 
-/// One route of the plan as the row loop reads it: the file field, the
-/// output column, the cast. Kept small so a row's routes share cache lines.
+/// One route of the plan; kept small so a row's routes share cache lines.
 #[derive(Clone, Copy)]
 struct Step {
-    /// Position of the field in the D row.
     field: u16,
-    /// Output column.
     target: u16,
     cast: Cast,
     nullable: bool,
 }
 
-/// Values of one output column that did not fit its type since the last
-/// flush, kept as text in a column of their own.
+/// Values of one output column that did not fit its type since the last flush.
 struct RawColumn {
-    /// The output column whose values these are.
     target: u16,
-    /// The raw column's name.
     name: String,
-    /// One entry per row of the batch: the text, or null where the value
-    /// fit.
+    /// One entry per row of the batch: the text, or null where the value fit.
     text: StringBuilder,
-    /// How many values were kept so.
     count: u64,
     /// The first of them: its text, its line and the fault.
     first: (String, u64, Fault),
@@ -95,8 +87,7 @@ struct Block {
     resolved: Resolved,
     /// The plan's routes that feed a column, in file order.
     steps: Vec<Step>,
-    /// Output columns that no file column feeds and that do not allow
-    /// nulls: every row leaves them null all the same.
+    /// Non-nullable output columns no file column feeds; every row leaves them null.
     missing_required: Vec<u16>,
     fingerprint: Fingerprint,
     builders: Vec<ColumnBuilder>,
@@ -106,14 +97,11 @@ struct Block {
     rows: usize,
     /// Per output column: timestamps clamped since the last flush.
     clamped: Vec<Tally>,
-    /// Per output column: nulls kept in a column that does not allow
-    /// them since the last flush. Such a column is nullable in the batch.
+    /// Per output column: nulls kept in a non-nullable column; it is nullable in the batch.
     nulls_kept: Vec<Tally>,
-    /// Columns with values kept as text since the last flush, in the order
-    /// they first had one.
+    /// Columns with values kept as text since the last flush, in first-seen order.
     raws: Vec<RawColumn>,
-    /// Rows per batch for this block's width: the sink's, or fewer for a
-    /// wide table so a batch holds at most [`BATCH_CELLS`] values.
+    /// Rows per batch for this block's width (see [`BATCH_CELLS`]).
     batch_rows: usize,
 }
 
@@ -149,51 +137,35 @@ impl From<Block> for BlockBuffers {
 
 /// Builds typed batches from MMS rows through the registry.
 ///
-/// A row is never refused for one of its values. A value that does not fit
-/// its column's type leaves the column null in that row, and its text is
-/// kept in a column of its own, `{column}__raw`, which exists only in the
-/// batches that need it; an empty value in a column that does not allow
-/// nulls is kept as a null. Each is reported once per column per batch
-/// (`parse.value_kept_raw`, `parse.null_kept`). In strict mode either
-/// refuses the file instead. Only a row whose structure is wrong for its
-/// block (too many fields, another block's prefix) is quarantined.
+/// A value that does not fit its type is null, its text kept in `{column}__raw`;
+/// an empty non-nullable value is kept as null. Each is reported once per column
+/// per batch (`parse.value_kept_raw`, `parse.null_kept`); strict mode refuses
+/// the file instead. Only a structurally wrong row is quarantined.
 pub struct ArrowSink<'r, B: BatchSink> {
     registry: &'r Registry,
     opts: ResolveOptions,
-    /// Fields of a row before its data: [`PREFIX_FIELDS`] for an MMS D row
-    /// (`D`, type, subtype, version), 0 for a plain row, which carries only
-    /// its columns and belongs to the block that opened it.
+    /// Fields of a row before its data: [`PREFIX_FIELDS`] for MMS, 0 for plain.
     prefix: usize,
-    /// The month of the source being read, when it is known: it picks
-    /// among the runs of a table's history that fit a block.
     period: Option<phasor_core::YearMonth>,
     batch_rows: usize,
     out: B,
     block: Option<Block>,
     parsed: Vec<Parsed>,
-    /// The values of the current row that did not fit: output column,
-    /// field position, fault.
+    /// The current row's misfits: output column, field position, fault.
     misfits: Vec<(u16, u16, Fault)>,
-    /// The shapes (plan and I-row version) whose resolution warnings were
-    /// passed on: a file of many blocks of one shape says them once.
+    /// Shapes whose resolution warnings were already passed on, so each is said once.
     warned: Vec<(phasor_registry::PlanHash, u16)>,
 }
 
-/// Rows a new column builder makes room for. Builders grow as rows come;
-/// a block of a few rows (most blocks of a file of many tables) must not
-/// pay for touching room for thousands.
+/// Rows a new column builder makes room for, small so tiny blocks stay cheap.
 const FIRST_ROWS: usize = 256;
 
 /// Rows per batch by default.
 pub const DEFAULT_BATCH_ROWS: usize = 65_536;
 
-/// Values (rows times columns) a batch holds at most: a table of more than
-/// 16 columns gets fewer rows per batch, so memory follows the values a
-/// batch holds, not its row count.
+/// Values (rows times columns) a batch holds at most, so wide tables get fewer rows per batch.
 pub const BATCH_CELLS: usize = 1 << 20;
 
-/// Rows per batch for a table `width` columns wide: `batch_rows` at most,
-/// and no fewer than [`FIRST_ROWS`] (or `batch_rows`, when that is less).
 fn rows_for(width: usize, batch_rows: usize) -> usize {
     (BATCH_CELLS / width.max(1)).clamp(FIRST_ROWS.min(batch_rows), batch_rows)
 }
@@ -228,17 +200,14 @@ impl<'r, B: BatchSink> ArrowSink<'r, B> {
         }
     }
 
-    /// Says which month the source being read is of, so that each block
-    /// is read with the schema of the run released by then.
+    /// Sets the source's month, which picks the schema run each block is read with.
     #[must_use]
     pub fn with_period(mut self, period: Option<phasor_core::YearMonth>) -> Self {
         self.period = period;
         self
     }
 
-    /// Reads rows of `prefix` fields before their data: 0 for the rows of
-    /// a plain file, whose block is the header that opened it, so no field
-    /// names the block and none is compared.
+    /// Reads rows of `prefix` fields before their data; 0 for a plain file.
     #[must_use]
     pub fn with_prefix(mut self, prefix: usize) -> Self {
         self.prefix = prefix;
@@ -252,8 +221,7 @@ impl<'r, B: BatchSink> ArrowSink<'r, B> {
         Ok(self.out)
     }
 
-    /// Flushes and takes the inner sink back, keeping the sink even when the
-    /// final flush failed so the caller can abort what it had opened.
+    /// Flushes and takes the inner sink back, even when the final flush failed.
     pub fn finish(mut self) -> (B, Result<(), SinkError>) {
         let r = self.flush();
         (self.out, r)
@@ -282,9 +250,7 @@ impl<'r, B: BatchSink> ArrowSink<'r, B> {
                 .with_version(block.resolved.version)
                 .with_column(column.to_owned())
         };
-        // The plan's schema serves every batch that needs no change to it;
-        // a copy is made only for one that does (a column made nullable, a
-        // raw column added).
+        // The plan's schema is copied only for a batch that changes it.
         let lake = &plan.arrow;
         let mut changed: Option<Vec<Field>> = None;
         fn own<'c>(c: &'c mut Option<Vec<Field>>, lake: &Schema) -> &'c mut Vec<Field> {
@@ -295,8 +261,6 @@ impl<'r, B: BatchSink> ArrowSink<'r, B> {
             .iter_mut()
             .map(ColumnBuilder::finish)
             .collect();
-        // Timestamps beyond the nanosecond range were stored at its nearest
-        // end; say so once per column, with how many and an example.
         for (i, tally) in block.clamped.iter_mut().enumerate() {
             let Some((sample, _)) = tally.first.take() else {
                 continue;
@@ -315,8 +279,6 @@ impl<'r, B: BatchSink> ArrowSink<'r, B> {
             self.out.warning(d);
             tally.count = 0;
         }
-        // A column that does not allow nulls, with nulls kept in it, allows
-        // them in this batch.
         for (i, tally) in block.nulls_kept.iter_mut().enumerate() {
             let Some((_, line)) = tally.first.take() else {
                 continue;
@@ -338,9 +300,7 @@ impl<'r, B: BatchSink> ArrowSink<'r, B> {
             *f = f.clone().with_nullable(true);
             tally.count = 0;
         }
-        // Values that did not fit their column's type: the text beside it.
         for raw in block.raws.drain(..) {
-            // The column is null where its value did not fit.
             let i = raw.target as usize;
             let f = &mut own(&mut changed, lake)[i];
             *f = f.clone().with_nullable(true);
@@ -389,9 +349,7 @@ impl<'r, B: BatchSink> ArrowSink<'r, B> {
         let full = block.rows >= batch_rows;
         block.rows = 0;
         self.out.batch(out)?;
-        // A full batch is likely followed by another: once it is written
-        // and dropped, give the builders its room, not doubling again
-        // from empty.
+        // A full batch is likely followed by another: size the builders for it.
         if full && let Some(block) = self.block.as_mut() {
             let lake = &block.resolved.plan.arrow;
             for (b, f) in block.builders.iter_mut().zip(lake.fields()) {
@@ -424,9 +382,7 @@ impl<B: BatchSink> Sink for ArrowSink<'_, B> {
             }
         }
         self.out.block_started(irow, &resolved, pos);
-        // A file of many blocks reuses the buffers of the block before:
-        // only the first I row of a file allocates them, and a block of the
-        // same shape keeps its column builders as well.
+        // Reuse the previous block's buffers, and its builders when the shape is the same.
         let old = self.block.take();
         let same_shape = old
             .as_ref()
@@ -505,8 +461,6 @@ impl<B: BatchSink> Sink for ArrowSink<'_, B> {
         if row.len() < self.prefix {
             return Err(RowError::TooShort(row.len()).into());
         }
-        // The prefix must match the block: a cheap byte compare. A plain
-        // row has none: its block is the header that opened it.
         if self.prefix > 0
             && (row.get(1) != Some(block.report_type.as_bytes())
                 || row.get(2) != Some(block.report_subtype.as_bytes())
@@ -532,8 +486,7 @@ impl<B: BatchSink> Sink for ArrowSink<'_, B> {
             .into());
         }
         let strict = self.opts.mode == Mode::Strict;
-        // A field that does not fit is a value fault, not a row fault: the
-        // row is kept. Strict mode refuses the file at the first one.
+        // A misfit keeps the row; strict mode refuses the file at the first one.
         let refuse = |block: &Block, target: u16, field: u16, fault: Fault| {
             let column = block.resolved.plan.arrow.field(target as usize).name();
             let bytes = row.get(usize::from(field)).unwrap_or(b"");
@@ -569,8 +522,6 @@ impl<B: BatchSink> Sink for ArrowSink<'_, B> {
                 self.parsed[target as usize] = parsed;
             }
         }
-        // A column the file does not carry is null, also where the lake
-        // does not allow it.
         if let Some(&m) = block.missing_required.first() {
             if strict {
                 let column = block.resolved.plan.arrow.field(m as usize).name();
@@ -593,7 +544,6 @@ impl<B: BatchSink> Sink for ArrowSink<'_, B> {
             for (b, v) in block.builders.iter_mut().zip(&self.parsed) {
                 match v {
                     Parsed::Str(i) => {
-                        // SAFETY-free: the bytes live in `row`, which outlives this call.
                         let bytes = row.get(usize::from(*i)).unwrap_or(b"");
                         match b {
                             ColumnBuilder::Utf8(sb) => {
@@ -630,10 +580,7 @@ impl<B: BatchSink> Sink for ArrowSink<'_, B> {
     }
 }
 
-/// Records the current row's misfits: an empty value where nulls are not
-/// allowed is a kept null; any other value goes, as text, to its column's
-/// raw column, which is started (null for the rows before) on its first
-/// value. Every raw column gets one entry for the row.
+/// Records the current row's misfits; every raw column gets one entry for the row.
 fn keep_misfits(block: &mut Block, misfits: &[(u16, u16, Fault)], row: &Row<'_>, line: u64) {
     let rows_before = block.rows;
     for &(target, field, fault) in misfits {
@@ -668,7 +615,6 @@ fn keep_misfits(block: &mut Block, misfits: &[(u16, u16, Fault)], row: &Row<'_>,
         raw.text.append_value(&text);
         raw.count += 1;
     }
-    // Raw columns of the batch without a value in this row are null for it.
     for raw in &mut block.raws {
         if raw.text.len() == rows_before {
             raw.text.append_null();
@@ -839,8 +785,7 @@ mod tests {
         assert!(tables >= 20);
     }
 
-    /// The multi-block fixture with one more block put in first, right
-    /// after the file header: a block for a report pair no table claims.
+    /// The multi-block fixture led by a block for a report pair no table claims.
     fn with_unknown_block() -> Vec<u8> {
         let text = String::from_utf8(fixture("multi_block_dispatchis.csv")).unwrap();
         let after_header = text.find('\n').unwrap() + 1;
@@ -1136,8 +1081,7 @@ D,DISPATCH,UNIT_SCADA,1,\"2024/01/01 00:05:00\",,1\n\
 D,DISPATCH,UNIT_SCADA,1,\"2024/01/01 00:05:00\",D,also bad\n\
 D,DISPATCH,UNIT_SCADA,1,\"2024/01/01 00:05:00\",E,2\n";
 
-    /// A decimal with more digits than its column, or than i128, holds is
-    /// kept as text beside a null, never wrapped into another number.
+    /// A decimal too wide for its column is kept as text beside a null, never wrapped.
     #[test]
     fn a_decimal_too_long_for_its_column_is_kept_as_text() {
         let r = reg();
@@ -1280,8 +1224,7 @@ D,DISPATCH,UNIT_SCADA,1,\"2024/01/01 00:05:00\",E,2\n";
         assert_eq!(out.warnings[0].line, Some(5));
     }
 
-    /// A table that declares `{column}__raw` gets the text there, under
-    /// the column's own id, and no column of the batch alone.
+    /// A table that declares `{column}__raw` gets the text there, under the column's own id.
     #[test]
     fn raw_columns_exist_only_in_the_batches_that_need_them() {
         let r = reg();

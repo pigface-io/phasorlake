@@ -3,8 +3,7 @@ use phasor_core::Diagnose as _;
 
 const URL: &str = "https://h/d/f.zip";
 
-/// Writes `bytes` at `url`'s path in `a` with a record that they were
-/// fetched from `url`.
+/// Writes `bytes` at `url`'s path in `a` with a record of the fetch.
 fn hold(a: &Archive, url: &str, bytes: &[u8]) -> PathBuf {
     let path = a.path_for(url);
     std::fs::create_dir_all(path.parent().unwrap()).unwrap();

@@ -1,22 +1,6 @@
-//! Iceberg tables on disk: one writer, a pointer to the current metadata.
-//!
-//! A table is a directory. `metadata/vN.metadata.json` is the N-th version
-//! of its metadata and `metadata/version-hint.text` names the current one,
-//! the layout readers find on their own (`iceberg_scan('<dir>')`,
-//! pyiceberg's `StaticTable`). Each new version is written beside the old
-//! ones and the hint is swapped by rename, so a reader sees the old table
-//! or the new one, never half of either.
-//!
-//! The census decides every schema ([`phasor_iceberg::Schema`]); the store
-//! records them and never invents one. Setting a schema identical to an
-//! earlier one makes that earlier schema current again, with its id, so a
-//! table that goes back and forth between two column lists keeps two
-//! schemas, not a new one per change. An append writes a manifest and a
-//! manifest list ([`phasor_iceberg::table`]) and adds one snapshot whose
-//! summary carries the caller's properties: the run of AEMO files it holds.
-//!
-//! Tables are unpartitioned. Ids and times come from the caller, so the
-//! same census writes the same bytes.
+//! Iceberg tables on disk: `metadata/vN.metadata.json` versions beside
+//! `metadata/version-hint.text`, swapped by rename so a reader never sees half a
+//! table. Schemas come from the census; ids and times from the caller. See docs/iceberg.md.
 
 use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
@@ -151,9 +135,8 @@ impl Store {
         Ok(())
     }
 
-    /// Makes `schema` current: an earlier schema with the same columns and
-    /// key becomes current again, any other is added. Returns the id the
-    /// table knows it by; `at_ms` is when the change is recorded.
+    /// Makes `schema` current: an earlier schema with the same columns and key becomes
+    /// current again, with its id, else it is added. Returns the schema id.
     pub fn set_schema(&self, schema: &Schema, at_ms: i64) -> Result<u32> {
         let (version, metadata) = self.current()?;
         let mut next = metadata.next(&url(&self.version_file(version)), at_ms);
@@ -164,8 +147,7 @@ impl Store {
         Ok(id)
     }
 
-    /// Sets the table's properties to `properties`, recorded at `at_ms`;
-    /// the same properties again write nothing.
+    /// Sets the table's properties at `at_ms`; the same properties again write nothing.
     pub fn set_properties(&self, properties: BTreeMap<String, String>, at_ms: i64) -> Result<()> {
         let (version, metadata) = self.current()?;
         if metadata.properties == properties {

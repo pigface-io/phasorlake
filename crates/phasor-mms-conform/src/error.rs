@@ -1,14 +1,11 @@
-//! What the typed sink refuses and fails with. The scanner's own errors
-//! ([`phasor_mms_decode::error`]) carry these through and diagnose
-//! themselves, each of these by its own [`Diagnose`].
+//! What the typed sink refuses and fails with, each diagnosed by its own [`Diagnose`].
 
 use phasor_core::num::NumberError;
 use phasor_core::{Category, Diagnose, Diagnostic};
 
 use crate::mmstime::TimestampError;
 
-/// A value that does not fit its column: the row is kept, the value
-/// null, unless strict mode refuses the file for it.
+/// A value that does not fit its column; the row is kept unless strict mode refuses the file.
 #[derive(Debug, Clone, PartialEq, Eq, thiserror::Error)]
 pub enum ValueError {
     /// A non-nullable column is empty.
@@ -53,9 +50,7 @@ pub enum ValueError {
     },
 }
 
-/// What is wrong with `value` as a number of the declared kind, in the
-/// words of what was expected and what was found: a whole number was
-/// declared and the file has a fraction, not just "not an integer".
+/// What is wrong with `value` as a number, in words of what was expected and found.
 fn number_fault(value: &str, source: &NumberError) -> String {
     let is_number = phasor_core::num::parse_f64(value.as_bytes()).is_ok();
     match source {
@@ -128,8 +123,7 @@ pub type ScanError = phasor_mms_decode::ScanError<ValueError, SinkError>;
 /// A failure of the thing rows are delivered to; ends the scan.
 #[derive(Debug, thiserror::Error)]
 pub enum SinkError {
-    /// The sink refused the block its I row opens, for example because the
-    /// shape did not resolve in strict mode; the diagnostic says why.
+    /// The sink refused the block its I row opens; the diagnostic says why.
     #[error("{}", .0.message)]
     Refused(Box<Diagnostic>),
     /// Writing a batch failed.
@@ -139,8 +133,7 @@ pub enum SinkError {
         table: String,
         /// What went wrong.
         message: String,
-        /// The chain of causes under it, outermost first: what the
-        /// operating system or the Parquet writer actually said.
+        /// The chain of causes under it, outermost first.
         cause: Vec<String>,
     },
     /// Building an Arrow array failed; a bug.
@@ -154,9 +147,7 @@ pub enum SinkError {
 }
 
 impl SinkError {
-    /// A failed write of `table`, with every cause under `err` kept: the
-    /// message of an I/O error is what tells a full disk from a missing
-    /// directory from too many open files.
+    /// A failed write of `table`, with every cause under `err` kept.
     pub fn write(table: impl Into<String>, err: &(dyn std::error::Error + 'static)) -> Self {
         let mut cause = Vec::new();
         let mut source = err.source();

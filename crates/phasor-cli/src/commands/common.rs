@@ -1,5 +1,4 @@
-//! What `fetch` and `ingest` share: which tables, of which market,
-//! over what window, in the market's clock.
+//! What `fetch` and `ingest` share: which tables of which market, over what window.
 
 use anyhow::{Context as _, Result, bail};
 use phasor_core::timetext;
@@ -18,8 +17,7 @@ pub fn fail(e: &impl Diagnose) -> anyhow::Error {
 
 /// The tables a command works on, and the one market they are of.
 pub struct Selection {
-    /// The tables, in the order asked, less the excluded, by name, upper
-    /// case.
+    /// The tables in the order asked, less the excluded, upper case.
     pub names: Vec<String>,
     /// The market's constants.
     pub def: MarketDef,
@@ -38,8 +36,7 @@ pub fn table_id(r: &Registry, name: &str) -> Option<TableId> {
     })
 }
 
-/// Resolves the tables asked for; `market` is needed only when none is
-/// named (every table of the market) or a name is unknown to the registry.
+/// Resolves the tables asked for; `market` is needed only when none is named or a name is unknown.
 pub fn select(ctx: &Context, args: &TablesArg) -> Result<Selection> {
     let r = &ctx.registry;
     let mut ids = Vec::new();
@@ -80,10 +77,9 @@ pub fn select(ctx: &Context, args: &TablesArg) -> Result<Selection> {
     })
 }
 
-/// An instant from the forms the window flags accept, in a market at
-/// `offset_secs` from UTC: `YYYY-MM`, `YYYY-MM-DD`, `YYYY-MM-DDTHH:MM[:SS]`
-/// (a space for the `T` too), or RFC 3339 with its own offset. As an end,
-/// a month or a day means the instant after its last; as a start, its first.
+/// An instant from `YYYY-MM`, `YYYY-MM-DD` or `YYYY-MM-DD[T ]HH:MM[:SS]` at `offset_secs`,
+/// or RFC 3339.
+/// As an end, a month or day means the instant after its last; as a start, its first.
 pub fn parse_when(text: &str, offset_secs: i32, end: bool) -> Result<i64> {
     let text = text.trim();
     let bad =
@@ -114,8 +110,7 @@ pub fn rfc3339(us: i64, offset_secs: i32) -> String {
     timetext::format_rfc3339(us.div_euclid(1_000_000), offset_secs)
 }
 
-/// A window, in the market's clock, with the days and instants the fetch
-/// needs to cover it.
+/// A window in the market's clock, with the days and instants a fetch must cover.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Window {
     /// `[from, to)` as microseconds since the epoch, for the sources.

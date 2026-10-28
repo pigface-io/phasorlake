@@ -1,14 +1,6 @@
-//! nemweb's report folders as a source: `Reports/ARCHIVE/{folder}/` holds
-//! one zip per day of a report's five-minute (or other) files, nested;
-//! `Reports/CURRENT/{folder}/` the loose files of the last days. Which
-//! folder carries which table the registry knows from the census's
-//! `folders.json`.
-//!
-//! A request names tables and days. A day in `ARCHIVE` is its daily zip,
-//! read by its directory so only the entries within the request's instants
-//! are fetched; a day not yet archived is the `CURRENT` files of that day.
-//! The files carry whatever tables the folder's report has: the lake takes
-//! them all, the request's trimmed Parquet only its table.
+//! nemweb's report folders as a source: `Reports/ARCHIVE/{folder}/` holds one zip
+//! per day, `Reports/CURRENT/{folder}/` the loose files of the last days. A day is
+//! its archive zip, read for the request's instants, else its `CURRENT` files.
 
 use std::collections::BTreeMap;
 use std::sync::Arc;
@@ -27,9 +19,7 @@ pub const REPORTS_SOURCE_ID: &str = "nem-reports";
 /// Market time of the NEM, seconds east of UTC.
 const AEST: i32 = 36_000;
 
-/// Five minutes, in microseconds: how far past an interval's end a file's
-/// stamp may lie and still carry the interval's last rows (a file stamped
-/// at `T` holds the interval ending at `T`).
+/// Five minutes in microseconds: a file stamped `T` holds the interval ending at `T`.
 const INTERVAL_MICROS: i64 = 5 * 60 * 1_000_000;
 /// A day, in microseconds.
 const DAY_MICROS: i64 = 86_400 * 1_000_000;
@@ -41,8 +31,7 @@ pub struct ReportName {
     pub report: String,
     /// The day of the stamp.
     pub day: CivilDay,
-    /// The time of day of the stamp, `(hour, minute, second)`, when the name
-    /// carries one: a daily zip of `ARCHIVE` carries none.
+    /// The stamp's `(hour, minute, second)`; a daily `ARCHIVE` zip carries none.
     pub time: Option<(u8, u8, u8)>,
 }
 
@@ -55,11 +44,8 @@ impl ReportName {
     }
 }
 
-/// Whether a file or entry stamped as `name` serves a request for
-/// `instants`: one stamped within them, or the first at or just after
-/// their end, which carries the last interval. A daily zip, whose name has
-/// no time, serves any request for its day; its entries are picked from
-/// its directory.
+/// Whether a file stamped `name` serves `instants`: stamped within them, or the
+/// first at or after their end. A daily zip serves any request for its day.
 fn within(name: &ReportName, instants: Option<(i64, i64)>) -> bool {
     match (name.time, instants) {
         (Some(_), Some((from, to))) => {
@@ -70,8 +56,7 @@ fn within(name: &ReportName, instants: Option<(i64, i64)>) -> bool {
     }
 }
 
-/// Whether `instants` take every file of the daily zip `day`: those
-/// stamped from its 00:05 to the next day's 00:00, as [`within`] keeps them.
+/// Whether `instants` take every file of the daily zip `day` (00:05 to the next 00:00).
 fn whole_day(day: &ReportName, instants: Option<(i64, i64)>) -> bool {
     instants.is_none_or(|(from, to)| {
         let start = day.micros();
@@ -79,10 +64,7 @@ fn whole_day(day: &ReportName, instants: Option<(i64, i64)>) -> bool {
     })
 }
 
-/// The day whose intervals a file stamped as `name` carries. A day's
-/// intervals end from just after its midnight to the next midnight, so a
-/// file stamped at 00:00 carries the day before's last interval: AEMO's
-/// daily zip of a day holds its files from 00:05 to the next day's 00:00.
+/// The day whose intervals a file carries: one stamped 00:00 carries the day before's last.
 fn day_of(name: &ReportName) -> CivilDay {
     if name.time == Some((0, 0, 0)) {
         CivilDay::from_days(name.day.days_since_epoch() - 1)
@@ -91,9 +73,8 @@ fn day_of(name: &ReportName) -> CivilDay {
     }
 }
 
-/// Parses a report file's name: `PUBLIC_{REPORT}_{YYYYMMDD}.zip`,
-/// `PUBLIC_{REPORT}_{YYYYMMDDHHMM}_{id}.zip` or with seconds, `.zip` or
-/// `.CSV`, taken from the end of a path or a `!`-joined entry path.
+/// Parses `PUBLIC_{REPORT}_{YYYYMMDD}.zip` or `PUBLIC_{REPORT}_{YYYYMMDDHHMM[SS]}_{id}.{zip,CSV}`,
+/// from the end of a path or a `!`-joined entry path.
 pub fn parse_report_name(name: &str) -> Option<ReportName> {
     let name = name.rsplit(['/', '!']).next()?;
     let stem = match name.rsplit_once('.') {
@@ -146,8 +127,7 @@ pub struct ReportFolders {
 }
 
 impl ReportFolders {
-    /// The folders under `base_url` (nemweb, a mirror or a test server),
-    /// mapped to tables by `registry`.
+    /// The folders under `base_url`, mapped to tables by `registry`.
     pub fn new(base_url: &str, registry: Arc<Registry>) -> Result<Self, FetchError> {
         let mut base = Url::parse(base_url).map_err(|e| FetchError::Parse {
             url: base_url.to_owned(),
@@ -171,8 +151,7 @@ impl ReportFolders {
             })
     }
 
-    /// The folders that carry the query's tables, by folder name, each with
-    /// its `ARCHIVE` and `CURRENT` sides where the census saw them.
+    /// The folders that carry the query's tables, each with its `ARCHIVE` and `CURRENT` sides.
     fn folders_for(&self, query: &Query) -> Result<BTreeMap<String, Vec<Side>>, FetchError> {
         let no_match = |table: &str, nearest: &str| FetchError::NoMatch {
             url: self.base.to_string(),
@@ -215,8 +194,7 @@ impl ReportFolders {
         Ok(out)
     }
 
-    /// The files of one folder (both sides) for the query's days: a day's
-    /// `ARCHIVE` zip when there is one, else its `CURRENT` files.
+    /// One folder's files for the query's days: a day's `ARCHIVE` zip, else its `CURRENT` files.
     async fn folder_files(
         &self,
         sides: &[Side],
@@ -328,11 +306,8 @@ impl Source for ReportFolders {
         Ok(out)
     }
 
-    /// The archived files of the folders that carry the query's tables, for
-    /// its days: daily zips, loose files and entries fetched alone. A
-    /// folder's sides are kept in one local folder, walked once; a day whose
-    /// `ARCHIVE` zip is held is read from it, not again from the 5-minute
-    /// files `CURRENT` listed.
+    /// The archived files of the query's folders and days. A day whose `ARCHIVE` zip
+    /// is held is read from it, not again from its `CURRENT` files.
     fn archived(&self, archive: &Archive, query: &Query) -> Result<Vec<LocalFile>, FetchError> {
         let days: Vec<CivilDay> = query.range.days_iter().collect();
         let mut out = Vec::new();
@@ -399,17 +374,15 @@ impl Source for ReportFolders {
         })
     }
 
-    /// A day's zip of `ARCHIVE` holds the day's every file: read by its
-    /// directory when the request wants less than the day.
+    /// A day's `ARCHIVE` zip is read by its directory when the request wants less than the day.
     fn wants_ranged(&self, remote: &RemoteFile, query: &Query) -> bool {
         report_side(&remote.url) == Some("ARCHIVE")
             && parse_report_name(remote.url.path())
                 .is_some_and(|n| n.time.is_none() && !whole_day(&n, query.instants))
     }
 
-    /// The entries stamped within the request's instants, plus the first
-    /// stamped at or just after their end, which carries the last interval;
-    /// the whole zip when the request has no instants.
+    /// The entries within the request's instants plus the first at or after their end;
+    /// the whole zip when there are no instants.
     fn pick(&self, remote: &RemoteFile, entries: &[Entry], query: &Query) -> Picks {
         let Some((from, to)) = query.instants else {
             return Picks::Whole;
@@ -494,8 +467,7 @@ mod tests {
         }
     }
 
-    /// A registry of two real tables with folders.json saying where the
-    /// report folders carry them.
+    /// A registry of two real tables with a folders.json placing them.
     fn registry() -> (tempfile::TempDir, Arc<Registry>) {
         let dir = tempfile::tempdir().unwrap();
         let real = Path::new(env!("CARGO_MANIFEST_DIR")).join("../../schemas/nem");

@@ -1,30 +1,6 @@
 //! The lake's Iceberg tables, built from the manifest.
 //!
-//! A table's Iceberg metadata is a function of two things: the schemas the
-//! census folded into its history, and the live outputs the manifest
-//! records. [`build_table`] writes it from those alone, so a reingest, a
-//! removed source or a refolded history is a rebuild, never an edit:
-//!
-//! - every schema of the history is added in id order, so the table's
-//!   schema ids are the history's;
-//! - the outputs are taken in the order the manifest gives (source month,
-//!   file, entry), and each run of outputs under one schema and one AEMO
-//!   version is one snapshot, with that schema current; its summary names
-//!   the run's first and last source file, its months and its version;
-//! - after the runs, the schema of every field the history has, under its
-//!   newest name, is made current ([`union`]): the lake's files hold every
-//!   field, so a reader by field id reads every column of every file, and
-//!   a snapshot keeps its run's schema for a read of the table as it was;
-//! - an output whose block had no schema of the history (a column list no
-//!   run of it fits) is written under the table's last schema, and
-//!   its snapshot says so (`phasor.schema=latest`): a reader takes its
-//!   columns by field id all the same.
-//!
-//! The table is not partitioned. Lake files are split by the market-time
-//! month, and Iceberg's month transform is the UTC month, so a month
-//! partition would put the first ten hours of each month in the wrong one.
-//! Snapshot ids and times come from the outputs, so the same manifest and
-//! history write the same metadata.
+//! [`build_table`] is a pure rebuild from the history and the live outputs, never an edit.
 
 use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
@@ -43,8 +19,7 @@ pub struct TableSchemas {
     pub uuid: String,
     /// Its schemas, by id from 0.
     pub schemas: Vec<Schema>,
-    /// Its properties as phasor-schemas publishes them: its declaration,
-    /// roles, key, breaks and the data model's words.
+    /// Its properties as phasor-schemas publishes them.
     pub properties: BTreeMap<String, String>,
     /// What the data model says of each column, by field id.
     pub docs: BTreeMap<u32, String>,
@@ -61,8 +36,7 @@ pub struct Built {
     pub rows: u64,
 }
 
-/// A deterministic UUID for a table: the bytes of two hashes of its name,
-/// laid out as a version 8 UUID.
+/// A deterministic version 8 UUID for a table, from hashes of its name.
 pub fn table_uuid(name: &str) -> String {
     let h = |seed: u64| fnv(name.as_bytes(), seed);
     let hex = format!("{:016x}{:016x}", h(0), h(1));
@@ -103,9 +77,12 @@ fn month_ms(period: Option<&str>) -> i64 {
     (era * 146_097 + doe - 719_468) * 86_400_000
 }
 
-/// Builds the Iceberg metadata of table `t`, of `market`, whose files go
-/// under `table_dir`, in the lake at `lake`, from `outputs` (its live
-/// outputs in manifest order). Any metadata already there is replaced.
+/// Builds the Iceberg metadata of table `t` from `outputs`, replacing any already there.
+///
+/// Each run of outputs under one schema and version is one snapshot, then the
+/// [`union`] schema is made current. The table is not partitioned: Iceberg's
+/// month transform is UTC, but lake files split by market-time month.
+/// Snapshot ids and times come from the outputs, so the result is deterministic.
 pub fn build_table(
     lake: &Path,
     market: &str,
@@ -119,8 +96,7 @@ pub fn build_table(
         std::fs::remove_dir_all(&meta)?;
     }
     let store = Store::at(dir);
-    // A lake file holds its table's columns, then each row's source and
-    // publish time; so does each schema of the table the lake publishes.
+    // Each schema ends with the provenance columns, as the lake files do.
     let schemas: Vec<Schema> = t
         .schemas
         .iter()
@@ -193,8 +169,7 @@ pub fn build_table(
         built.rows += run.iter().map(|o| o.rows).sum::<u64>();
         i = j;
     }
-    // The table reads as its files hold it: every field of every schema,
-    // each with the data model's words, and the table's declaration.
+    // The current schema holds every field of every schema, as the files do.
     let mut all = union(&t.schemas);
     for f in &mut all.fields {
         f.doc = t.docs.get(&f.id).cloned();
@@ -209,10 +184,7 @@ pub fn build_table(
     Ok(built)
 }
 
-/// Every field any schema has, by id in id order (the order the lake's
-/// files hold them), under its newest name: required where every schema
-/// with it requires it, and the identifier fields the schemas' keys share
-/// that stay required. Its id is one past the schemas'.
+/// Every field any schema has, in id order under its newest name; its id is one past the schemas'.
 pub fn union(schemas: &[Schema]) -> Schema {
     let mut fields: Vec<phasor_iceberg::Field> = Vec::new();
     for f in schemas.iter().flat_map(|s| &s.fields) {
@@ -283,8 +255,7 @@ mod tests {
         ]
     }
 
-    /// A Parquet file of `rows` rows with the columns named (field ids as
-    /// the schemas give them); its size.
+    /// Writes a Parquet file of `rows` rows; returns its size.
     fn parquet(path: &Path, rows: usize, raise: bool) -> u64 {
         let f = |name: &str, ty, id: u32, nullable| {
             ArrowField::new(name, ty, nullable).with_metadata(HashMap::from([(

@@ -1,11 +1,6 @@
-//! The versions of each file nemweb rewrote in place, each against the
-//! ones before it: new data, the same bytes, or a zip packed again.
-//!
-//! A download pass keeps a version only when its bytes, or for a zip what
-//! it holds, are new (`Fetcher::fetch`). Versions kept before it did are
-//! found here, and `prune` takes out each that is the same as one before
-//! it: noted in its folder's journal first, then its file and sidecar
-//! removed, and `held.ndjson` pointed at the version it is the same as.
+//! The versions of each file nemweb rewrote in place, each against the ones
+//! before it: new data, the same bytes, or a zip packed again. `prune`
+//! journals and removes each that is the same as an earlier one.
 
 use std::collections::BTreeSet;
 use std::io::Write as _;
@@ -50,9 +45,8 @@ fn name_of(a: &Held) -> Option<String> {
     a.path.file_name().map(|n| n.to_string_lossy().into_owned())
 }
 
-/// Every file `held.ndjson` names a later version of, each version against
-/// the ones before it; with `prune`, each that is the same as one before
-/// it removed. `on` sees the journal line of each found the same.
+/// Every file with later versions, each against the ones before it; with
+/// `prune`, duplicates removed. `on` sees the journal line of each duplicate.
 pub async fn versions(
     mirror: &Mirror,
     archive: &Archive,

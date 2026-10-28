@@ -1,11 +1,6 @@
-//! The National Electricity Market kit.
-//!
-//! What the NEM brings to the lake: nemweb's monthly archive as a
-//! [`Source`](phasor_kit::Source) ([`MmsdmArchive`]), the names AEMO
-//! gives its files ([`names`]), its settings ([`NemConfig`]), its command
-//! line ([`cli`]), and the [`kit()`] that bundles them with the MMS decoder
-//! and the registry's catalog for the pipeline. Nothing here reads rows:
-//! the format is `phasor-mms-*`'s.
+//! The National Electricity Market kit: nemweb's monthly archive ([`MmsdmArchive`])
+//! and report folders as sources, file names ([`names`]), settings ([`NemConfig`])
+//! and the [`kit()`] that bundles them. Nothing here reads rows.
 
 pub mod cli;
 pub mod config;

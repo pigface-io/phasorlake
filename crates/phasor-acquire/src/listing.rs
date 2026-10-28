@@ -25,11 +25,8 @@ pub struct Entry {
     pub is_dir: bool,
 }
 
-/// The time text of a listing line as IIS wrote it, kept in place (no
-/// allocation per line: the parser is measured) and read as an instant on
-/// demand. nemweb lists in market time (AEST), so the text is read in
-/// `+10:00`. What is recorded keeps the text and gains the instant beside
-/// it.
+/// A listing line's time text, kept in place (no allocation per line) and read
+/// as an instant on demand in market time (`+10:00`).
 #[derive(Clone, Copy, PartialEq, Eq)]
 pub struct ListedTime {
     len: u8,
@@ -99,9 +96,7 @@ fn trim(b: &[u8]) -> &[u8] {
     &b[start..end]
 }
 
-/// The next `href="` at or after `pos`, either case, in one pass over the
-/// document: each finder's last hit is kept and searched again only once
-/// the scan has passed it.
+/// The next `href="` at or after `pos`, either case, in one pass over the document.
 struct Hrefs<'h> {
     html: &'h [u8],
     finders: [(memmem::Finder<'static>, Option<usize>); 2],
@@ -137,8 +132,7 @@ impl<'h> Hrefs<'h> {
     }
 }
 
-/// Extracts every link with the text that precedes it on its line. One pass
-/// over the document; only the strings an entry keeps are allocated.
+/// Extracts every link with the text that precedes it on its line, in one pass.
 pub fn parse(html: &[u8]) -> Vec<Entry> {
     // A row of an IIS listing is some 150 to 250 bytes.
     let mut out = Vec::with_capacity(html.len() / 160);

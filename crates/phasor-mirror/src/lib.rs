@@ -1,13 +1,6 @@
-//! A copy of every file under nemweb's archive folders, and under any
-//! other host the config names ([`hosts`]), and the catalog of it: every
-//! folder, file and zip entry, which the lake reads.
-//!
-//! [`crawl()`] reads every listing page under the roots, strictly
-//! ([`listing`]), into one record of every folder and file. Every file of
-//! that record is downloaded through the paced [`net::Fetcher`] into the
-//! archive (`docs/archive.md`), each once. [`map()`] writes the catalog
-//! (`docs/catalog.md`), [`compare()`] finds the zips that repeat a folder,
-//! and [`status()`] counts how far it has got.
+//! A copy of every file under nemweb's archive folders and any other host
+//! the config names ([`hosts`]), and the catalog of it, which the lake reads.
+//! [`crawl()`] lists, [`net::Fetcher`] downloads, [`map()`] writes the catalog.
 
 pub mod compare;
 pub mod config;

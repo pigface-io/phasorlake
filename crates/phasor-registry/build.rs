@@ -1,11 +1,5 @@
-//! Validates `schemas/` and packs it into `$OUT_DIR/registry.bin`: the
-//! market files, and the tables, the NEM ones from the copy of
-//! phasor-schemas' histories under `schemas/nem/pulled/`.
-//!
-//! A table that breaks an invariant fails the build with the issue list,
-//! so no binary ever ships a registry the validator rejects. That the copy
-//! is the one its manifest names, at the commit `Cargo.lock` pins, is
-//! `just schemas-check`'s to prove.
+//! Validates `schemas/` and packs it into `$OUT_DIR/registry.bin`; a table
+//! that breaks an invariant fails the build with the issue list.
 
 use std::path::{Path, PathBuf};
 

@@ -1,8 +1,6 @@
 //! A point in time with its UTC offset, as RFC 3339 text: every time field
-//! the mirror writes. The type is the family's one
-//! ([`phasor_provenance::stamp`]); the mirror's listing times and the DOS
-//! times in AEMO's zips are AEST (UTC+10, no daylight saving), AEMO's WA
-//! host's are AWST (UTC+8); an HTTP date and the mirror's own clock are UTC.
+//! the mirror writes ([`phasor_provenance::stamp`]). nemweb's times are AEST
+//! (UTC+10, no daylight saving); HTTP dates and the mirror's clock are UTC.
 
 pub use phasor_provenance::stamp::{AEST, AWST, BadStamp, Stamp};
 

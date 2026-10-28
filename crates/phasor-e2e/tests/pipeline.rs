@@ -58,10 +58,7 @@ impl Env {
     }
 }
 
-/// The WEM kit, whose sources know a file by its path, then the NEM kit
-/// over `registry`, with the archive at `https://h` as its source (what
-/// names a local file's table and month): last, as the binary assembles
-/// it, so a file no source claims is read as MMS rows.
+/// The WEM kit, then the NEM kit over `registry` last, as the binary assembles them.
 fn kits_for(registry: &Arc<Registry>) -> Arc<KitRegistry> {
     Arc::new(KitRegistry::new(vec![
         phasor_wem::kit(&phasor_wem::WemConfig::default(), Registry::load_embedded()).unwrap(),
@@ -102,8 +99,7 @@ fn env() -> Env {
     }
 }
 
-/// A table of text columns, with schemas of `(from, columns)`: one run
-/// each, from that month.
+/// A table of text columns with schemas of `(from, columns)`, one run each.
 fn text_table(
     name: &str,
     pair: (&str, &str),
@@ -172,8 +168,7 @@ fn text_table(
     }
 }
 
-/// Lays `t` over the registry as a user's own table under `{root}`, as
-/// `{root}/nem/{TABLE}/table.toml`.
+/// Lays `t` over the registry as a user's table at `{root}/nem/{TABLE}/table.toml`.
 fn overlay(registry: &Registry, root: &Path, t: &Table) -> Arc<Registry> {
     let dir = root.join("nem").join(&t.name);
     std::fs::create_dir_all(&dir).unwrap();
@@ -201,8 +196,7 @@ fn parquet_rows(path: &str) -> usize {
     b.build().unwrap().map(|r| r.unwrap().num_rows()).sum()
 }
 
-/// A number is written as its table's history types it: RRP is
-/// decimal(15, 5), exact.
+/// A number is written as its history types it: RRP is decimal(15, 5), exact.
 #[tokio::test]
 async fn numbers_are_written_as_their_historys_types() {
     use arrow_array::Array;
@@ -237,8 +231,7 @@ async fn numbers_are_written_as_their_historys_types() {
     assert_eq!(batch.num_rows(), 20);
 }
 
-/// An appended table with no time column of its own is partitioned by the
-/// month of the file its rows came in.
+/// An appended table without a time column is partitioned by its file's month.
 #[tokio::test]
 async fn a_table_without_a_time_column_is_partitioned_by_its_file_month() {
     let mut e = env();
@@ -380,10 +373,7 @@ async fn local_zip_ingests_idempotently_and_records_manifest() {
     );
 }
 
-/// An entry of a rollup that the mirror also holds from its own address
-/// went public when that address served it, which its record keeps: its
-/// rows are stamped with that time, and an entry held only in the rollup
-/// with the rollup's.
+/// A rollup entry the mirror also holds from its own address is stamped with that address's time.
 #[tokio::test]
 async fn an_entry_held_alone_is_stamped_when_it_first_went_public() {
     let e = env();
@@ -538,9 +528,7 @@ fn footer(path: &str, key: &str) -> String {
         .unwrap_or_default()
 }
 
-/// Every output records the shape it was read from and the plan it was
-/// read by. A source already in the lake is skipped while that plan holds,
-/// and read again, from disk, once it has changed.
+/// A source is skipped while its recorded plan holds and re-read once it changes.
 #[tokio::test]
 async fn a_source_is_read_again_when_its_plan_changes() {
     let e = env();
@@ -682,9 +670,7 @@ async fn a_source_is_read_again_when_its_plan_changes() {
     assert_eq!(walk(&e.home.lake()), files, "what is in the lake stays");
 }
 
-/// A block is read with the schema of its table's history its columns
-/// are: the same table, two shapes, both conforming, and the lake says
-/// which schema read each.
+/// Two conforming shapes of one table are each read with their own schema, and the lake says which.
 #[tokio::test]
 async fn the_columns_decide_the_schema() {
     let e = env();
@@ -820,10 +806,7 @@ async fn the_columns_decide_the_schema() {
     assert_eq!(rep.summary.listed, 3);
 }
 
-/// A source whose rows wander over more months than a worker may hold
-/// open writes each month in parts: a writer is closed to make room and a
-/// further file is started when rows for its month come again. Every row
-/// lands, no two files share a name, and a failed entry leaves nothing.
+/// Rows over more months than a worker holds open are written in parts; none lost, no name shared.
 #[tokio::test]
 async fn rows_that_wander_over_many_months_are_written_in_parts() {
     assert_eq!(phasor_pipeline::ingest_file::open_writers(4), 32);
@@ -963,8 +946,7 @@ fn texts(b: &arrow_array::RecordBatch, name: &str) -> Vec<Option<String>> {
         .collect()
 }
 
-/// The August 2026 head of DUDETAIL, its first REGISTEREDCAPACITY (declared
-/// NUMBER(6,0)) changed from 500 to 13.55, zipped as an archive file.
+/// DUDETAIL's August 2026 head with one REGISTEREDCAPACITY changed to 13.55, zipped.
 fn dudetail_with_a_fraction(e: &Env) -> PathBuf {
     let head =
         std::fs::read_to_string(fixtures().join(
@@ -981,8 +963,7 @@ fn dudetail_with_a_fraction(e: &Env) -> PathBuf {
     zip_path
 }
 
-/// A value its column's type cannot hold keeps its row: the column is null
-/// there and the text is beside it, in a column of its own.
+/// A value its type cannot hold keeps its row: null in the column, the text beside it.
 #[tokio::test]
 async fn a_value_that_does_not_fit_keeps_its_row_with_the_text_beside_it() {
     let mut e = env();
@@ -1048,8 +1029,7 @@ async fn a_value_that_does_not_fit_keeps_its_row_with_the_text_beside_it() {
     assert!(walk(&e.home.quarantine()).is_empty());
 }
 
-/// A file of many blocks, each I row a different table, as most AEMO
-/// files are: every block lands in its own table, every row is kept.
+/// A file of many blocks lands each in its own table, every row kept.
 #[tokio::test]
 async fn each_block_of_a_file_goes_to_its_own_table() {
     let e = env();
@@ -1089,9 +1069,7 @@ async fn each_block_of_a_file_goes_to_its_own_table() {
     assert!(tables.contains("dispatchprice"), "{tables:?}");
 }
 
-/// A partition whose later batches carry a column of kept text, or a null
-/// where the lake allows none, goes on in a further file that has room
-/// for them; earlier batches keep their own file, later ones get nulls.
+/// Later batches with kept text or an unallowed null go on in a further file with room for them.
 #[tokio::test]
 async fn batches_that_need_more_columns_go_on_in_a_further_file() {
     let e = env();
@@ -1160,9 +1138,7 @@ C,\"END OF REPORT\",9\n";
     assert_eq!(texts(&second, "DUID")[1], None);
 }
 
-/// A column a user's table declares beside the history's has an id of its
-/// own; the Parquet file of a shape that carries it holds it under that
-/// id, like every declared column.
+/// A column a user's table adds has its own id, and the Parquet file holds it under that id.
 #[tokio::test]
 async fn a_declared_column_is_written_with_its_field_id() {
     let mut e = env();
@@ -1258,8 +1234,7 @@ async fn reading_a_source_again_removes_its_old_quarantine() {
     assert!(walk(&e.home.quarantine()).is_empty());
 }
 
-/// A source read again that fails leaves the earlier read's Parquet in
-/// place: nothing is replaced by a read that wrote nothing.
+/// A failed re-read leaves the earlier read's Parquet in place.
 #[tokio::test]
 async fn a_failed_read_again_keeps_what_the_earlier_read_wrote() {
     let e = env();
@@ -1372,9 +1347,7 @@ fn a_recorded_source_becomes_a_file_to_read() {
     assert!(!catalog.plans_current(&[broken]));
 }
 
-/// A file a kit's source names goes to that kit and is read by its rules:
-/// a WEM datafile outside the feed's folders names no block, and the kit
-/// says so.
+/// A file a kit's source names goes to that kit and is read by its rules.
 #[tokio::test]
 async fn a_file_of_a_kit_without_a_decoder_is_refused() {
     let mut e = env();
@@ -1431,8 +1404,7 @@ async fn a_file_of_a_kit_without_a_decoder_is_refused() {
     );
 }
 
-/// A file handed to a kit the binary was not assembled with is refused
-/// whole, before anything is read or written.
+/// A file for a kit the binary lacks is refused before anything is read or written.
 #[test]
 fn a_file_for_a_kit_not_assembled_is_refused() {
     use phasor_pipeline::ingest_file::{IngestInput, ingest_file};
@@ -1726,8 +1698,7 @@ impl Source for Broken {
     }
 }
 
-/// `fetch` downloads into the archive and writes nothing else; `ingest
-/// --from` then reads the month from the archive, without the network.
+/// `fetch` only downloads; `ingest --from` then reads the month from the archive offline.
 #[tokio::test]
 async fn fetch_only_downloads_and_ingest_reads_the_archived_month() {
     let e = env();
@@ -1808,8 +1779,7 @@ async fn fetch_only_downloads_and_ingest_reads_the_archived_month() {
     assert!(!walk(&e.home.lake()).is_empty());
 }
 
-/// Two URLs the archive keeps at one path (a folder listed on both sides
-/// of nemweb) are fetched once in a run, never both into one `.part`.
+/// Two URLs kept at one archive path are fetched once in a run, never into one `.part`.
 #[tokio::test]
 async fn urls_the_archive_keeps_at_one_path_are_fetched_once() {
     let e = env();
@@ -1974,8 +1944,7 @@ fn walk(root: &Path) -> Vec<String> {
     out
 }
 
-/// A whole-month zip read by its directory: the source picks the nested
-/// zips of the tables asked for, or wants the zip whole.
+/// A whole-month zip read by its directory: picks the tables asked for, or the whole zip.
 struct RangedMonth {
     url: Url,
     whole: bool,
@@ -2026,9 +1995,7 @@ impl Source for RangedMonth {
     }
 }
 
-/// An entry fetched alone out of a whole-month zip lands in the lake under
-/// its own name; a later read of the whole zip leaves it alone; the entry
-/// read again alone after that is nothing new.
+/// An entry fetched alone lands under its own name and is not re-read with or after the whole zip.
 #[tokio::test]
 async fn an_entry_picked_out_of_a_zip_and_the_whole_zip_do_not_double_up() {
     let e = env();
@@ -2190,8 +2157,7 @@ async fn an_entry_picked_out_of_a_zip_and_the_whole_zip_do_not_double_up() {
     );
 }
 
-/// A monthly source whose archive has published up to, not including,
-/// `unpublished_from`: one file per table per month.
+/// A monthly source published up to `unpublished_from`, one file per table per month.
 struct Monthly {
     unpublished_from: Option<phasor_core::YearMonth>,
     whole_zip: Option<Url>,
@@ -2604,9 +2570,7 @@ async fn an_interval_is_cut_into_published_months_and_the_days_around_them() {
     );
 }
 
-/// `get` over a whole-month zip read by its directory: the plan's one step
-/// runs over the files the archive listed, and the table's entry alone
-/// lands in the lake.
+/// `get` over a whole-month zip by its directory lands the table's entry alone in the lake.
 #[tokio::test]
 async fn get_runs_each_step_over_what_its_source_listed() {
     use phasor_pipeline::{SourceChoice, run_get};
@@ -2785,8 +2749,7 @@ async fn get_runs_each_step_over_what_its_source_listed() {
     assert_eq!(report.runs.len(), 1, "stopped after the first step");
 }
 
-/// A snapshot table fed from a source that cuts its files by day (a
-/// registry a feed publishes daily) is partitioned by that day.
+/// A snapshot table from a daily source is partitioned by day.
 #[tokio::test]
 async fn a_days_snapshot_is_partitioned_by_its_day() {
     let e = env();
@@ -2836,10 +2799,7 @@ async fn a_days_snapshot_is_partitioned_by_its_day() {
     );
 }
 
-/// A feed whose files restate the one before: the archive holds two
-/// versions of a GBB file, as the mirror keeps them; the second ingests
-/// only the rows the first lacked, and the manifest tells the versions
-/// apart.
+/// A restating feed's second version ingests only the rows the first lacked.
 #[tokio::test]
 async fn a_restated_file_adds_only_its_new_rows() {
     let mut e = env();
@@ -2958,9 +2918,7 @@ async fn a_restated_file_adds_only_its_new_rows() {
     assert_eq!(local.table.as_deref(), Some("GBB_ACTUAL_FLOW_STORAGE"));
 }
 
-/// Files read by a named kit, whatever claims them by name: a WEM
-/// datafile's name read as MMS rows by the NEM kit; a kit the binary lacks
-/// reads nothing and says so.
+/// A named kit reads files whatever claims them; a kit the binary lacks reads nothing and says so.
 #[tokio::test]
 async fn local_files_read_by_a_named_kit() {
     let e = env();
@@ -2989,9 +2947,7 @@ async fn local_files_read_by_a_named_kit() {
     assert!(d.message.contains("the mars kit"), "{}", d.message);
 }
 
-/// One field's text in an MMS row, for row `i` of three, by the type its
-/// table gives it: the widest value the type holds, an awkward one, and
-/// the empty field where the column allows it.
+/// One MMS field's text for row `i` of three: the widest value, an awkward one, or empty.
 fn synthetic_value(ty: LakeType, i: usize, required: bool) -> String {
     let empty_or = |v: &str| {
         if required {
@@ -3034,8 +2990,7 @@ fn synthetic_value(ty: LakeType, i: usize, required: bool) -> String {
     }
 }
 
-/// A file of one run of a table: its I row as the run's report pair and
-/// version, three D rows of every column, and the footer.
+/// A file of one run of a table: its I row, three D rows of every column, and the footer.
 fn synthetic_mms(table: &Table, run: &Run) -> String {
     let schema = table
         .schemas
@@ -3071,11 +3026,7 @@ fn synthetic_mms(table: &Table, run: &Run) -> String {
     out
 }
 
-/// Every NEM table of the registry, as its latest and its oldest runs
-/// write it, goes into the lake: one zip, an entry per run, three rows of
-/// every column each. Each file holds its table's columns under their field ids, then
-/// each row's source and publish time; no value is turned to text; each
-/// source's rows are all there.
+/// Every NEM table's latest and oldest runs land typed, under field ids, every row kept.
 #[tokio::test]
 async fn every_table_survives_the_lake() {
     use arrow_array::Array as _;
@@ -3204,8 +3155,7 @@ async fn every_table_survives_the_lake() {
     assert_eq!(seen, tables.len());
 }
 
-/// A file is closed for the next once it holds `file_size_mb`: the rows
-/// go on in a further part, each still naming its source, none lost.
+/// A file is closed at `file_size_mb` and rows go on in a further part, none lost.
 #[tokio::test]
 async fn a_file_is_cut_at_its_size_and_the_rows_go_on() {
     let e = env();
@@ -3274,10 +3224,7 @@ async fn a_file_is_cut_at_its_size_and_the_rows_go_on() {
     assert_eq!(ingests[0].outputs.len(), files.len());
 }
 
-/// A plain CSV row whose every field is empty is a blank line, and a
-/// blank line is no row in any CSV: a one-column file with an empty value
-/// reads as one row fewer. Not a loss: AEMO cannot publish such a row
-/// either, as the bytes are the same.
+/// A plain CSV row of all-empty fields is a blank line, so no row; AEMO cannot publish one either.
 #[tokio::test]
 async fn a_blank_line_in_a_plain_file_is_no_row() {
     let mut e = env();
@@ -3304,10 +3251,7 @@ async fn a_blank_line_in_a_plain_file_is_no_row() {
     assert_eq!(rep.summary.bad_rows, 0);
 }
 
-/// Every table's real file, as AEMO published it (the first rows of one
-/// file of each, in `testdata/heads`), goes into the lake whole: no file
-/// fails, no row is lost or quarantined, no value is turned to text, and
-/// every lake file ends with each row's source and publish time.
+/// Every table's real head file lands whole: no failure, no lost, quarantined or text value.
 #[tokio::test]
 async fn every_real_head_survives_the_lake() {
     use arrow_array::Array as _;
@@ -3478,11 +3422,7 @@ async fn every_real_head_survives_the_lake() {
     assert!(short.is_empty(), "{short:#?}");
 }
 
-/// Every time a source was stamped with is kept on its rows, each as
-/// found: the zip's record of when the entry was written (read in AEST,
-/// the packer's clock), the creation stamp in the entry's name, and the
-/// server's Last-Modified, here none for a local file. Nothing is chosen
-/// between them; the manifest's shares say the same.
+/// Every time a source was stamped with is kept on its rows as found, none chosen between.
 #[tokio::test]
 async fn each_time_a_source_was_stamped_with_is_kept_on_its_rows() {
     use arrow_array::Array as _;
@@ -3618,9 +3558,7 @@ impl Source for Feed {
     }
 }
 
-/// Tables go with the sources that serve them; with none, a kit of several
-/// feeds reads every feed, and a kit of one monthly and one daily source
-/// reads them as one.
+/// Tables go with the sources that serve them; with none, every feed of a kit is read.
 #[test]
 fn every_feed_a_request_needs_is_read() {
     use phasor_pipeline::source_groups;

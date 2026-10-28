@@ -26,8 +26,7 @@ impl Default for WemConfig {
 }
 
 impl WemConfig {
-    /// The `[sources.wem]` table, else the `wem_base_url` key the file held
-    /// under the tool's earlier name, else the defaults.
+    /// The `[sources.wem]` table, else the legacy `wem_base_url` key, else the defaults.
     pub fn from_sources(sources: &Sources) -> Result<Self, SourcesError> {
         if let Some(c) = sources.kit::<Self>("wem")? {
             return Ok(c);

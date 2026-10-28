@@ -1,5 +1,4 @@
-//! Where phasor keeps things: `~/.phasor` by default, `--home` or
-//! `PHASOR_HOME` otherwise. Tests always point this at a temp directory.
+//! Where phasor keeps things: `~/.phasor` by default, `--home` or `PHASOR_HOME` otherwise.
 
 use std::path::{Path, PathBuf};
 
@@ -15,9 +14,7 @@ impl Home {
         Self { root: root.into() }
     }
 
-    /// Resolves the home: the explicit flag (which the command line also
-    /// fills from `PHASOR_HOME`), else `~/.phasor` under the user's home
-    /// directory.
+    /// Resolves the home: the flag (also filled from `PHASOR_HOME`), else `~/.phasor`.
     pub fn resolve(flag: Option<&Path>, user_home: Option<&Path>) -> Option<Self> {
         match flag {
             Some(p) => Some(Self::at(p)),
@@ -33,8 +30,7 @@ impl Home {
     pub fn lake(&self) -> PathBuf {
         self.root.join("lake")
     }
-    /// Every downloaded file, untransformed, at a path that mirrors its
-    /// URL, each beside a record of how it was requested. Never cleaned.
+    /// Every downloaded file, untransformed, at a path mirroring its URL beside its record. Never cleaned.
     pub fn archive(&self) -> PathBuf {
         self.root.join("archive")
     }

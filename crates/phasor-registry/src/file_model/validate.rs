@@ -6,8 +6,7 @@ use std::collections::{BTreeMap, HashSet};
 use crate::file_model::model::{LakeType, LoadMode, Table};
 use crate::file_model::temporal::RESERVED_PREFIX;
 
-/// One thing wrong with a table or a set of tables. The message names the
-/// key, so the fix is plain.
+/// One thing wrong with a table or a set of tables; the message names the key.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Issue {
     /// The table, or empty for an issue across tables.

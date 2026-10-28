@@ -1,14 +1,6 @@
-//! Conforming decoded MMS rows to the registry.
+//! Conforming decoded MMS rows to the registry (layer L2, synchronous).
 //!
-//! Layer L2, synchronous. `phasor-mms-decode` hands over each block's shape and
-//! its rows as untyped fields; this crate resolves the shape through the
-//! registry and applies the result: casts every field to its lake type,
-//! decides which rows are quarantined, clamps timestamps beyond the
-//! nanosecond range, and keeps columns no table declares as text.
-//! [`ArrowSink`] builds the typed `RecordBatch`es; [`inspect`] summarises a
-//! file without building anything; [`kit`] is the format as a kit's
-//! decoder; [`plain`] reads the header-row CSV and WEMDE JSON
-//! files of the other feeds through the same sink.
+//! [`ArrowSink`] builds the typed batches, [`inspect`] summarises a file, [`kit`] is the decoder.
 
 /// Opens a zone of `zonetrace` until the end of the block, with the
 /// feature `zones`; nothing without it.

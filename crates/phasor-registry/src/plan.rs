@@ -1,12 +1,6 @@
 //! The conformance plan: how files of one shape become rows of the lake.
 //!
-//! Resolution ends in a [`ConformancePlan`], a value that says, for every
-//! column of the file, which lake column it feeds and how its text is
-//! parsed, and for the output, which columns it has, which of them form
-//! the key and which one partitions it. `phasor-mms-conform` applies it; the
-//! registry is the only place that builds one. It serialises (`phasor
-//! schema plan` prints it as JSON); [`PlanHash`] names what of it decides
-//! the output.
+//! Only the registry builds a [`ConformancePlan`]; `phasor-mms-conform` applies it.
 
 use std::sync::Arc;
 
@@ -67,34 +61,19 @@ impl Cast {
 pub enum Origin {
     /// Its name is a column of the table.
     Declared,
-    /// The table has no column for it; it is kept as text under its own
-    /// name, in a column of these files only.
+    /// The table has no column for it; it is kept as text in these files only.
     FileExtra,
 }
 
-/// The generation of the conversions the code itself performs: how a
-/// timestamp, a number or a date is read, how a partition is chosen, how a
-/// value that does not fit is kept. Raise it when the same plan would be
-/// written differently by a newer phasor, so that lakes written by the
-/// older one are known to be behind. 6: a lake file holds a source
-/// file's entries together, each row naming its own. 7: the `_ul_`
-/// columns, with every time a source was stamped with. 8: a block goes
-/// to the table its columns choose (an area report to its `*_AREA`
-/// table), and a renamed column is one field under its newest name.
+/// The generation of the conversions the code itself performs.
+///
+/// Raise it when the same plan would be written differently by a newer phasor.
 pub const PLAN_FORMAT: u32 = 8;
 
-/// The identity of a plan: everything that decides what files of its shape
-/// are written as, and nothing else. It is recorded with every Parquet file
-/// and every ingest, so a file says which plan made it, and an ingest whose
-/// plan has changed since can be found and done again from the archived
-/// source.
+/// The identity of a plan: everything that decides what files of its shape are written as.
 ///
-/// It covers the table, market, directory, load mode and schema, the
-/// key and time columns by name, and each route: the file column, the lake
-/// column it feeds with that column's id, type and nullability, the cast
-/// and why it goes there. It does not cover the lake columns the shape
-/// does not carry, so declaring a column restales only the shapes that
-/// carry it, nor a description or a note.
+/// It leaves out lake columns the shape does not carry, so declaring a column
+/// restales only the shapes that carry it, and descriptions and notes.
 #[derive(Clone, Copy, PartialEq, Eq, Hash)]
 pub struct PlanHash(pub u128);
 
@@ -225,8 +204,7 @@ pub struct ConformancePlan {
     pub key_columns: Vec<u16>,
     /// Output field index of the partition column.
     pub time_column: Option<u16>,
-    /// The output columns: the lake's, then any the file carries beyond
-    /// them.
+    /// The output columns: the lake's, then any the file carries beyond them.
     pub fields: Vec<PlanField>,
     /// One route per file column, in file order.
     pub routes: Vec<ColumnRoute>,
@@ -241,15 +219,10 @@ pub struct ConformancePlan {
 }
 
 impl ConformancePlan {
-    /// The plan of a file column list onto `t`, read against its schema
-    /// `schema`, losing nothing the file carries. `lake` is the table's
-    /// lake schema and `dir` the directory its files go to.
+    /// The plan of a file column list onto `t` against `schema`, losing nothing the file carries.
     ///
-    /// Each name that is a column of the table feeds it. Each that is not
-    /// is added at the end as a nullable text column, marked as coming
-    /// from the file, for files of this shape only; and a lake column the
-    /// shape lacks is made nullable where the lake says it is not, since
-    /// these files have no value for it.
+    /// Unknown names become trailing nullable text columns; lake columns the
+    /// shape lacks are made nullable.
     pub fn new(
         t: &Table,
         market: &MarketDef,
@@ -281,8 +254,7 @@ impl ConformancePlan {
                     });
                 }
                 None => {
-                    // A name the file repeats, or one that collides with
-                    // what is already there, is told apart by a suffix.
+                    // A repeated or colliding name gets a suffix.
                     let mut name = (*n).to_owned();
                     let mut j = 2;
                     while extra.contains(&name) || t.column_index(&name).is_some() {
@@ -369,8 +341,7 @@ impl ConformancePlan {
         plan
     }
 
-    /// Number of columns files of this shape are written with: the lake's,
-    /// plus any the file carries beyond them.
+    /// Number of columns files of this shape are written with.
     #[cfg(test)]
     pub(crate) fn lake_width(&self) -> usize {
         self.fields.len()
@@ -416,8 +387,7 @@ mod tests {
             .plan_hash()
     }
 
-    /// The hash is the same for the same shape and plan, and differs when
-    /// the shape, the schema or the table differs.
+    /// The hash differs exactly when the shape, the schema or the table differs.
     #[test]
     fn the_hash_follows_what_decides_the_output() {
         let reg = with(unit_scada());
@@ -454,8 +424,7 @@ mod tests {
         assert_eq!(e.plan_hash(), f.plan_hash());
     }
 
-    /// Declaring a column restales only the shapes that carry it; a type
-    /// change restales the shapes that carry the column.
+    /// Declaring or retyping a column restales only the shapes that carry it.
     #[test]
     fn a_change_restales_only_the_shapes_it_touches() {
         let reg = with(unit_scada());

@@ -1,8 +1,5 @@
-//! End-to-end benchmark: ingest a synthetic month-sized zip built from the
-//! DISPATCH_UNIT_SCADA fixture through the real pipeline into a temp home,
-//! and print wall time and peak heap as JSON for `xtask bench`. Peak RSS is
-//! measured from outside by `/usr/bin/time`. The allocator is `peak_alloc`,
-//! an external crate, so this crate stays free of `unsafe`.
+//! End-to-end benchmark: ingests a synthetic month-sized DISPATCH_UNIT_SCADA zip
+//! into a temp home and prints wall time and peak heap as JSON for `xtask bench`.
 
 use std::fmt::Write as _;
 use std::io::Write;
@@ -22,8 +19,7 @@ use tokio_util::sync::CancellationToken;
 #[global_allocator]
 static PEAK: PeakAlloc = PeakAlloc;
 
-/// Rows in the synthetic file: about 1/8 of a real month of DISPATCH_UNIT_SCADA,
-/// enough to measure, small enough for a pre-push hook.
+/// Rows in the synthetic file: about 1/8 of a real month, small enough for a pre-push hook.
 const ROWS: usize = 524_288;
 
 fn synthetic_zip(dir: &Path) -> std::path::PathBuf {
@@ -128,8 +124,7 @@ fn print_zones() {
 fn main() {
     let dir = tempfile::tempdir().expect("tempdir");
     let registry = Registry::load_embedded();
-    // `phasor-bench {zip}...` ingests real zips instead, one at a time,
-    // and prints what each took, its zones too with the feature.
+    // `phasor-bench {zip}...` ingests real zips instead and prints what each took.
     let given: Vec<std::path::PathBuf> = std::env::args().skip(1).map(Into::into).collect();
     if !given.is_empty() {
         for zip in &given {

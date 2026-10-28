@@ -1,10 +1,5 @@
-//! A decoder reads one entry of one file into typed blocks.
-//!
-//! The pipeline opens the entry and hands its bytes to the decoder; the
-//! decoder hands back batches of rows, each with the table they belong to
-//! and the transform they were read by. Which rows fit, which are kept as
-//! text and which are quarantined is the decoder's business; where the
-//! batches go is the sink's.
+//! A decoder reads one entry of one file into typed blocks, each with its table
+//! and transform; where the blocks go is the sink's business.
 
 use std::io::Read;
 use std::sync::Arc;
@@ -24,8 +19,7 @@ pub enum LoadMode {
     Snapshot,
 }
 
-/// How strictly a decoder reads: what a source publishes that the catalog
-/// does not describe is kept, or refused.
+/// How strictly a decoder reads what the catalog does not describe: kept, or refused.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Default)]
 pub enum Strictness {
     /// Keep every row; an undeclared table or column is kept as text.
@@ -59,8 +53,7 @@ pub struct Block {
     pub table: Arc<TableRef>,
     /// The table's version the block was read against.
     pub version: u16,
-    /// The fingerprint of the block's header: two column lists of one
-    /// version are two shapes.
+    /// The fingerprint of the block's header: two column lists of one version are two shapes.
     pub fingerprint: Fingerprint,
     /// The transform the rows were read by.
     pub transform: Arc<Transform>,
@@ -88,8 +81,7 @@ pub enum Flow {
 
 /// Receives what a decoder reads.
 pub trait BlockSink {
-    /// A block began: its table, version and transform are known, and
-    /// `status` says how the block matched the catalog.
+    /// A block began; `status` says how it matched the catalog.
     fn block_started(
         &mut self,
         table: &Arc<TableRef>,
@@ -123,14 +115,12 @@ pub struct DecodeCtx<'a> {
     pub file: &'a LocalFile,
     /// The entry's name, nested names joined with `!`.
     pub entry: &'a str,
-    /// The period the file covers, when known: it decides which version
-    /// of a table a block is read against.
+    /// The period the file covers, when known; it picks the table version a block is read against.
     pub period: Option<Period>,
     /// Options.
     pub options: &'a DecodeOptions,
-    /// The version of the file published before this one, when the source
-    /// knows it ([`LocalFile::previous`]): a decoder of a feed that
-    /// restates its files reads only the rows absent from it.
+    /// The file's previous version ([`LocalFile::previous`]), when known: a feed that
+    /// restates its files is read for the rows absent from it.
     pub previous: Option<&'a std::path::Path>,
 }
 
@@ -147,8 +137,7 @@ pub struct DecodeStats {
     pub rows: u64,
     /// Rows rejected.
     pub bad_rows: u64,
-    /// Rows the version of the file before this one already had, left out
-    /// by a feed that restates its files.
+    /// Rows left out because the previous version of the file already had them.
     pub rows_repeated: u64,
     /// The line count the file declared of itself, when it did.
     pub footer_declared: Option<u64>,
@@ -161,18 +150,14 @@ impl DecodeStats {
     }
 }
 
-/// Reads one format into blocks.
-///
-/// A trait object, not an enum: the pipeline must not depend on the crate
-/// of any one format, and a kit registers its decoder at assembly. The
-/// dynamic call is per entry and per batch, never per row.
+/// Reads one format into blocks. A trait object so the pipeline depends on no format;
+/// the dynamic call is per entry and per batch, never per row.
 pub trait Decoder: Send + Sync {
     /// The format's id, recorded with what it reads: `mms`.
     fn id(&self) -> &'static str;
     /// Whether an entry of this name is one this decoder reads.
     fn accepts(&self, entry_name: &str) -> bool;
-    /// Reads `reader` to the end, handing blocks to `sink`. `scratch` is
-    /// a read buffer the caller keeps between entries.
+    /// Reads `reader` to the end into `sink`; `scratch` is a buffer kept between entries.
     fn decode(
         &self,
         reader: &mut dyn Read,

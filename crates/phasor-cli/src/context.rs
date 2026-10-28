@@ -1,5 +1,4 @@
-//! Assembling the dependencies a command needs from flags, environment and
-//! the config file.
+//! Assembling a command's dependencies from flags, environment and the config file.
 
 use std::path::PathBuf;
 use std::sync::Arc;
@@ -52,8 +51,6 @@ impl Context {
         let config = Config::load(&config_path)
             .map_err(|e| anyhow::anyhow!("{}", phasor_core::Diagnose::diagnostic(&e).render()))?;
         let mut registry = phasor_nem::registry();
-        // The user's own tables, when there are any: a file named after a
-        // built-in table replaces it, others are added.
         let overlay = home.schemas();
         let has_overlay = !cli.no_user_schemas
             && std::fs::read_dir(&overlay).is_ok_and(|mut d| d.next().is_some());
@@ -90,8 +87,7 @@ impl Context {
         Archive::new(self.home.archive())
     }
 
-    /// A fetcher over the real network, or offline, with requests the
-    /// configured interval apart.
+    /// A fetcher over the network, or offline, its requests the configured interval apart.
     pub fn fetcher(
         &self,
         events: Option<tokio::sync::mpsc::Sender<phasor_core::event::Event>>,

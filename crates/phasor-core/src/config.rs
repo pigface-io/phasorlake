@@ -7,8 +7,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::diag::{Category, Diagnose, Diagnostic};
 
-/// Settings a user may persist. Every field has a default; flags and
-/// `PHASOR_*` environment variables override the file.
+/// Settings a user may persist; flags and `PHASOR_*` variables override the file.
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields, default)]
 pub struct Config {
@@ -16,8 +15,7 @@ pub struct Config {
     pub jobs: usize,
     /// Concurrent downloads.
     pub downloads: usize,
-    /// Minimum gap between two requests to a server, in milliseconds.
-    /// AEMO's web server blocks clients that ask too fast.
+    /// Minimum gap between two requests to a server, in milliseconds (AEMO blocks fast clients).
     pub request_interval_ms: u64,
     /// Bad rows tolerated per source before it fails.
     pub max_bad_rows: u64,
@@ -66,20 +64,17 @@ pub enum Statistics {
     None,
     /// Per column chunk: a row group's least and greatest values.
     Chunk,
-    /// Per page too, with the column and offset indexes that let a reader
-    /// skip pages.
+    /// Per page, with the column and offset indexes that let a reader skip pages.
     #[default]
     Page,
 }
 
-/// How the lake's Parquet files are laid out. Every value is set
-/// explicitly, so a newer Parquet library never changes the files; none
-/// changes what a file holds, so changing one never re-reads the lake.
+/// How the lake's Parquet files are laid out. Every value is set explicitly, and
+/// none changes what a file holds, so changing one never re-reads the lake.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields, default)]
 pub struct Lake {
-    /// A file is closed, and the next begun, once it holds about this
-    /// many megabytes.
+    /// A file is closed once it holds about this many megabytes.
     pub file_size_mb: u32,
     /// Rows per row group.
     pub row_group_rows: usize,
@@ -87,8 +82,7 @@ pub struct Lake {
     pub page_kb: u32,
     /// Or at this many rows, whichever comes first.
     pub page_rows: usize,
-    /// A column's dictionary may grow to this many kilobytes; past it the
-    /// column is written plain.
+    /// A column's dictionary may grow to this many kilobytes; past it the column is written plain.
     pub dictionary_page_kb: u32,
     /// The compression.
     pub compression: Codec,
@@ -145,10 +139,8 @@ impl Lake {
     }
 }
 
-/// Per-kit settings: `[sources.<kit>]` tables, each read by its kit with
-/// its own keys and defaults. The two `*_base_url` keys are what the file
-/// held under the tool's earlier name; a kit reads its own when its table
-/// is absent.
+/// Per-kit settings: `[sources.<kit>]` tables, each read by its kit. A kit falls
+/// back to the legacy `*_base_url` keys when its table is absent.
 #[derive(Debug, Clone, PartialEq, Default, Serialize, Deserialize)]
 #[serde(default)]
 pub struct Sources {

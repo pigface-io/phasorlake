@@ -1,7 +1,5 @@
-//! One source file, end to end, on a blocking worker: walk the entries its
-//! kit's decoders read, decode each into typed batches, write Parquet per
-//! partition, quarantine bad rows. Nothing here touches the manifest or the
-//! network; the result is handed back for the async commit step.
+//! One source file, end to end, on a blocking worker: decode its entries,
+//! write Parquet, quarantine bad rows. No manifest or network access here.
 
 use std::path::PathBuf;
 use std::sync::Arc;
@@ -44,11 +42,9 @@ pub struct IngestInput {
     pub request: String,
     /// Events.
     pub events: Option<mpsc::Sender<Event>>,
-    /// The file is in the lake already, written by rules that have changed
-    /// since; it is being read again.
+    /// The file is being read again because its rules have changed.
     pub rules_changed: bool,
-    /// Entries of the file (nested paths joined with `!`) that are in the
-    /// lake already from a fetch of each alone, left as they are.
+    /// Entries (nested paths joined with `!`) already in the lake from a fetch of each alone.
     pub skip: Vec<String>,
 }
 
@@ -82,9 +78,7 @@ pub struct EntryReport {
     pub entry: String,
     /// Warnings raised.
     pub warnings: Vec<Diagnostic>,
-    /// What was wrong with each row that could not be read, the first
-    /// [`ROW_ERRORS_KEPT`] of them: errors when the entry was refused for
-    /// them, warnings when it was accepted without those rows.
+    /// The first [`ROW_ERRORS_KEPT`] unreadable rows: errors if the entry was refused, else warnings.
     pub row_errors: Vec<Diagnostic>,
     /// The error that failed the entry, if any.
     pub error: Option<Diagnostic>,
@@ -97,40 +91,30 @@ pub struct FileReport {
     pub local: LocalFile,
     /// Entries in archive order, with what was said of each.
     pub entries: Vec<EntryReport>,
-    /// What the file read, per shape, and the Parquet files it put in the
-    /// lake: none when an entry failed, since a file goes into the lake
-    /// whole or not at all.
+    /// What the file read, per shape; no Parquet files when an entry failed (all or nothing).
     pub results: Vec<IngestResult>,
     /// An error that prevented reading the file at all.
     pub file_error: Option<Diagnostic>,
-    /// The file was read again because the rules it had been written by
-    /// have changed.
+    /// The file was read again because its rules have changed.
     pub rules_changed: bool,
     /// Entries left to an earlier read of each alone.
     pub left: Vec<String>,
 }
 
-/// Parquet writers all the workers of a run may hold open together. An
-/// operating system gives a process a few hundred open files by default
-/// (256 on macOS), and downloads and the manifest need some.
+/// Parquet writers all workers of a run may hold open, under the default open-file limit.
 const OPEN_WRITERS_PER_RUN: usize = 128;
 
-/// How many writers one worker may hold open at once, given how many
-/// workers run: the run's share, and never fewer than eight.
+/// How many writers one of `jobs` workers may hold open at once; never fewer than eight.
 pub fn open_writers(jobs: usize) -> usize {
     (OPEN_WRITERS_PER_RUN / jobs.max(1)).max(8)
 }
 
-/// How many row errors of one entry are reported one by one. Every bad
-/// row is in the quarantine file; this bounds what a run prints.
+/// How many row errors of one entry are reported one by one.
 pub const ROW_ERRORS_KEPT: usize = 20;
 
-/// Hands a source file's blocks to its write into the lake, and keeps
-/// what is said of each entry.
+/// Hands a source file's blocks to its lake write, and keeps what is said of each entry.
 struct LakeSink<'a> {
-    /// The source file's write: every entry's rows go to the same files,
-    /// each row naming its entry, and the files are committed together
-    /// once the whole file is read.
+    /// The file's write; all entries' rows commit together once the file is read.
     session: IngestSession,
     results: Vec<IngestResult>,
     current: Option<usize>,
@@ -146,10 +130,7 @@ struct LakeSink<'a> {
 }
 
 impl LakeSink<'_> {
-    /// Entry `entry`'s source, `url!entry` (the URL alone for a file read
-    /// whole), and its publish times. `zip_entry_modified`: its modified
-    /// time in its zip's directory, in microseconds since 1970 (UTC), when
-    /// it has one.
+    /// Entry `entry`'s source name and times; `zip_entry_modified` is microseconds UTC.
     fn stamp(&mut self, entry: &str, zip_entry_modified: Option<i64>) -> Stamp {
         let local = self.local;
         let url = local.remote.url.as_str();
@@ -158,11 +139,7 @@ impl LakeSink<'_> {
         } else {
             format!("{url}!{entry}")
         };
-        // Each time as found, none chosen over another: the server's
-        // word for the entry's own bytes where the mirror holds them,
-        // else for the file; the zip's record of the entry; the stamp
-        // in the entry's name (or the file's, read whole), in the
-        // clock of the host that named it.
+        // Every time as found, none chosen over another.
         let modified = local.last_modified_at.map(|s| s.rfc3339());
         let server_last_modified = self
             .entry_times
@@ -205,8 +182,7 @@ impl BlockSink for LakeSink<'_> {
         transform: &Arc<Transform>,
         status: &str,
     ) {
-        // Two column lists read against one schema are two shapes, read by two
-        // plans: each is a result of its own.
+        // Two column lists against one schema are two shapes, two results.
         let idx = match self.results.iter().position(|r| {
             r.table == table.name && r.version == version && r.fingerprint == fingerprint
         }) {
@@ -388,8 +364,7 @@ fn ingest_entry(
     report.row_errors = std::mem::take(&mut sink.row_errors);
     for d in &mut report.row_errors {
         d.fill_from(&ctx);
-        // The entry went into the lake without these rows: they are in
-        // the quarantine file, and the run goes on.
+        // Accepted without these rows; they are in the quarantine file.
         if report.error.is_none() {
             d.severity = phasor_core::Severity::Warning;
         }
@@ -398,14 +373,11 @@ fn ingest_entry(
     report
 }
 
-/// Ingests one local file: a file a decoder of the kit reads whole, or a
-/// zip whose entries (nested zips included) are walked for the ones a
-/// decoder reads.
+/// Ingests one local file, or the entries of a zip (nested included) its kit's decoders read.
 pub fn ingest_file(input: IngestInput) -> FileReport {
     zone!(FILE);
     let path = input.local.path.clone();
-    // The file's name is its URL's: a version the mirror kept beside the
-    // first (`{name}@{stamp}`) is read as the file it is a version of.
+    // The URL's name, so a mirror version `{name}@{stamp}` reads as `{name}`.
     let name = input.local.remote.file_name();
     let mut entries = Vec::new();
     let mut file_error = None;
@@ -427,7 +399,6 @@ pub fn ingest_file(input: IngestInput) -> FileReport {
             results: Vec::new(),
         };
     };
-    // One read buffer and one sink for every entry of the file.
     let mut scan_buf = Vec::new();
     let source = Source {
         url: input.local.remote.url.to_string(),
@@ -531,8 +502,6 @@ pub fn ingest_file(input: IngestInput) -> FileReport {
             d
         };
         match result {
-            // An entry left behind is an entry that failed; the rest were
-            // read.
             Ok(w) => entries.extend(w.failed.iter().map(|a| EntryReport {
                 entry: match a {
                     ArchiveError::Entry { entry, .. }
@@ -566,11 +535,7 @@ pub fn ingest_file(input: IngestInput) -> FileReport {
     }
 }
 
-/// Closes the file's writes and quarantine and gives what it read, with
-/// whether its files were put in place. When the file or any of its
-/// entries failed, its Parquet files are discarded, its results kept
-/// without them, and every entry that did not fail itself is told why. A
-/// file goes into the lake whole or not at all.
+/// Closes the file's writes and quarantine; a failed file or entry discards all its Parquet files.
 fn finish(
     mut sink: LakeSink<'_>,
     entries: &mut [EntryReport],

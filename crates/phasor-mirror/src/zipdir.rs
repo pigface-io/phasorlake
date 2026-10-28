@@ -1,11 +1,6 @@
-//! A zip's central directory from byte spans of the file, without the rest
-//! of it, read by `phasor_zip::zipdir` (shared with the lake, which fetches
-//! single entries by the same directory): the mirror adds the entry's
-//! modified time as an instant in the host's clock (AEST for nemweb, AWST
-//! for AEMO's WA host), and the record form `peek.ndjson` keeps.
-//!
-//! [`read_directory`] drives the reads through a [`Spans`] source: ranged
-//! requests to nemweb, or a file on disk.
+//! A zip's central directory from byte spans of the file, read by
+//! `phasor_zip::zipdir` through a [`Spans`] source, with each entry's time
+//! as an instant in the host's clock, in the form `peek.ndjson` keeps.
 
 pub use phasor_zip::zipdir::{DirError, TAIL};
 use phasor_zip::zipdir::{DirectoryReader, Step};
@@ -16,8 +11,7 @@ use crate::stamp::{AEST, Stamp};
 /// One entry of a zip, as its central directory records it.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Entry {
-    /// The name, folders separated by `/` (a `\` in the zip is read as
-    /// one); a folder's ends in `/`.
+    /// The name, folders separated by `/` (a `\` is read as one); a folder's ends in `/`.
     pub name: String,
     /// Uncompressed size, as declared.
     pub size: u64,
@@ -27,19 +21,16 @@ pub struct Entry {
     pub crc32: u32,
     /// Compression method (0 stored, 8 deflated).
     pub method: u16,
-    /// Modified, `YYYY-MM-DD HH:MM:SS`, from the DOS date and time: read
-    /// from a record an older mirror wrote, for its instant; never written.
+    /// Modified as `YYYY-MM-DD HH:MM:SS` text, read only to derive its instant; never written.
     #[serde(default, skip_serializing)]
     pub modified: String,
-    /// The same time as an instant, AEST (AEMO packs its zips there); none
-    /// when the DOS fields are out of range.
+    /// The modified time as an instant; none when the DOS fields are out of range.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub modified_at: Option<Stamp>,
 }
 
 impl Entry {
-    /// The entry with `modified_at` derived from `modified` when a record
-    /// written before it was kept lacks it.
+    /// The entry with `modified_at` derived from `modified` when it lacks it.
     pub fn derived(mut self) -> Self {
         if self.modified_at.is_none() {
             self.modified_at = Stamp::from_naive(&self.modified, AEST);
@@ -49,8 +40,7 @@ impl Entry {
 }
 
 impl Entry {
-    /// A directory entry with its DOS time read in the clock of the
-    /// machine that packed the zip (`offset` seconds east of UTC).
+    /// A directory entry with its DOS time read `offset` seconds east of UTC.
     pub fn from_zip(e: phasor_zip::zipdir::Entry, offset: i32) -> Self {
         Self {
             modified: e.modified_text(),
@@ -64,8 +54,7 @@ impl Entry {
     }
 }
 
-/// A file on disk, read by span; every span lies inside it, as the
-/// directory reader checks, so a read fails only with the disk.
+/// A file on disk, read by span.
 pub struct OnDisk(pub std::fs::File);
 
 impl Spans for OnDisk {
@@ -81,9 +70,8 @@ impl Spans for OnDisk {
     }
 }
 
-/// What the zip at `path` holds: each file's name, CRC-32 and size, in
-/// name order, folders left out; none when it is not a zip that reads.
-/// Two zips that hold the same are the same data however they are packed.
+/// Each file's name, CRC-32 and size in the zip at `path`, in name order;
+/// none when it is not a zip that reads.
 pub async fn contents(path: &std::path::Path) -> Option<Vec<(String, u32, u64)>> {
     phasor_zip::zipdir::contents(path)
 }
@@ -96,15 +84,12 @@ pub trait Spans {
     fn read(&mut self, start: u64, end: u64) -> impl Future<Output = Result<Vec<u8>, Self::Error>>;
 }
 
-/// Every entry of the zip of `len` bytes, from at most three reads: its
-/// tail, a zip64 end record when it lies outside the tail, and the
-/// directory when it does; the entries' times read in AEST.
+/// Every entry of the zip of `len` bytes, in at most three reads, times in AEST.
 pub async fn read_directory<S: Spans>(src: &mut S, len: u64) -> Result<Vec<Entry>, S::Error> {
     read_directory_in(src, len, AEST).await
 }
 
-/// [`read_directory`], the entries' DOS times read in the clock of the
-/// host whose zip it is (`offset` seconds east of UTC).
+/// [`read_directory`], with times read `offset` seconds east of UTC.
 pub async fn read_directory_in<S: Spans>(
     src: &mut S,
     len: u64,

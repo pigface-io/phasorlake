@@ -1,7 +1,5 @@
-//! A local HTTP/1.1 server for tests: each path answers with the replies
-//! queued for it, in order, the last one repeating; any other path is a
-//! 404. It lets the real transport, and the binary, run against something
-//! that behaves like nemweb, including the ways nemweb fails.
+//! A local HTTP/1.1 server for tests: each path answers its queued replies in
+//! order, the last repeating; any other path is a 404.
 
 use std::collections::HashMap;
 use std::io::{BufRead as _, BufReader, Write as _};
@@ -12,8 +10,7 @@ use std::time::Duration;
 /// What a path answers.
 #[derive(Debug, Clone)]
 pub enum Reply {
-    /// A 200 with this body, an ETag and a Last-Modified; to a ranged
-    /// request, a 206 with that range of it.
+    /// A 200 with this body, an ETag and a Last-Modified; a 206 to a ranged request.
     Ok(Vec<u8>),
     /// A 200 with this body, whatever range was asked for.
     Whole(Vec<u8>),

@@ -1,14 +1,5 @@
 //! The month a file's data is for, read from its URL, and the cut-off
-//! before which the mirror keeps nothing (`keep_from` in the config, or
-//! `--keep-from`).
-//!
-//! The month comes from, first match wins:
-//! - `_YYYY_MM` in the last segment (`MMSDM_2015_01.zip`, `NEMDE_2015_01/`);
-//! - the first `_YYYYMMDD…` stamp in it (`PUBLIC_YESTBID_201612220000_…`:
-//!   the first stamp is the data's, a later one when it was published);
-//! - the deepest `/YYYY/` folder in the path (`MMSDM/2015/…/CRLF.TXT`).
-//!
-//! A URL with none of these has no month and is always kept.
+//! before which the mirror keeps nothing (`keep_from` or `--keep-from`).
 
 use std::collections::{BTreeMap, BTreeSet};
 use std::fmt;
@@ -75,7 +66,9 @@ impl<'de> Deserialize<'de> for Month {
     }
 }
 
-/// The month `url`'s data is for, if its URL says.
+/// The month `url`'s data is for, if its URL says: `_YYYY_MM` or the first
+/// `_YYYYMMDD` stamp in the last segment, else the deepest `/YYYY/` folder.
+/// A URL with none has no month and is always kept.
 pub fn data_month(url: &str) -> Option<Month> {
     let path = url.split(['?', '#']).next().unwrap_or(url);
     let path = path.trim_end_matches('/');
@@ -88,7 +81,6 @@ pub fn data_month(url: &str) -> Option<Month> {
     })
 }
 
-/// `_YYYY_MM`, or the first `_YYYYMMDD` stamp, in a file or folder name.
 fn in_name(name: &str) -> Option<Month> {
     let b = name.as_bytes();
     let digits = |from: usize| b[from..].iter().take_while(|c| c.is_ascii_digit()).count();
@@ -150,14 +142,9 @@ struct Pruned<'a> {
 }
 
 /// Deletes from `archive` every file the record lists for a month before
-/// `mirror`'s [`Mirror::keep_from`], with its record, versions and
-/// AppleDouble twins; with `apply` false only counts them.
-///
-/// A folder every file under which is before goes whole, one removal
-/// rather than one per file (each costs seconds deep in a large folder on
-/// exFAT); a file before in a folder that keeps others goes alone, its
-/// folder read once. Each deletion is a line of `pruned.ndjson`. The
-/// listings stay: the files are still nemweb's, just not kept.
+/// `mirror`'s [`Mirror::keep_from`], with what sits beside it; with `apply`
+/// false only counts them. A folder with nothing kept goes whole. The
+/// listings stay.
 pub fn prune(mirror: &Mirror, archive: &Archive, apply: bool) -> Result<PruneSummary, MirrorError> {
     let from = mirror.keep_from().ok_or(MirrorError::NoKeepFrom)?;
     let record = mirror.record()?;
@@ -264,9 +251,8 @@ pub fn prune(mirror: &Mirror, archive: &Archive, apply: bool) -> Result<PruneSum
     Ok(summary)
 }
 
-/// Removes from `dir` each of `names` with what sits beside it: its
-/// record, versions (`{name}@…`), part file, and the AppleDouble twin of
-/// each. The folder is read once.
+/// Removes from `dir` each of `names` with its record, versions, part file
+/// and AppleDouble twins.
 fn remove_named(dir: &Path, names: &BTreeSet<String>) -> Result<(), MirrorError> {
     // Every name first, then the deletions: a folder read while its
     // entries go may pass some over.

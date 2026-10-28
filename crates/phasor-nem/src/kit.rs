@@ -13,24 +13,19 @@ use crate::sources::reports::ReportFolders;
 /// The kit's id, as a command names it.
 pub const KIT_ID: &str = "nem";
 
-/// Documents AEMO republishes in place that the lake's readers join
-/// against: the NEM Registration and Exemption List (every unit, its
-/// station, fuel, technology and region). Each distinct version is kept.
+/// Documents AEMO republishes in place that readers join against (the NEM
+/// Registration and Exemption List); each distinct version is kept.
 pub const DOCUMENTS: &[&str] = &[
     "https://www.aemo.com.au/-/media/files/electricity/nem/Participant_Information/NEM-Registration-and-Exemption-List.xlsx",
 ];
 
-/// The tables the kit was built with: the schema tree compiled into the
-/// binary. It stays in the registry crate until a second MMS market needs
-/// a tree of its own.
+/// The tables the kit was built with: the schema tree compiled into the binary.
 pub fn registry() -> Arc<Registry> {
     Registry::load_embedded()
 }
 
-/// The NEM kit over `registry`, listing nemweb at `base_url`: the report
-/// folders and the monthly archive as its sources, the MMS decoder, and
-/// the registry's catalog. The report folders come first: their files are
-/// known by their path, the archive's by their name alone.
+/// The NEM kit over `registry`: the report folders, then the monthly archive, as
+/// sources (files known by path before files known by name), the MMS decoder and the catalog.
 pub fn kit(registry: Arc<Registry>, base_url: &str) -> Result<SourceKit, FetchError> {
     let reports = ReportFolders::new(base_url, registry.clone())?;
     let archive = MmsdmArchive::new(base_url)?;

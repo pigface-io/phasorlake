@@ -1,6 +1,5 @@
 //! In-memory shape of a table: its columns, and its history as an Iceberg
-//! table — the schemas its files were written under and the runs of files
-//! of each.
+//! table (its schemas and the runs of files under each).
 
 use phasor_iceberg::IcebergType;
 use std::fmt;
@@ -10,8 +9,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::file_model::temporal::Temporal;
 
-/// The market a table belongs to: the one the published metadata names,
-/// so the lake, the census and the explorer agree on its id and clock.
+/// The market a table belongs to, as the published metadata names it.
 pub use phasor_iceberg::Market;
 
 /// Per-market constants, from `schemas/{market}/market.toml`.
@@ -23,10 +21,9 @@ pub struct MarketDef {
     pub utc_offset_secs: i32,
     /// How timestamps are written in this market's files.
     pub timestamp_format: TimestampFormat,
-    /// Seconds after midnight at which the market's trading day begins:
-    /// 14400 (04:00) for the NEM, 28800 (08:00) for the WEM. A table that
-    /// labels its rows with a trading day (`valid.kind = "day"`) covers
-    /// `[label + start, label + start + 1 day)`.
+    /// Seconds after midnight at which the trading day begins, e.g. 14400 for the NEM.
+    ///
+    /// A `valid.kind = "day"` label covers `[label + start, label + start + 1 day)`.
     pub trading_day_start_secs: i32,
 }
 
@@ -60,8 +57,7 @@ pub enum TimestampFormat {
     Iso8601,
 }
 
-/// A stable column identifier, never reused within a table: the Iceberg
-/// field id of the table's history, and the Parquet field id.
+/// A stable column id, never reused within a table: the Iceberg and Parquet field id.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
 #[serde(transparent)]
 pub struct ColumnId(pub u32);
@@ -98,8 +94,7 @@ pub enum LakeType {
     Date,
     /// An instant, written in market time.
     Timestamp,
-    /// An exact decimal: `precision` digits in all, `scale` after the
-    /// point, fixed for the life of the column.
+    /// An exact decimal, fixed for the life of the column.
     Decimal {
         /// Digits in all, 1 to 38.
         precision: u8,
@@ -203,9 +198,7 @@ impl From<LakeType> for String {
     }
 }
 
-/// One lake column, ever: one field of the table's history, so its id is
-/// never reused. A column AEMO renamed is still one column, under its
-/// newest name ([`Table::older_names`] keeps the others).
+/// One lake column, ever; a renamed column keeps its newest name ([`Table::older_names`]).
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Column {
     /// Stable id; the Iceberg and Parquet field id.
@@ -214,8 +207,7 @@ pub struct Column {
     pub name: String,
     /// The type.
     pub ty: LakeType,
-    /// Whether nulls are allowed: unless every schema of the history
-    /// requires the field.
+    /// Whether nulls are allowed: unless every schema of the history requires it.
     pub nullable: bool,
     /// Why the column is what it is, when that is not plain.
     pub note: Option<String>,
@@ -224,28 +216,24 @@ pub struct Column {
 /// What phasor-schemas publishes of a table beyond its columns.
 #[derive(Debug, Clone, Default, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Published {
-    /// Its properties (declaration, roles, key, breaks, the data model's
-    /// words), which the lake's own Iceberg table carries too.
+    /// Its properties, which the lake's own Iceberg table carries too.
     pub properties: std::collections::BTreeMap<String, String>,
     /// What the data model says of each column, by field id.
     pub docs: std::collections::BTreeMap<u32, String>,
 }
 
-/// One schema of the table's history: the columns of the files written
-/// under it, in file order.
+/// One schema of the table's history.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct TableSchema {
     /// The Iceberg schema id.
     pub id: u16,
-    /// Its fields in file order: the column, and whether every row of its
-    /// files has a value.
+    /// Its fields in file order, each with whether every row has a value.
     pub fields: Vec<(ColumnId, bool)>,
     /// The fields of the key.
     pub key: Vec<ColumnId>,
 }
 
-/// Files in a row that AEMO released under one schema, version and
-/// report pair.
+/// Consecutive files AEMO released under one schema, version and report pair.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Run {
     /// The schema.
@@ -277,23 +265,15 @@ pub struct Table {
     pub description: Option<String>,
     /// `(report_type, report_subtype)` pairs whose I rows feed this table.
     pub report_pairs: Vec<(String, String)>,
-    /// The columns an I row of those pairs must hold to feed this table;
-    /// empty for every I row of them. Where a pair carries two kinds of
-    /// row (a region's, an area's), the narrower kind's table names the
-    /// column that marks it, and a block goes to the most specific table
-    /// whose columns it holds.
+    /// The columns an I row of those pairs must hold to feed this table; empty for any.
+    ///
+    /// A block goes to the most specific table whose columns it holds.
     #[serde(default)]
     pub with_columns: Vec<String>,
-    /// The names a column had in a schema before AEMO renamed it: (schema,
-    /// column, name there). A renamed column is one field, named in
-    /// [`Table::columns`] by its newest name; a block of an older schema
-    /// still writes the older one.
+    /// Older names of renamed columns: (schema, column, name there).
     #[serde(default)]
     pub older_names: Vec<(u16, ColumnId, String)>,
-    /// What phasor-schemas publishes of the table beyond its columns, as
-    /// JSON ([`Published`]); empty for a table written by hand or derived
-    /// from a file. Kept as text so loading the registry does not build
-    /// its maps: [`Table::published`] reads it when it is wanted.
+    /// [`Published`] as JSON, parsed lazily by [`Table::published`]; empty when unpublished.
     #[serde(default)]
     pub published: String,
     /// Append or snapshot.
@@ -310,8 +290,7 @@ pub struct Table {
     pub schemas: Vec<TableSchema>,
     /// The runs of its history, in release order.
     pub runs: Vec<Run>,
-    /// The schema a reader of the table gets today: the published
-    /// `current-schema-id`, the last run's.
+    /// The published `current-schema-id`, the last run's.
     pub current_schema: u16,
 }
 
@@ -359,9 +338,9 @@ impl Table {
             .collect()
     }
 
-    /// The schema a block of `report` released in `release` is compared
-    /// with when no run fits it: that of the last run of the pair released
-    /// by then, else the pair's first, else the table's last run.
+    /// The schema a block no run fits is compared with.
+    ///
+    /// That of the pair's last run released by `release`, else its first, else the table's last.
     pub fn reference_schema(
         &self,
         report: (&str, &str),
@@ -387,10 +366,7 @@ impl Table {
             .any(|r| r.report.0 == report.0 && r.report.1 == report.1 && r.version == version)
     }
 
-    /// The history as an Iceberg table, the form `History::resolve` and
-    /// the planner read. Only what the registry keeps is filled in: a mark
-    /// has its month, not its file, and no column breaks (a table with a
-    /// breaking column is refused on reading, see [`mod@super::doc`]).
+    /// The history as an Iceberg table, filled in only with what the registry keeps.
     pub fn history(&self) -> phasor_iceberg::History {
         let last = self.columns.iter().map(|c| c.id.0).max().unwrap_or(0);
         let mark = |m: YearMonth| phasor_iceberg::history::Mark {
@@ -455,8 +431,7 @@ impl Table {
         }
     }
 
-    /// What phasor-schemas publishes of the table beyond its columns;
-    /// empty for a table it does not publish.
+    /// What phasor-schemas publishes of the table beyond its columns.
     pub fn published(&self) -> Published {
         if self.published.is_empty() {
             return Published::default();
@@ -502,8 +477,7 @@ pub(crate) mod tests {
         }
     }
 
-    /// DISPATCH_UNIT_SCADA in two schemas: three columns from 2024-01,
-    /// four from 2026-08.
+    /// DISPATCH_UNIT_SCADA in two schemas: three columns, then four from 2026-08.
     pub(crate) fn unit_scada() -> Table {
         let names = |n: &[&str]| n.iter().map(|s| (*s).to_owned()).collect::<Vec<_>>();
         let key = vec![ColumnId(1), ColumnId(2)];
@@ -614,8 +588,7 @@ pub(crate) mod tests {
         assert_eq!(empty.reference_schema(pair, None), None);
     }
 
-    /// The history the registry keeps reads back as the Iceberg history
-    /// `History::resolve` reads.
+    /// The registry's history reads back as an Iceberg history.
     #[test]
     fn the_history_is_an_iceberg_history() {
         let t = unit_scada();

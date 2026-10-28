@@ -1,17 +1,6 @@
-//! Reading and writing a hand-written table, `{TABLE}/table.toml` in a
-//! user's own schemas, and `schemas/{market}/market.toml`.
-//!
-//! The registry's NEM tables are the ones phasor-schemas publishes
-//! ([`mod@crate::file_model::doc`]); a hand-written table says the same in
-//! TOML: top-level scalars, one line per column (`column = [{ id = 1,
-//! name = "…", type = "double", nullable = true }, …]`; `[[column]]` tables
-//! read the same), the time roles under `[temporal]`, and one `[[schema]]`
-//! per column list its files carry, with the AEMO versions they come under
-//! and the month they start. The schemas become the table's history: one
-//! run per schema, report pair and version. Unknown keys are errors.
-//! Writing is deterministic, so a file that changes nothing is
-//! byte-identical, and `phasor schema show` writes any table, a pulled one
-//! included, in this form.
+//! Reading and writing a hand-written table, `{TABLE}/table.toml`, and
+//! `schemas/{market}/market.toml`; unknown keys are errors and writing is
+//! deterministic.
 
 use std::fmt::Write as _;
 use std::path::Path;
@@ -207,8 +196,7 @@ pub(crate) fn norm(s: &mut String, buf: &mut String) {
     }
 }
 
-/// Parses a table file's text. Names are normalised, so a hand-typed
-/// lower-case name still matches an I row.
+/// Parses a table file's text, normalising names so lower-case ones still match.
 pub fn parse_table(path: &Path, text: &str, market: Market) -> Result<Table, SchemaFileError> {
     let format: FormatOnly = toml::from_str(text).map_err(|e| parse_err(path, text, &e))?;
     let invalid = |message: String| SchemaFileError::Invalid {
@@ -364,8 +352,7 @@ fn inline<T: AsRef<str>>(items: &[T]) -> String {
     format!("[{}]", parts.join(", "))
 }
 
-/// Renders a table as TOML, deterministically: each schema with the month
-/// its first run starts and the versions of its runs.
+/// Renders a table as TOML, deterministically.
 pub fn write_table(t: &Table) -> String {
     let mut out = format!(
         "# The table {}, written by hand or by `phasor schema show`.\nschema_format = {SCHEMA_FORMAT}\nname = {}\n",
@@ -506,8 +493,7 @@ mod tests {
         parse_table(Path::new("table.toml"), text, Market::Nem)
     }
 
-    /// The fixture as a hand-written file says it: one run per schema,
-    /// from the month its first run starts.
+    /// The fixture as a hand-written file says it: one run per schema.
     fn as_written() -> Table {
         let mut t = unit_scada();
         for r in &mut t.runs {

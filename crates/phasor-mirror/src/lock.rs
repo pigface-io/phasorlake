@@ -16,8 +16,6 @@ impl Mirror {
     /// Takes the run lock, or says that another run holds it.
     pub fn lock(&self) -> Result<RunLock, MirrorError> {
         let file = self.lock_file()?;
-        // Held by another run, or any other reason it cannot be taken: the
-        // cause says which.
         file.try_lock()
             .map(|()| RunLock { _file: file })
             .map_err(|e| MirrorError::Locked {

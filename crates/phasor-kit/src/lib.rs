@@ -1,15 +1,5 @@
-//! The ports a source kit implements, and the registry that holds every
-//! kit a binary was assembled with.
-//!
-//! Layer L1. The pipeline runs over these and nothing else: a
-//! [`Source`] lists and describes files through [`Listings`], a
-//! [`Decoder`] reads an entry into [`Block`]s for a [`BlockSink`], a
-//! [`Catalog`] declares the tables, and a [`SourceKit`] bundles the three
-//! for one market; [`LocalFile`] is the file a fetch hands back.
-//! [`Transform`] is what every lake file records of how it was read.
-//!
-//! No format and no market is named here: those live in their own crates
-//! and are registered at assembly.
+//! The ports a source kit implements, and the registry of every kit a binary
+//! was assembled with. No format or market is named here; layering is in CONTRIBUTING.md.
 
 pub mod catalog;
 pub mod decoder;

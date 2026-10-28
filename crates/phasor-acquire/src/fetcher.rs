@@ -1,19 +1,6 @@
-//! Downloading: paced, retried, stopped for good when refused, and kept in
-//! the archive.
-//!
-//! A file is downloaded whole, once. Its bytes go from the transport to
-//! disk without a copy: each chunk is handed as it arrived to a writer on a
-//! blocking thread, which hashes it and writes it through a 1 MiB buffer,
-//! so no hashing or file I/O runs on the async runtime.
-//!
-//! A zip that holds more than a request needs (a whole-month archive of
-//! every table, a day's zip of five-minute files) is read by its central
-//! directory first, through ranged requests, and only the entries the
-//! source picks are fetched, each as the file it is: a nested zip stays a
-//! zip, a deflated CSV is inflated. The archive keeps each at the zip's
-//! path with `!{entry}` appended, its sidecar saying where in the zip it
-//! was. When the picks are most of the zip, or the server ignores ranges,
-//! the zip is downloaded whole instead.
+//! Downloading into the archive. A zip that holds more than a request needs
+//! is read by its central directory through ranged requests, and only the
+//! picked entries are fetched, each kept at the zip's path plus `!{entry}`.
 
 use std::io::Read as _;
 use std::path::Path;
@@ -33,9 +20,7 @@ use phasor_kit::{Listings, LocalFile, Pick, Picks, RemoteFile};
 pub use phasor_net::fetch::{FetcherConfig, RangeRead};
 use phasor_net::fetch::{Requests, stream_to_file};
 
-/// The listing line a remote file was listed with: its time as an
-/// instant, read from the listing's text in the host's clock when the
-/// source gave only the text.
+/// The listing line a file was listed with, its text read as an instant in the host's clock.
 fn listed_of(remote: &RemoteFile) -> Listed {
     let url = remote.url.as_str();
     Listed {
@@ -50,8 +35,7 @@ fn listed_of(remote: &RemoteFile) -> Listed {
 /// What [`Fetcher::fetch_picks`] fetched.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Picked {
-    /// The zip, whole: the source wanted it all, the picks were most of
-    /// it, the server ignored the range, or the archive had it already.
+    /// The zip, whole: wanted whole, mostly picked, range ignored, or already archived.
     Whole(Box<LocalFile>),
     /// The picked entries, in the order picked, each as its own file.
     Entries(Vec<LocalFile>),
@@ -67,9 +51,7 @@ impl Picked {
     }
 }
 
-/// Bytes read past an entry's compressed data in one request, so its local
-/// header's extra field, and the next picked entry when it follows, come
-/// in the same request.
+/// Bytes read past an entry's data, so its extra field and an adjacent pick come in one request.
 const SLACK: u64 = 256;
 
 /// Fetches remote files into the archive.
@@ -129,10 +111,8 @@ impl Fetcher {
         self.requests.fetch_range(url, span).await
     }
 
-    /// The entries of the zip `remote` that `pick` wants, each fetched
-    /// alone by ranged requests and archived as the file it is, or the zip
-    /// whole when the picks are most of it, the server ignores the range,
-    /// or the archive holds it already. `pick` sees the zip's directory.
+    /// The entries of the zip `remote` that `pick` wants, each fetched by ranged
+    /// requests, or the zip whole when that is cheaper or the only way.
     pub async fn fetch_picks(
         &self,
         remote: &RemoteFile,
@@ -148,8 +128,7 @@ impl Fetcher {
             entry: entry.to_owned(),
             message,
         };
-        // The directory: its tail first, which also says how long the
-        // file is; the rest as the reader asks.
+        // The tail first: it also says how long the file is.
         let tail = match self.fetch_range(url, Span::Last(TAIL)).await {
             Ok(t) => t,
             Err(FetchError::RangeIgnored { .. }) => {
@@ -193,8 +172,7 @@ impl Fetcher {
         if wanted.saturating_mul(2) > total {
             return self.fetch(remote).await.map(|l| Picked::Whole(Box::new(l)));
         }
-        // Each pick keeps its place in the answer, whatever order the
-        // requests take.
+        // Indexed so each pick keeps its place whatever order the requests take.
         let mut out: Vec<(usize, LocalFile)> = Vec::with_capacity(picks.len());
         let mut todo: Vec<(usize, Pick)> = Vec::new();
         for (place, p) in picks.into_iter().enumerate() {
@@ -237,15 +215,13 @@ impl Fetcher {
             for (place, p) in &todo[i..j] {
                 let e = &entries[p.index];
                 let short = || corrupt(&e.name, "shorter than the directory says".into());
-                // Offsets within the request's bytes; the request spans at
-                // most the file, so they fit the address space.
+                // The request spans at most the file, so these offsets fit `usize`.
                 let at = (e.local_header_offset - start) as usize;
                 let header = buf.get(at..at + LOCAL_HEADER).ok_or_else(short)?;
                 let data_start =
                     at + local_header_len(header).map_err(|x| corrupt(&e.name, x.to_string()))?;
                 let data_end = data_start as u64 + e.compressed;
-                // An extra field longer than the slack, or a directory that
-                // overstates: the rest of the data, as far as the file goes.
+                // An extra field longer than the slack, or an overstated directory: read the rest.
                 if data_end > buf.len() as u64 {
                     let more = self
                         .fetch_range(
@@ -272,8 +248,7 @@ impl Fetcher {
         Ok(Picked::Entries(out.into_iter().map(|(_, l)| l).collect()))
     }
 
-    /// Archives the bytes of one entry of the zip `zip` as the file
-    /// `remote`, with a sidecar that says where in the zip it was.
+    /// Archives one entry of `zip` as `remote`, its sidecar saying where in the zip it was.
     fn keep_entry(
         &self,
         zip: &RemoteFile,
@@ -327,8 +302,7 @@ impl Fetcher {
         ))
     }
 
-    /// The archived copy of a remote file, or the file downloaded into the
-    /// archive whole, with a sidecar that says where it came from.
+    /// The archived copy of a remote file, else downloaded whole into the archive.
     pub async fn fetch(&self, remote: &RemoteFile) -> Result<LocalFile, FetchError> {
         if let Some(found) = self.archive.lookup(remote.url.as_str())? {
             return Ok(LocalFile::from_held(remote, found, true));
@@ -336,10 +310,8 @@ impl Fetcher {
         self.download(remote, false).await
     }
 
-    /// Fetches a document AEMO changes in place at one URL (a workbook
-    /// it republishes): downloaded every time, kept as a new version
-    /// beside the earlier ones when its bytes are new, else noted as seen
-    /// again on the version it is (`cached`). No version is written over.
+    /// Fetches a document AEMO changes in place at one URL: downloaded every time,
+    /// kept as a new version when its bytes are new. No version is written over.
     pub async fn fetch_document(&self, remote: &RemoteFile) -> Result<LocalFile, FetchError> {
         self.download(remote, true).await
     }
@@ -348,9 +320,8 @@ impl Fetcher {
         let url = remote.url.as_str();
         self.ensure_online(url)?;
         let base = self.archive.path_for(url);
-        // Files other URLs keep at the path: both listings of a report
-        // folder are one folder; and, fetched again, the URL's own earlier
-        // versions. Never written over.
+        // Both listings of a report folder share one folder, and a URL fetched again
+        // has earlier versions here: never write over them.
         let others: Vec<Held> = Archive::held_at(&base)?
             .into_iter()
             .filter(|a| again || !a.provenance.names(url))
@@ -440,9 +411,7 @@ fn make_room(path: &Path) -> Result<(), FetchError> {
     })
 }
 
-/// The bytes of an entry as the file it is: a stored entry's as they are, a
-/// deflated entry's inflated; checked against the directory's size and
-/// CRC-32.
+/// An entry's bytes, inflated when deflated, checked against the directory's size and CRC-32.
 fn unpack(e: &Entry, data: &[u8]) -> Result<Vec<u8>, String> {
     let bytes = match e.method {
         0 => data.to_vec(),
@@ -861,8 +830,7 @@ mod picks_tests {
         w.finish().unwrap().into_inner()
     }
 
-    /// A whole-month zip: two small nested zips side by side, a large one,
-    /// a deflated text file and a folder.
+    /// A whole-month zip: two adjacent small nested zips, a large one, a deflated text file and a folder.
     fn month_zip() -> (Vec<u8>, Vec<Vec<u8>>, Vec<u8>) {
         let a = inner("A.CSV", b"a,b\n1,2\n");
         let b = inner("B.CSV", b"c\n3\n");
@@ -1085,8 +1053,7 @@ mod picks_tests {
         }
     }
 
-    /// The zip with `f` applied to the central directory record of the
-    /// entry at `index`.
+    /// The zip with `f` applied to the central directory record of entry `index`.
     fn tampered(zip: &[u8], index: usize, f: impl Fn(&mut [u8])) -> Vec<u8> {
         let mut z = zip.to_vec();
         // The outer directory, through the end record (the nested zips
@@ -1267,8 +1234,7 @@ mod picks_tests {
         };
     }
 
-    /// The month zip with a comment long enough to push its directory out
-    /// of the tail.
+    /// The month zip with a comment that pushes its directory out of the tail.
     fn commented(zip: &[u8]) -> Vec<u8> {
         let mut z = zip.to_vec();
         let eocd = z.len() - 22;

@@ -1,17 +1,9 @@
 //! Hive-partitioned Parquet files under `{lake}/{market}/{table}/data/{partition}/`,
-//! beside the table's Iceberg metadata in `{table}/metadata/`: the layout
-//! Iceberg readers expect, so one finds a table's files again under a lake
-//! moved or copied whole (DuckDB's `allow_moved_paths` re-roots a path at
-//! its `data/` directory).
+//! beside the table's Iceberg metadata, the layout Iceberg readers expect.
 //!
-//! Each source file (zip entry) writes one Parquet file per partition it
-//! touches, named `{source_stem}-v{version}-{sha8}.parquet`, so a re-ingest
-//! of the same source replaces exactly its own files. A file is written to a
-//! `.tmp-{pid}-{n}` sibling and handed to the disk when closed; a commit
-//! flushes the disk once for every file closed since the last, then renames
-//! each into place, so a reader never sees a partial file. One flush of the
-//! disk costs milliseconds (`F_FULLFSYNC` on macOS), so it is paid per
-//! commit, not per file.
+//! Each source writes one file per partition, `{source_stem}-v{version}-{sha8}.parquet`,
+//! to a `.tmp-{pid}-{n}` sibling; a commit flushes the disk once for every file
+//! closed since the last, then renames each into place.
 
 use std::collections::HashMap;
 use std::fs::File;
@@ -46,15 +38,13 @@ struct Open {
     sources: Vec<(String, u64)>,
 }
 
-/// A file closed, on the disk under its temporary name until a commit.
-/// Only its names are kept: a run closes more files than it may hold open.
+/// A file closed under its temporary name until a commit; only names are kept.
 struct Closed {
     tmp: PathBuf,
     final_path: PathBuf,
 }
 
-/// Parquet's compression for `codec`; `zstd_level` counts for zstd only
-/// and is held to 1..=22.
+/// Parquet's compression for `codec`; `zstd_level` is clamped to 1..=22.
 pub fn compression(codec: Codec, zstd_level: i32) -> Compression {
     match codec {
         Codec::Zstd => {
@@ -69,10 +59,9 @@ pub fn compression(codec: Codec, zstd_level: i32) -> Compression {
 /// The directory under a table's that holds its data files.
 pub const DATA: &str = "data";
 
-/// Bytes of a row group in memory, as the writer counts them, past which it
-/// ends short of its row count. The writer's count is low: a table of 100
-/// columns holds about five times as much, so 8 MiB keeps a wide table's
-/// ingest near 50 MB of heap where its row count alone let it reach 340.
+/// Bytes of a row group in memory, as the writer counts them, past which it ends early.
+///
+/// The writer's count runs low, so this is set well under the heap it allows.
 pub const ROW_GROUP_BYTES: usize = 8 << 20;
 
 /// The production lake writer.
@@ -105,8 +94,7 @@ impl ParquetHive {
         self
     }
 
-    /// The bytes an open file holds so far, written and buffered: what
-    /// decides when it is closed for the next.
+    /// The bytes an open file holds so far, written and buffered.
     pub fn bytes_in_file(&self, id: WriterId) -> u64 {
         self.open.get(&id.0).map_or(0, |o| {
             (o.writer.bytes_written() + o.writer.in_progress_size()) as u64
@@ -130,9 +118,7 @@ impl ParquetHive {
         } else {
             sha8
         };
-        // The shape's fingerprint keeps two column lists of one version,
-        // from one source, in files of their own. A further file of the
-        // same partition is told apart by its part number.
+        // The fingerprint separates column lists of one version; the part number, further files.
         let part = if meta.part > 1 {
             format!("-p{}", meta.part)
         } else {
@@ -148,9 +134,7 @@ impl ParquetHive {
         let l = &self.layout;
         let mut b = WriterProperties::builder()
             .set_writer_version(WriterVersion::PARQUET_2_0)
-            // PLAIN where a dictionary gives up: the version 2 default,
-            // DELTA, reserves 1 MiB per integer column for every row group
-            // a writer has open, and zstd after PLAIN does as well here.
+            // PLAIN, not the DELTA default, which reserves 1 MiB per integer column.
             .set_encoding(Encoding::PLAIN)
             .set_compression(compression(l.compression, l.zstd_level))
             .set_max_row_group_row_count(Some(l.row_group_rows))
@@ -187,7 +171,6 @@ impl ParquetHive {
                     "phasor.lake_format".to_owned(),
                     crate::provenance::LAKE_FORMAT.to_owned(),
                 ),
-                // The transform: what was read, and by which plan.
                 KeyValue::new(
                     "phasor.report_type".to_owned(),
                     meta.transform.block_family.clone(),
@@ -228,8 +211,7 @@ impl ParquetHive {
                         .map_or_else(String::new, |s| s.to_string()),
                 ),
             ]));
-        // Measures never benefit from dictionaries; ids do, and so do a
-        // source's times, one value each over many rows.
+        // Dictionaries help ids and a source's repeated times, never measures.
         for f in schema.fields() {
             if !crate::provenance::TIME_COLUMNS.contains(&f.name().as_str())
                 && matches!(
@@ -250,8 +232,7 @@ impl ParquetHive {
 }
 
 impl ParquetHive {
-    /// How many files are closed and not yet committed: a mark to
-    /// [`discard`](Self::discard) back to.
+    /// How many files are closed and not yet committed: a mark for [`discard`](Self::discard).
     pub fn closed(&self) -> usize {
         self.closed.len()
     }
@@ -272,8 +253,6 @@ impl LakeWriter for ParquetHive {
         meta: &FileMeta,
     ) -> Result<WriterId, StoreError> {
         zone!(OPEN);
-        // A lake file ends with every row's source and the times its
-        // source was stamped with.
         let tail = crate::provenance::fields();
         let ends = schema.fields().len() >= tail.len()
             && schema.fields()[schema.fields().len() - tail.len()..]
@@ -302,8 +281,7 @@ impl LakeWriter for ParquetHive {
             source,
         })?;
         let final_path = dir.join(Self::file_name(meta));
-        // Unique in the process, not only in this writer: two writers of
-        // one run may open the same final name at once.
+        // Unique in the process: two writers may open the same final name at once.
         let id = NEXT_TMP.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
         let tmp = dir.join(format!(
             ".tmp-{}-{id}-{}",
@@ -314,10 +292,8 @@ impl LakeWriter for ParquetHive {
             path: tmp.display().to_string(),
             source,
         })?;
-        // Sort order is not declared in the footer: the writer learns whether
-        // the rows were ordered only as batches arrive, and Parquet properties
-        // are fixed at open. `WrittenFile::sorted` records it for the manifest
-        // and a later compaction declares it.
+        // Sort order is known only after the batches, and properties are fixed at
+        // open, so `WrittenFile::sorted` records it instead of the footer.
         let props = self.props(&schema, meta);
         let writer = ArrowWriter::try_new(file, schema.clone(), Some(props)).map_err(|e| {
             StoreError::Parquet {
@@ -397,8 +373,6 @@ impl LakeWriter for ParquetHive {
             path: o.tmp.display().to_string(),
             message: e.to_string(),
         })?;
-        // The writer holds a row group in memory until it ends: a wide
-        // table's ends at a size too, not only at its row count.
         if o.writer.memory_size() >= self.row_group_bytes {
             zone!(ENCODE);
             o.writer.flush().map_err(|e| StoreError::Parquet {
@@ -447,8 +421,6 @@ impl LakeWriter for ParquetHive {
             path: tmp.display().to_string(),
             message: e.to_string(),
         })?;
-        // To the disk. Where `fsync` stops at the disk's cache (macOS), the
-        // commit flushes that once for every file.
         rustix::fs::fsync(&file).map_err(|e| StoreError::Io {
             path: tmp.display().to_string(),
             source: e.into(),
@@ -473,7 +445,7 @@ impl LakeWriter for ParquetHive {
         let Some(last) = self.closed.last() else {
             return Ok(());
         };
-        // One flush of the disk's cache makes every file before it durable.
+        // `fsync` stops at the disk's cache on macOS; one full flush covers every file.
         File::open(&last.tmp)
             .and_then(|f| f.sync_all())
             .map_err(|source| StoreError::Io {
@@ -488,7 +460,6 @@ impl LakeWriter for ParquetHive {
                     to: c.final_path.display().to_string(),
                     source,
                 };
-                // Not put in place: neither this file nor those after it.
                 for c in std::iter::once(c).chain(closed) {
                     let _ = std::fs::remove_file(&c.tmp);
                 }
@@ -508,8 +479,7 @@ impl LakeWriter for ParquetHive {
 
 impl Drop for ParquetHive {
     fn drop(&mut self) {
-        // Anything still open was not closed on purpose, and anything
-        // closed but not committed was not kept: remove its temp file.
+        // Remove the temp files of anything open or uncommitted.
         let ids: Vec<u32> = self.open.keys().copied().collect();
         for id in ids {
             self.abort(WriterId(id));

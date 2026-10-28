@@ -480,11 +480,7 @@ fn bad_rows_fail_and_are_explained() {
     assert!(out.contains("csv.stopped_fail_fast"), "{out}");
 }
 
-/// The head of every zip of two months, January 2024 and August 2026:
-/// each block must resolve to a schema of its table's history (strict mode
-/// refuses a deviation) and every row must parse into its column's type.
-/// The histories reach September 2026, so nothing deviates; a month past
-/// the census would, as August 2026 did while the census ended in April.
+/// Every block in the heads of two months resolves to a schema strictly and every row parses.
 #[test]
 fn every_archive_table_ingests_strictly() {
     every_head_ingests_strictly("MMSDM_2024_01", 161, &[]);
@@ -698,8 +694,7 @@ fn inspect_and_schema_commands() {
     assert!(err.contains("schema.no_columns"), "{err}");
 }
 
-/// A table and a column nobody declared are ingested all the same, as
-/// text, and reported; only strict mode refuses them.
+/// An undeclared table and column are ingested as text and reported; strict mode refuses them.
 #[test]
 fn what_the_registry_does_not_declare_is_kept_not_skipped() {
     let cli = Cli::new();
@@ -749,9 +744,7 @@ fn what_the_registry_does_not_declare_is_kept_not_skipped() {
     assert!(out.contains("schema.unknown_table"), "{out}");
 }
 
-/// A table nobody declared is kept as text; once a schema for it is
-/// adopted, `reingest` reads the source again from disk and the lake
-/// follows: typed files in the table's own directory, the text ones gone.
+/// An undeclared table is text until a schema is adopted; `reingest` then rewrites it typed.
 #[test]
 fn reingest_brings_the_lake_up_to_the_schema() {
     let cli = Cli::new();
@@ -828,8 +821,7 @@ fn reingest_brings_the_lake_up_to_the_schema() {
     assert_eq!(parquet(), after, "what is in the lake stays");
 }
 
-/// A user's fix for files that deviate from their table, a column and a
-/// schema, puts exactly the sources it touches behind.
+/// A user's fix for deviating files puts exactly the sources it touches behind.
 #[test]
 fn a_fix_in_table_toml_brings_in_the_files_that_deviate() {
     let cli = Cli::new();
@@ -910,8 +902,7 @@ fn a_fix_in_table_toml_brings_in_the_files_that_deviate() {
     assert!(err.contains("NOWHERE, which is not a column"), "{err}");
 }
 
-/// A table in `{home}/schemas/` is in effect for every command, without a
-/// rebuild; one of the same name replaces the built-in table.
+/// A table in `{home}/schemas/` takes effect for every command and replaces a built-in one.
 #[test]
 fn user_schemas_take_effect() {
     let cli = Cli::new();
@@ -996,8 +987,7 @@ fn user_schemas_take_effect() {
     );
 }
 
-/// Downloads are an archive: listed with how they were requested, checked
-/// against their record, and never removed by any cache command.
+/// Downloads are listed, checked against their record, and never removed by a cache command.
 #[test]
 fn the_archive_lists_and_verifies_every_download() {
     let cli = Cli::new();
@@ -1136,8 +1126,7 @@ fn cache_wem_fetch_and_config() {
     assert!(cli.ok(&["-v", "schema", "list"]).contains("DISPATCH"));
 }
 
-/// A user's own table, as `{home}/schemas/nem/{TABLE}/table.toml`; the
-/// path of the file.
+/// Writes a user's table at `{home}/schemas/nem/{TABLE}/table.toml`; its path.
 fn user_table(cli: &Cli, name: &str, text: &str) -> PathBuf {
     let dir = cli.home.path().join("schemas/nem").join(name);
     std::fs::create_dir_all(&dir).unwrap();
@@ -1224,11 +1213,7 @@ fn walk(root: &Path) -> Vec<PathBuf> {
     out
 }
 
-/// A server on a local port for `get`: a year listing that names one
-/// whole-month zip, the zip itself served by byte range, and 404 for the
-/// rest. Answers until dropped.
-/// A local HTTP server answering every request with `text`, until the
-/// test ends; its base URL.
+/// A local HTTP server answering every request with `text` until the test ends; its base URL.
 fn serve_text(text: String) -> String {
     use std::io::{Read, Write};
     let listener = std::net::TcpListener::bind("127.0.0.1:0").unwrap();
@@ -1344,8 +1329,7 @@ impl Drop for MonthServer {
     }
 }
 
-/// `get` over a whole-month zip: planned, picked out by range, read into
-/// the lake and written as parts with a sidecar; dry runs and refusals.
+/// `get` over a whole-month zip: planned, picked by range, ingested; dry runs and refusals.
 #[test]
 fn fetch_reads_an_interval_of_a_table_from_a_whole_month_zip_into_the_lake() {
     use std::io::Write as _;

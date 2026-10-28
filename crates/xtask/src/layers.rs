@@ -1,8 +1,5 @@
-//! `layers.json` declares, for each crate of the workspace, the crates of
-//! the family (`phasor-*`) it may depend on outside its tests. The gate
-//! fails on an edge the file does not list, so a crate cannot start leaning
-//! on another without the layering saying so, and on a listed edge that is
-//! gone, so the file never claims more than the code does.
+//! Holds each crate's `phasor-*` dependencies to `layers.json`: an unlisted edge
+//! fails, and so does a listed edge that is gone.
 
 use std::collections::{BTreeMap, BTreeSet};
 use std::path::Path;
@@ -38,8 +35,7 @@ pub fn problems(declared: &Graph, actual: &Graph) -> Vec<String> {
     out
 }
 
-/// The workspace's family edges, from `cargo metadata`: normal and build
-/// dependencies, not dev ones.
+/// The workspace's family edges from `cargo metadata`, dev dependencies left out.
 fn actual(root: &Path) -> Result<Graph> {
     let out = Command::new(env!("CARGO"))
         .current_dir(root)

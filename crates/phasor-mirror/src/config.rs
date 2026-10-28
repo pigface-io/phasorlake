@@ -1,6 +1,5 @@
-//! The home, the mirror's records under it, and its config file,
-//! `{home}/config.toml`. Unknown keys are errors, so a typo never falls
-//! back to a default quietly.
+//! The home, the mirror's records under it, and `{home}/config.toml`, whose
+//! unknown keys are errors.
 //!
 //! ```text
 //! {home}/config.toml               settings
@@ -25,8 +24,7 @@ use crate::keep::Month;
 use crate::net::Archive;
 use crate::watch::Cadence;
 
-/// Where the mirror keeps things: the archive of downloads and its own
-/// records. `--home` or `PHASOR_MIRROR_HOME`, else `~/.phasor-mirror`.
+/// Where the mirror keeps things: `--home` or `PHASOR_MIRROR_HOME`, else `~/.phasor-mirror`.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Home {
     root: PathBuf,
@@ -51,8 +49,7 @@ impl Home {
         &self.root
     }
 
-    /// Every downloaded file at a path that mirrors its URL, each beside its
-    /// sidecar (`docs/archive.md`): what phasor reads.
+    /// Every downloaded file at a path that mirrors its URL, beside its sidecar.
     pub fn archive(&self) -> PathBuf {
         self.root.join("archive")
     }
@@ -73,8 +70,7 @@ impl Home {
     }
 }
 
-/// Where the mirror keeps its own records: `{home}/state`. Each file is
-/// named for what it holds; a cache is under `cache/`, safe to delete.
+/// The mirror's own records, `{home}/state`; what is under `cache/` is safe to delete.
 #[derive(Debug, Clone)]
 pub struct Mirror {
     dir: PathBuf,
@@ -90,8 +86,7 @@ impl Mirror {
         }
     }
 
-    /// The same records, keeping nothing whose data is for a month before
-    /// `from` ([`crate::keep`]): [`Mirror::kept`] leaves it out.
+    /// The same records, keeping nothing for a month before `from` ([`crate::keep`]).
     pub fn keeping(self, from: Option<Month>) -> Self {
         Self {
             keep_from: from,
@@ -119,8 +114,7 @@ impl Mirror {
         self.dir.join("crawl.json")
     }
 
-    /// One folder per local folder of the archive (both listings of a
-    /// report folder in one): its listing, pages and events.
+    /// One folder per local folder of the archive: its listing, pages and events.
     pub fn folders(&self) -> Archive {
         Archive::new(self.dir.join("folders"))
     }
@@ -130,15 +124,12 @@ impl Mirror {
         self.folders().path_for(folder)
     }
 
-    /// What every listing of `folder`'s local folder showed when last
-    /// read: one link a line, each with the listing it was on.
+    /// What every listing of `folder`'s local folder showed when last read.
     pub fn listing_path(&self, folder: &str) -> PathBuf {
         self.folder_dir(folder).join("listing.ndjson")
     }
 
-    /// Where the page of a folder URL is kept, as served: under its local
-    /// folder, named for its listing (`pages/CURRENT.html`), or
-    /// `pages/index.html` for a folder with one listing.
+    /// Where the page of a folder URL is kept, named for its listing or `index`.
     pub fn page_path(&self, folder: &Url) -> PathBuf {
         let probe = format!("{}_", folder.as_str());
         let name = phasor_provenance::layout::listing(&probe).unwrap_or_else(|| "index".into());
@@ -164,8 +155,7 @@ impl Mirror {
 pub struct Config {
     /// Downloads at a time.
     pub downloads: usize,
-    /// Minimum gap between two requests, in milliseconds. AEMO's web
-    /// server refuses clients that ask too fast.
+    /// Minimum gap between two requests, in milliseconds.
     pub request_interval_ms: u64,
     /// The site the roots are on.
     pub base_url: String,
@@ -175,15 +165,13 @@ pub struct Config {
     pub jobs: usize,
     /// Tries per request before it fails.
     pub attempts: u32,
-    /// Wait before the second try, in milliseconds; it doubles each try,
-    /// up to 60 times this.
+    /// Wait before the second try, in milliseconds; doubles each try, up to 60 times this.
     pub backoff_ms: u64,
     /// Seconds a request may wait for the next bytes before it fails.
     pub read_timeout_secs: u64,
     /// Seconds between the counts a run writes for `status`.
     pub progress_every_secs: u64,
-    /// Folders a watch reads most often, as paths under `base_url`: those
-    /// whose files nemweb rewrites in place several times a day.
+    /// Folders a watch reads most often, as paths under `base_url`.
     pub watch_fast: Vec<String>,
     /// Seconds between a watch's reads of `watch_fast`.
     pub watch_fast_secs: u64,
@@ -195,13 +183,10 @@ pub struct Config {
     pub watch_secs: u64,
     /// The fewest seconds between two reads of a folder found changed.
     pub watch_least_secs: u64,
-    /// Further hosts, each with its own roots and clock, read after
-    /// nemweb; none by default.
+    /// Further hosts, each with its own roots and clock, read after nemweb.
     pub hosts: Vec<HostConfig>,
-    /// Keep nothing whose data is for a month before this (`"2020-01"`):
-    /// no download, peek, watch read or count of it, and `prune` deletes
-    /// what the archive holds of it. Every month when absent;
-    /// `--keep-from` overrides it.
+    /// Keep nothing whose data is for a month before this (`"2020-01"`);
+    /// every month when absent.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub keep_from: Option<Month>,
 }
@@ -222,8 +207,7 @@ pub struct HostConfig {
     pub base_url: String,
     /// Seconds east of UTC of the times its listings and zips carry.
     pub listing_offset_secs: i32,
-    /// Its own minimum gap between two requests, in milliseconds; the
-    /// top-level `request_interval_ms` when absent.
+    /// Its own minimum gap between requests, in milliseconds; the top-level one when absent.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub request_interval_ms: Option<u64>,
     /// The folders mirrored, as paths under `base_url`.

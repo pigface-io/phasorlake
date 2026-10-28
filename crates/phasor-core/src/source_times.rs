@@ -1,30 +1,17 @@
-//! The times a source file carries, each read from one place and named for
-//! it: what the web server said of its bytes (`Last-Modified`), and the
-//! timestamp AEMO wrote in its file name. Neither is judged or combined
-//! here; the writer stamps each on every lake row as found, and a reader
-//! chooses which to be known by. (The third, the zip entry's modified
-//! time, comes from the zip's directory as it is walked.)
+//! The times a source file carries, each from one place: the server's `Last-Modified`
+//! and the timestamp in its file name. Neither is judged here; each is stamped on every row.
 
 use crate::timetext;
 
-/// The server's `Last-Modified` for the source's bytes, recorded as
-/// RFC 3339 text, in microseconds since 1970 (UTC); none when the server
-/// gave none or the text is not a time.
+/// The server's RFC 3339 `Last-Modified` in UTC microseconds; none when absent or unreadable.
 pub fn server_last_modified(rfc3339: Option<&str>) -> Option<i64> {
     let s = timetext::parse_rfc3339(rfc3339?)?;
     Some(s.secs_utc * 1_000_000 + i64::from(s.nanos / 1_000))
 }
 
-/// The timestamp written in a file's name: the first run of exactly
-/// fourteen digits bounded by non-digits, read as `YYYYMMDDHHMMSS` in the
-/// host's clock (`offset_secs`), in microseconds since 1970 (UTC). AEMO
-/// stamps a report with its creation time this way
-/// (`PUBLIC_YESTBID_201612220000_20161223040519.zip`: 2016-12-23 04:05:19)
-/// and a gas restatement after a `~` (`int651_…~20261023113222.csv`). The
-/// twelve-digit run a report also carries is the interval it reports, not
-/// a time it was made, and is not read: a report is public a minute after
-/// it for dispatch, a day after for bids, and nothing here knows which.
-/// None when the name has no such run, or its digits are not a time.
+/// The first run of exactly fourteen digits in a file's name, read as `YYYYMMDDHHMMSS`
+/// at `offset_secs`, in UTC microseconds. A twelve-digit run is an interval, not a
+/// creation time, and is not read. None when there is no such run or it is not a time.
 pub fn filename_timestamp(url: &str, offset_secs: i32) -> Option<i64> {
     let d = digits_run(file_name(url), 14)?;
     let text = format!(
@@ -39,8 +26,7 @@ pub fn filename_timestamp(url: &str, offset_secs: i32) -> Option<i64> {
     timetext::parse_naive(&text, offset_secs).map(|s| s.secs_utc * 1_000_000)
 }
 
-/// The last path segment of a URL or path, without a query string or
-/// fragment.
+/// The last path segment of a URL or path, without query or fragment.
 fn file_name(url: &str) -> &str {
     let no_query = url.split(['?', '#']).next().unwrap_or(url);
     no_query.rsplit(['/', '\\']).next().unwrap_or(no_query)

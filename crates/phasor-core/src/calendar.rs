@@ -1,11 +1,6 @@
-//! The calendar, in whole days and seconds, and the fixed offsets of the
-//! Australian markets: what every time in the lake is counted in.
-//!
-//! The lake stores every instant as nanoseconds since the Unix epoch in
-//! UTC, with the market offset recorded in the Arrow type. The NEM runs on
-//! Australian Eastern Standard Time all year (UTC+10, no daylight saving),
-//! the WEM on Australian Western Standard Time (UTC+8). No calendar
-//! library: these run on the hot path.
+//! The calendar in whole days and seconds, and the fixed market offsets: the NEM
+//! on UTC+10 all year, the WEM on UTC+8. The lake stores instants as UTC
+//! nanoseconds. No calendar library: these run on the hot path.
 
 /// Seconds east of UTC for the National Electricity Market (AEST, fixed).
 pub const NEM_OFFSET_SECS: i32 = 10 * 3600;
@@ -18,11 +13,9 @@ pub const NANOS_PER_SECOND: i64 = 1_000_000_000;
 /// The proleptic Gregorian calendar in whole days, the family's one.
 pub use phasor_provenance::civil::{civil_from_days, days_from_civil, days_in_month};
 
-/// The civil `(year, month)` in the market's local time of a UTC instant in
-/// nanoseconds, for partitioning.
+/// The civil `(year, month)` in market time of a UTC instant in nanoseconds.
 pub fn local_year_month(nanos_utc: i64, offset_secs: i32) -> (i32, u32) {
-    // Seconds first: adding the offset in nanoseconds could overflow at the
-    // ends of the range, where clamped values sit.
+    // Seconds first: adding the offset in nanoseconds could overflow at the clamped ends.
     let local_secs = nanos_utc.div_euclid(NANOS_PER_SECOND) + i64::from(offset_secs);
     let (y, m, _) = civil_from_days(local_secs.div_euclid(86_400));
     (y, m)
@@ -41,8 +34,7 @@ pub fn format_local_seconds(secs_utc: i64, offset_secs: i32) -> String {
     )
 }
 
-/// The UTC nanoseconds of a civil date and time written in `offset_secs`,
-/// for tests and tools that name an instant.
+/// The UTC nanoseconds of a civil date and time written in `offset_secs`.
 #[must_use]
 pub fn utc_nanos(y: i32, m: u32, d: u32, hh: u32, mm: u32, ss: u32, offset_secs: i32) -> i64 {
     let local = days_from_civil(y, m, d) * 86_400

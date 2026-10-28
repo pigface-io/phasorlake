@@ -1,11 +1,6 @@
-//! The tables phasor reads are the ones phasor-schemas publishes: each
-//! table's Iceberg table metadata, `{market}/<TABLE>/metadata/v1.metadata.json`,
-//! and the manifest of their hashes. `pull` copies them at a commit into
-//! `schemas/{market}/pulled/` for every market published and records the
-//! commit in each `SOURCE`; `check` holds each copy to the manifest and the
-//! commit to the one `Cargo.lock` takes `phasor-iceberg` from, so the
-//! histories and the crate that reads them are always of one commit. A
-//! market with no table published has no `pulled/`.
+//! `pull` copies phasor-schemas' table metadata at a commit into `schemas/{market}/pulled/`;
+//! `check` holds each copy to its manifest and to the commit `Cargo.lock` pins
+//! `phasor-iceberg` at.
 
 use std::collections::BTreeMap;
 use std::io::{BufRead as _, BufReader, Read as _, Write as _};
@@ -50,8 +45,7 @@ fn pulled_dir(market: &str) -> PathBuf {
     crate::repo_root().join(pulled_rel(market))
 }
 
-/// The market and table a manifest path names, when it is a
-/// `{market}/<TABLE>/metadata/v1.metadata.json`.
+/// The market and table of a `{market}/<TABLE>/metadata/v1.metadata.json` path.
 fn table_of(path: &str) -> Option<(&str, &str)> {
     match path.split('/').collect::<Vec<_>>().as_slice() {
         [market, table, "metadata", "v1.metadata.json"]
@@ -115,10 +109,8 @@ fn blobs(checkout: &Path, rev: &str, paths: &[String]) -> Result<Vec<Vec<u8>>> {
     Ok(found)
 }
 
-/// Copies every market's tables' metadata, its folders file and the
-/// manifest of `rev` in `checkout` into `schemas/{market}/pulled/`,
-/// whatever the checkout's working tree holds, and writes the commit to
-/// each `SOURCE`. A market the commit publishes no table of has no copy.
+/// Copies every market's metadata, folders file and manifest of `rev` in `checkout`
+/// into `schemas/{market}/pulled/` and writes the commit to each `SOURCE`.
 pub fn pull(rev: &str, checkout: &Path) -> Result<bool> {
     let full = git(
         checkout,
@@ -231,8 +223,7 @@ fn sha256(bytes: &[u8]) -> String {
         })
 }
 
-/// What is wrong with `market`'s copy in `dir`, held to its manifest and
-/// to the commit `lock` names. Empty when it is right.
+/// What is wrong with `market`'s copy in `dir` against its manifest and `lock`; empty when right.
 pub fn problems(dir: &Path, lock: &str, market: &str) -> Vec<String> {
     let pulled = pulled_rel(market);
     let mut out = Vec::new();
@@ -325,8 +316,7 @@ pub fn problems(dir: &Path, lock: &str, market: &str) -> Vec<String> {
     out
 }
 
-/// `schemas-check`: every market's copy is the manifest's, and of the
-/// locked commit; a market without a copy has nothing to check.
+/// `schemas-check`: every market's copy matches its manifest and the locked commit.
 pub fn check() -> Result<bool> {
     let lock = std::fs::read_to_string(crate::repo_root().join("Cargo.lock"))
         .context("reading Cargo.lock")?;

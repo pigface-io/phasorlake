@@ -146,8 +146,7 @@ pub async fn schema(ctx: &Context, cmd: &SchemaCmd) -> Result<i32> {
     }
 }
 
-/// The columns `next` adds to and drops from `prev`, and whether the
-/// columns both have moved.
+/// The columns `next` adds to and drops from `prev`, and whether shared ones moved.
 fn changes(prev: &[&str], next: &[&str]) -> String {
     let mut out: Vec<String> = next
         .iter()
@@ -171,8 +170,7 @@ fn changes(prev: &[&str], next: &[&str]) -> String {
     out.join(" ")
 }
 
-/// `phasor schema plan <type> <subtype> <version> --columns ...`: the plan
-/// a shape resolves to, permissively, as one JSON document.
+/// `phasor schema plan`: the plan a shape resolves to, permissively, as JSON.
 fn plan(
     r: &Registry,
     report_type: &str,

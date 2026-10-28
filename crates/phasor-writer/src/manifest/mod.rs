@@ -1,9 +1,7 @@
 //! The SQLite manifest.
 //!
-//! [`Manifest`] is the synchronous API over one connection; the pipeline
-//! uses [`ManifestHandle`], which runs a `Manifest` on its own thread and
-//! answers over channels, so SQLite always has exactly one writer and async
-//! code never blocks on it.
+//! [`Manifest`] is the synchronous API; [`ManifestHandle`] runs one on its own
+//! thread so SQLite has exactly one writer and async code never blocks on it.
 
 mod handle;
 
@@ -68,8 +66,7 @@ pub struct FileRecord {
     /// `last_modified` as an instant, RFC 3339 UTC.
     #[serde(default)]
     pub last_modified_at: Option<String>,
-    /// When the bytes were fetched, RFC 3339, as the archive's record says;
-    /// none records the time of recording.
+    /// When the bytes were fetched, RFC 3339; none records the time of recording.
     #[serde(default)]
     pub fetched_at: Option<String>,
 }
@@ -161,24 +158,19 @@ pub struct EntryShare {
     pub min_time: Option<i64>,
     /// Its greatest.
     pub max_time: Option<i64>,
-    /// The HTTP `Last-Modified` the web server gave for the entry's bytes,
-    /// microseconds since 1970 (UTC): what its rows carry as
-    /// `_ul_server_last_modified`.
+    /// The server's `Last-Modified`, microseconds since 1970 UTC: `_ul_server_last_modified`.
     #[serde(default)]
     pub server_last_modified: Option<i64>,
-    /// The entry's modified time in its zip's central directory, read in
-    /// the packer's clock: its rows' `_ul_zip_entry_modified`.
+    /// The zip central directory's modified time, packer's clock: `_ul_zip_entry_modified`.
     #[serde(default)]
     pub zip_entry_modified: Option<i64>,
-    /// The fourteen-digit stamp in the entry's file name, read in the
-    /// host's clock: its rows' `_ul_filename_timestamp`.
+    /// The stamp in the entry's file name, host's clock: `_ul_filename_timestamp`.
     #[serde(default)]
     pub filename_timestamp: Option<i64>,
 }
 
 impl EntryShare {
-    /// Counts `rows` more, whose time column spans `bounds` when the
-    /// table has one.
+    /// Counts `rows` more, whose time column spans `bounds`.
     pub fn add(&mut self, rows: u64, bounds: Option<(Option<i64>, Option<i64>)>) {
         self.rows += rows;
         if let Some((min, max)) = bounds {
@@ -213,8 +205,7 @@ pub struct LiveOutput {
     pub source_period: Option<String>,
     /// The source file.
     pub url: String,
-    /// The entries of the source file its ingest read, with when each
-    /// went public; each row of the file names its own in `_ul_source`.
+    /// The entries of the source file its ingest read.
     pub entries: Vec<EntryShare>,
     /// Its least time value, nanoseconds since 1970.
     pub min_time: Option<i64>,
@@ -223,8 +214,7 @@ pub struct LiveOutput {
     /// The partition it is in, as its directory names it.
     #[serde(default)]
     pub partition: String,
-    /// When the server last changed the source file, RFC 3339 UTC, when
-    /// the server said.
+    /// When the server last changed the source file, RFC 3339 UTC.
     #[serde(default)]
     pub last_modified_at: Option<String>,
 }
@@ -300,22 +290,17 @@ pub struct DiagFilter {
 
 /// The manifest over one connection.
 ///
-/// Every path it records under its home (the directory the manifest file is
-/// in) is stored relative to that home and given back absolute, so a home
-/// moved or copied whole still names its own files: cache files, lake
-/// outputs and quarantine files alike. A path outside the home is kept as
-/// it is.
+/// Paths under its home (the manifest's directory) are stored relative to it,
+/// so a home moved whole still names its own files.
 pub struct Manifest {
     conn: Connection,
     path: String,
     home: Option<PathBuf>,
-    /// The home's run lock, held from the first run started until the
-    /// manifest is closed.
+    /// The home's run lock, held from the first run started until close.
     lock: Option<std::fs::File>,
 }
 
-/// Now, RFC 3339 UTC to the second: the form of every time the manifest
-/// holds as text.
+/// Now, RFC 3339 UTC to the second.
 fn now() -> String {
     phasor_core::clock::now_utc_rfc3339()
 }
@@ -399,10 +384,8 @@ impl Manifest {
         if at as usize >= MIGRATIONS.len() {
             return Ok(());
         }
-        // A migration that rebuilds a table drops the old one, and with
-        // foreign keys on that would take the rows that point at it. The
-        // setting cannot change inside a transaction, so it is off for the
-        // whole pass and back on after it.
+        // A table rebuild would cascade-delete rows that point at it, and the
+        // setting cannot change inside a transaction, so it is off for the pass.
         self.exec_batch("PRAGMA foreign_keys = OFF;")?;
         let migrated = self.apply_migrations(&mut at);
         self.exec_batch("PRAGMA foreign_keys = ON;")?;
@@ -442,14 +425,10 @@ impl Manifest {
         Ok(self.conn.last_insert_rowid())
     }
 
-    /// Starts a run: every ingest a run that ended without finishing left
-    /// running is marked aborted, and every file such a run left half
-    /// written in the lake is removed.
+    /// Starts a run, aborting what an unfinished run left and removing its half-written files.
     ///
-    /// The home is locked first, so a second run on it waits for none of
-    /// this: it is refused, rather than aborting the first one's ingests
-    /// and removing the files it is writing. The system drops the lock with
-    /// the process, so a run that was killed leaves none behind.
+    /// The home is locked first, so a second concurrent run is refused; the
+    /// lock dies with the process.
     pub fn start_run(&mut self, argv: &str) -> Result<i64, ManifestError> {
         self.lock_home()?;
         self.abort_running()?;
@@ -518,8 +497,7 @@ impl Manifest {
         self.sql(r)
     }
 
-    /// The tables a run began an ingest of, by name: those whose lake
-    /// files it may have written or superseded.
+    /// The tables a run began an ingest of, by name.
     pub fn tables_of_run(&self, run_id: i64) -> Result<Vec<String>, ManifestError> {
         let r = (|| {
             let mut st = self.conn.prepare(
@@ -594,8 +572,7 @@ impl Manifest {
         }))
     }
 
-    /// Every file the manifest has recorded, in the order they were first
-    /// seen.
+    /// Every file the manifest has recorded, in first-seen order.
     pub fn list_files(&self) -> Result<Vec<FileRecord>, ManifestError> {
         let mut stmt = self.sql(self.conn.prepare(
             "SELECT source, url, cache_path, sha256, size, etag, last_modified, last_modified_at, fetched_at FROM files ORDER BY id",
@@ -627,14 +604,10 @@ impl Manifest {
         })
     }
 
-    /// What was read from a source with this URL and sha256, when it is
-    /// wholly in the lake: every ingest `ok` and every output still on
-    /// disk. `None` when it is not (never ingested, changed since, failed,
-    /// interrupted, or a Parquet file gone), so it must be read again.
+    /// What was read from a source with this URL and sha256, when it is wholly in the lake.
     ///
-    /// The caller decides whether the transforms are still the ones the
-    /// current rules give; if they are, the source can be skipped. Ingests
-    /// an earlier version of the source left behind do not count.
+    /// `None` unless every ingest is `ok` and every output is still on disk.
+    /// The caller decides whether the transforms still match the current rules.
     pub fn ingested_shapes(
         &self,
         url: &str,
@@ -679,9 +652,7 @@ impl Manifest {
         Ok(Some(rows.into_iter().map(|(_, s)| s).collect()))
     }
 
-    /// Every entry in the lake that was fetched alone out of the zip at
-    /// `url` (recorded under `{url}!{entry}`), as its path within the zip
-    /// (`inner.zip!X.CSV`): what a read of the whole zip leaves alone.
+    /// Every entry fetched alone out of the zip at `url`, as its path within the zip.
     pub fn entries_ingested_under(&self, url: &str) -> Result<Vec<String>, ManifestError> {
         let prefix = format!("{url}!");
         let pattern = format!(
@@ -705,9 +676,7 @@ impl Manifest {
             .collect())
     }
 
-    /// Whether the lake holds, from a read of the whole zip at `url`, the
-    /// entry `entry` or anything nested in it: what a fetch of that entry
-    /// alone would read again.
+    /// Whether a read of the whole zip at `url` put `entry`, or anything nested in it, in the lake.
     pub fn is_ingested_from(&self, url: &str, entry: &str) -> Result<bool, ManifestError> {
         let nested = format!(
             "{}!%",
@@ -735,8 +704,7 @@ impl Manifest {
         Ok(paths.into_iter().map(|p| self.resolved(p)).collect())
     }
 
-    /// Paths of the quarantine files a file's current ingests wrote, for
-    /// superseding.
+    /// Paths of the quarantine files a file's current ingests wrote.
     pub fn quarantine_of_file(&self, file_id: i64) -> Result<Vec<String>, ManifestError> {
         let mut stmt = self.sql(self.conn.prepare("SELECT DISTINCT quarantine_path FROM ingests WHERE file_id = ?1 AND quarantine_path IS NOT NULL AND status != 'superseded' ORDER BY quarantine_path"))?;
         let paths: Vec<String> = self.sql(
@@ -746,8 +714,7 @@ impl Manifest {
         Ok(paths.into_iter().map(|p| self.resolved(p)).collect())
     }
 
-    /// Paths of every quarantine file a current ingest recorded; a file
-    /// under the quarantine directory that is not in this list is an orphan.
+    /// Paths of every quarantine file a current ingest recorded.
     pub fn live_quarantine(&self) -> Result<Vec<String>, ManifestError> {
         let mut stmt = self.sql(self.conn.prepare("SELECT DISTINCT quarantine_path FROM ingests WHERE quarantine_path IS NOT NULL AND status != 'superseded' ORDER BY quarantine_path"))?;
         let paths: Vec<String> =
@@ -755,7 +722,6 @@ impl Manifest {
         Ok(paths.into_iter().map(|p| self.resolved(p)).collect())
     }
 
-    /// The entries each ingest read, by ingest, in entry order.
     fn entries_by_ingest(
         &self,
         table: Option<&str>,
@@ -791,9 +757,7 @@ impl Manifest {
         Ok(by)
     }
 
-    /// Every output of a live ingest (status `ok`), of one table or all, in
-    /// the order the lake's Iceberg tables commit them: table, then source
-    /// month, then source file and output.
+    /// Every output of an `ok` ingest, of one table or all, in Iceberg commit order.
     pub fn live_outputs(&self, table: Option<&str>) -> Result<Vec<LiveOutput>, ManifestError> {
         let entries = self.entries_by_ingest(table)?;
         let mut stmt = self.sql(self.conn.prepare(
@@ -847,12 +811,9 @@ impl Manifest {
         Ok(n)
     }
 
-    /// Replaces what a file's earlier read wrote. Its Parquet and
-    /// quarantine files are removed, except those in `kept`, which this
-    /// read wrote again under the same names; each directory a removed
-    /// Parquet file leaves empty is removed, up to the lake's root; its
-    /// ingests are marked superseded. Gives how many Parquet files the
-    /// earlier read had.
+    /// Replaces what a file's earlier read wrote, keeping `kept`; returns its Parquet file count.
+    ///
+    /// Removed files take emptied directories with them, up to the lake root.
     pub fn supersede(&mut self, file_id: i64, kept: &[String]) -> Result<usize, ManifestError> {
         let old = self.outputs_of_file(file_id)?;
         let lake = self.home.as_ref().map(|h| h.join("lake"));
@@ -1094,9 +1055,7 @@ pub struct IngestShape {
     pub transform: Transform,
 }
 
-/// Reads the nine transform columns of an `ingests` row, starting at
-/// `at`: report type, report subtype, source version, source columns,
-/// plan hash, schema source, resolution, source period, shape id, schema id.
+/// Reads the transform columns of an `ingests` row, starting at `at`.
 fn transform_from_row(r: &rusqlite::Row<'_>, at: usize) -> rusqlite::Result<Transform> {
     let columns: String = r.get(at + 3)?;
     Ok(Transform {
@@ -1145,14 +1104,12 @@ fn parse_partition(seg: &str) -> crate::writer::Partition {
     Partition::Unknown
 }
 
-/// Removes a Parquet file an earlier read wrote, and each directory above
-/// it that is left empty, up to `lake`.
+/// Removes a file and each directory above it left empty, up to `lake`.
 fn remove_output(path: &Path, lake: Option<&Path>) {
     let _ = std::fs::remove_file(path);
     let Some(lake) = lake else { return };
     let mut dir = path.parent();
     while let Some(d) = dir {
-        // `remove_dir` refuses a directory that still holds something.
         if d == lake || !d.starts_with(lake) || std::fs::remove_dir(d).is_err() {
             break;
         }
@@ -1396,8 +1353,7 @@ mod tests {
         );
     }
 
-    /// One run on a home at a time: a second is refused while the first
-    /// holds it, not let in to abort the first one's ingests.
+    /// One run on a home at a time: a second is refused while the first holds it.
     #[test]
     fn a_second_run_on_a_home_is_refused_while_the_first_holds_it() {
         let dir = tempfile::tempdir().unwrap();
@@ -1795,9 +1751,7 @@ mod tests {
         );
     }
 
-    /// A manifest written before ingests recorded their transform keeps
-    /// every row, output and diagnostic through the rebuild of `ingests`,
-    /// and its ingests read as ones whose rules are not known.
+    /// A manifest without transforms keeps every row through the `ingests` rebuild.
     #[test]
     fn an_older_manifest_is_migrated_in_place() {
         let dir = tempfile::tempdir().unwrap();
@@ -1852,9 +1806,7 @@ mod tests {
         assert!(m.outputs_of_file(1).unwrap().is_empty());
     }
 
-    /// A manifest at migration 3 records rules hashes; after the move to
-    /// plan hashes they are kept as they were, so they match no plan and
-    /// every such source is read again, and no shape id is known.
+    /// Rules hashes from migration 3 survive as hashes that match no plan.
     #[test]
     fn a_manifest_of_rules_hashes_moves_to_plan_hashes() {
         let dir = tempfile::tempdir().unwrap();
@@ -1904,10 +1856,7 @@ mod tests {
         assert_eq!(rec.transform, transform());
     }
 
-    /// A manifest at migration 7 has an ingest per entry; after the move to
-    /// one per source file, those of one shape are merged into the first,
-    /// each entry's rows kept as its share, outputs and diagnostics with it,
-    /// and a merge of an ok and a failed entry is failed.
+    /// Per-entry ingests from migration 7 merge into one per source file and shape.
     #[test]
     fn ingests_per_entry_merge_into_one_per_source_file() {
         let dir = tempfile::tempdir().unwrap();
@@ -1982,8 +1931,7 @@ mod tests {
         assert_eq!(live[0].entries.len(), 2);
     }
 
-    /// A migration that fails leaves the manifest as it was and says which
-    /// one failed.
+    /// A failed migration leaves the manifest as it was and names itself.
     #[test]
     fn a_failed_migration_is_reported() {
         let dir = tempfile::tempdir().unwrap();

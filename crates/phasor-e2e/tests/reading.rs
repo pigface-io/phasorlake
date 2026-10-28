@@ -1,13 +1,6 @@
-//! Every example in `docs/reading.md` runs through the DuckDB CLI over a
-//! small lake written as the pipeline writes it, and returns the rows
-//! written here. The doc is the only way phasor describes a read, so a
-//! query there that drifts from the lake fails the tests.
-//!
-//! The lake: DISPATCHPRICE from a live report, the month's DVD and an
-//! archive copy re-touched in 2026 whose zip entry is dated the night it
-//! was written; DUDETAIL in two monthly snapshots, the second holding a
-//! correction and the version that ends it; BIDDAYOFFER_D with a NaN
-//! version; SSM_ENABLEMENT_COSTS twice, with no key.
+//! Every example in `docs/reading.md` runs through the DuckDB CLI over a small
+//! lake written as the pipeline writes it, and must return the rows written here.
+//! The lake: DISPATCHPRICE, DUDETAIL, BIDDAYOFFER_D and SSM_ENABLEMENT_COSTS.
 
 use std::collections::BTreeMap;
 use std::path::{Path, PathBuf};
@@ -113,8 +106,7 @@ struct Source {
     server: Option<&'static str>,
     /// The zip entry's modified time, in the market's clock.
     zip_entry: Option<&'static str>,
-    /// The schema of the table's history its block was read with; the
-    /// latest when none is given.
+    /// The history's schema the block was read with; the latest when none.
     schema_id: Option<u32>,
     rows: Vec<(&'static str, Vec<V>)>,
 }
@@ -143,8 +135,7 @@ impl Lake {
         self.registry.lake_schema(id).clone()
     }
 
-    /// Writes a source's rows as one lake file, each row stamped with its
-    /// source and times as an ingest stamps them.
+    /// Writes a source's rows as one lake file, stamped as an ingest stamps them.
     fn write(&mut self, s: &Source) {
         let id = self.registry.table_by_name(s.table).unwrap();
         let table = self.registry.table(id);
@@ -503,8 +494,7 @@ fn biddayoffer(lake: &mut Lake) {
     });
 }
 
-/// An older BIDDAYOFFER_D file, read with the table's first schema: it
-/// still carries MR_FACTOR, which later schemas dropped.
+/// An older BIDDAYOFFER_D file, read with the first schema, still carrying MR_FACTOR.
 fn older_bids(lake: &mut Lake) {
     lake.write(&Source {
         table: "BIDDAYOFFER_D",
@@ -595,8 +585,7 @@ fn copy_dir(from: &Path, to: &Path) {
     }
 }
 
-/// The rows of a query through the DuckDB CLI, as CSV with a header, run
-/// from `home` as the doc says.
+/// A query's rows through the DuckDB CLI, as CSV with a header, run from `home`.
 fn duck(home: &Path, sql: &str) -> String {
     let out = Command::new("duckdb")
         .current_dir(home)

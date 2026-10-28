@@ -1,15 +1,6 @@
-//! Watching nemweb for what changes: each folder's listing read again on a
-//! schedule of its own, and what is new or rewritten put in the crawl
+//! Watching for what changes: each folder's listing read again on a schedule
+//! of its own, sooner when found changed, and what is new put in the crawl
 //! record for a download pass.
-//!
-//! nemweb adds files to `Reports/CURRENT/` every few minutes, drops them
-//! after days or weeks, and rewrites some in place several times a day
-//! (most gas reports). A full crawl reads some 2,900 pages; a watch reads a
-//! folder again when its turn comes: the folders that rewrite files often
-//! every few minutes, the rest of `Reports/CURRENT/` hourly, and every
-//! other folder about daily. A folder found changed is read again sooner,
-//! down to the least interval; one found the same goes back towards its
-//! own.
 
 use std::collections::{BTreeMap, VecDeque};
 use std::time::{Duration, Instant};
@@ -41,8 +32,7 @@ pub struct Cadence {
 }
 
 impl Cadence {
-    /// A folder's own interval, and whether it is one of the others, whose
-    /// first reads are spread over that interval.
+    /// A folder's own interval, and whether its first read is spread over it.
     fn base(&self, folder: &str) -> (Duration, bool) {
         let under = |prefixes: &[String]| prefixes.iter().any(|p| folder.starts_with(p.as_str()));
         if under(&self.fast) {
@@ -74,9 +64,8 @@ pub struct Schedule {
 }
 
 impl Schedule {
-    /// Every folder given, at its cadence. The folders read most often and
-    /// next most often are due now; the others are spread over their
-    /// interval, so a watch does not begin with a full crawl.
+    /// Every folder given, at its cadence; the slowest ones' first reads are
+    /// spread over their interval.
     pub fn new(cadence: Cadence, folders: impl IntoIterator<Item = String>, now: Instant) -> Self {
         let mut s = Self {
             cadence,
@@ -126,9 +115,8 @@ impl Schedule {
         due.into_iter().map(|(_, f)| f.clone()).collect()
     }
 
-    /// A folder read at `now`: found changed, it is read again in half its
-    /// interval, down to the least; found the same, in twice it, up to its
-    /// own.
+    /// A folder read at `now`: its interval halves when changed, down to the
+    /// least, and doubles when not, up to its own.
     pub fn checked(&mut self, folder: &str, changed: bool, now: Instant) {
         let least = self.cadence.least;
         if let Some(slot) = self.slots.get_mut(folder) {
@@ -177,11 +165,9 @@ fn listed(r: &Remote) -> Listed {
     (r.kind, r.size, r.modified_at)
 }
 
-/// Reads the listing pages of `folders` again and puts what each lists in
-/// place of what it listed in the crawl record, reading every folder new
-/// to the record too. A folder nemweb answers with 404 is gone: it and all
-/// under it leave the record. Any other failure stops the refresh, and the
-/// record keeps what was read before it.
+/// Reads the listing pages of `folders` again, and every new folder, into
+/// the crawl record. A 404 removes a folder and all under it; any other
+/// failure stops the refresh.
 pub async fn refresh(
     fetcher: &Fetchers,
     mirror: &Mirror,

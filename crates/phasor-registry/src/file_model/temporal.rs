@@ -1,26 +1,13 @@
 //! A table's two time axes: what each fact is about, when it applies
 //! (valid time), and which of its revisions is the newest (knowledge).
 //!
-//! Dedupe, "as of" reads, effective-date windows and forecast vintages are
-//! one question asked of these roles: which version of a fact is the
-//! truth, as known at some time. The roles are derived from the data
-//! model's primary key and the table's columns by the one rule every
-//! reader and the publisher share ([`phasor_iceberg::derive`]), so no
-//! table has a hand-kept list; a table file may override them, marked
-//! [`RoleOrigin::Hand`].
-//!
-//! The roles name columns by `C`: a [`Temporal<String>`] is what a table
-//! file says; [`Temporal::check`] proves every name against the table and
-//! turns it into a [`Temporal<ColumnId>`], the only form the rest of
-//! phasor reads.
+//! Roles come from [`phasor_iceberg::derive`] unless a table file overrides them.
 
 use serde::{Deserialize, Serialize};
 
 use crate::file_model::model::{Column, ColumnId, LakeType, Table};
 
-/// Column names reserved for what phasor adds to every lake row
-/// (`_ul_source` and the times its source was stamped with); no table may
-/// declare one.
+/// The prefix of the columns phasor adds to every lake row; no table may declare one.
 pub const RESERVED_PREFIX: &str = "_UL_";
 
 /// Who chose a table's roles.
@@ -36,30 +23,22 @@ pub enum RoleOrigin {
 /// When a fact applies, and how a window of time selects it.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub enum ValidAxis<C> {
-    /// No column says when: every row applies always. A window does not
-    /// select rows of such a table.
+    /// No column says when: every row applies always, whatever the window.
     Timeless,
     /// The time ends the interval the row covers (SETTLEMENTDATE): a window
     /// `(after, upto]` keeps `after < t <= upto`.
     IntervalEnd(C),
-    /// The time labels the row: a day, the start of a period, a run
-    /// (TRADINGDATE, DAY, RUN_DATETIME of a run's own result): a window
-    /// keeps `after <= t < upto`.
+    /// The time labels the row (TRADINGDATE): a window keeps `after <= t < upto`.
     Instant(C),
-    /// The time labels the trading day the row is for, written at
-    /// midnight (the bid and settlement tables' SETTLEMENTDATE): the row
-    /// covers `[label + start, label + start + 1 day)` where `start` is
-    /// the market's trading day start, and a window keeps the labels whose
-    /// day overlaps it.
+    /// The time labels the row's trading day, written at midnight.
+    ///
+    /// The row covers `[label + start, label + start + 1 day)`; a window keeps overlapping days.
     Day(C),
-    /// The row is in force from the time until the next row of the same
-    /// entity (EFFECTIVEDATE), or until the end column says, whichever is
-    /// first: a window keeps each version whose span overlaps it.
+    /// In force from the time (EFFECTIVEDATE) until the entity's next row or `until`.
     From {
         /// The column the version is in force from.
         column: C,
-        /// The column that ends it early (END_DATE), when the table has
-        /// one; AEMO's "no end" dates are open ends.
+        /// The column that ends it early (END_DATE); "no end" dates are open.
         until: Option<C>,
     },
 }
@@ -108,23 +87,18 @@ impl<C> ValidAxis<C> {
     }
 }
 
-/// A table's roles. Every primary-key column has exactly one of entity,
-/// valid or order; a column outside the key may be an order, the cutoff,
-/// or the end of a version.
+/// A table's roles; every primary-key column has exactly one of entity, valid or order.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct Temporal<C> {
     /// Who chose the roles.
     pub origin: RoleOrigin,
-    /// What a fact is about: two rows of the same entity and valid time
-    /// are revisions of one fact. May be empty.
+    /// What a fact is about; may be empty.
     pub entity: Vec<C>,
     /// When a fact applies.
     pub valid: ValidAxis<C>,
-    /// Which revision is newer, most significant first. The source a row
-    /// came from is always the last tiebreak, so it is not listed.
+    /// Which revision is newer, most significant first; the source is the implicit last tiebreak.
     pub order: Vec<C>,
-    /// The time a revision became known, which a read "as known at" is
-    /// held to. `None`: the time its source was published.
+    /// The time a revision became known; `None` means its source's publish time.
     pub cutoff: Option<C>,
 }
 
@@ -144,8 +118,7 @@ fn is_time(c: &Column) -> bool {
     matches!(c.ty, LakeType::Timestamp | LakeType::Date)
 }
 
-/// The roles as the publisher states them, as phasor's; `None` for a
-/// valid kind phasor does not know.
+/// The publisher's roles as phasor's; `None` for an unknown valid kind.
 pub fn from_published(t: &phasor_iceberg::Temporal) -> Option<Temporal<String>> {
     let v = &t.valid;
     let valid = match (v.kind.as_str(), v.column.clone()) {
@@ -171,8 +144,7 @@ pub fn from_published(t: &phasor_iceberg::Temporal) -> Option<Temporal<String>> 
     })
 }
 
-/// The roles of a table, from its primary key and columns: the publisher's
-/// rule ([`phasor_iceberg::derive`]) over the columns as Iceberg fields.
+/// The roles of a table from its primary key and columns, by [`phasor_iceberg::derive`].
 pub fn derive(primary_key: &[String], columns: &[Column]) -> Temporal<String> {
     let fields: Vec<phasor_iceberg::Field> = columns
         .iter()
@@ -189,11 +161,7 @@ pub fn derive(primary_key: &[String], columns: &[Column]) -> Temporal<String> {
 }
 
 impl Temporal<String> {
-    /// Proves every role against the table: each name is a column, a time
-    /// role is a time, no column has two roles (the cutoff may also be an
-    /// order), every key column has a role, and derived roles are what
-    /// [`derive()`] gives today. Returns the roles by column id, or every
-    /// problem found.
+    /// Proves every role against the table; returns the roles by column id, or every problem found.
     pub fn check(&self, t: &Table) -> Result<Temporal<ColumnId>, Vec<String>> {
         let mut problems = Vec::new();
         let mut id = |role: &str, n: &String| match t.column(n) {

@@ -1,11 +1,6 @@
-//! What every zip holds, before it is downloaded: its central directory,
-//! read by ranged requests ([`crate::zipdir`]).
-//!
-//! Each zip the crawl lists and the archive does not hold is peeked once;
-//! the entries go to `{home}/mirror/peek.ndjson`, one line per zip, which is
-//! also how a peek that was cut off carries on. Zips beside a folder of the
-//! same name (the whole-month zips) come first, so `compare` can rule on
-//! them before the download reaches them.
+//! What every zip holds before it is downloaded: its central directory, read
+//! by ranged requests ([`crate::zipdir`]) into `{home}/mirror/peek.ndjson`,
+//! one line per zip.
 
 use std::collections::{HashMap, HashSet};
 use std::io::Write as _;
@@ -32,8 +27,7 @@ pub struct Peeked {
     /// The size the crawl listed it at when it was peeked.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub listed_size: Option<u64>,
-    /// The date the crawl listed it with, as listed: read from a record an
-    /// older mirror wrote, for its instant; never written.
+    /// The listed date as text, read only to derive its instant; never written.
     #[serde(default, skip_serializing)]
     pub listed_modified: Option<String>,
     /// `listed_modified` as an instant (AEST).
@@ -45,8 +39,7 @@ pub struct Peeked {
     /// The server's `ETag` for it.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub etag: Option<String>,
-    /// The server's `Last-Modified` as sent: read from a record an older
-    /// mirror wrote, for its instant; never written.
+    /// The server's `Last-Modified` as text, read only to derive its instant; never written.
     #[serde(default, skip_serializing)]
     pub last_modified: Option<String>,
     /// `last_modified` as an instant (UTC).
@@ -70,9 +63,7 @@ pub struct PeekError {
 }
 
 impl Peeked {
-    /// The record with its `_at` instants, and its entries', derived from
-    /// the text fields beside them where a record written before they were
-    /// kept lacks them.
+    /// The record with any missing `_at` instants, its entries' too, derived from the text.
     pub fn derived(mut self) -> Self {
         if self.listed_modified_at.is_none() {
             self.listed_modified_at = self
@@ -128,8 +119,7 @@ impl Mirror {
     }
 }
 
-/// Every zip peeked so far, in the order peeked, each with its `_at`
-/// instants.
+/// Every zip peeked so far, in the order peeked, each with its `_at` instants.
 pub fn read_peeks(path: &Path) -> Result<Vec<Peeked>, MirrorError> {
     let text = match std::fs::read_to_string(path) {
         Ok(t) => t,
@@ -150,8 +140,7 @@ pub fn read_peeks(path: &Path) -> Result<Vec<Peeked>, MirrorError> {
         .collect()
 }
 
-/// A file's spans read by ranged requests, keeping what the server said of
-/// the whole file the first time.
+/// A file's spans read by ranged requests, keeping the first response's headers.
 struct Ranged<'a> {
     fetcher: &'a Fetchers,
     url: &'a str,
@@ -184,15 +173,11 @@ impl zipdir::Spans for Ranged<'_> {
     }
 }
 
-/// Peeks every zip of the finished crawl that the archive does not hold,
-/// the paired zips first, one at a time (the fetcher paces them). With
-/// `only_paired`, just the zips beside a folder of the same name: the only
-/// ones a pass may leave undownloaded, so the only ones whose listing is
-/// needed before their download.
+/// Peeks every zip of the finished crawl that the archive does not hold, the
+/// paired zips first; with `only_paired`, just those.
 ///
 /// A zip that is not one, or whose directory is damaged, is recorded with
-/// why; a network failure is reported and asked again next pass; a refusal
-/// or a full disk stops the pass.
+/// why; a refusal or a full disk stops the pass.
 pub async fn peek(
     fetcher: &Fetchers,
     mirror: &Mirror,
@@ -226,9 +211,8 @@ pub async fn peek(
     };
     for (done, remote) in zips.iter().enumerate() {
         let url = &remote.url;
-        // Held, before the pass or by the download beside it: the
-        // archive has the zip whole. Asked here, not up front, since on
-        // exFAT each name not there costs a scan of its folder.
+        // Asked here, not up front, since the download beside it may have
+        // archived the zip since the pass began.
         if fetcher.archive().path_for(url).is_file() {
             summary.archived += 1;
             continue;
@@ -283,9 +267,7 @@ pub async fn peek(
     Ok(summary)
 }
 
-/// Records the listing of the zip `url` archived at `path`, read from its
-/// central directory on disk, unless the record has it already: kept when
-/// a downloaded zip is removed, so what it held stays known.
+/// Records the listing of the zip `url` archived at `path`, unless the record has it already.
 pub fn keep_listing(
     mirror: &Mirror,
     url: &str,
@@ -324,9 +306,7 @@ pub fn keep_listing(
     append(&mirror.peek_path(), &peeked)
 }
 
-/// The listing of each zip that still holds: the latest record of it,
-/// taken when the crawl listed it at the size and date it lists it at now.
-/// A zip AEMO has published again since has none, and is peeked again.
+/// The latest record of each zip peeked at the size and date the crawl lists it at.
 pub fn current(mirror: &Mirror) -> Result<HashMap<String, Peeked>, MirrorError> {
     let listed: HashMap<String, (Option<u64>, Option<Stamp>)> = mirror
         .record()?
@@ -351,8 +331,7 @@ pub fn current(mirror: &Mirror) -> Result<HashMap<String, Peeked>, MirrorError> 
     Ok(out)
 }
 
-/// The latest record of each zip peeked, current or not: the evidence a
-/// removal stood on is kept even after the crawl moves on.
+/// The latest record of each zip peeked, current or not.
 pub fn latest(mirror: &Mirror) -> Result<HashMap<String, Peeked>, MirrorError> {
     Ok(read_peeks(&mirror.peek_path())?
         .into_iter()
@@ -365,8 +344,6 @@ fn is_zip_name(url: &str) -> bool {
     url.len() >= 4 && url[url.len() - 4..].eq_ignore_ascii_case(".zip")
 }
 
-/// A directory that could not be read, as the record keeps it: the code
-/// and message of its diagnostic.
 fn peek_error(e: &DirError) -> PeekError {
     let d = e.diagnostic();
     PeekError {

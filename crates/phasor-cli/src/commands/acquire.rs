@@ -9,11 +9,8 @@ use crate::cli::Cli;
 use crate::context::Context;
 use crate::render;
 
-/// Plans `req` over the kit's sources and runs it: fetched into the
-/// archive, and read into the lake unless `options.ingest` is off. Prints
-/// the plan and each step's summary as it goes. A plan that cannot be made
-/// (offline, a listing refused) is printed as its diagnostic and returned
-/// as the exit code a run would have given: 4 for the network, else 1.
+/// Plans `req` and runs it: fetched, and ingested unless `options.ingest` is off.
+/// A plan that cannot be made prints its diagnostic and returns 4 for the network, else 1.
 pub async fn run(
     cli: &Cli,
     ctx: &Context,
@@ -53,8 +50,7 @@ pub async fn run(
             } else {
                 eprintln!("error: {}", d.render());
             }
-            // Offline is its own outcome; any other failure to plan, a
-            // refusal or a server error included, is a failure.
+            // Offline is its own outcome; any other failure to plan is a failure.
             let code = if d.code == "net.offline" {
                 i32::from(phasor_core::diag::exit::OFFLINE)
             } else {

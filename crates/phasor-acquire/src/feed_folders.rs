@@ -1,14 +1,6 @@
-//! A feed's folders as a source: the roots the shared feeds table names
-//! for it, walked by their directory listings, each file named by the
-//! feed's rules.
-//!
-//! The gas feeds (GBB, GSH, STTM, DWGM under nemweb's report folders) and
-//! the WEM's WEMDE documents are all folder trees of files whose names say
-//! their block, their version and their release month, and the lake and
-//! the census read them by the one table in phasor-plain-decode. This
-//! source lists such a tree, finds its files in the archive (each version
-//! the mirror kept, in order, so a file that restates the one before is
-//! read against it) and claims a URL by the feed's roots in its path.
+//! A feed's folder tree as a [`Source`]: the roots the shared feeds table names
+//! for it, walked by their listings, each file named by the feed's rules. Used by
+//! the gas feeds and the WEM's WEMDE documents.
 
 use std::collections::{BTreeMap, BTreeSet};
 use std::path::PathBuf;
@@ -53,9 +45,7 @@ fn month_of(at: Stamp, offset_secs: i32) -> Option<YearMonth> {
 }
 
 impl FeedFolders {
-    /// The folders of `feed` under `base_url` (the feed's host, a mirror or
-    /// a test server), their files recorded under `id`, their blocks
-    /// named by `table_of` where the registry claims them.
+    /// The folders of `feed` under `base_url`, recorded under `id`, blocks named by `table_of`.
     pub fn new(
         id: &'static str,
         base_url: &str,
@@ -75,8 +65,7 @@ impl FeedFolders {
         })
     }
 
-    /// The same source, serving only the tables `serves` says are the
-    /// feed's: a request for another feed's table lists nothing here.
+    /// The same source, serving only the tables `serves` says are the feed's.
     #[must_use]
     pub fn with_tables_served(mut self, serves: Serves) -> Self {
         self.serves = serves;
@@ -102,9 +91,7 @@ impl FeedFolders {
             .collect()
     }
 
-    /// A file at `url` as the feed sees it: the table its block belongs
-    /// to, and the month it was released in, from its name first, else
-    /// from the time it was listed with.
+    /// A file at `url`: its block's table and release month, from its name, else its listed time.
     fn remote(
         &self,
         url: Url,
@@ -131,9 +118,7 @@ impl FeedFolders {
         }
     }
 
-    /// Whether a query asks for this file: its month, when known, is in
-    /// the range, and its table is one asked for (every table when none
-    /// is named, a block no table claims only then).
+    /// Whether a query asks for this file by month and table.
     fn wanted(&self, remote: &RemoteFile, query: &Query) -> bool {
         if remote.period.is_some_and(|p| !query.range.contains(p)) {
             return false;
@@ -147,16 +132,14 @@ impl FeedFolders {
         }
     }
 
-    /// Whether a path lies in a folder the feed skips; a URL writes a space
-    /// in a folder's name as `%20`.
+    /// Whether a path lies in a folder the feed skips (a space is `%20` in a URL).
     fn skipped(&self, path: &str) -> bool {
         path.split('/')
             .filter(|s| !s.is_empty())
             .any(|s| self.feed.ignores(&s.replace("%20", " ")))
     }
 
-    /// The version stamp a kept version carries in its file name
-    /// (`{name}@{stamp}`), else the time it was listed with, else none.
+    /// The version stamp in a kept version's name (`{name}@{stamp}`), else its listed time.
     fn version_tag(a: &Held) -> Option<String> {
         let name = a.path.file_name()?.to_str()?;
         if let Some((_, stamp)) = name.rsplit_once('@') {
@@ -179,8 +162,7 @@ impl Source for FeedFolders {
         (self.serves)(table)
     }
 
-    /// Every file under the feed's roots the query asks for, by their
-    /// listings, folders the feed skips left out.
+    /// Lists every file under the feed's roots the query asks for.
     async fn list(
         &self,
         query: &Query,
@@ -233,15 +215,11 @@ impl Source for FeedFolders {
         Ok(out)
     }
 
-    /// The archived files under the feed's roots the query asks for, every
-    /// version of a file the mirror kept in the order published, each
-    /// naming the one before it so a feed that restates its files is read
-    /// against it. A later version is told apart in the manifest by the
-    /// version's stamp as the URL's fragment.
+    /// Every archived version, in published order, each naming the one before it;
+    /// a later version carries its stamp as the URL's fragment.
     fn archived(&self, archive: &Archive, query: &Query) -> Result<Vec<LocalFile>, FetchError> {
         let mut out = Vec::new();
-        // A feed's roots on both sides of a listing (CURRENT and ARCHIVE)
-        // are kept in one local folder: each folder is walked once.
+        // CURRENT and ARCHIVE share one local folder: walk each folder once.
         let mut walked: Vec<PathBuf> = Vec::new();
         for root in self.roots()? {
             let dir = archive.path_for(root.as_str());
@@ -308,8 +286,7 @@ impl Source for FeedFolders {
         Ok(out)
     }
 
-    /// A URL under one of the feed's roots, whatever its host: a mirror's
-    /// `file://` path and the host's `https://` URL both claim.
+    /// Claims a URL under the feed's roots, `file://` mirror or `https://` host.
     fn describe(&self, url: &Url) -> Option<RemoteFile> {
         let path = url.path();
         // A root as AEMO lists it, or as the archive keeps it.
@@ -329,8 +306,7 @@ impl Source for FeedFolders {
         Some(self.remote(url.clone(), None, None, None))
     }
 
-    /// A zip under a feed's folders holds a day's many reports: read by its
-    /// directory when the query names tables.
+    /// A zip under a feed's folders is read by its directory when the query names tables.
     fn wants_ranged(&self, remote: &RemoteFile, query: &Query) -> bool {
         !query.tables.is_empty()
             && remote
@@ -341,8 +317,7 @@ impl Source for FeedFolders {
                 .is_some_and(|ext| ext.eq_ignore_ascii_case("zip"))
     }
 
-    /// The entries whose blocks belong to the tables asked for; the whole
-    /// zip when no table is named.
+    /// Picks the entries whose blocks belong to the tables asked for.
     fn pick(&self, remote: &RemoteFile, entries: &[Entry], query: &Query) -> Picks {
         if query.tables.is_empty() {
             return Picks::Whole;
@@ -635,8 +610,7 @@ mod tests {
         path
     }
 
-    /// A feed listed on both sides (CURRENT and ARCHIVE) keeps them in one
-    /// local folder, which is read once: each file comes once.
+    /// A feed's CURRENT and ARCHIVE sides share one local folder, read once.
     #[test]
     fn a_folder_both_sides_share_is_read_once() {
         let dir = tempfile::tempdir().unwrap();

@@ -1,10 +1,5 @@
-//! The Wholesale Electricity Market kit.
-//!
-//! AEMO's datafiles, listed by their YAML manifests and found in the
-//! archive by the feed's folders, as a [`Source`](phasor_kit::Source)
-//! ([`WemDatafiles`]); the WEMDE documents' daily zips as another; the
-//! plain CSV and WEMDE decoders of the conform crate; the registry's WEM
-//! tables as the catalog; and the kit's settings ([`WemConfig`]).
+//! The Wholesale Electricity Market kit: datafiles ([`WemDatafiles`]), WEMDE daily
+//! zips, the plain decoders and the registry's WEM tables, set by [`WemConfig`].
 
 pub mod config;
 pub mod kit;

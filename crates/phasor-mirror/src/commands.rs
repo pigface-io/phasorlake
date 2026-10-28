@@ -77,8 +77,7 @@ impl Context {
         Archive::new(self.home.archive())
     }
 
-    /// A fetcher per host over the network, or offline, each host's
-    /// requests its own interval apart.
+    /// A fetcher per host, over the network or offline.
     pub fn fetchers(&self) -> Result<Fetchers, MirrorError> {
         let hosts = self.config.hosts()?;
         Ok(per_host(&hosts, &self.archive(), |h| {
@@ -86,8 +85,7 @@ impl Context {
         }))
     }
 
-    /// The fetchers with each host that refused given a new fetcher; the
-    /// others keep their pace and their count.
+    /// The fetchers with each host that refused given a new fetcher.
     pub fn renewed(&self, fetchers: Fetchers) -> Fetchers {
         fetchers.renewed(|h: &HostFetcher| {
             let (transport, cfg) = self.fetcher_parts(h.fetcher.min_interval());
@@ -236,10 +234,6 @@ fn roots(ctx: &Context, given: &[String]) -> Result<Vec<Url>, MirrorError> {
     }
 }
 
-/// Crawls, then downloads; a refusal waits `wait` and starts both again
-/// with a new fetcher, at most `refusals` times. The crawl carries on from
-/// its kept pages and the download skips archived files, so starting again
-/// repeats no request that succeeded.
 /// What `run` was asked to do.
 struct RunPlan<'a> {
     given: &'a [String],
@@ -249,6 +243,8 @@ struct RunPlan<'a> {
     delete_duplicates: bool,
 }
 
+/// Crawls, then downloads; a refusal waits `wait` and starts both again
+/// with a new fetcher, at most `refusals` times.
 async fn run(ctx: &Context, mirror: &Mirror, plan: &RunPlan<'_>) -> Result<i32, MirrorError> {
     let (given, refusals, wait, delete_duplicates) =
         (plan.given, plan.refusals, plan.wait, plan.delete_duplicates);
@@ -334,10 +330,8 @@ struct WatchPlan<'a> {
     delete_duplicates: bool,
 }
 
-/// Reads each folder's listing again when its turn comes and downloads
-/// what is new or rewritten, until `rounds` rounds; a refusal or a network
-/// failure waits `wait` and goes on with a new fetcher, at most
-/// `refusals` times in a row, and so does an archive that is not there.
+/// Reads each folder's listing again when its turn comes and downloads what
+/// is new, until `rounds` rounds; a failure waits `wait`, at most `refusals` in a row.
 async fn watch(ctx: &Context, mirror: &Mirror, plan: &WatchPlan<'_>) -> Result<i32, MirrorError> {
     let roots = roots(ctx, plan.given)?;
     if !mirror.done_path().exists() {
@@ -409,10 +403,8 @@ async fn watch(ctx: &Context, mirror: &Mirror, plan: &WatchPlan<'_>) -> Result<i
                     r.files.len(),
                 );
             }
-            // Every file of the folders read that the archive lacks in the
-            // version listed, changed this round or not: one a download
-            // before did not get (it failed, or the watch was stopped) is
-            // fetched the next time its folder is read.
+            // Every file the archive lacks, changed this round or not, so one
+            // a failed or stopped download missed is fetched next time.
             if !r.files.is_empty() {
                 let paired = phasor_mirror::pairs(mirror, &ctx.archive(), false)?;
                 if paired.iter().any(|p| r.files.contains(&p.zip)) {
@@ -454,8 +446,6 @@ async fn watch(ctx: &Context, mirror: &Mirror, plan: &WatchPlan<'_>) -> Result<i
     Ok(0)
 }
 
-/// Each version of each file nemweb rewrote in place against the ones
-/// before it, and with `prune` those the same removed.
 async fn versions(ctx: &Context, mirror: &Mirror, prune: bool) -> Result<i32, MirrorError> {
     let json = ctx.json;
     let s = phasor_mirror::versions(mirror, &ctx.archive(), prune, |e| {
@@ -565,8 +555,7 @@ async fn crawl(
     Ok(0)
 }
 
-/// Peeks the zips not yet downloaded; the exit code, and whether a zip
-/// failed on the network, which passes with time.
+/// Peeks the zips not yet downloaded; the exit code, and whether a zip failed on the network.
 async fn peek(
     ctx: &Context,
     fetcher: &Fetchers,
@@ -619,8 +608,7 @@ fn passes_with_time(d: &phasor_mirror::Diagnostic) -> bool {
     )
 }
 
-/// Downloads the crawl's files; the exit code, and whether a file failed
-/// on the network, which passes with time.
+/// Downloads the crawl's files; the exit code, and whether a file failed on the network.
 async fn download(
     ctx: &Context,
     fetcher: &Fetchers,

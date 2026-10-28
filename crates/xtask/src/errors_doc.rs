@@ -1,7 +1,5 @@
-//! `docs/errors.md` lists every diagnostic code. The codes are found in the
-//! source as string literals of the form `"category.snake_name"` passed to
-//! `Diagnostic::error`/`warning`/`new` or named as a `code` field, so a new
-//! failure mode shows up here automatically and the doc cannot drift.
+//! Generates `docs/errors.md` from every `"category.snake_name"` code literal in
+//! the source, so the doc cannot drift.
 
 use std::collections::BTreeMap;
 use std::path::Path;
@@ -13,9 +11,7 @@ const CATEGORIES: [&str; 14] = [
     "manifest", "verify", "query", "internal",
 ];
 
-/// Codes phasor reports that a phasor-schemas crate raises on its behalf,
-/// with where: the decoders' and the zip walker's own diagnostics. Listed
-/// beside phasor's own, since they reach its users the same way.
+/// Codes a phasor-schemas crate raises on phasor's behalf, with where.
 const INHERITED: [(&str, &str); 13] = [
     ("csv.block_mismatch", MMS_DECODE),
     ("csv.data_before_header", MMS_DECODE),
@@ -35,8 +31,7 @@ const MMS_DECODE: &str = "phasorlake-schemas/crates/phasor-mms-decode/src/diagno
 const PLAIN_DECODE: &str = "phasorlake-schemas/crates/phasor-plain-decode/src/diagnose.rs";
 const ZIP: &str = "phasorlake-schemas/crates/phasor-zip/src/diagnose.rs";
 
-/// Codes that are no longer raised. A code is a promise to whoever matches
-/// on it, so a retired one stays listed and may never be given a new meaning.
+/// Codes no longer raised; a retired code stays listed and never gets a new meaning.
 const RETIRED: [(&str, &str); 33] = [
     (
         "zip.no_csv",
@@ -181,8 +176,7 @@ pub fn reused(codes: &BTreeMap<String, String>) -> Vec<&'static str> {
         .collect()
 }
 
-/// Every `"category.name"` literal in the `.rs` files under `crates/`, with
-/// the first file that uses it.
+/// Every `"category.name"` literal under `crates/`, with the first file using it.
 pub fn collect_codes(root: &Path) -> BTreeMap<String, String> {
     let mut out: BTreeMap<String, String> = BTreeMap::new();
     let mut stack = vec![root.join("crates")];

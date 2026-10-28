@@ -1,18 +1,5 @@
 //! A table as phasor-schemas publishes it: its Iceberg table metadata,
-//! `nem/<TABLE>/metadata/v1.metadata.json`, pulled into
-//! `schemas/nem/pulled/<TABLE>/metadata/` (`just schemas-pull`).
-//!
-//! The metadata is read through `phasor_iceberg::from_metadata`: the
-//! table's history (the Iceberg schemas its files were written under and
-//! the runs of files of each, one snapshot per run), its declaration
-//! (report pairs, key, time column, time roles and load mode, as
-//! `phasor.*` properties) and the data model's words. The table's columns
-//! are the history's fields, by id, each with its Iceberg type; a column
-//! takes nulls unless every schema requires it. The schema a reader of the
-//! table gets today is the metadata's `current-schema-id`.
-//!
-//! A table the data model does not declare has no report pairs; the
-//! registry leaves it out, and a block of it is derived from its file.
+//! pulled into `schemas/nem/pulled/<TABLE>/metadata/` (`just schemas-pull`).
 
 use std::path::Path;
 
@@ -29,14 +16,10 @@ use crate::file_model::model::{
 /// The path of a pulled table's metadata under its directory.
 pub const DOC_FILE: &str = "metadata/v1.metadata.json";
 
-/// Parses a pulled table's metadata: the table, or `None` for one the data
-/// model does not declare.
+/// Parses a pulled table's metadata: the table, or `None` for one the data model does not declare.
 ///
-/// A column of the history is one field: two fields of one name (a column
-/// whose values left their type, so the fold gave it a new field) are an
-/// error until phasor reads a column by more than one field. A time column
-/// or time role naming a column no file has carried is dropped, since no
-/// row can have a value for it.
+/// Two fields of one name are an error. A time column or role naming a column
+/// no file has carried is dropped.
 pub fn parse_doc(
     path: &Path,
     text: &str,
@@ -206,8 +189,7 @@ pub(crate) mod tests {
     use super::*;
     use crate::file_model::model::tests::unit_scada;
 
-    /// DISPATCH_UNIT_SCADA as phasor-schemas publishes it: the fixture's
-    /// history and declaration as Iceberg table metadata.
+    /// DISPATCH_UNIT_SCADA as phasor-schemas publishes it.
     pub(crate) fn scada_doc() -> serde_json::Value {
         let t = unit_scada();
         let p = Published {
@@ -257,8 +239,7 @@ pub(crate) mod tests {
         parse_doc(Path::new(DOC_FILE), &v.to_string(), Market::Nem)
     }
 
-    /// A table read from a document, its published properties checked and
-    /// then set aside: the rest is the fixture's.
+    /// A table read from a document, its published properties checked and set aside.
     pub(crate) fn bare(t: Option<Table>) -> Option<Table> {
         t.map(|mut t| {
             let p = t.published();

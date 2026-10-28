@@ -1,12 +1,5 @@
 //! A whole `schemas/` tree as one postcard blob, written by the registry's
 //! build script and embedded in the binary.
-//!
-//! On disk a market is `schemas/{market}/market.toml` and its tables: the
-//! ones pulled from phasor-schemas under `pulled/`
-//! (`{TABLE}/metadata/v1.metadata.json`, held to their manifest by
-//! `just schemas-check`), and, in a user's own schemas, a directory per
-//! table with a hand-written `table.toml` or a `metadata/v1.metadata.json`
-//! of the same form as a pulled one.
 
 use std::path::Path;
 
@@ -19,8 +12,7 @@ use crate::file_model::folders::{FOLDERS_FILE, Folder, read_folders};
 use crate::file_model::model::{Market, MarketDef, Table};
 use crate::file_model::validate::{Issue, issue, validate_set, validate_table};
 
-/// The directory of a market that holds the tables pulled from
-/// phasor-schemas.
+/// The directory of a market that holds the tables pulled from phasor-schemas.
 pub const PULLED_DIR: &str = "pulled";
 
 /// Everything in a `schemas/` tree.
@@ -30,8 +22,7 @@ pub struct SchemaSet {
     pub markets: Vec<MarketDef>,
     /// Every table, sorted by name.
     pub tables: Vec<Table>,
-    /// Which report folder carries each block, from the markets'
-    /// `pulled/folders.json`; empty until one is pulled.
+    /// Which report folder carries each block, from `pulled/folders.json`.
     #[serde(default)]
     pub folders: Vec<Folder>,
 }
@@ -95,8 +86,7 @@ impl SchemaSet {
         Ok(())
     }
 
-    /// Every issue in the set: per table and across tables. Empty when
-    /// valid.
+    /// Every issue in the set, per table and across tables; empty when valid.
     pub fn validate(&self) -> Vec<Issue> {
         let mut out: Vec<Issue> = self.tables.iter().flat_map(validate_table).collect();
         out.extend(validate_set(&self.tables));
@@ -151,8 +141,7 @@ mod tests {
         }
     }
 
-    /// A tree with DISPATCH_UNIT_SCADA pulled, an undeclared table beside
-    /// it, and a hand-written table.
+    /// A tree with DISPATCH_UNIT_SCADA pulled, an undeclared table and a hand-written one.
     fn tree() -> tempfile::TempDir {
         let dir = tempfile::tempdir().unwrap();
         let nem_dir = dir.path().join("nem");

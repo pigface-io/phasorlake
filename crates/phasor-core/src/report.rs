@@ -1,5 +1,4 @@
-//! Aggregation of diagnostics over a run: every file is attempted, every
-//! failure is kept, and the summary groups by code.
+//! Diagnostics over a run: every file is attempted, every failure kept, grouped by code.
 
 use std::collections::{BTreeMap, HashSet};
 
@@ -78,8 +77,7 @@ pub struct Report {
     /// Stop at the first error.
     #[serde(skip)]
     pub fail_fast: bool,
-    /// Keys of warnings already counted, so a repeated warning is a count
-    /// rather than a flood. See [`Report::dedup_key`].
+    /// Keys of warnings already counted, so a repeat is a count ([`Report::dedup_key`]).
     #[serde(skip)]
     seen_warnings: HashSet<String>,
     /// Whether `Flow::Stop` was returned.
@@ -154,9 +152,7 @@ impl Report {
             .count()
     }
 
-    /// The key under which a warning is deduplicated: the same code for the
-    /// same table and version from any file counts once per file, so a
-    /// drift that affects 161 files reads as one line with a count.
+    /// The dedup key of a warning: one code for one table and version counts once per file.
     fn dedup_key(d: &Diagnostic) -> String {
         format!(
             "{}|{}|{}|{}",
@@ -167,8 +163,7 @@ impl Report {
         )
     }
 
-    /// Lines for a human summary: per code, the count and up to three
-    /// example messages.
+    /// Lines for a human summary: per code, the count and up to three example messages.
     pub fn summary_lines(&self) -> Vec<String> {
         let mut out = Vec::new();
         for (code, bucket) in &self.by_code {

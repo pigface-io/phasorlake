@@ -78,8 +78,7 @@ fn arrow_field(name: &str, ty: DataType, id: u32, nullable: bool) -> ArrowField 
     )]))
 }
 
-/// Writes rows `(minutes after TS, region, raise, rrp in 1e-5)` with or
-/// without the raise column; the size on disk.
+/// Writes rows `(minutes after TS, region, raise, rrp in 1e-5)`, raise optional; the size on disk.
 fn parquet(path: &Path, precision: u8, raise: bool, rows: &[(i64, &str, f64, i128)]) -> u64 {
     let ts = DataType::Timestamp(TimeUnit::Microsecond, Some("UTC".into()));
     let mut fields = vec![

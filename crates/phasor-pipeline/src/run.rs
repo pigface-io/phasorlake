@@ -23,13 +23,10 @@ fn emit(tx: &mpsc::Sender<Event>, e: Event) {
     let _ = tx.try_send(e);
 }
 
-/// A local path as a `RemoteFile` with a `file://` URL, and the kit that
-/// reads it: the kit whose source recognises the name, which then says
-/// the file's table and period; else the fallback kit when it has a
-/// decoder for the name, or for a zip, else the nearest kit before it that
-/// has. `None` when no kit reads such a file. A version the mirror kept
-/// beside the first (`{name}@{stamp}`) is the file's URL with the stamp as
-/// its fragment: the file it is a version of, told apart.
+/// A local path as a `RemoteFile` with a `file://` URL, and the kit that reads it.
+///
+/// `None` when no kit reads such a file. A mirror version `{name}@{stamp}`
+/// gets the stamp as its URL fragment.
 pub fn local_remote(
     kits: &KitRegistry,
     path: &std::path::Path,
@@ -46,8 +43,7 @@ pub fn local_remote(
         remote.size = size;
         return Some((kit.id, remote));
     }
-    // A zip is walked for the entries the decoders read; its own name
-    // says nothing. Any other file must have a decoder for its name.
+    // A zip's own name says nothing; any other file needs a decoder for its name.
     let is_zip = phasor_zip::has_extension(&name, ".zip");
     let kit = kits
         .kits()
@@ -68,10 +64,7 @@ pub fn local_remote(
     ))
 }
 
-/// A local path as a `RemoteFile` read by the kit `kit`: what one of its
-/// sources says of the name when one does, else the bare file. `None`
-/// when the binary has no such kit, or the kit reads no such file (no
-/// decoder for the name, and not a zip).
+/// A local path as a `RemoteFile` read by the kit `kit`; `None` when it cannot read it.
 pub fn local_remote_in(
     kits: &KitRegistry,
     kit: &str,
@@ -107,8 +100,7 @@ pub fn local_remote_in(
     Some((k.id, remote))
 }
 
-/// Hashes a local file into a `LocalFile`, reading it in pieces. Blocking:
-/// the run calls it off the async runtime.
+/// Hashes a local file into a `LocalFile`; blocking.
 pub fn local_file(remote: RemoteFile, path: &std::path::Path) -> std::io::Result<LocalFile> {
     let (sha256, size) = phasor_acquire::sha256_file(path)?;
     Ok(LocalFile {
@@ -132,10 +124,7 @@ async fn hash_local(remote: RemoteFile, path: std::path::PathBuf) -> std::io::Re
         .unwrap_or_else(|e| Err(std::io::Error::other(e)))
 }
 
-/// A source the manifest has recorded, as the file to read it from again,
-/// with the kit that reads it: the kit of the source recorded, else the
-/// kit that reads the file by its name. `None` when its URL does not
-/// parse, its path names no file, or no kit reads it.
+/// A recorded source as the file to read it from again, with its kit; `None` when unreadable.
 pub fn recorded_remote(kits: &KitRegistry, rec: &FileRecord) -> Option<(&'static str, RemoteFile)> {
     let path = std::path::Path::new(&rec.cache_path);
     let (kit, source) = match kits.source(&rec.source) {
@@ -148,31 +137,26 @@ pub fn recorded_remote(kits: &KitRegistry, rec: &FileRecord) -> Option<(&'static
     Some((kit.unwrap_or(claimed), remote))
 }
 
-/// The kit of a listed file: the kit whose source listed it, else the
-/// fallback kit, which an assembled binary always has.
+/// The kit whose source listed a file, else the fallback kit.
 fn kit_of<'k>(kits: &'k KitRegistry, source_id: &str) -> Option<&'k SourceKit> {
     kits.source(source_id)
         .map(|(k, _)| k)
         .or_else(|| kits.fallback())
 }
 
-/// The transforms of recorded shapes.
 fn transforms(shapes: &[IngestShape]) -> Vec<Transform> {
     shapes.iter().map(|s| s.transform.clone()).collect()
 }
 
-/// A file to fetch or read: where it is, and for a file already on disk
-/// its path and what the manifest knows of it.
+/// A file to fetch or read.
 struct Listed {
-    /// The kit that reads the file.
     kit: &'static str,
     remote: RemoteFile,
     path: Option<std::path::PathBuf>,
     known: Option<FileRecord>,
     /// An archived file, known with its hash already.
     archived: Option<LocalFile>,
-    /// A zip to read by its directory first: the source that picks its
-    /// entries, and the query it picks for.
+    /// A zip to read by its directory first: the source that picks entries, and its query.
     picks: Option<(Arc<dyn Source>, Query)>,
 }
 
@@ -207,9 +191,7 @@ pub async fn run(
         }
     };
 
-    // 1. List.
-    // Two URLs the archive keeps at one path (a feed listed on both sides
-    // of nemweb) are one file: fetched once, not twice into one `.part`.
+    // 1. List. Two URLs the archive keeps at one path are fetched once.
     let remote_listed = |source: &Arc<dyn Source>, query: &Query, files: Vec<RemoteFile>| {
         let mut seen = std::collections::HashSet::new();
         files
@@ -333,8 +315,7 @@ pub async fn run(
             };
             let mut out = Vec::new();
             for rec in files {
-                // Decided from the manifest alone: a source that is wholly
-                // in the lake by the current rules is not even hashed.
+                // A source wholly in the lake by the current rules is not even hashed.
                 let shapes = deps
                     .manifest
                     .ingested_shapes(&rec.url, &rec.sha256)
@@ -397,8 +378,6 @@ pub async fn run(
                 if let Some(l) = archived {
                     return vec![Fetched::Ok(kit, l)];
                 }
-                // A zip read by its directory: the entries the source
-                // picks, each a file of its own, or the zip whole.
                 if let Some((source, query)) = picks {
                     let pick = |entries: &[phasor_kit::Entry]| source.pick(&remote, entries, &query);
                     return match fetcher.fetch_picks(&remote, &pick).await {
@@ -415,8 +394,7 @@ pub async fn run(
                 }
                 vec![match path {
                     Some(p) => match (hash_local(remote.clone(), p.clone()).await, known) {
-                        // What the server said of a recorded source stays
-                        // with it when it is read again.
+                        // Keep what the server said of a recorded source.
                         (Ok(l), Some(known)) => Fetched::Ok(kit, LocalFile {
                             etag: known.etag,
                             last_modified: known.last_modified,
@@ -502,23 +480,18 @@ pub async fn run(
                         if !options.ingest {
                             return Step::Downloaded(Box::new(local));
                         }
-                        // An entry fetched alone whose zip was read whole
-                        // already: in the lake, nothing to do.
+                        // An entry whose zip was already read whole is in the lake.
                         let url = local.remote.url.to_string();
                         if let Some((zip, entry)) = url.split_once('!')
                             && matches!(manifest.is_ingested_from(zip, entry).await, Ok(true))
                         {
                             return Step::Skipped(Box::new(local));
                         }
-                        // Entries of this zip fetched alone before are in
-                        // the lake already: a read of the zip leaves them.
+                        // Entries of this zip fetched alone before are left alone.
                         let skip = manifest
                             .entries_ingested_under(&url)
                             .await
                             .unwrap_or_default();
-                        // In the lake already, by rules that still hold:
-                        // nothing to do. By rules that have changed: read
-                        // it again.
                         let mut rules_changed = false;
                         match manifest
                             .ingested_shapes(local.remote.url.as_str(), &local.sha256)
@@ -561,8 +534,7 @@ pub async fn run(
                         };
                         let ingest = move || {
                             let rep = ingest_file(input);
-                            // The worker's zones join the process's, for
-                            // zonetrace::take_all.
+                            // Merge the worker's zones for zonetrace::take_all.
                             #[cfg(feature = "zones")]
                             zonetrace::flush();
                             rep
@@ -710,7 +682,6 @@ async fn commit(
         .min_by_key(|d| d.code.as_ref() == "store.file_discarded")
         .map(|d| d.code.to_string());
     let committed = rep.file_error.is_none() && refused.is_none();
-    // What the manifest knew before this file is recorded, to detect a change.
     let previous = deps
         .manifest
         .file_by_url(local.remote.url.as_str())
@@ -723,9 +694,7 @@ async fn commit(
             source: local.remote.source.to_owned(),
             url: local.remote.url.to_string(),
             cache_path: local.path.display().to_string(),
-            // A read that failed did not replace the earlier one, so the
-            // file stays recorded as the bytes that read: a later read
-            // that succeeds then sees the change and replaces it.
+            // A failed read keeps the earlier hash, so a later success sees the change.
             sha256: match (&previous, committed) {
                 (Some((_, prev)), false) => prev.sha256.clone(),
                 _ => local.sha256.clone(),
@@ -746,10 +715,7 @@ async fn commit(
             None
         }
     };
-    // A changed source, or changed rules: what the earlier read wrote is
-    // replaced by what this one wrote, once this read committed. A read
-    // that failed wrote nothing, and the earlier read's files stay. A file
-    // this read wrote again under the same name is already the new one.
+    // A changed source or rules: a committed read replaces the earlier read's files.
     let source_changed = previous
         .as_ref()
         .is_some_and(|(_, prev)| prev.sha256 != local.sha256);
@@ -758,8 +724,7 @@ async fn commit(
         run_id,
         committed && previous.is_some() && (source_changed || rep.rules_changed),
     ) {
-        // The files this read wrote again under the same names are
-        // already the new ones, and stay.
+        // Files written again under the same names are already the new ones.
         let kept: Vec<String> = rep
             .results
             .iter()
@@ -839,12 +804,9 @@ async fn commit(
         stop |= report.emit(d.clone()) == Flow::Stop;
         return stop;
     }
-    // One ingest per shape the file read, each with what every entry gave
-    // it; failed, without files, when an entry failed.
+    // One ingest per shape; failed, without files, when an entry failed.
     let mut first_ingest_id = None;
-    // A read again that failed leaves the earlier read on record: its
-    // ingests, and the outputs they own, are only replaced by a read that
-    // commits. The failure is still reported, and its diagnostics kept.
+    // A failed re-read leaves the earlier read's ingests on record.
     let record = committed || previous.is_none();
     for r in &rep.results {
         if let (Some(fid), Some(run), true) = (file_id, run_id, record) {
@@ -894,8 +856,7 @@ async fn commit(
             .flat_map(|r| &r.entries)
             .filter(|s| s.entry == entry.entry)
             .fold((0, 0), |(r, b), s| (r + s.rows, b + s.bad_rows));
-        // Row errors first, so the exact fault is on record before the
-        // refusal that follows from it.
+        // Row errors first, so the fault is on record before its refusal.
         for w in entry.row_errors.iter().chain(&entry.warnings) {
             if let Some(run) = run_id {
                 let _ = deps
@@ -909,8 +870,7 @@ async fn commit(
             } else {
                 summary.warnings += 1;
             }
-            // A row error never stops a run by itself: the entry's own
-            // error does, when the rows were too many.
+            // A row error never stops a run by itself.
             let _ = report.emit(w.clone());
         }
         summary.rows += rows;

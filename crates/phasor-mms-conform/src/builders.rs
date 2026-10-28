@@ -12,9 +12,7 @@ use phasor_registry::Cast;
 
 use crate::error::{RowError, ValueError};
 
-/// A value parsed from a field, before it is appended. Holding parsed values
-/// for a whole row before appending any means a bad field never leaves a
-/// half-appended row behind.
+/// A value parsed from a field, held until the whole row parses so no row is half-appended.
 #[derive(Debug, Clone, Copy, PartialEq)]
 pub enum Parsed {
     /// Empty field.
@@ -23,8 +21,7 @@ pub enum Parsed {
     F64(f64),
     /// An integer, timestamp nanoseconds or days.
     I64(i64),
-    /// A timestamp beyond what nanoseconds hold, clamped to the nearest end
-    /// of the range.
+    /// A timestamp beyond the nanosecond range, clamped to its nearest end.
     Clamped(i64),
     /// Text: the field index to fetch from the row again.
     Str(u16),
@@ -34,8 +31,7 @@ pub enum Parsed {
     Dec(i128),
 }
 
-/// Why a field could not be given its column's type. Small and `Copy`: a
-/// fault is rare, but the parse result is checked for every field.
+/// Why a field could not be given its column's type; small and `Copy` for the hot path.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Fault {
     /// The field is empty and the column does not allow nulls.
@@ -51,8 +47,7 @@ pub enum Fault {
 }
 
 impl Fault {
-    /// The fault as a row error, which says it in full: the column, the
-    /// value, what was expected.
+    /// The fault as a row error, with the column and value.
     pub fn row_error(self, column: &str, bytes: &[u8]) -> RowError {
         let column = column.to_owned();
         let value = || String::from_utf8_lossy(bytes).into_owned();
@@ -132,8 +127,7 @@ pub enum ColumnBuilder {
     F64(Float64Builder),
     /// `i64`.
     I64(Int64Builder),
-    /// Timestamp microseconds with a zone: AEMO's times are whole seconds,
-    /// and Iceberg's `timestamptz` is microseconds.
+    /// Timestamp microseconds with a zone, as Iceberg's `timestamptz`.
     Ts(TimestampMicrosecondBuilder),
     /// Days.
     Date(Date32Builder),
@@ -178,20 +172,18 @@ impl ColumnBuilder {
         }
     }
 
-    /// Appends a parsed value. `text` resolves `Parsed::Str` back to bytes
-    /// that [`parse_field`] already checked are UTF-8.
+    /// Appends a parsed value; `text` resolves `Parsed::Str` to bytes [`parse_field`] checked.
     #[inline]
     pub fn append(&mut self, v: Parsed, text: impl FnOnce(u16) -> &'static [u8]) {
         match (self, v) {
             (b, Parsed::Null) => b.append_null(),
             (Self::Utf8(b), Parsed::Str(i)) => {
                 let bytes = text(i);
-                // Checked in parse_field; the lossy path is unreachable but safe.
+                // Checked in parse_field, so the empty fallback is never taken.
                 b.append_value(std::str::from_utf8(bytes).unwrap_or(""));
             }
             (Self::F64(b), Parsed::F64(v)) => b.append_value(v),
             (Self::I64(b), Parsed::I64(v)) => b.append_value(v),
-            // The parser gives nanoseconds.
             (Self::Ts(b), Parsed::I64(v) | Parsed::Clamped(v)) => {
                 b.append_value(v.div_euclid(1_000));
             }

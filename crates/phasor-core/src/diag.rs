@@ -1,19 +1,12 @@
-//! The one shape every error and warning in phasor is reported as: the
-//! family's [`phasor_diag`], re-exported, with the categories phasor
-//! declares beside the common ones.
-//!
-//! A `Diagnostic` carries a stable machine-readable code, a category, a
-//! severity, a message, and every piece of context the layer that raised it
-//! knew. Outer layers fill in the fields they know without touching the
-//! inner ones.
+//! The one shape every error and warning is reported as: [`phasor_diag`] re-exported,
+//! with phasor's categories. Outer layers fill in fields without touching inner ones.
 
 pub use phasor_diag::{Category, Code, Context, Diagnose, Diagnostic, Sample, Severity, exit};
 
 /// The mirror's own records: crawl, peek, removed duplicates, map.
 pub const MIRROR: Category = Category::new("mirror");
 
-/// Every category phasor raises: the family's common ones and the
-/// mirror's, in the order a catalogue lists them.
+/// Every category phasor raises, in catalogue order.
 pub const CATEGORIES: [Category; 15] = [
     Category::CONFIG,
     Category::NET,

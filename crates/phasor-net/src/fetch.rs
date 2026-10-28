@@ -1,13 +1,6 @@
-//! Requests: paced, retried, stopped for good when refused; and a body
-//! streamed to disk.
-//!
-//! [`Requests`] is what every fetcher of the family sends through: at least
-//! `min_interval` between two requests, retries with backoff for what is
-//! worth retrying, and a breaker that stops every later request at once
-//! once the server refuses this client. [`stream_to_file`] hands a body's
-//! chunks, as they arrive, to a writer on a blocking thread, which hashes
-//! them and writes them through a 1 MiB buffer, so no hashing or file I/O
-//! runs on the async runtime.
+//! Requests: [`Requests`] paces them, retries with backoff what is worth
+//! retrying, and trips a breaker once the server refuses this client.
+//! [`stream_to_file`] hashes and writes a body on a blocking thread, off the async runtime.
 
 use std::io::Write as _;
 use std::path::{Path, PathBuf};
@@ -52,8 +45,7 @@ impl Default for FetcherConfig {
     }
 }
 
-/// Bytes of a file got by a ranged request, and what the server said of
-/// the whole file.
+/// Bytes from a ranged request, and what the server said of the whole file.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct RangeRead {
     /// The bytes asked for.
@@ -71,9 +63,8 @@ pub struct Requests {
     transport: Arc<dyn Transport>,
     config: FetcherConfig,
     last_request: Mutex<Option<Instant>>,
-    /// Set once the server refuses this client (HTTP 403, or 429 through
-    /// every retry): status, the URL refused and the start of its body.
-    /// Every later request fails at once without touching the network.
+    /// Set once the server refuses this client (403, or 429 through every retry);
+    /// every later request then fails at once.
     blocked: OnceLock<(u16, String, Vec<u8>)>,
     /// Requests the server answered as asked and whose body arrived whole.
     succeeded: AtomicU64,
@@ -118,8 +109,7 @@ impl Requests {
             })
     }
 
-    /// Trips the breaker on a refusal of `url` (unless it is tripped
-    /// already) and gives the refusal.
+    /// Trips the breaker on a refusal of `url` and gives the refusal.
     fn refuse(&self, status: u16, url: &str, body_head: Vec<u8>) -> FetchError {
         let _ = self.blocked.set((status, url.to_owned(), body_head));
         let (status, first_url, body_head) = self.blocked.get().cloned().unwrap_or_default();
@@ -131,8 +121,7 @@ impl Requests {
         }
     }
 
-    /// Fails with [`FetchError::Offline`] when the transport reaches no
-    /// network.
+    /// Fails with [`FetchError::Offline`] when the transport reaches no network.
     pub fn ensure_online(&self, url: &str) -> Result<(), FetchError> {
         if self.transport.is_offline() {
             return Err(FetchError::Offline {
@@ -160,9 +149,8 @@ impl Requests {
             .await
     }
 
-    /// Bytes `span` of a file, by a ranged request, into memory, with what
-    /// the server said of the whole file. A server that answers with the
-    /// whole file instead is [`FetchError::RangeIgnored`].
+    /// Bytes `span` of a file into memory. A server that sends the whole file instead
+    /// is [`FetchError::RangeIgnored`].
     pub async fn fetch_range(&self, url: &str, span: Span) -> Result<RangeRead, FetchError> {
         self.ensure_online(url)?;
         self.get_with_retries(url, Some(span), |resp| async move {
@@ -182,10 +170,8 @@ impl Requests {
         .await
     }
 
-    /// GETs `url` (only `span` of it, when given) and hands the answer to
-    /// `consume` (a 200, or a 206 for a span), pacing every attempt,
-    /// retrying what is worth retrying with backoff, and tripping the
-    /// breaker on a refusal.
+    /// GETs `url` (or `span` of it) and hands a 200 or 206 to `consume`, paced, retried
+    /// with backoff, tripping the breaker on a refusal.
     pub async fn get_with_retries<T, F, Fut>(
         &self,
         url: &str,
@@ -284,8 +270,7 @@ pub async fn read_head(
 pub async fn read_all(url: &str, resp: HttpResponse) -> Result<Vec<u8>, FetchError> {
     let mut body = resp.body;
     let expected = resp.content_length;
-    // The server's length is a hint, held to 8 MiB: a body that claims
-    // more grows as it comes, rather than reserving what it claims.
+    // The server's length is only a hint: reserve at most 8 MiB and grow past it.
     let room = expected.map_or(64 << 10, |n| usize::try_from(n).unwrap_or(0).min(8 << 20));
     let mut out = Vec::with_capacity(room);
     while let Some(chunk) = body.next().await {
@@ -308,8 +293,7 @@ pub async fn read_all(url: &str, resp: HttpResponse) -> Result<Vec<u8>, FetchErr
     Ok(out)
 }
 
-/// A completed download: its bytes' hashes and size, and what the server
-/// said.
+/// A completed download: its hashes, size and what the server said.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Streamed {
     /// The sha256 of every byte of the file.
@@ -324,8 +308,8 @@ pub struct Streamed {
     pub last_modified: Option<String>,
 }
 
-/// What a download said of the file when it began: kept beside its part,
-/// so a later run continues it only if the server still has that file.
+/// What the server said of a file when its download began, kept beside the part
+/// so a later run continues only if the file is unchanged.
 #[derive(Debug, Clone, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
 pub struct PartMeta {
     /// The whole file's size, when the server said.
@@ -351,10 +335,8 @@ const SPOOL_CHUNKS: usize = 16;
 /// Bytes the writer gathers before each write.
 const WRITE_BUFFER: usize = 1 << 20;
 
-/// Writes the chunks it receives to `part` through a 1 MiB buffer, taking
-/// their sha256 and CRC-32 on the way, and makes the file durable; the
-/// hashes and the size. With `from`, the part's first `from` bytes are kept
-/// (and hashed first) and the chunks follow them. Runs on a blocking thread.
+/// Writes chunks to `part` through a 1 MiB buffer, hashing them, and syncs it.
+/// With `from`, the part's first `from` bytes are kept and hashed first. Blocking.
 fn spool(
     part: &Path,
     from: u64,
@@ -400,11 +382,9 @@ fn spool(
     Ok((Sha256(hasher.finalize().into()), crc.finalize(), size))
 }
 
-/// Streams `resp`'s body to `part`, after the part's first `from` bytes
-/// when it continues one, reporting progress to `events`. With `resume`,
-/// a download cut off keeps its part and what the server said of the file
-/// when it began ([`PartMeta`]), for a later run to continue; without, a
-/// part cut off is removed. A part of the wrong length is always removed.
+/// Streams `resp`'s body to `part` after its first `from` bytes. With `resume`, a
+/// cut-off part is kept with its [`PartMeta`]; without, it is removed. A part of
+/// the wrong length is always removed.
 pub async fn stream_to_file(
     url: &str,
     resp: HttpResponse,

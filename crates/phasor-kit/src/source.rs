@@ -1,5 +1,4 @@
-//! What a request asks for, what a source answers with, and the file a
-//! fetch hands back.
+//! What a request asks for, what a source answers with, and the file a fetch hands back.
 
 use std::path::PathBuf;
 
@@ -12,8 +11,7 @@ pub use phasor_zip::zipdir::Entry;
 use serde::{Deserialize, Serialize};
 use url::Url;
 
-/// What a source asks of the network to list its files: a page (a
-/// directory listing, a report page) into memory.
+/// How a source fetches a listing page into memory.
 #[async_trait]
 pub trait Listings: Send + Sync {
     /// GETs the page at `url`.
@@ -39,19 +37,15 @@ pub struct LocalFile {
     pub last_modified: Option<String>,
     /// `last_modified` as an instant (UTC).
     pub last_modified_at: Option<Stamp>,
-    /// When the bytes were fetched, as their record says; none for a file
-    /// that is not from the archive.
+    /// When the bytes were fetched, per their record; none for a file not from the archive.
     pub fetched_at: Option<Stamp>,
-    /// The version of the same file published before this one, when the
-    /// source keeps versions and knows it: a feed whose files restate the
-    /// one before is read against it, so only the rows new to this version
-    /// are ingested.
+    /// The previous version of this file, when the source keeps versions: only rows
+    /// new to this version are ingested.
     pub previous: Option<PathBuf>,
 }
 
 impl LocalFile {
-    /// An archived file as the answer to `remote`: its bytes as its record
-    /// gives them, `cached` when no request was made for them.
+    /// An archived file as the answer to `remote`; `cached` when no request was made.
     pub fn from_held(remote: &RemoteFile, found: Held, cached: bool) -> Self {
         let p = &found.provenance;
         Self {
@@ -72,22 +66,18 @@ impl LocalFile {
 /// What the user asked for.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Query {
-    /// Table names (data-model names), upper-case. Empty means every table
-    /// the source has for the period, whether a schema declares it or not.
+    /// Upper-case data-model table names. Empty means every table the source has.
     pub tables: Vec<String>,
     /// Table names to leave out, upper-case.
     pub exclude: Vec<String>,
     /// The periods asked for, inclusive.
     pub range: TimeRange,
-    /// The instants asked for within the periods, `[from, to)` as
-    /// microseconds since the epoch, when the request is finer than a day:
-    /// a source picking five-minute entries out of a day's zip keeps the
-    /// ones inside. `None` means the whole of every period.
+    /// Instants asked for, `[from, to)` in microseconds since the epoch, when finer
+    /// than a day. `None` means the whole of every period.
     pub instants: Option<(i64, i64)>,
 }
 
-/// How finely a source cuts its files: the monthly archive publishes a
-/// month at a time, the report folders a day (or less) at a time.
+/// How finely a source cuts its files: a month, or a day or less.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Granularity {
     /// One file covers a month.
@@ -96,12 +86,10 @@ pub enum Granularity {
     Day,
 }
 
-/// Which entries of a zip a source wants fetched alone, out of the
-/// directory it was shown.
+/// Which entries of a zip a source wants fetched alone.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Picks {
-    /// The zip whole: every entry, or more of them than ranged requests
-    /// are worth.
+    /// The zip whole: every entry, or more than ranged requests are worth.
     Whole,
     /// These entries, each as the file it becomes.
     Entries(Vec<Pick>),
@@ -112,8 +100,7 @@ pub enum Picks {
 pub struct Pick {
     /// Its index in the directory shown.
     pub index: usize,
-    /// The file the entry becomes: its URL is the zip's with `!{entry}`
-    /// appended, its table and period what the entry's name says.
+    /// The file the entry becomes: the zip's URL plus `!{entry}`, table and period from its name.
     pub remote: RemoteFile,
 }
 
@@ -132,15 +119,12 @@ pub struct RemoteFile {
     pub size: Option<u64>,
     /// Modified time the listing (or the WEM manifest) reported, as text.
     pub modified: Option<String>,
-    /// `modified` as an instant: `+10:00` for what nemweb lists, UTC for
-    /// a WEM manifest. `None` when the text is not a time.
+    /// `modified` as an instant: `+10:00` for nemweb, UTC for a WEM manifest; `None` if not a time.
     pub modified_at: Option<Stamp>,
 }
 
 impl RemoteFile {
-    /// The last path segment. `%23` is read as `#`: the newer archive
-    /// names are `PUBLIC_ARCHIVE#TABLE#FILE01#...` and a URL has to escape
-    /// the `#`.
+    /// The last path segment, `%23` read as `#` (archive names like `PUBLIC_ARCHIVE#TABLE#...`).
     pub fn file_name(&self) -> String {
         self.url
             .path_segments()
@@ -150,15 +134,12 @@ impl RemoteFile {
             .replace("%23", "#")
     }
 
-    /// The file name without its extension, lower-case, with every
-    /// character other than letters, digits, `_`, `-` and `.` turned into
-    /// `_`: the stem that names the Parquet files written from it, safe in
-    /// a path, a glob and a URL.
+    /// The file name without extension, lower-case, other than `[a-z0-9_.-]` turned
+    /// into `_`: the stem of its Parquet files, safe in a path, glob and URL.
     pub fn stem(&self) -> String {
         let name = self.file_name();
         let stem = name.rsplit_once('.').map_or(name.as_str(), |(s, _)| s);
-        // A version of a file (the URL's fragment, a stamp) keeps its own
-        // Parquet files.
+        // A version of a file (a stamp as the URL's fragment) keeps its own Parquet files.
         let stem = match self.url.fragment() {
             Some(f) => format!("{stem}-{f}"),
             None => stem.to_owned(),
@@ -176,16 +157,11 @@ impl RemoteFile {
     }
 }
 
-/// Where files live for one market and publication.
-///
-/// A source lists what a query needs from the network, finds what of that
-/// is already in the archive, and reads what a file's name alone says.
-/// The pipeline knows no source by name: every one it runs is a `dyn
-/// Source`.
+/// Where files live for one market and publication: listed from the network,
+/// found in the archive, described by name alone.
 #[async_trait]
 pub trait Source: Send + Sync {
-    /// The source id, as the manifest records it with every file:
-    /// `nem-mmsdm`, `wem-datafiles`. Never changed.
+    /// The source id the manifest records with every file (`nem-mmsdm`). Never changed.
     fn id(&self) -> &'static str;
 
     /// The files a query needs, in a stable order.
@@ -195,17 +171,13 @@ pub trait Source: Send + Sync {
         listings: &dyn Listings,
     ) -> Result<Vec<RemoteFile>, FetchError>;
 
-    /// The archived files of `query`, from their sidecars: nothing is
-    /// hashed, nothing downloaded. A source whose archive is not read
-    /// this way has none.
+    /// The archived files of `query`, from their sidecars alone. None by default.
     fn archived(&self, archive: &Archive, query: &Query) -> Result<Vec<LocalFile>, FetchError> {
         let _ = (archive, query);
         Ok(Vec::new())
     }
 
-    /// What this source knows about a file from its URL alone: the table
-    /// and period its name says. `None` when the name is not one of its
-    /// files.
+    /// The table and period a file's URL alone says; `None` when not one of its files.
     fn describe(&self, url: &Url) -> Option<RemoteFile> {
         let _ = url;
         None
@@ -216,26 +188,20 @@ pub trait Source: Send + Sync {
         Granularity::Month
     }
 
-    /// Whether this source publishes `table` at all: a kit of several
-    /// sources at one granularity (the gas feeds) is read from the one that
-    /// does. Every source by default.
+    /// Whether this source publishes `table`; every table by default.
     fn serves(&self, table: &str) -> bool {
         let _ = table;
         true
     }
 
-    /// Whether `remote` is a zip that may hold more than `query` needs (a
-    /// whole-month archive, a day's zip of five-minute files), so its
-    /// directory is worth reading by ranged requests before it is fetched.
-    /// A query that needs all of it says no: the zip comes whole, with no
-    /// requests spent on its directory.
+    /// Whether `remote` is a zip worth reading by its directory through ranged
+    /// requests because `query` needs only part of it.
     fn wants_ranged(&self, remote: &RemoteFile, query: &Query) -> bool {
         let _ = (remote, query);
         false
     }
 
-    /// Which entries of the zip `remote`, whose directory is `entries`, a
-    /// query needs: the whole zip unless the source says otherwise.
+    /// Which entries of the zip `remote` a query needs; the whole zip by default.
     fn pick(&self, remote: &RemoteFile, entries: &[Entry], query: &Query) -> Picks {
         let _ = (remote, entries, query);
         Picks::Whole

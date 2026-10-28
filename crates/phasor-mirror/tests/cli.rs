@@ -47,8 +47,7 @@ impl Cli {
     }
 }
 
-/// The mirror crawls from the pages it kept, offline, and counts what the
-/// archive holds of what the crawl listed.
+/// The mirror crawls from its kept pages offline and counts what the archive holds.
 #[test]
 fn the_mirror_crawls_kept_pages_and_reports_its_status() {
     let cli = Cli::new();
@@ -99,8 +98,7 @@ fn the_mirror_crawls_kept_pages_and_reports_its_status() {
     assert_eq!(code, 0);
 }
 
-/// `run` crawls and downloads; offline, a file the archive lacks
-/// fails and one it holds is counted.
+/// `run` offline fails a file the archive lacks and counts one it holds.
 #[test]
 fn the_mirror_downloads_what_the_crawl_listed() {
     let cli = Cli::new();
@@ -202,8 +200,7 @@ impl Cli {
 const FAST: &str =
     "request_interval_ms = 0\nattempts = 2\nbackoff_ms = 1\nprogress_every_secs = 0\n";
 
-/// A whole run against a local nemweb that refuses once and breaks a file
-/// once, then the duplicate zip compared away, mapped and summarised.
+/// A whole run against a local nemweb that refuses once and breaks a file once.
 #[test]
 fn a_run_waits_out_failures_then_compare_map_and_summary() {
     let srv = Server::start();
@@ -399,8 +396,7 @@ fn refusals_in_a_row_end_the_run() {
     assert!(out.contains("net.http_status"), "{out}");
 }
 
-/// A page or a file that stops coming fails after the read timeout, each
-/// try, and says so.
+/// A page or a file that stops coming fails after the read timeout.
 #[test]
 fn what_stops_coming_times_out() {
     let srv = Server::start();
@@ -488,8 +484,7 @@ fn the_lock_the_home_and_the_config() {
     assert!(String::from_utf8_lossy(&out.stderr).contains("No home directory"));
 }
 
-/// A whole-month zip whose listing matches its folder is removed before it
-/// is ever downloaded, and the download then leaves it alone.
+/// A whole-month zip whose listing matches its folder is never downloaded.
 #[test]
 fn a_duplicate_is_ruled_on_from_its_listing_and_never_downloaded() {
     let cli = Cli::new();
@@ -550,8 +545,7 @@ fn a_duplicate_is_ruled_on_from_its_listing_and_never_downloaded() {
     );
 }
 
-/// A run peeks the zips beside a folder of the same name and downloads,
-/// together, and keeps its counts as it goes.
+/// A run peeks paired zips and downloads together, keeping its counts.
 #[test]
 fn a_run_keeps_its_counts_for_status() {
     let srv = Server::start();
@@ -597,10 +591,7 @@ fn dated(entries: &[(&str, &str, Option<usize>)]) -> Vec<u8> {
     body.into_bytes()
 }
 
-/// `watch` reads each folder again, downloads a file rewritten in place
-/// as a later version, rules on a whole-month zip new to nemweb from its
-/// listing, waits out a missing archive and refusals, and stops on a page
-/// it cannot read.
+/// `watch` reads folders again, keeps rewritten files as versions, and stops on a bad page.
 #[test]
 fn a_watch_keeps_each_version_and_what_is_new() {
     const MON: &str = "Monday, October 12, 2026 10:45 AM";
@@ -790,8 +781,7 @@ fn a_watch_keeps_each_version_and_what_is_new() {
     }
 }
 
-/// A month to keep from leaves out what is before it, and prune deletes
-/// what the archive holds of that, once asked to.
+/// A month to keep from leaves out what is before it, and prune deletes it.
 #[test]
 fn prune_deletes_what_is_before_the_month_kept_from() {
     let cli = Cli::new();

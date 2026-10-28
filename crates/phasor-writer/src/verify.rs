@@ -1,7 +1,5 @@
-//! `verify`: the lake against the manifest. Every output an ingest lists
-//! exists with the size recorded for it, its rows of each source (the
-//! count its footer keeps) add up to what the manifest says each entry
-//! gave, and every file under quarantine belongs to a current ingest.
+//! `verify`: the lake against the manifest: output sizes, per-source row
+//! counts, and orphan quarantine files.
 
 use std::path::Path;
 
@@ -62,8 +60,7 @@ fn orphans_under(dir: &Path, live: &[String]) -> Vec<String> {
     found
 }
 
-/// The rows of each source a lake file's footer counts (`phasor.sources`);
-/// none when the file cannot be read or has no count.
+/// The rows of each source a lake file's footer counts (`phasor.sources`).
 fn footer_sources(path: &Path) -> Option<Vec<(String, u64)>> {
     use parquet::file::reader::{FileReader, SerializedFileReader};
     let reader = SerializedFileReader::new(std::fs::File::open(path).ok()?).ok()?;
@@ -90,10 +87,7 @@ fn source_name(url: &str, entry: &str) -> String {
     }
 }
 
-/// Checks the outputs of every ingest (of one table, when `table` is
-/// given) against the disk, and the quarantine directory `quarantine`
-/// against the files current ingests recorded. The manifest is read once;
-/// the lake is never written.
+/// Checks every ingest's outputs (of `table`, when given) and `quarantine` against the disk; read-only.
 pub async fn verify_lake(
     manifest: &ManifestHandle,
     quarantine: &Path,
@@ -105,8 +99,7 @@ pub async fn verify_lake(
     let live = manifest.live_quarantine().await?;
     let mut report = VerifyReport::default();
     for i in &ingests {
-        // What its files say each source gave, against what the manifest
-        // says: only when every file is there to say it.
+        // Compare footer counts with the manifest only when every file is there.
         let mut counted: std::collections::BTreeMap<String, u64> =
             std::collections::BTreeMap::new();
         let mut readable = !i.outputs.is_empty();
@@ -163,8 +156,7 @@ pub async fn verify_lake(
             }
         }
     }
-    // A quarantine file no current ingest recorded was left by a read that
-    // has since been superseded: its rows are in the lake or were read again.
+    // A quarantine file no current ingest recorded was left by a superseded read.
     let qdir = match table {
         Some(t) => quarantine.join(t.to_ascii_lowercase()),
         None => quarantine.to_path_buf(),

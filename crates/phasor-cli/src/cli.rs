@@ -1,16 +1,4 @@
-//! The flag tree.
-//!
-//! Two stores, one verb per arrow. Reading the lake is the reader's own
-//! SQL, not a command:
-//!
-//! ```text
-//! AEMO ──fetch──▶ archive ──ingest──▶ lake
-//! disk ──import─▶ lake
-//! ```
-//!
-//! `fetch` and `ingest` take the same tables and window; `fetch` reads
-//! what it downloads into the lake unless told `--no-ingest`. Every
-//! command's `--help` ends with examples.
+//! The flag tree; `ABOUT` is the overview at the end of `--help`.
 
 use std::path::PathBuf;
 

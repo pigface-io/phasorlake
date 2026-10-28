@@ -1,12 +1,5 @@
-//! Time as text outside the lake: RFC 3339 with an offset, and the forms it
-//! is read from.
-//!
-//! Inside the lake an instant is UTC nanoseconds in a column that carries
-//! the market offset (`nemtime`). Outside it, in a provenance record, the
-//! manifest or a listing, an instant is text, and the text always says
-//! which offset it is in. The type and its readers are the family's one,
-//! [`phasor_provenance::stamp`]; these functions are the lake's names for
-//! them.
+//! Time as text outside the lake: RFC 3339 with an offset, and the forms it is
+//! read from. The lake's names for [`phasor_provenance::stamp`].
 
 pub use phasor_provenance::stamp::Stamp;
 
@@ -22,8 +15,7 @@ pub fn parse(s: &str, naive_offset_secs: i32) -> Option<Stamp> {
     Stamp::read(s, naive_offset_secs)
 }
 
-/// `s` as RFC 3339 with an offset, read from any form; `None` when it is
-/// not a time.
+/// `s` as RFC 3339 with an offset, from any form; `None` when not a time.
 #[must_use]
 pub fn normalise(s: &str, naive_offset_secs: i32) -> Option<String> {
     parse(s, naive_offset_secs).map(|t| t.rfc3339())
@@ -59,8 +51,7 @@ pub fn parse_iis_listing(s: &str, offset_secs: i32) -> Option<Stamp> {
     Stamp::from_listing(s, offset_secs)
 }
 
-/// `YYYY-MM-DD HH:MM:SS` (or `/`, or a `T`) with no offset, read in
-/// `offset_secs`.
+/// `YYYY-MM-DD HH:MM:SS` (or `/`, or a `T`) with no offset, read in `offset_secs`.
 #[must_use]
 pub fn parse_naive(s: &str, offset_secs: i32) -> Option<Stamp> {
     Stamp::from_naive(s, offset_secs)

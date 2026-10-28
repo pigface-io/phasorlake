@@ -1,7 +1,5 @@
-//! One [`Fetcher`] per host, each with its own pace and its own refusal
-//! breaker, behind the fetcher's interface: a request goes to the fetcher
-//! of the host that serves its URL, so a refusal by one host leaves the
-//! others reading, and each host is asked no faster than it allows.
+//! One [`Fetcher`] per host, each with its own pace and refusal breaker, so
+//! a refusal by one host leaves the others reading.
 
 use std::sync::Arc;
 
@@ -16,8 +14,7 @@ use crate::stamp::AEST;
 
 /// A host's fetcher: its base URL, its clock and the fetcher itself.
 pub struct HostFetcher {
-    /// The host, `https://www.nemweb.com.au`, no trailing slash; empty
-    /// for a fetcher that serves every URL.
+    /// The host's base URL, no trailing slash; empty for one that serves every URL.
     pub base_url: String,
     /// Seconds east of UTC of the times the host writes.
     pub offset_secs: i32,
@@ -35,8 +32,7 @@ impl HostFetcher {
     }
 }
 
-/// The fetchers of every host, the first the default for a URL no host
-/// serves. They share one archive.
+/// The fetchers of every host, the first the default for a URL no host serves.
 pub struct Fetchers {
     hosts: Vec<HostFetcher>,
 }
@@ -52,7 +48,7 @@ impl Fetchers {
         Self { hosts }
     }
 
-    /// One fetcher for every URL, in AEST: nemweb alone, as before hosts.
+    /// One fetcher for every URL, in AEST.
     pub fn one(fetcher: Fetcher) -> Self {
         Self::new(vec![HostFetcher {
             base_url: String::new(),
@@ -118,8 +114,7 @@ impl Fetchers {
         self
     }
 
-    /// The fetchers with each host that refused replaced by what `build`
-    /// makes of it, the others kept with their pace and their count.
+    /// The fetchers with each host that refused replaced by what `build` makes of it.
     #[must_use]
     pub fn renewed(mut self, mut build: impl FnMut(&HostFetcher) -> Fetcher) -> Self {
         self.hosts = self
@@ -156,8 +151,7 @@ impl Fetchers {
     }
 }
 
-/// A fetcher per host over one transport and one archive, each paced as
-/// its host asks.
+/// A fetcher per host over one transport and one archive.
 pub fn per_host(
     hosts: &[crate::hosts::Host],
     archive: &Archive,
