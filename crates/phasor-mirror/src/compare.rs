@@ -241,7 +241,7 @@ fn rollups(archive: &Archive, record: &[Remote], removed: &HashMap<String, Remov
                     rd.filter_map(Result::ok)
                         .map(|e| e.file_name().to_string_lossy().into_owned())
                         .filter(|n| {
-                            !n.starts_with("._")
+                            !crate::net::is_apple_double(Path::new(n))
                                 && !n.ends_with(".json")
                                 && !n.ends_with(".part")
                                 && !n.ends_with(".tmp")
@@ -355,18 +355,8 @@ pub fn compare(
         rollup: pair.rollup,
         held: Vec::new(),
     };
-    // The folder's files by their path under the folder, as listed; only
-    // those the zip's files match need be archived.
-    let folder: BTreeMap<String, PathBuf> = pair
-        .files
-        .iter()
-        .map(|(url, _)| {
-            (
-                percent_decoded(&url[pair.folder.len()..]),
-                archive.path_for(url),
-            )
-        })
-        .collect();
+    // Only the folder's files the zip's files match need be archived.
+    let folder = folder_paths(archive, pair);
     let zip_path = archive.path_for(&pair.zip);
     let mut zip = None;
     let files: Vec<ZipFile> = if zip_path.is_file() {
@@ -609,16 +599,7 @@ pub fn verify(mirror: &Mirror, archive: &Archive) -> Result<Vec<Verified>, Mirro
             out.push(v);
             continue;
         };
-        let folder: BTreeMap<String, PathBuf> = pair
-            .files
-            .iter()
-            .map(|(url, _)| {
-                (
-                    percent_decoded(&url[pair.folder.len()..]),
-                    archive.path_for(url),
-                )
-            })
-            .collect();
+        let folder = folder_paths(archive, &pair);
         let left_out = &removed[&pair.zip].ancillary;
         for e in entries.iter().filter(|e| !e.name.ends_with(['/', '\\'])) {
             let name = e.name.replace('\\', "/");
@@ -653,6 +634,19 @@ pub fn verify(mirror: &Mirror, archive: &Archive) -> Result<Vec<Verified>, Mirro
         out.push(v);
     }
     Ok(out)
+}
+
+/// The folder's files by their path under the folder, as listed, each with its archived path.
+fn folder_paths(archive: &Archive, pair: &Pair) -> BTreeMap<String, PathBuf> {
+    pair.files
+        .iter()
+        .map(|(url, _)| {
+            (
+                percent_decoded(&url[pair.folder.len()..]),
+                archive.path_for(url),
+            )
+        })
+        .collect()
 }
 
 /// The shortest tail of `name`, cut at a `/`, that is a path of `folder`.
