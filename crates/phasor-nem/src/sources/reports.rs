@@ -2,7 +2,7 @@
 //! per day, `Reports/CURRENT/{folder}/` the loose files of the last days. A day is
 //! its archive zip, read for the request's instants, else its `CURRENT` files.
 
-use std::collections::BTreeMap;
+use std::collections::{BTreeMap, BTreeSet};
 use std::sync::Arc;
 
 use async_trait::async_trait;
@@ -193,12 +193,12 @@ impl ReportFolders {
         query: &Query,
         fetcher: &dyn Listings,
     ) -> Result<Vec<RemoteFile>, FetchError> {
-        let days: Vec<CivilDay> = query.range.days_iter().collect();
+        let days = query.range.from.first_day()..=query.range.to.last_day();
         let mut out = Vec::new();
-        let mut covered: Vec<CivilDay> = Vec::new();
+        let mut covered: BTreeSet<CivilDay> = BTreeSet::new();
         let listed = |side: &Side,
                       out: &mut Vec<RemoteFile>,
-                      covered: &mut Vec<CivilDay>,
+                      covered: &mut BTreeSet<CivilDay>,
                       body: &[u8],
                       url: &Url|
          -> Result<(), FetchError> {
@@ -226,7 +226,7 @@ impl ReportFolders {
                     continue;
                 }
                 if archived_day {
-                    covered.push(name.day);
+                    covered.insert(name.day);
                 }
                 let file_url = url
                     .join(&e.href)
@@ -299,7 +299,7 @@ impl Source for ReportFolders {
     /// The archived files of the query's folders and days. A day whose `ARCHIVE` zip
     /// is held is read from it, not again from its `CURRENT` files.
     fn archived(&self, archive: &Archive, query: &Query) -> Result<Vec<LocalFile>, FetchError> {
-        let days: Vec<CivilDay> = query.range.days_iter().collect();
+        let days = query.range.from.first_day()..=query.range.to.last_day();
         let mut out = Vec::new();
         for sides in self.folders_for(query)?.values() {
             let mut dirs: Vec<std::path::PathBuf> = Vec::new();
@@ -315,7 +315,7 @@ impl Source for ReportFolders {
                 .filter_map(|a| Some((parse_report_name(a.provenance.url())?, a)))
                 .filter(|(name, _)| days.contains(&day_of(name)) && within(name, query.instants))
                 .collect();
-            let whole_days: Vec<CivilDay> = held
+            let whole_days: BTreeSet<CivilDay> = held
                 .iter()
                 .filter(|(name, a)| {
                     name.time.is_none() && a.provenance.url().contains("/Reports/ARCHIVE/")
