@@ -414,10 +414,16 @@ pub fn compare(
         return Ok(cmp);
     };
     // Every file of the zip at its folder path, which must be archived.
-    let mut matched: Vec<(ZipFile, String)> = Vec::with_capacity(files.len());
+    let mut matched: Vec<(ZipFile, String, u64)> = Vec::with_capacity(files.len());
+    let file_len = |p: &Path| {
+        std::fs::metadata(p)
+            .ok()
+            .filter(std::fs::Metadata::is_file)
+            .map(|m| m.len())
+    };
     for f in files {
         match suffix_in(&f.name, &folder) {
-            Some(rel) if folder[&rel].is_file() => matched.push((f, rel)),
+            Some(rel) if let Some(len) = file_len(&folder[&rel]) => matched.push((f, rel, len)),
             _ if is_ancillary(&f.name) => cmp.ancillary.push(f.name),
             Some(rel) => cmp.not_archived.push(rel),
             None => cmp.only_in_zip.push(f.name),
@@ -427,10 +433,10 @@ pub fn compare(
         cmp.verdict = Verdict::NotArchived;
         return Ok(cmp);
     }
-    let seen: HashSet<String> = matched.iter().map(|(_, rel)| rel.clone()).collect();
-    for (f, rel) in matched {
+    let seen: HashSet<String> = matched.iter().map(|(_, rel, _)| rel.clone()).collect();
+    for (f, rel, len) in matched {
         let path = &folder[&rel];
-        if known_sum(path)? == f.sum {
+        if known_sum(path, len)? == f.sum {
             cmp.same += 1;
             cmp.held.push((f.name, path.clone()));
             continue;
@@ -660,12 +666,9 @@ fn suffix_in(name: &str, folder: &BTreeMap<String, PathBuf>) -> Option<String> {
     }
 }
 
-/// The size and CRC-32 of an archived file, read once and kept in its sidecar.
-fn known_sum(path: &Path) -> Result<Sum, MirrorError> {
+/// The size and CRC-32 of an archived file `len` bytes long, read once and kept in its sidecar.
+fn known_sum(path: &Path, len: u64) -> Result<Sum, MirrorError> {
     let sidecar = Archive::read(path)?;
-    let len = std::fs::metadata(path)
-        .map_err(MirrorError::io(path))?
-        .len();
     if let Some(p) = &sidecar
         && p.content.size == len
         && let Some(crc32) = p.content.crc32
