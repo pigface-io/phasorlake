@@ -46,9 +46,13 @@ impl Mirror {
 
     /// The record less what is not kept ([`Mirror::keeping`]).
     pub fn kept(&self) -> Result<Vec<Remote>, MirrorError> {
-        let mut record = self.record()?;
+        Ok(self.kept_in(self.record()?))
+    }
+
+    /// `record` less what is not kept.
+    pub fn kept_in(&self, mut record: Vec<Remote>) -> Vec<Remote> {
         record.retain(|r| crate::keep::keeps(&r.url, self.keep_from()));
-        Ok(record)
+        record
     }
 
     /// Replaces what the listing `folder` shows with `links`. The other

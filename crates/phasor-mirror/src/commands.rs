@@ -759,11 +759,17 @@ fn compare(ctx: &Context, mirror: &Mirror, delete: bool) -> Result<i32, MirrorEr
     use phasor_mirror::Verdict;
     let archive = ctx.archive();
     let offsets = phasor_mirror::Offsets::of(&ctx.config.hosts()?);
-    let listings: std::collections::HashMap<String, Vec<phasor_mirror::zipdir::Entry>> =
-        phasor_mirror::peek::current(mirror)?
-            .into_values()
-            .filter_map(|p| Some((p.url, p.entries?)))
-            .collect();
+    // Read once for the whole pass: each removal keeps its zip's listing.
+    let record = mirror.record()?;
+    let current = phasor_mirror::peek::current_in(mirror, &record)?;
+    let mut known = phasor_mirror::peek::Known {
+        record,
+        peeked: current.keys().cloned().collect(),
+    };
+    let listings: std::collections::HashMap<String, Vec<phasor_mirror::zipdir::Entry>> = current
+        .into_values()
+        .filter_map(|p| Some((p.url, p.entries?)))
+        .collect();
     let tmp = mirror.tmp_dir();
     let (mut compared, mut waiting, mut freed, mut spared) = (0usize, 0usize, 0u64, 0u64);
     let mut rows = Vec::new();
@@ -778,7 +784,7 @@ fn compare(ctx: &Context, mirror: &Mirror, delete: bool) -> Result<i32, MirrorEr
         let mut action = "kept";
         if delete && cmp.verdict == Verdict::Same {
             let offset = offsets.offset_of(&cmp.zip);
-            let r = phasor_mirror::remove(mirror, &archive, &cmp, offset)?;
+            let r = phasor_mirror::remove(mirror, &archive, &cmp, offset, Some(&mut known))?;
             if r.downloaded {
                 freed += r.size;
             } else {

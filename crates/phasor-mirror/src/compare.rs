@@ -11,8 +11,9 @@ use crate::net::{Address, Archive, Provenance, Via};
 use serde::{Deserialize, Serialize};
 use zip::ZipArchive;
 
-use crate::crawl::{Mirror, RemoteKind};
+use crate::crawl::{Mirror, Remote, RemoteKind};
 use crate::error::MirrorError;
+use crate::peek::Known;
 use crate::stamp::Stamp;
 use crate::zipdir::Entry;
 
@@ -164,11 +165,19 @@ pub fn pairs(
             path: mirror.done_path().display().to_string(),
         });
     }
-    let record = mirror.record()?;
     let removed = match with_removed {
         true => HashMap::new(),
         false => mirror.removed()?,
     };
+    Ok(pairs_in(&mirror.record()?, &removed, archive))
+}
+
+/// [`pairs`] of a `record` in URL order, leaving out the zips in `removed`.
+pub fn pairs_in(
+    record: &[Remote],
+    removed: &HashMap<String, Removed>,
+    archive: &Archive,
+) -> Vec<Pair> {
     let dirs: HashSet<&str> = record
         .iter()
         .filter(|r| r.kind == RemoteKind::Dir)
@@ -192,9 +201,12 @@ pub fn pairs(
         if !dirs.contains(folder.as_str()) {
             continue;
         }
-        let files = record
+        // In URL order, the links under the folder are the ones after it.
+        let under = record.partition_point(|f| f.url < folder);
+        let files = record[under..]
             .iter()
-            .filter(|f| f.kind == RemoteKind::File && f.url.starts_with(&folder))
+            .take_while(|f| f.url.starts_with(&folder))
+            .filter(|f| f.kind == RemoteKind::File)
             .map(|f| (f.url.clone(), f.size.unwrap_or(0)))
             .collect();
         out.push(Pair {
@@ -205,17 +217,13 @@ pub fn pairs(
             rollup: false,
         });
     }
-    out.extend(rollups(archive, &record, &removed));
-    Ok(out)
+    out.extend(rollups(archive, record, removed));
+    out
 }
 
 /// Every rollup, paired with the folder's files of that day and the next,
 /// read from the archive since `CURRENT` lists a file for a few days only.
-fn rollups(
-    archive: &Archive,
-    record: &[crate::crawl::Remote],
-    removed: &HashMap<String, Removed>,
-) -> Vec<Pair> {
+fn rollups(archive: &Archive, record: &[Remote], removed: &HashMap<String, Removed>) -> Vec<Pair> {
     let mut names: HashMap<PathBuf, Vec<String>> = HashMap::new();
     let mut out = Vec::new();
     for r in record.iter().filter(|r| r.kind == RemoteKind::File) {
@@ -459,12 +467,14 @@ pub fn compare(
 }
 
 /// Records and removes the zip of a comparison that found it the same as its
-/// folder. Refuses any other comparison.
+/// folder. Refuses any other comparison. A downloaded zip's listing is kept
+/// against `known`, read here when not given.
 pub fn remove(
     mirror: &Mirror,
     archive: &Archive,
     cmp: &Comparison,
     offset: i32,
+    known: Option<&mut Known>,
 ) -> Result<Removed, MirrorError> {
     if cmp.verdict != Verdict::Same {
         return Err(MirrorError::NotSame {
@@ -491,7 +501,15 @@ pub fn remove(
     // A downloaded zip's listing is kept before it goes, so its side of the
     // comparison stays in the record and the catalog.
     if removed.downloaded && !cmp.from_listing {
-        crate::peek::keep_listing(mirror, &cmp.zip, &path, offset)?;
+        let mut read;
+        let known = match known {
+            Some(k) => k,
+            None => {
+                read = Known::read(mirror)?;
+                &mut read
+            }
+        };
+        crate::peek::keep_listing(mirror, known, &cmp.zip, &path, offset)?;
     }
     let record = mirror.removed_path();
     let mut line = serde_json::to_vec(&removed).expect("a Removed always serialises");
@@ -942,7 +960,7 @@ mod tests {
             (Verdict::Same, 2, true),
             "{cmp:?}"
         );
-        let removed = remove(&mirror, &archive, &cmp, crate::stamp::AEST).unwrap();
+        let removed = remove(&mirror, &archive, &cmp, crate::stamp::AEST, None).unwrap();
         assert_eq!(removed.same_as, cur);
         assert!(!archive.path_for(&day17).exists());
         let sc = Archive::read(&archive.path_for(&format!("{cur}{na}")))
@@ -1030,7 +1048,7 @@ mod tests {
         assert_eq!((cmp.same, cmp.repacked), (1, 1));
         assert_eq!(cmp.only_in_folder, ["S/CTL/T1.ctl"]);
 
-        let removed = remove(&f.mirror, &f.archive, &cmp, crate::stamp::AEST).unwrap();
+        let removed = remove(&f.mirror, &f.archive, &cmp, crate::stamp::AEST, None).unwrap();
         assert_eq!(removed.same_as, "https://h/A/M/");
         assert!(!f.archive.path_for("https://h/A/M.zip").exists());
         assert!(
@@ -1090,6 +1108,7 @@ mod tests {
         // Kept once.
         crate::peek::keep_listing(
             &f.mirror,
+            &mut Known::read(&f.mirror).unwrap(),
             "https://h/A/M.zip",
             Path::new("/none"),
             crate::stamp::AEST,
@@ -1120,7 +1139,7 @@ mod tests {
         let cmp = compare(&f.archive, pair, None, &f.mirror.tmp_dir()).unwrap();
         assert_eq!(cmp.verdict, Verdict::Differs);
         assert_eq!(cmp.only_in_zip, ["M/README.txt"]);
-        let e = remove(&f.mirror, &f.archive, &cmp, crate::stamp::AEST).unwrap_err();
+        let e = remove(&f.mirror, &f.archive, &cmp, crate::stamp::AEST, None).unwrap_err();
         assert_eq!(e.diagnostic().code, "mirror.not_same");
         assert!(f.archive.path_for(&pair.zip).exists());
     }
@@ -1199,7 +1218,7 @@ mod tests {
         );
         assert_eq!(cmp.ancillary, ["M/Readme.htm", "M/S/disclaimer.htm"]);
         // Recorded with the removal, and left out again when verified.
-        let r = remove(&f.mirror, &f.archive, &cmp, crate::stamp::AEST).unwrap();
+        let r = remove(&f.mirror, &f.archive, &cmp, crate::stamp::AEST, None).unwrap();
         assert_eq!(r.ancillary, cmp.ancillary);
         let line = std::fs::read_to_string(f.mirror.removed_path()).unwrap();
         assert!(
@@ -1276,7 +1295,7 @@ mod tests {
         let pair2 = &pairs(&f2.mirror, &f2.archive, true).unwrap()[0];
         let cmp = compare(&f2.archive, pair2, None, &f2.mirror.tmp_dir()).unwrap();
         std::fs::remove_file(Archive::record_path(&f2.archive.path_for(&pair2.zip))).unwrap();
-        let e = remove(&f2.mirror, &f2.archive, &cmp, crate::stamp::AEST).unwrap_err();
+        let e = remove(&f2.mirror, &f2.archive, &cmp, crate::stamp::AEST, None).unwrap_err();
         assert_eq!(e.diagnostic().code, "mirror.not_same");
         // A record of removals that is a folder cannot be read.
         std::fs::create_dir_all(f.mirror.removed_path()).unwrap();
@@ -1347,13 +1366,13 @@ mod tests {
         let unsure = compare(&f.archive, pair, Some(&listing), &tmp).unwrap();
         assert_eq!(unsure.verdict, Verdict::NeedsDownload);
         assert_eq!(unsure.unsure, ["S/DATA/T2.zip"]);
-        assert!(remove(&f.mirror, &f.archive, &unsure, crate::stamp::AEST).is_err());
+        assert!(remove(&f.mirror, &f.archive, &unsure, crate::stamp::AEST, None).is_err());
         // A file the folder lacks settles it.
         listing.push(entry("M/README.txt", b"r"));
         let differs = compare(&f.archive, pair, Some(&listing), &tmp).unwrap();
         assert_eq!(differs.verdict, Verdict::Differs);
 
-        let r = remove(&f.mirror, &f.archive, &cmp, crate::stamp::AEST).unwrap();
+        let r = remove(&f.mirror, &f.archive, &cmp, crate::stamp::AEST, None).unwrap();
         assert_eq!(
             (r.downloaded, r.sha256.as_deref(), r.size),
             (false, None, pair.zip_size)
@@ -1452,7 +1471,7 @@ mod tests {
         let tmp = f.mirror.tmp_dir();
         assert!(verify(&f.mirror, &f.archive).unwrap().is_empty());
         let cmp = compare(&f.archive, pair, None, &tmp).unwrap();
-        remove(&f.mirror, &f.archive, &cmp, crate::stamp::AEST).unwrap();
+        remove(&f.mirror, &f.archive, &cmp, crate::stamp::AEST, None).unwrap();
         let v = &verify(&f.mirror, &f.archive).unwrap()[0];
         assert!(v.holds(), "{v:?}");
         assert_eq!(v.checked, 2);
@@ -1500,11 +1519,20 @@ mod tests {
         let dir = f.mirror.dir();
         let text = dir.join("text.zip");
         std::fs::write(&text, b"not a zip").unwrap();
-        crate::peek::keep_listing(&f.mirror, "https://h/t.zip", &text, crate::stamp::AEST).unwrap();
+        let mut known = Known::read(&f.mirror).unwrap();
+        crate::peek::keep_listing(
+            &f.mirror,
+            &mut known,
+            "https://h/t.zip",
+            &text,
+            crate::stamp::AEST,
+        )
+        .unwrap();
         let p = crate::peek::read_peeks(&f.mirror.peek_path()).unwrap();
         assert_eq!(p[0].error.as_ref().unwrap().code, "zip.not_a_zip");
         let e = crate::peek::keep_listing(
             &f.mirror,
+            &mut known,
             "https://h/u.zip",
             &dir.join("none"),
             crate::stamp::AEST,
