@@ -12,6 +12,7 @@ use rusqlite::{Connection, OptionalExtension, params};
 use serde::{Deserialize, Serialize};
 
 use crate::error::ManifestError;
+use crate::partition::{max_time, min_time};
 use crate::writer::{Transform, WrittenFile};
 
 pub use handle::{ManifestHandle, ManifestThread};
@@ -174,14 +175,8 @@ impl EntryShare {
     pub fn add(&mut self, rows: u64, bounds: Option<(Option<i64>, Option<i64>)>) {
         self.rows += rows;
         if let Some((min, max)) = bounds {
-            self.min_time = match (self.min_time, min) {
-                (Some(a), Some(b)) => Some(a.min(b)),
-                (a, b) => a.or(b),
-            };
-            self.max_time = match (self.max_time, max) {
-                (Some(a), Some(b)) => Some(a.max(b)),
-                (a, b) => a.or(b),
-            };
+            self.min_time = min_time(self.min_time, min);
+            self.max_time = max_time(self.max_time, max);
         }
     }
 }
@@ -872,16 +867,7 @@ impl Manifest {
             .outputs
             .iter()
             .fold((None::<i64>, None::<i64>), |(mn, mx), o| {
-                (
-                    match (mn, o.min_time) {
-                        (Some(a), Some(b)) => Some(a.min(b)),
-                        (a, b) => a.or(b),
-                    },
-                    match (mx, o.max_time) {
-                        (Some(a), Some(b)) => Some(a.max(b)),
-                        (a, b) => a.or(b),
-                    },
-                )
+                (min_time(mn, o.min_time), max_time(mx, o.max_time))
             });
         let path = self.path.clone();
         let quarantine = e.quarantine_path.as_deref().map(|q| self.stored(q));

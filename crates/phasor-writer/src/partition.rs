@@ -4,7 +4,7 @@ use arrow_array::cast::AsArray;
 use arrow_array::types::{Date32Type, TimestampMicrosecondType, UInt32Type};
 use arrow_array::{Array, PrimitiveArray, RecordBatch};
 use arrow_schema::{DataType, Field, Schema, TimeUnit};
-use phasor_core::calendar::local_year_month;
+use phasor_core::calendar::{days_from_civil, local_year_month};
 
 use crate::error::StoreError;
 use crate::writer::Partition;
@@ -33,6 +33,64 @@ pub fn naive_timestamp(schema: &Schema) -> Option<&Field> {
     schema.fields().iter().find_map(|f| find(f))
 }
 
+/// The market month of a time column's values, in units of `unit_ns`.
+///
+/// It keeps the last month's bounds, so a run of rows in one month costs a
+/// comparison each; a month whose times reach the ends of nanoseconds is
+/// never kept, so every value goes through the same saturating conversion.
+struct MonthOf {
+    unit_ns: i64,
+    offset_secs: i32,
+    /// The last month's first value and the next month's, empty at first.
+    lo: i64,
+    hi: i64,
+    part: Partition,
+}
+
+impl MonthOf {
+    const fn new(unit_ns: i64, offset_secs: i32) -> Self {
+        Self {
+            unit_ns,
+            offset_secs,
+            lo: 0,
+            hi: 0,
+            part: Partition::Unknown,
+        }
+    }
+
+    #[inline]
+    fn of(&mut self, v: i64) -> Partition {
+        if self.lo <= v && v < self.hi {
+            return self.part;
+        }
+        let (y, m) = local_year_month(v.saturating_mul(self.unit_ns), self.offset_secs);
+        self.part = Partition::Month {
+            year: y,
+            month: m as u8,
+        };
+        let start = |y: i32, m: u32| {
+            (i128::from(days_from_civil(y, m, 1)) * 86_400 - i128::from(self.offset_secs))
+                * 1_000_000_000
+                / i128::from(self.unit_ns)
+        };
+        let (lo, hi) = (
+            start(y, m),
+            if m == 12 {
+                start(y + 1, 1)
+            } else {
+                start(y, m + 1)
+            },
+        );
+        let lim = i128::from(i64::MAX / self.unit_ns);
+        (self.lo, self.hi) = if -lim < lo && hi < lim {
+            (lo as i64, hi as i64)
+        } else {
+            (0, 0)
+        };
+        self.part
+    }
+}
+
 /// Splits `batch` into one batch per market-time month of `time_col`.
 ///
 /// One month returns the batch uncopied; nulls go to [`Partition::Unknown`].
@@ -43,60 +101,46 @@ pub fn split_by_month(
 ) -> Result<Vec<(Partition, RecordBatch)>, StoreError> {
     zone!(SPLIT);
     let col = batch.column(time_col);
-    let month = |y: i32, m: u32| Partition::Month {
-        year: y,
-        month: m as u8,
-    };
-    let parts: Vec<Partition> = match col.data_type() {
+    match col.data_type() {
         DataType::Timestamp(TimeUnit::Microsecond, Some(_)) => {
             let ts: &PrimitiveArray<TimestampMicrosecondType> = col.as_primitive();
-            ts.iter()
-                .map(|v| {
-                    v.map_or(Partition::Unknown, |v| {
-                        let (y, m) = local_year_month(v.saturating_mul(1_000), offset_secs);
-                        month(y, m)
-                    })
-                })
-                .collect()
+            let mut months = MonthOf::new(1_000, offset_secs);
+            split_by(batch, |i| {
+                if ts.is_valid(i) {
+                    months.of(ts.value(i))
+                } else {
+                    Partition::Unknown
+                }
+            })
         }
         DataType::Date32 => {
             let days: &PrimitiveArray<Date32Type> = col.as_primitive();
-            days.iter()
-                .map(|v| {
-                    v.map_or(Partition::Unknown, |d| {
-                        let (y, m) =
-                            local_year_month(i64::from(d).saturating_mul(86_400_000_000_000), 0);
-                        month(y, m)
-                    })
-                })
-                .collect()
+            let mut months = MonthOf::new(86_400_000_000_000, 0);
+            split_by(batch, |i| {
+                if days.is_valid(i) {
+                    months.of(i64::from(days.value(i)))
+                } else {
+                    Partition::Unknown
+                }
+            })
         }
-        other => {
-            return Err(StoreError::PartitionColumnNotTimestamp {
-                column: batch.schema().field(time_col).name().clone(),
-                observed: other.to_string(),
-            });
-        }
-    };
-    if batch.num_rows() == 0 {
-        return Ok(vec![]);
+        other => Err(StoreError::PartitionColumnNotTimestamp {
+            column: batch.schema().field(time_col).name().clone(),
+            observed: other.to_string(),
+        }),
     }
-    let part_of = |i: usize| -> Partition { parts[i] };
-    let first = part_of(0);
-    let mut all_same = true;
-    for i in 1..batch.num_rows() {
-        if part_of(i) != first {
-            all_same = false;
-            break;
-        }
-    }
-    if all_same {
-        return Ok(vec![(first, batch.clone())]);
-    }
+}
+
+/// Splits `batch` by `part_of` each row.
+fn split_by(
+    batch: &RecordBatch,
+    mut part_of: impl FnMut(usize) -> Partition,
+) -> Result<Vec<(Partition, RecordBatch)>, StoreError> {
     // Rows in time order: each month is one slice, without copying.
     let mut runs: Vec<(Partition, usize, usize)> = Vec::new();
     let mut in_order = true;
-    for (i, &p) in parts.iter().enumerate() {
+    for i in 0..batch.num_rows() {
+        let p = part_of(i);
         if let Some((rp, _, len)) = runs.last_mut()
             && *rp == p
         {
@@ -109,6 +153,9 @@ pub fn split_by_month(
         }
     }
     if in_order {
+        if let [(p, ..)] = runs[..] {
+            return Ok(vec![(p, batch.clone())]);
+        }
         return Ok(runs
             .into_iter()
             .map(|(p, start, len)| (p, batch.slice(start, len)))
@@ -137,38 +184,65 @@ pub fn split_by_month(
     Ok(out)
 }
 
-/// Minimum and maximum of a timestamp column, ignoring nulls, in nanoseconds.
-pub fn time_bounds(batch: &RecordBatch, time_col: usize) -> (Option<i64>, Option<i64>) {
-    let col = batch.column(time_col);
-    let Some(ts) = col.as_primitive_opt::<TimestampMicrosecondType>() else {
-        return (None, None);
-    };
-    let mut min = None;
-    let mut max = None;
-    for v in ts.iter().flatten().map(|v| v.saturating_mul(1_000)) {
-        min = Some(min.map_or(v, |m: i64| m.min(v)));
-        max = Some(max.map_or(v, |m: i64| m.max(v)));
-    }
-    (min, max)
+/// A batch's time column at a glance: its bounds in nanoseconds, ignoring
+/// nulls, and whether it is non-decreasing with no null, so Parquet can
+/// declare it sorted. A column that is not the lake's timestamp has neither.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub struct TimeStats {
+    /// The earliest time.
+    pub min: Option<i64>,
+    /// The latest time.
+    pub max: Option<i64>,
+    /// Whether the column is non-decreasing with no null.
+    pub sorted: bool,
 }
 
-/// Whether a timestamp column is non-decreasing, so Parquet can declare it sorted.
-pub fn is_sorted(batch: &RecordBatch, time_col: usize) -> bool {
+/// The [`TimeStats`] of `batch`'s column `time_col`, in one pass.
+pub fn time_stats(batch: &RecordBatch, time_col: usize) -> TimeStats {
     let Some(ts) = batch
         .column(time_col)
         .as_primitive_opt::<TimestampMicrosecondType>()
     else {
-        return false;
+        return TimeStats::default();
     };
-    let mut prev: Option<i64> = None;
+    let mut min = i64::MAX;
+    let mut max = i64::MIN;
+    let mut any = false;
+    let mut sorted = true;
+    let mut prev = i64::MIN;
     for v in ts {
-        let Some(v) = v else { return false };
-        if prev.is_some_and(|p| v < p) {
-            return false;
-        }
-        prev = Some(v);
+        let Some(v) = v else {
+            sorted = false;
+            continue;
+        };
+        sorted &= v >= prev;
+        prev = v;
+        let v = v.saturating_mul(1_000);
+        min = min.min(v);
+        max = max.max(v);
+        any = true;
     }
-    true
+    TimeStats {
+        min: any.then_some(min),
+        max: any.then_some(max),
+        sorted,
+    }
+}
+
+/// The earlier of two optional times, either when the other is none.
+pub fn min_time(a: Option<i64>, b: Option<i64>) -> Option<i64> {
+    match (a, b) {
+        (Some(a), Some(b)) => Some(a.min(b)),
+        (a, b) => a.or(b),
+    }
+}
+
+/// The later of two optional times, either when the other is none.
+pub fn max_time(a: Option<i64>, b: Option<i64>) -> Option<i64> {
+    match (a, b) {
+        (Some(a), Some(b)) => Some(a.max(b)),
+        (a, b) => a.or(b),
+    }
 }
 
 #[cfg(test)]
@@ -344,18 +418,26 @@ mod tests {
                 .iter()
                 .any(|(p, b)| *p == Partition::Unknown && b.num_rows() == 1)
         );
-        let (min, max) = time_bounds(&b, 0);
-        assert_eq!(min, Some(utc_nanos(2024, 1, 1, 0, 0, 0, NEM_OFFSET_SECS)));
-        assert_eq!(max, Some(utc_nanos(2024, 1, 2, 0, 0, 0, NEM_OFFSET_SECS)));
-        assert!(!is_sorted(&b, 0));
+        let t = time_stats(&b, 0);
+        assert_eq!(t.min, Some(utc_nanos(2024, 1, 1, 0, 0, 0, NEM_OFFSET_SECS)));
+        assert_eq!(t.max, Some(utc_nanos(2024, 1, 2, 0, 0, 0, NEM_OFFSET_SECS)));
+        assert!(!t.sorted);
         let sorted = batch(&[
             Some("2024/01/01 00:00:00"),
             Some("2024/01/01 00:00:00"),
             Some("2024/01/02 00:00:00"),
         ]);
-        assert!(is_sorted(&sorted, 0));
-        assert!(!is_sorted(&b, 1), "not a timestamp column");
-        assert_eq!(time_bounds(&b, 1), (None, None));
+        assert!(time_stats(&sorted, 0).sorted);
+        assert!(!time_stats(&batch(&[Some("2024/01/01 00:00:00"), None]), 0).sorted);
+        assert_eq!(
+            time_stats(&b, 1),
+            TimeStats::default(),
+            "not a timestamp column"
+        );
+        assert_eq!(min_time(None, Some(2)), Some(2));
+        assert_eq!(max_time(Some(1), Some(2)), Some(2));
+        assert_eq!(min_time(Some(1), Some(2)), Some(1));
+        assert_eq!(max_time(Some(1), None), Some(1));
         let empty = batch(&[]);
         assert!(
             split_by_month(&empty, 0, NEM_OFFSET_SECS)
@@ -366,6 +448,61 @@ mod tests {
             split_by_month(&b, 1, NEM_OFFSET_SECS),
             Err(StoreError::PartitionColumnNotTimestamp { .. })
         ));
+    }
+
+    #[test]
+    fn a_kept_month_gives_what_each_value_would() {
+        let direct = |v: i64, unit: i64, offset: i32| {
+            let (y, m) = local_year_month(v.saturating_mul(unit), offset);
+            Partition::Month {
+                year: y,
+                month: m as u8,
+            }
+        };
+        let jan = utc_nanos(2024, 1, 1, 0, 0, 0, NEM_OFFSET_SECS) / 1_000;
+        let feb = utc_nanos(2024, 2, 1, 0, 0, 0, NEM_OFFSET_SECS) / 1_000;
+        let dec = utc_nanos(2023, 12, 31, 23, 59, 59, NEM_OFFSET_SECS) / 1_000;
+        let edge = i64::MAX / 1_000;
+        let micros = [
+            jan,
+            jan + 1,
+            feb - 1,
+            feb,
+            feb + 1,
+            jan - 1,
+            dec,
+            jan,
+            edge,
+            edge - 1,
+            edge + 1,
+            i64::MAX,
+            edge - 86_400_000_000 * 40,
+            i64::MIN,
+            -edge,
+            -edge + 1,
+            0,
+            -1,
+        ];
+        let mut months = MonthOf::new(1_000, NEM_OFFSET_SECS);
+        for v in micros {
+            assert_eq!(months.of(v), direct(v, 1_000, NEM_OFFSET_SECS), "{v}");
+        }
+        let edge = i64::MAX / 86_400_000_000_000;
+        let mut months = MonthOf::new(86_400_000_000_000, 0);
+        for d in [
+            19_723,
+            19_723 + 30,
+            19_723 + 31,
+            19_722,
+            edge,
+            edge + 1,
+            -edge,
+            -edge - 1,
+            0,
+            -1,
+        ] {
+            assert_eq!(months.of(d), direct(d, 86_400_000_000_000, 0), "{d}");
+        }
     }
 
     #[test]

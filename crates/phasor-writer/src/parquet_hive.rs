@@ -19,7 +19,7 @@ use parquet::file::properties::{EnabledStatistics, WriterProperties, WriterVersi
 use phasor_core::config::{Codec, Lake, Statistics};
 
 use crate::error::StoreError;
-use crate::partition::{is_sorted, time_bounds};
+use crate::partition::{TimeStats, max_time, min_time, time_stats};
 use crate::writer::{FileMeta, LakeWriter, PartitionKey, WriterId, WrittenFile};
 
 struct Open {
@@ -322,68 +322,7 @@ impl LakeWriter for ParquetHive {
     }
 
     fn write(&mut self, id: WriterId, batch: &RecordBatch) -> Result<(), StoreError> {
-        zone!(WRITE);
-        let o = self
-            .open
-            .get_mut(&id.0)
-            .ok_or(StoreError::NoSuchWriter(id.0))?;
-        if batch.schema().fields() != o.schema.fields() {
-            return Err(StoreError::SchemaMismatch {
-                path: o.final_path.display().to_string(),
-                expected: o
-                    .schema
-                    .fields()
-                    .iter()
-                    .map(|f| f.name().clone())
-                    .collect::<Vec<_>>()
-                    .join(","),
-                observed: batch
-                    .schema()
-                    .fields()
-                    .iter()
-                    .map(|f| f.name().clone())
-                    .collect::<Vec<_>>()
-                    .join(","),
-            });
-        }
-        if let Some(tc) = o.time_column {
-            zone!(BOUNDS);
-            let (mn, mx) = time_bounds(batch, tc);
-            if o.sorted
-                && (!is_sorted(batch, tc)
-                    || matches!((o.last_max, mn), (Some(prev), Some(first)) if first < prev))
-            {
-                o.sorted = false;
-            }
-            o.min = match (o.min, mn) {
-                (Some(a), Some(b)) => Some(a.min(b)),
-                (a, b) => a.or(b),
-            };
-            o.max = match (o.max, mx) {
-                (Some(a), Some(b)) => Some(a.max(b)),
-                (a, b) => a.or(b),
-            };
-            o.last_max = mx.or(o.last_max);
-        }
-        let encoded = {
-            zone!(ENCODE);
-            o.writer.write(batch)
-        };
-        encoded.map_err(|e| StoreError::Parquet {
-            path: o.tmp.display().to_string(),
-            message: e.to_string(),
-        })?;
-        if o.writer.memory_size() >= self.row_group_bytes {
-            zone!(ENCODE);
-            o.writer.flush().map_err(|e| StoreError::Parquet {
-                path: o.tmp.display().to_string(),
-                message: e.to_string(),
-            })?;
-        }
-        o.rows += batch.num_rows() as u64;
-        let source = batch.column(batch.num_columns() - crate::provenance::fields().len());
-        crate::provenance::count(source.as_ref(), &mut o.sources);
-        Ok(())
+        self.write_timed(id, batch).map(drop)
     }
 
     fn close(&mut self, id: WriterId) -> Result<WrittenFile, StoreError> {
@@ -474,6 +413,74 @@ impl LakeWriter for ParquetHive {
             let _ = o.writer.close();
             let _ = std::fs::remove_file(&o.tmp);
         }
+    }
+}
+
+impl ParquetHive {
+    /// Appends a batch in the writer's schema, as [`LakeWriter::write`]; the
+    /// stats of its time column, when the file has one.
+    pub(crate) fn write_timed(
+        &mut self,
+        id: WriterId,
+        batch: &RecordBatch,
+    ) -> Result<Option<TimeStats>, StoreError> {
+        zone!(WRITE);
+        let o = self
+            .open
+            .get_mut(&id.0)
+            .ok_or(StoreError::NoSuchWriter(id.0))?;
+        if batch.schema().fields() != o.schema.fields() {
+            return Err(StoreError::SchemaMismatch {
+                path: o.final_path.display().to_string(),
+                expected: o
+                    .schema
+                    .fields()
+                    .iter()
+                    .map(|f| f.name().clone())
+                    .collect::<Vec<_>>()
+                    .join(","),
+                observed: batch
+                    .schema()
+                    .fields()
+                    .iter()
+                    .map(|f| f.name().clone())
+                    .collect::<Vec<_>>()
+                    .join(","),
+            });
+        }
+        let stats = o.time_column.map(|tc| {
+            zone!(BOUNDS);
+            let t = time_stats(batch, tc);
+            if o.sorted
+                && (!t.sorted
+                    || matches!((o.last_max, t.min), (Some(prev), Some(first)) if first < prev))
+            {
+                o.sorted = false;
+            }
+            o.min = min_time(o.min, t.min);
+            o.max = max_time(o.max, t.max);
+            o.last_max = t.max.or(o.last_max);
+            t
+        });
+        let encoded = {
+            zone!(ENCODE);
+            o.writer.write(batch)
+        };
+        encoded.map_err(|e| StoreError::Parquet {
+            path: o.tmp.display().to_string(),
+            message: e.to_string(),
+        })?;
+        if o.writer.memory_size() >= self.row_group_bytes {
+            zone!(ENCODE);
+            o.writer.flush().map_err(|e| StoreError::Parquet {
+                path: o.tmp.display().to_string(),
+                message: e.to_string(),
+            })?;
+        }
+        o.rows += batch.num_rows() as u64;
+        let source = batch.column(batch.num_columns() - crate::provenance::fields().len());
+        crate::provenance::count(source.as_ref(), &mut o.sources);
+        Ok(stats)
     }
 }
 
