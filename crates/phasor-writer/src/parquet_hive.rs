@@ -69,6 +69,12 @@ pub fn compression(codec: Codec, zstd_level: i32) -> Compression {
 /// The directory under a table's that holds its data files.
 pub const DATA: &str = "data";
 
+/// Bytes of a row group in memory, as the writer counts them, past which it
+/// ends short of its row count. The writer's count is low: a table of 100
+/// columns holds about five times as much, so 8 MiB keeps a wide table's
+/// ingest near 50 MB of heap where its row count alone let it reach 340.
+pub const ROW_GROUP_BYTES: usize = 8 << 20;
+
 /// The production lake writer.
 pub struct ParquetHive {
     lake_root: PathBuf,
@@ -76,6 +82,7 @@ pub struct ParquetHive {
     open: HashMap<u32, Open>,
     closed: Vec<Closed>,
     version: &'static str,
+    row_group_bytes: usize,
 }
 
 impl ParquetHive {
@@ -87,6 +94,7 @@ impl ParquetHive {
             open: HashMap::new(),
             closed: Vec::new(),
             version: env!("CARGO_PKG_VERSION"),
+            row_group_bytes: ROW_GROUP_BYTES,
         }
     }
 
@@ -389,6 +397,15 @@ impl LakeWriter for ParquetHive {
             path: o.tmp.display().to_string(),
             message: e.to_string(),
         })?;
+        // The writer holds a row group in memory until it ends: a wide
+        // table's ends at a size too, not only at its row count.
+        if o.writer.memory_size() >= self.row_group_bytes {
+            zone!(ENCODE);
+            o.writer.flush().map_err(|e| StoreError::Parquet {
+                path: o.tmp.display().to_string(),
+                message: e.to_string(),
+            })?;
+        }
         o.rows += batch.num_rows() as u64;
         let source = batch.column(batch.num_columns() - crate::provenance::fields().len());
         crate::provenance::count(source.as_ref(), &mut o.sources);
@@ -615,6 +632,22 @@ mod tests {
                 resolution: "exact".into(),
             },
         }
+    }
+
+    #[test]
+    fn a_row_group_ends_at_its_size_before_its_row_count() {
+        let dir = tempfile::tempdir().unwrap();
+        let mut w = ParquetHive::new(dir.path());
+        w.row_group_bytes = 1;
+        let id = w.open(&key(1), schema(), &meta()).unwrap();
+        for t in ["2024/01/01 00:05:00", "2024/01/01 00:10:00"] {
+            w.write(id, &batch(&[t], &["A"], &[Some(1.0)])).unwrap();
+        }
+        let f = w.close(id).unwrap();
+        w.commit().unwrap();
+        let file = File::open(&f.path).unwrap();
+        let b = ParquetRecordBatchReaderBuilder::try_new(file).unwrap();
+        assert_eq!(b.metadata().num_row_groups(), 2);
     }
 
     fn key(month: u8) -> PartitionKey {

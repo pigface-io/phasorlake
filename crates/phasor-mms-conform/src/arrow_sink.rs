@@ -112,6 +112,9 @@ struct Block {
     /// Columns with values kept as text since the last flush, in the order
     /// they first had one.
     raws: Vec<RawColumn>,
+    /// Rows per batch for this block's width: the sink's, or fewer for a
+    /// wide table so a batch holds at most [`BATCH_CELLS`] values.
+    batch_rows: usize,
 }
 
 /// The allocations of a [`Block`], carried to the next block of a file.
@@ -184,6 +187,17 @@ const FIRST_ROWS: usize = 256;
 /// Rows per batch by default.
 pub const DEFAULT_BATCH_ROWS: usize = 65_536;
 
+/// Values (rows times columns) a batch holds at most: a table of more than
+/// 16 columns gets fewer rows per batch, so memory follows the values a
+/// batch holds, not its row count.
+pub const BATCH_CELLS: usize = 1 << 20;
+
+/// Rows per batch for a table `width` columns wide: `batch_rows` at most,
+/// and no fewer than [`FIRST_ROWS`] (or `batch_rows`, when that is less).
+fn rows_for(width: usize, batch_rows: usize) -> usize {
+    (BATCH_CELLS / width.max(1)).clamp(FIRST_ROWS.min(batch_rows), batch_rows)
+}
+
 /// What a column of `ty` expects, in words.
 fn expected(ty: &DataType) -> String {
     match ty {
@@ -253,10 +267,10 @@ impl<'r, B: BatchSink> ArrowSink<'r, B> {
 
     fn flush(&mut self) -> Result<(), SinkError> {
         zone!(FLUSH);
-        let batch_rows = self.batch_rows;
         let Some(block) = self.block.as_mut() else {
             return Ok(());
         };
+        let batch_rows = block.batch_rows;
         if block.rows == 0 {
             return Ok(());
         }
@@ -475,6 +489,7 @@ impl<B: BatchSink> Sink for ArrowSink<'_, B> {
             clamped: b.clamped,
             nulls_kept: b.nulls_kept,
             raws: b.raws,
+            batch_rows: rows_for(width, self.batch_rows),
             resolved,
         });
         Ok(())
@@ -595,7 +610,7 @@ impl<B: BatchSink> Sink for ArrowSink<'_, B> {
             keep_misfits(block, &self.misfits, row, pos.line);
         }
         block.rows += 1;
-        if block.rows >= self.batch_rows {
+        if block.rows >= block.batch_rows {
             self.flush().map_err(RowFailure::fatal)?;
         }
         Ok(())
@@ -1322,6 +1337,15 @@ D,DISPATCH,UNIT_SCADA,1,\"2024/01/01 00:05:00\",,1\n";
         assert_eq!(d.code, "parse.null_not_allowed");
         assert_eq!(d.column.as_deref(), Some("DUID"));
         assert_eq!(d.line, Some(2));
+    }
+
+    #[test]
+    fn a_wide_table_has_fewer_rows_per_batch() {
+        assert_eq!(rows_for(6, DEFAULT_BATCH_ROWS), DEFAULT_BATCH_ROWS);
+        assert_eq!(rows_for(128, DEFAULT_BATCH_ROWS), BATCH_CELLS / 128);
+        assert_eq!(rows_for(1 << 16, DEFAULT_BATCH_ROWS), FIRST_ROWS);
+        assert_eq!(rows_for(1 << 16, 16), 16);
+        assert_eq!(rows_for(0, 1024), 1024);
     }
 
     #[test]

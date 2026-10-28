@@ -98,7 +98,29 @@ pub fn split_by_month(
     if all_same {
         return Ok(vec![(first, batch.clone())]);
     }
-    // Rare: a file spanning months. Group row indexes per partition.
+    // A file spanning months, in time order: each month is one run of
+    // rows, and a slice of the batch, without copying.
+    let mut runs: Vec<(Partition, usize, usize)> = Vec::new();
+    let mut in_order = true;
+    for (i, &p) in parts.iter().enumerate() {
+        if let Some((rp, _, len)) = runs.last_mut()
+            && *rp == p
+        {
+            *len += 1;
+        } else if runs.iter().any(|(q, ..)| *q == p) {
+            in_order = false;
+            break;
+        } else {
+            runs.push((p, i, 1));
+        }
+    }
+    if in_order {
+        return Ok(runs
+            .into_iter()
+            .map(|(p, start, len)| (p, batch.slice(start, len)))
+            .collect());
+    }
+    // Rarer: months interleaved. Group row indexes per partition.
     let mut groups: Vec<(Partition, Vec<u32>)> = Vec::new();
     for i in 0..batch.num_rows() {
         let p = part_of(i);
@@ -220,6 +242,9 @@ mod tests {
             }
         );
         assert_eq!(parts[1].1.num_rows(), 1);
+        // Months in time order are slices of the batch, not copies.
+        let ids = |b: &RecordBatch| b.column(1).to_data().buffers()[0].as_ptr();
+        assert_eq!(ids(&parts[0].1), ids(&b));
         let one = batch(&[Some("2024/01/01 00:05:00"), Some("2024/01/02 00:05:00")]);
         let parts = split_by_month(&one, 0, NEM_OFFSET_SECS).unwrap();
         assert_eq!(parts.len(), 1);
