@@ -129,11 +129,10 @@ pub struct ReportFolders {
 impl ReportFolders {
     /// The folders under `base_url`, mapped to tables by `registry`.
     pub fn new(base_url: &str, registry: Arc<Registry>) -> Result<Self, FetchError> {
-        let mut base = Url::parse(base_url).map_err(FetchError::parse(base_url, "base URL"))?;
-        if !base.path().ends_with('/') {
-            base.set_path(&format!("{}/", base.path()));
-        }
-        Ok(Self { base, registry })
+        Ok(Self {
+            base: phasor_acquire::feed_folders::base_url(base_url)?,
+            registry,
+        })
     }
 
     /// The URL of a folder's side, `{base}Reports/ARCHIVE/Dispatch_SCADA/`.

@@ -30,6 +30,15 @@ pub struct FeedFolders {
     serves: Serves,
 }
 
+/// `url` as the base of a folder: with a `/` at the end of its path.
+pub fn base_url(url: &str) -> Result<Url, FetchError> {
+    let mut base = Url::parse(url).map_err(FetchError::parse(url, "base URL"))?;
+    if !base.path().ends_with('/') {
+        base.set_path(&format!("{}/", base.path()));
+    }
+    Ok(base)
+}
+
 /// The month of an instant in the feed's clock.
 fn month_of(at: Stamp, offset_secs: i32) -> Option<YearMonth> {
     let (year, month) = local_year_month(at.secs_utc.saturating_mul(1_000_000_000), offset_secs);
@@ -44,13 +53,9 @@ impl FeedFolders {
         feed: &'static Feed,
         table_of: TableOf,
     ) -> Result<Self, FetchError> {
-        let mut base = Url::parse(base_url).map_err(FetchError::parse(base_url, "base URL"))?;
-        if !base.path().ends_with('/') {
-            base.set_path(&format!("{}/", base.path()));
-        }
         Ok(Self {
             id,
-            base,
+            base: self::base_url(base_url)?,
             feed,
             table_of,
             serves: Arc::new(|_| true),
@@ -91,11 +96,11 @@ impl FeedFolders {
         modified: Option<String>,
         modified_at: Option<Stamp>,
     ) -> RemoteFile {
-        let path = url.path().to_owned();
-        let table = block_name(self.feed, &path).and_then(|b| (self.table_of)(&b));
+        let path = url.path();
+        let table = block_name(self.feed, path).and_then(|b| (self.table_of)(&b));
         let period = self
             .feed
-            .release_month(&path)
+            .release_month(path)
             .and_then(|m| YearMonth::new(m.year(), m.month()))
             .or_else(|| modified_at.and_then(|at| month_of(at, self.feed.offset_secs)))
             .map(Period::Month);
@@ -233,15 +238,12 @@ impl Source for FeedFolders {
                 if self.skipped(base.path()) {
                     continue;
                 }
-                versions.sort_by(|a, b| {
-                    let key = |x: &Held| {
-                        let p = &x.provenance;
-                        (
-                            p.listed(p.url()).and_then(|l| l.at).map(|s| s.secs_utc),
-                            x.path.clone(),
-                        )
-                    };
-                    key(a).cmp(&key(b))
+                versions.sort_by_cached_key(|x| {
+                    let p = &x.provenance;
+                    (
+                        p.listed(p.url()).and_then(|l| l.at).map(|s| s.secs_utc),
+                        x.path.clone(),
+                    )
                 });
                 let mut previous: Option<PathBuf> = None;
                 for (i, a) in versions.into_iter().enumerate() {
