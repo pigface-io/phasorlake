@@ -1,7 +1,10 @@
 # A `v*` tag builds the CLI for each platform the project supports and opens a
 # draft GitHub release with the binaries, their checksums and notes written
 # from the Conventional Commits since the previous tag. A person publishes the
-# draft; nothing here publishes on its own.
+# draft. The same tag builds the Python wheels, each with its platform's
+# binaries inside, and publishes them to PyPI by trusted publishing: the one
+# thing here that publishes on its own, so that the wheel on PyPI is the
+# commit the tag names and nothing else.
 name: release
 
 on:
@@ -13,7 +16,22 @@ permissions:
   contents: read
 
 jobs:
+  # The tag, Cargo and so the wheel all carry one version.
+  version:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - name: The tag names Cargo's version
+        if: github.event_name == 'push'
+        run: |
+          version=$(sed -n 's/^version = "\(.*\)"$/\1/p' Cargo.toml | head -1)
+          test "v$version" = "$GITHUB_REF_NAME" || { echo "::error::the tag is $GITHUB_REF_NAME but Cargo.toml says $version"; exit 1; }
+
   build:
+    needs: version
     strategy:
       fail-fast: false
       matrix:
@@ -40,6 +58,72 @@ jobs:
           name: ${{ matrix.target }}
           path: dist/*.tar.gz
           if-no-files-found: error
+
+  # One wheel per platform, the binaries built on the same runner (on Linux,
+  # inside maturin's manylinux container, so they run where the wheel does).
+  wheels:
+    needs: version
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { runner: macos-15, target: aarch64-apple-darwin }
+          - { runner: macos-15-intel, target: x86_64-apple-darwin }
+          - { runner: ubuntu-24.04, target: x86_64-unknown-linux-gnu, manylinux: auto }
+          - { runner: ubuntu-24.04-arm, target: aarch64-unknown-linux-gnu, manylinux: auto }
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup
+      - uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6
+        with:
+          version: "0.13.1"
+      - name: The binaries the wheel ships
+        if: runner.os != 'Linux'
+        run: just py-bin
+      - uses: PyO3/maturin-action@e83996d129638aa358a18fbd1dfb82f0b0fb5d3b # v1
+        with:
+          target: ${{ matrix.target }}
+          manylinux: ${{ matrix.manylinux || 'off' }}
+          args: --release --locked --out dist
+          sccache: false
+          # The container has cargo but not just; the recipe's commands, as they are.
+          before-script-linux: |
+            cargo build --release --locked -p phasor-cli -p phasor-mirror
+            mkdir -p python/phasorlake/bin
+            cp target/release/phasor target/release/phasor-mirror python/phasorlake/bin/
+      - name: The wheel holds the binaries and installs
+        shell: bash
+        run: |
+          unzip -l dist/*.whl | grep -E 'phasorlake/bin/phasor(-mirror)?$'
+          uv run --no-project --with dist/*.whl --python 3.12 python -c 'import phasorlake as pl; print(pl.__version__, pl.run(["--version"]))'
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: wheel-${{ matrix.target }}
+          path: dist/*.whl
+          if-no-files-found: error
+
+  # Trusted publishing: PyPI trusts this workflow of this repository, no token is kept.
+  pypi:
+    needs: wheels
+    if: github.event_name == 'push'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    environment: pypi
+    permissions:
+      id-token: write
+    steps:
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          pattern: wheel-*
+          path: dist
+          merge-multiple: true
+      - uses: pypa/gh-action-pypi-publish@7245906fb61fa33a13554f9d5fb856fe61758086 # v1.14.3
+        with:
+          packages-dir: dist
 
   release:
     needs: build

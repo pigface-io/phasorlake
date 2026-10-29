@@ -32,6 +32,8 @@ env:
   DUCKDB_SHA256_LINUX: 6e89deac1ebbc36eed0291caf8b567b030c7b86ac35998f71854e22b3c5d5e2f
   CARGO_LLVM_COV_VERSION: "0.9.1"
   CARGO_AUDIT_VERSION: "0.22.2"
+  # The Python package's tools run through uv; the lock file pins them.
+  UV_VERSION: "0.13.1"
 
 jobs:
   # Every git hook of both stages on every file: style, lint, tests, coverage
@@ -48,6 +50,9 @@ jobs:
           # No job pushes: the token does not stay on disk for a tool to find.
           persist-credentials: false
       - uses: ./.github/actions/setup
+      - uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6
+        with:
+          version: ${{ env.UV_VERSION }}
       - name: Install gitleaks, shellcheck, duckdb, prek and cargo-llvm-cov
         run: |
           scripts/fetch-tool.sh \
@@ -121,3 +126,17 @@ jobs:
       - uses: ./.github/actions/setup
       - run: sudo apt-get install -y zsh
       - run: just net-test
+
+  # The Python package on macOS, where most of its users are: built, typed, tested.
+  python-macos:
+    runs-on: macos-15
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/setup
+      - uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6
+        with:
+          version: ${{ env.UV_VERSION }}
+      - run: just py-fmt-check py-lint py-type py-stubs py-test
