@@ -1,4 +1,8 @@
 C,NEMP.WORLD,GSH_CAPACITY_TRANSFER_AUCTION_NT,AEMO,PUBLIC,2026/08/07,16:30:01,0000000531458749,GSH,0000000531458748
 I,GSH,CAPACITY_TRANSFER_AUCTION_NT,1,NOTICE_ID,NOTICE_DATE,GAS_DATE,FACILITY_ID,FACILITY_NAME,MARKET,NOTICE_TYPE,DESCRIPTION,LASTCHANGED
 D,GSH,CAPACITY_TRANSFER_AUCTION_NT,1,58,"2026/08/07 00:00:00","2026/08/08 00:00:00",,,DAA,"Day-ahead Auction Delay","All Auction Quantities submissions for today's auction have not been received by the initial cut-off time 4:30PM today. As a result, the day-ahead auction will be delayed. The new cut-off times are:
+Auction Quantities submissions from Facility Operators due by 6:30PM today (07/08/2026)
+AEMO to publish Auction Quantities report by 6:45PM today (07/08/2026)
+Auction bid submissions from Auction Participants due by 7:00PM today (07/08/2026)
+AEMO to publish Auction Results report by 7:30PM today (07/08/2026)","2026/08/07 16:30:00"
 C,"END OF REPORT",4

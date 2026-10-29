@@ -16,7 +16,8 @@ def test_dispatchprice_columns_and_schema() -> None:
     assert t["market"] == "nem"
     assert t["load_mode"] == "append"
     # A table's key and roles are a reader's: the registry says neither.
-    assert "key" not in t and "roles" not in t
+    assert "key" not in t
+    assert "roles" not in t
     assert t["time_column"] == "SETTLEMENTDATE"
     by_name = {c["name"]: c for c in t["columns"]}
     assert by_name["SETTLEMENTDATE"]["role"] == "time"
