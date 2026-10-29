@@ -28,8 +28,6 @@ jobs:
         with:
           persist-credentials: false
       - uses: ./.github/actions/setup
-        with:
-          schemas-key: ${{ secrets.PHASOR_SCHEMAS_KEY }}
       - run: just build
       - name: Package
         run: |
