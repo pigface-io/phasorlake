@@ -3,7 +3,9 @@
 `pip install phasorlake` gives Python the `phasor` command and its decoder.
 The package is the same Rust as the command, built from the same commit: what
 `phasorlake.decode` returns of a file is what `phasor ingest` writes of it,
-column for column, type for type, field id for field id.
+column for column, type for type, field id for field id. The source, the
+command's own documentation and the files the examples below read are at
+<https://github.com/pigface-io/phasorlake>.
 
 ```sh
 pip install phasorlake
@@ -13,8 +15,9 @@ phasor-mirror --help
 
 The package does not read the lake. Every revision of every row is kept, and
 "the latest", "every revision" and "as known at a time" are questions you ask
-in your own SQL, with DuckDB, pyiceberg or polars: `docs/reading.md` gives
-each as one query.
+in your own SQL, with DuckDB, pyiceberg or polars:
+[`docs/reading.md`](https://github.com/pigface-io/phasorlake/blob/main/docs/reading.md)
+gives each as one query.
 
 ## Decode a file
 
@@ -83,7 +86,7 @@ assert pl.run(["--version"]) == 0
 ## Errors and warnings
 
 A failure raises `PhasorError`. Its `code` is the diagnostic code the command
-prints (`docs/errors.md` lists every one), and `message`, `file`, `entry`,
+prints ([`docs/errors.md`](https://github.com/pigface-io/phasorlake/blob/main/docs/errors.md) lists every one), and `message`, `file`, `entry`,
 `table` and `line` say where. What phasor noted without failing comes
 through Python's `warnings` as `PhasorWarning`, the code first in its text.
 
