@@ -6,6 +6,7 @@ use phasor_core::{Diagnose, TimeRange, YearMonth};
 use phasor_pipeline::days_of;
 use phasor_registry::file_model::MarketDef;
 use phasor_registry::{Market, Registry, TableId};
+use tokio_util::sync::CancellationToken;
 
 use crate::cli::{TablesArg, WindowArgs};
 use crate::context::Context;
@@ -13,6 +14,19 @@ use crate::context::Context;
 /// A diagnostic as an error.
 pub fn fail(e: &impl Diagnose) -> anyhow::Error {
     anyhow::anyhow!("{}", e.diagnostic().render())
+}
+
+/// A token cancelled on Ctrl-C: the run stops taking files and finishes those in flight.
+pub fn cancel_on_interrupt() -> CancellationToken {
+    let cancel = CancellationToken::new();
+    let c2 = cancel.clone();
+    tokio::spawn(async move {
+        if tokio::signal::ctrl_c().await.is_ok() {
+            eprintln!("interrupted; finishing the files in flight");
+            c2.cancel();
+        }
+    });
+    cancel
 }
 
 /// The tables a command works on, and the one market they are of.
@@ -157,22 +171,19 @@ pub fn window(args: &WindowArgs, def: &MarketDef) -> Result<Option<Window>> {
 }
 
 /// The request line the manifest records.
-pub fn request(verb: &str, sel: &Selection, w: Option<&Window>, def: &MarketDef) -> String {
+pub fn request(verb: &str, sel: &Selection, w: &Window, def: &MarketDef) -> String {
     let tables = if sel.names.is_empty() {
         "*".to_owned()
     } else {
         sel.names.join(",")
     };
-    match w {
-        Some(w) => format!(
-            "{verb} {} {} {}..{}",
-            sel.kit,
-            tables,
-            rfc3339(w.instants.0, def.utc_offset_secs),
-            rfc3339(w.instants.1, def.utc_offset_secs)
-        ),
-        None => format!("{verb} {} {tables}", sel.kit),
-    }
+    format!(
+        "{verb} {} {} {}..{}",
+        sel.kit,
+        tables,
+        rfc3339(w.instants.0, def.utc_offset_secs),
+        rfc3339(w.instants.1, def.utc_offset_secs)
+    )
 }
 
 #[cfg(test)]

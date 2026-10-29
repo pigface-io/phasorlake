@@ -1034,6 +1034,9 @@ fn the_archive_lists_and_verifies_every_download() {
         err.contains("cache.sha256_mismatch") && err.contains("a.zip"),
         "{err}"
     );
+    let (code, out, _) = cli.code(&["--json", "verify", "--archive"]);
+    assert_eq!(code, 1, "{out}");
+    assert!(out.contains("\"code\":\"cache.sha256_mismatch\""), "{out}");
 }
 
 #[test]
@@ -1513,4 +1516,329 @@ fn fetch_reads_an_interval_of_a_table_from_a_whole_month_zip_into_the_lake() {
         "9",
     ]);
     assert!(code != 0 && err.contains("9"), "{err}");
+}
+
+/// Each command's refusals: what is missing or wrong is said, with a failing code.
+#[test]
+fn every_command_says_what_it_needs() {
+    let cli = Cli::new();
+    let refused = |args: &[&str], says: &str| {
+        let (code, out, err) = cli.code(args);
+        assert_eq!(code, 1, "{args:?}: {out}{err}");
+        assert!(err.contains(says), "{args:?}: {err}");
+    };
+    refused(
+        &["list", "NOPE"],
+        "No table is named NOPE; `phasor list` names them.",
+    );
+    refused(&["list", "NOPE", "--ingests"], "No table is named NOPE.");
+    refused(
+        &["ingest", "--source", "nem-mmsdm"],
+        "--source goes with a window",
+    );
+    refused(
+        &["ingest", "DISPATCHPRICE"],
+        "Name a window with the tables",
+    );
+    refused(
+        &[
+            "ingest",
+            "DISPATCHPRICE",
+            "--from",
+            "2024-01",
+            "--to",
+            "2024-01",
+            "--source",
+            "nem-nope",
+        ],
+        "The nem kit has no source nem-nope; it has nem-reports, nem-mmsdm.",
+    );
+    refused(&["fetch", "DISPATCHPRICE"], "fetch needs a window");
+    refused(
+        &["fetch", "--from", "2024-01", "--to", "2024-01"],
+        "Name a table, or --market",
+    );
+    refused(
+        &[
+            "ingest",
+            "DISPATCHPRICE,DWGM_INT029A_SYSTEM_NOTICES",
+            "--from",
+            "2024-01",
+            "--to",
+            "2024-01",
+        ],
+        "DWGM_INT029A_SYSTEM_NOTICES is of the gas market, the others of nem; one market a command.",
+    );
+    refused(
+        &["schema", "plan", "", "PRICE", "1", "--columns", "A"],
+        "A report type and subtype are names",
+    );
+    // A table of one's own that no source of its kit publishes names none to read.
+    let gas = cli.home.path().join("schemas/gas/PHASOR_TEST_GAS");
+    std::fs::create_dir_all(&gas).unwrap();
+    std::fs::write(
+        gas.join("table.toml"),
+        FOLLOWS.replace("PHASOR_TEST_FOLLOWS", "PHASOR_TEST_GAS"),
+    )
+    .unwrap();
+    refused(
+        &[
+            "ingest",
+            "PHASOR_TEST_GAS",
+            "--from",
+            "2024-01",
+            "--to",
+            "2024-01",
+        ],
+        "No source of the gas kit publishes PHASOR_TEST_GAS; name one with --source.",
+    );
+    assert!(cli.ok(&["list", "--runs"]).contains("no runs yet"));
+    let none = cli.ok(&["list", "DISPATCHPRICE", "--coverage"]);
+    assert!(none.contains("0 partition(s), no gap"), "{none}");
+    // A daily source reads its archive by day.
+    let out = cli.ok(&[
+        "ingest",
+        "DISPATCHPRICE",
+        "--day",
+        "2024-01-15",
+        "--source",
+        "nem-reports",
+        "--dry-run",
+    ]);
+    assert!(out.contains("0 listed"), "{out}");
+    // One market's tables, the others passed over; debug logging on.
+    let gas = cli.ok(&["-vv", "list", "--market", "gas"]);
+    assert!(gas.contains("DWGM_INT029A_SYSTEM_NOTICES") && !gas.contains("DISPATCHPRICE"));
+    // A table's columns: name, type, role, field id, words; nullability is a reader's.
+    let columns = cli.ok(&["list", "DISPATCHPRICE"]);
+    let header = columns.lines().find(|l| l.starts_with("column")).unwrap();
+    assert_eq!(
+        header.split_whitespace().collect::<Vec<_>>(),
+        ["column", "type", "role", "field", "description"]
+    );
+}
+
+/// What `inspect` cannot read is an error, or for one entry of a zip, said and passed over.
+#[test]
+fn inspect_says_what_it_cannot_read() {
+    let cli = Cli::new();
+    let tmp = cli.home.path();
+    let (code, _, err) = cli.code(&["inspect", tmp.join("gone.csv").to_str().unwrap()]);
+    assert_eq!(code, 1, "{err}");
+    let headless = tmp.join("headless.csv");
+    std::fs::write(&headless, "D,DISPATCH,PRICE,4,1\r\n").unwrap();
+    let (code, _, err) = cli.code(&["inspect", headless.to_str().unwrap()]);
+    assert_eq!(code, 1, "{err}");
+    assert!(err.contains("csv.data_before_header"), "{err}");
+    // An entry in a compression no reader here knows (LZMA, method 14).
+    let price = std::fs::read(fixtures().join("DISPATCHPRICE_v4_head.csv")).unwrap();
+    let mixed = tmp.join("mixed.zip");
+    make_zip(&mixed, &[("A.CSV", &price), ("B.CSV", &price)]);
+    let mut bytes = std::fs::read(&mixed).unwrap();
+    for (signature, at) in [(b"PK\x03\x04", 8), (b"PK\x01\x02", 10)] {
+        let second = bytes
+            .windows(4)
+            .enumerate()
+            .filter(|(_, w)| w == signature)
+            .nth(1)
+            .map(|(i, _)| i)
+            .unwrap();
+        bytes[second + at..second + at + 2].copy_from_slice(&14u16.to_le_bytes());
+    }
+    std::fs::write(&mixed, bytes).unwrap();
+    let (code, out, err) = cli.code(&["inspect", mixed.to_str().unwrap()]);
+    assert_eq!(code, 0, "{out}{err}");
+    assert!(err.contains("zip.bad_entry"), "{err}");
+    assert!(out.contains("A.CSV") && !out.contains("B.CSV"), "{out}");
+}
+
+/// A home that cannot be made, and a config file a kit refuses, stop the command before it starts.
+#[test]
+fn a_bad_home_or_config_is_explained() {
+    let cli = Cli::new();
+    let file = cli.home.path().join("a-file");
+    std::fs::write(&file, "").unwrap();
+    let out = Command::new(env!("CARGO_BIN_EXE_phasor"))
+        .arg("--home")
+        .arg(file.join("home"))
+        .args(["list", "--runs"])
+        .output()
+        .unwrap();
+    assert_eq!(out.status.code(), Some(1));
+    assert!(String::from_utf8_lossy(&out.stderr).contains("could not be created"));
+    let config = cli.home.path().join("config.toml");
+    for (text, says) in [
+        (
+            "[sources.nem]\nbase_urll = \"http://a\"\n",
+            "(in the config file)",
+        ),
+        (
+            "[sources.nem]\nbase_url = \"not a url\"\n",
+            "listing.parse_failed",
+        ),
+    ] {
+        std::fs::write(&config, text).unwrap();
+        let (code, _, err) = cli.code(&["list", "--runs"]);
+        assert_eq!(code, 1, "{err}");
+        assert!(err.contains(says), "{text}: {err}");
+    }
+}
+
+/// `list --coverage` gives the months the lake holds of a table and the months between with none.
+#[test]
+fn coverage_shows_the_months_held_and_the_gaps() {
+    let cli = Cli::new();
+    let tmp = cli.home.path();
+    let january = std::fs::read_to_string(fixtures().join("DISPATCHPRICE_v4_head.csv")).unwrap();
+    let march = tmp.join("DISPATCHPRICE_march.csv");
+    std::fs::write(&march, january.replace("2024/01/", "2024/03/")).unwrap();
+    // Two entries of one zip feed one file of the lake.
+    let both = tmp.join("PUBLIC_DISPATCHIS_TWO.zip");
+    make_zip(
+        &both,
+        &[("A.CSV", january.as_bytes()), ("B.CSV", january.as_bytes())],
+    );
+    cli.ok(&["import", both.to_str().unwrap(), march.to_str().unwrap()]);
+    let out = cli.ok(&["list", "DISPATCHPRICE", "--coverage"]);
+    assert!(out.contains("2 partition(s); gaps: 2024-02"), "{out}");
+    let json = cli.ok(&["--json", "list", "DISPATCHPRICE", "--coverage"]);
+    assert!(
+        json.lines()
+            .last()
+            .unwrap()
+            .contains("\"gaps\":[\"2024-02\"]"),
+        "{json}"
+    );
+    assert_eq!(json.lines().count(), 3, "{json}");
+    let files = cli.ok(&["list", "DISPATCHPRICE", "--files"]);
+    assert!(
+        files.contains("PUBLIC_DISPATCHIS_TWO.zip (2 entries)"),
+        "{files}"
+    );
+    let files = cli.ok(&["--json", "list", "--files"]);
+    assert_eq!(files.lines().count(), 2, "{files}");
+}
+
+/// A manifest broken under the binary is reported as the manifest's error; the import still writes.
+#[test]
+fn a_broken_manifest_is_reported() {
+    let cli = Cli::new();
+    cli.ok(&["list", "--runs"]);
+    let db = rusqlite::Connection::open(cli.home.path().join("manifest.sqlite")).unwrap();
+    db.execute_batch("DROP TABLE runs").unwrap();
+    drop(db);
+    let (code, _, err) = cli.code(&["list", "--runs"]);
+    assert_eq!(code, 1, "{err}");
+    assert!(err.contains("runs"), "{err}");
+    // No run to record the import under: nothing to rebuild the Iceberg tables from.
+    let scada = fixtures().join("DISPATCH_UNIT_SCADA_v1_head.csv");
+    let (_, out, err) = cli.code(&["import", scada.to_str().unwrap()]);
+    assert!(err.contains("runs") || out.contains("runs"), "{out}{err}");
+}
+
+/// `fetch --documents` keeps a version of each document the config names, again only when it changed.
+#[test]
+fn documents_are_fetched_from_where_the_config_says() {
+    let cli = Cli::new();
+    let base = serve_text("a registration list".into());
+    std::fs::write(
+        cli.home.path().join("config.toml"),
+        format!("[sources.nem]\ndocuments = [\"{base}/list.xlsx\"]\n"),
+    )
+    .unwrap();
+    let out = cli.ok(&["fetch", "--documents"]);
+    assert!(out.starts_with("new version: "), "{out}");
+    let json = cli.ok(&["--json", "fetch", "--documents"]);
+    assert!(
+        json.contains("\"type\":\"document\"") && json.contains("\"new\":false"),
+        "{json}"
+    );
+}
+
+/// Ctrl-C stops a run taking files and lets those in flight finish; a run that cannot plan fails.
+#[test]
+#[cfg(unix)]
+fn ctrl_c_finishes_the_files_in_flight() {
+    use std::io::{Read, Write};
+    use std::sync::atomic::{AtomicBool, Ordering};
+    // A nemweb that answers, the first time slowly, that it has no such month.
+    let listener = std::net::TcpListener::bind("127.0.0.1:0").unwrap();
+    let port = listener.local_addr().unwrap().port();
+    let asked = std::sync::Arc::new(AtomicBool::new(false));
+    let seen = asked.clone();
+    std::thread::spawn(move || {
+        for sock in listener.incoming().flatten() {
+            let mut sock = sock;
+            let _ = sock.read(&mut [0u8; 4096]);
+            if !seen.swap(true, Ordering::SeqCst) {
+                std::thread::sleep(std::time::Duration::from_millis(1500));
+            }
+            let _ = sock.write_all(
+                b"HTTP/1.1 404 Not Found\r\nContent-Length: 0\r\nConnection: close\r\n\r\n",
+            );
+        }
+    });
+    let cli = Cli::new();
+    std::fs::write(
+        cli.home.path().join("config.toml"),
+        format!("[sources.nem]\nbase_url = \"http://127.0.0.1:{port}\"\n"),
+    )
+    .unwrap();
+    let child = Command::new(env!("CARGO_BIN_EXE_phasor"))
+        .arg("--home")
+        .arg(cli.home.path())
+        .args([
+            "--no-progress",
+            "fetch",
+            "DISPATCHPRICE",
+            "--from",
+            "2024-01",
+            "--to",
+            "2024-01",
+        ])
+        .env_remove("PHASOR_HOME")
+        .stdout(std::process::Stdio::piped())
+        .stderr(std::process::Stdio::piped())
+        .spawn()
+        .unwrap();
+    let deadline = std::time::Instant::now() + std::time::Duration::from_secs(30);
+    while !asked.load(Ordering::SeqCst) {
+        assert!(
+            std::time::Instant::now() < deadline,
+            "the listing was never asked for"
+        );
+        std::thread::sleep(std::time::Duration::from_millis(20));
+    }
+    // The listing is in flight: the handler has long been in place.
+    std::thread::sleep(std::time::Duration::from_millis(200));
+    let kill = Command::new("kill")
+        .args(["-INT", &child.id().to_string()])
+        .status()
+        .unwrap();
+    assert!(kill.success());
+    let out = child.wait_with_output().unwrap();
+    let err = String::from_utf8_lossy(&out.stderr);
+    assert!(
+        err.contains("interrupted; finishing the files in flight"),
+        "{err}"
+    );
+    // Nothing was in flight but the listing, and no month is not a failure.
+    assert_eq!(out.status.code(), Some(0), "{err}");
+    // A listing phasor cannot read fails the run before it starts.
+    let base = serve_text("not a listing at all".into());
+    std::fs::write(
+        cli.home.path().join("config.toml"),
+        format!("[sources.nem]\nbase_url = \"{base}\"\n"),
+    )
+    .unwrap();
+    let (code, _, err) = cli.code(&[
+        "fetch",
+        "DISPATCHPRICE",
+        "--from",
+        "2024-01",
+        "--to",
+        "2024-01",
+    ]);
+    assert_eq!(code, 1, "{err}");
+    assert!(err.contains("listing.parse_failed"), "{err}");
 }

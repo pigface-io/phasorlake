@@ -59,7 +59,7 @@ phasor writes the lake and does not read it. Every revision is kept, so
 | command | does |
 |---|---|
 | `fetch T --from A --to B` | download what covers the window and ingest it. `--no-ingest`, `--dry-run`, `--day D` |
-| `fetch --documents` | AEMO's registration list, a new version kept beside the old |
+| `fetch --documents` | AEMO's registration list, a new version kept beside the old; `documents = [...]` under `[sources.nem]` names others |
 | `ingest [T --from A --to B]` | archive to lake, offline. No args: everything not yet ingested or out of date |
 | `import <zip\|csv\|dir>` | files you already have |
 | `list [T]` | tables, time columns, coverage, files, manifest |

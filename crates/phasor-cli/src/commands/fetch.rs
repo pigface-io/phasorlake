@@ -11,9 +11,11 @@ use super::common;
 
 /// `phasor fetch --documents`: every document fetched again, a new version kept.
 async fn documents(ctx: &Context) -> Result<i32> {
+    let nem = phasor_nem::NemConfig::from_sources(&ctx.config.sources)
+        .map_err(|e| anyhow::anyhow!("{e} (in the config file)"))?;
     let fetcher = ctx.fetcher(None)?;
     let mut code = 0;
-    for url in phasor_nem::DOCUMENTS {
+    for url in &nem.documents {
         let remote = phasor_kit::RemoteFile {
             url: url::Url::parse(url)?,
             source: "aemo-documents",
@@ -66,7 +68,7 @@ pub async fn fetch(cli: &Cli, ctx: &Context, args: &FetchCmd) -> Result<i32> {
     let Some(w) = common::window(&args.window, &sel.def)? else {
         bail!("fetch needs a window: --from and --to, or --day.");
     };
-    let request = common::request("fetch", &sel, Some(&w), &sel.def);
+    let request = common::request("fetch", &sel, &w, &sel.def);
     let req = GetRequest {
         kit: sel.kit.clone(),
         tables: sel.names.clone(),

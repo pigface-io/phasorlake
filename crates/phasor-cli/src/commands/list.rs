@@ -195,11 +195,6 @@ fn columns(ctx: &Context, id: TableId) -> Result<i32> {
                 c.ty.to_string(),
                 role(&c.name).to_owned(),
                 c.id.to_string(),
-                if c.nullable {
-                    String::new()
-                } else {
-                    "required".into()
-                },
                 docs.get(&c.id.0).cloned().unwrap_or_default(),
             ]
         })
@@ -218,10 +213,7 @@ fn columns(ctx: &Context, id: TableId) -> Result<i32> {
         }
         print!(
             "{}",
-            render::table(
-                &["column", "type", "role", "field", "", "description"],
-                &rows
-            )
+            render::table(&["column", "type", "role", "field", "description"], &rows)
         );
     }
     Ok(0)

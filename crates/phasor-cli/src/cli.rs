@@ -543,9 +543,7 @@ mod tests {
             "9",
         ])
         .unwrap();
-        let Command::Import(ImportCmd { ingest, .. }) = c.command else {
-            panic!("import");
-        };
+        let ingest = ingest_of(c).expect("import");
         let config = Lake {
             page_rows: 5000,
             ..Lake::default()
@@ -566,12 +564,20 @@ mod tests {
         ] {
             let c = Cli::try_parse_from(["phasor", "import", "a.zip", "--lake-compression", arg])
                 .unwrap();
-            let Command::Import(ImportCmd { ingest, .. }) = c.command else {
-                panic!("import");
-            };
+            let ingest = ingest_of(c).expect("import");
             assert_eq!(ingest.layout(config).compression, codec);
         }
         assert!(Cli::try_parse_from(["phasor", "import", "a.zip", "--lake-page-kb", "4"]).is_err());
+        let list = Cli::try_parse_from(["phasor", "list"]).unwrap();
+        assert!(ingest_of(list).is_none());
+    }
+
+    /// The ingest flags of an `import`; none for another command.
+    fn ingest_of(c: Cli) -> Option<IngestArgs> {
+        match c.command {
+            Command::Import(ImportCmd { ingest, .. }) => Some(ingest),
+            _ => None,
+        }
     }
 
     use super::*;
@@ -590,15 +596,11 @@ mod tests {
             "--dry-run",
         ])
         .unwrap();
-        match c.command {
-            Command::Fetch(f) => {
-                assert_eq!(f.tables.tables, ["A", "B"]);
-                assert_eq!(f.window.from.as_deref(), Some("2024-01"));
-                assert_eq!(f.window.to.as_deref(), Some("2024-02"));
-                assert!(f.dry_run);
-            }
-            other => panic!("{other:?}"),
-        }
+        assert!(matches!(&c.command, Command::Fetch(f)
+            if f.tables.tables == ["A", "B"]
+                && f.window.from.as_deref() == Some("2024-01")
+                && f.window.to.as_deref() == Some("2024-02")
+                && f.dry_run));
         assert!(Cli::try_parse_from(["phasor", "fetch", "A", "--from", "2024-01"]).is_err());
         let c = Cli::try_parse_from(["phasor", "--json", "-vv", "import", "a.zip", "--strict"])
             .unwrap();
@@ -612,12 +614,8 @@ mod tests {
             })
         ));
         let c = Cli::try_parse_from(["phasor", "ingest", "--dry-run"]).unwrap();
-        match c.command {
-            Command::Ingest(i) => {
-                assert!(i.dry_run && !i.window.is_set() && i.tables.tables.is_empty());
-            }
-            other => panic!("{other:?}"),
-        }
+        assert!(matches!(&c.command, Command::Ingest(i)
+            if i.dry_run && !i.window.is_set() && i.tables.tables.is_empty()));
         let c = Cli::try_parse_from([
             "phasor",
             "fetch",
@@ -629,13 +627,8 @@ mod tests {
         ])
         .unwrap();
         assert!(c.offline);
-        match c.command {
-            Command::Fetch(f) => {
-                assert_eq!(f.window.day.as_deref(), Some("2024-01-15"));
-                assert!(f.no_ingest);
-            }
-            other => panic!("{other:?}"),
-        }
+        assert!(matches!(&c.command, Command::Fetch(f)
+            if f.window.day.as_deref() == Some("2024-01-15") && f.no_ingest));
         assert!(Cli::try_parse_from(["phasor", "get", "T", "--day", "2024-01-01"]).is_err());
         let c = Cli::try_parse_from(["phasor", "fetch", "--documents"]).unwrap();
         assert!(matches!(c.command, Command::Fetch(f) if f.documents));
@@ -677,9 +670,7 @@ mod tests {
                 "{path}: --help ends with no Examples:"
             );
             for a in cmd.get_arguments() {
-                if a.is_positional() && a.get_id() == "command" {
-                    continue;
-                }
+                let id = a.get_id();
                 let help = a
                     .get_long_help()
                     .or(a.get_help())
@@ -688,8 +679,7 @@ mod tests {
                 let flag = !a.is_positional() && a.get_action().takes_values();
                 assert!(
                     !help.is_empty() && (!flag || help.contains('`')),
-                    "{path} --{}: an option that takes a value shows an example in backticks; help was {help:?}",
-                    a.get_id()
+                    "{path} --{id}: an option that takes a value shows an example in backticks; help was {help:?}"
                 );
             }
             for s in subs {

@@ -1877,6 +1877,7 @@ dependencies = [
  "phasor-wem",
  "phasor-writer",
  "phasor-zip",
+ "rusqlite",
  "serde",
  "serde_json",
  "tempfile",

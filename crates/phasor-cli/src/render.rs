@@ -226,4 +226,51 @@ mod tests {
         assert!(text.contains("error net.offline ×1\n{"), "{text}");
         assert!(text.contains("\"observed\":\"13.55\""), "{text}");
     }
+
+    /// Every kind of event through `consume_events`, in each of its modes.
+    #[tokio::test]
+    async fn events_render_as_json_bars_or_lines() {
+        let events = || {
+            let outcome = phasor_core::report::SourceOutcome {
+                source: "https://h/a/b.zip".into(),
+                status: phasor_core::report::SourceStatus::Ok,
+                failed_with: None,
+                errors: 0,
+                warnings: 0,
+                rows: 7,
+                bad_rows: 0,
+            };
+            let failed = Diagnostic::error("net.offline", phasor_core::Category::NET, "Offline.");
+            vec![
+                Event::Listed { files: 1 },
+                Event::DownloadStarted {
+                    url: "https://h/a/b.zip".into(),
+                    size: Some(2_000_000),
+                },
+                Event::DownloadStarted {
+                    url: "https://h/a/c.zip".into(),
+                    size: None,
+                },
+                Event::SourceDone(Box::new(outcome)),
+                Event::Diagnostic(Box::new(failed)),
+                Event::IngestStarted {
+                    source: "b.zip".into(),
+                },
+            ]
+        };
+        // (json, progress bars, verbose): bars draw nothing where stderr is no terminal.
+        for (json, progress, verbose) in [
+            (true, false, false),
+            (false, true, false),
+            (false, false, true),
+            (false, false, false),
+        ] {
+            let (tx, rx) = tokio::sync::mpsc::channel(16);
+            for e in events() {
+                tx.send(e).await.unwrap();
+            }
+            drop(tx);
+            consume_events(rx, json, progress, verbose).await;
+        }
+    }
 }

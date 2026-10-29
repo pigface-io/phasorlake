@@ -41,5 +41,7 @@ tracing.workspace = true
 tracing-subscriber.workspace = true
 
 [dev-dependencies]
+# A manifest broken under the binary, to see it reported.
+rusqlite.workspace = true
 tempfile.workspace = true
 zip.workspace = true

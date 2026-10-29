@@ -1,13 +1,13 @@
 //! `import`, `ingest`, `verify`, `iceberg`: the pipeline over local and archived files, and checks.
 
 use std::path::PathBuf;
+use std::sync::Arc;
 
 use anyhow::Result;
 use phasor_core::Diagnose;
 use phasor_core::TimeRange;
-use phasor_kit::Query;
+use phasor_kit::{Query, Source};
 use phasor_pipeline::{Input, Plan, RunOptions};
-use tokio_util::sync::CancellationToken;
 
 use crate::cli::{Cli, IngestArgs, IngestCmd};
 use crate::context::Context;
@@ -47,14 +47,7 @@ async fn run_plan(cli: &Cli, ctx: &Context, plan: Plan) -> Result<i32> {
     let fetcher = ctx.fetcher(Some(tx.clone()))?;
     let (manifest, thread) = ctx.manifest()?;
     let deps = ctx.deps(fetcher, manifest);
-    let cancel = CancellationToken::new();
-    let c2 = cancel.clone();
-    tokio::spawn(async move {
-        if tokio::signal::ctrl_c().await.is_ok() {
-            eprintln!("interrupted; finishing the files in flight");
-            c2.cancel();
-        }
-    });
+    let cancel = common::cancel_on_interrupt();
     let json = ctx.json;
     let progress = ctx.progress;
     let verbose = cli.verbose > 0;
@@ -185,43 +178,7 @@ pub async fn ingest(cli: &Cli, ctx: &Context, args: &IngestCmd) -> Result<i32> {
         .kits
         .kit(&sel.kit)
         .ok_or_else(|| anyhow::anyhow!("This binary was assembled without the {} kit.", sel.kit))?;
-    // Each table is read from the named source, else the monthly one that publishes it,
-    // else the first that does; with no tables, every feed.
-    let reads: Vec<(std::sync::Arc<dyn phasor_kit::Source>, Vec<String>)> = match &args.source {
-        Some(id) => vec![(
-            kit.sources
-                .iter()
-                .find(|s| s.id() == id)
-                .cloned()
-                .ok_or_else(|| {
-                    anyhow::anyhow!(
-                        "The {} kit has no source {id}; it has {}.",
-                        sel.kit,
-                        kit.sources
-                            .iter()
-                            .map(|s| s.id())
-                            .collect::<Vec<_>>()
-                            .join(", ")
-                    )
-                })?,
-            sel.names.clone(),
-        )],
-        None => phasor_pipeline::source_groups(&kit.sources, &sel.names)
-            .into_iter()
-            .map(|g| {
-                g.monthly
-                    .or(g.daily)
-                    .map(|s| (s, g.tables.clone()))
-                    .ok_or_else(|| {
-                        anyhow::anyhow!(
-                            "No source of the {} kit publishes {}; name one with --source.",
-                            sel.kit,
-                            g.tables.join(", ")
-                        )
-                    })
-            })
-            .collect::<Result<_>>()?,
-    };
+    let reads = reads(&sel.kit, &kit.sources, &sel.names, args.source.as_deref())?;
     let mut code = 0;
     for (source, names) in reads {
         // A source cut by day is archived by day, one cut by month by month.
@@ -232,7 +189,7 @@ pub async fn ingest(cli: &Cli, ctx: &Context, args: &IngestCmd) -> Result<i32> {
             TimeRange::months(days.from.first_day().month(), days.to.last_day().month())
         };
         let plan = Plan {
-            request: common::request("ingest", &sel, Some(&w), &sel.def),
+            request: common::request("ingest", &sel, &w, &sel.def),
             input: Input::Archive {
                 source,
                 query: Query {
@@ -333,6 +290,39 @@ fn build_iceberg(
         ]);
     }
     Ok((rows, code))
+}
+
+/// A source `ingest` reads, and the tables it reads of it.
+type Read = (Arc<dyn Source>, Vec<String>);
+
+/// The sources `ingest` reads and the tables of each: the named source, else
+/// for each table the monthly source that publishes it, else the first that
+/// does; with no tables, every feed.
+fn reads(
+    kit: &str,
+    sources: &[Arc<dyn Source>],
+    names: &[String],
+    named: Option<&str>,
+) -> Result<Vec<Read>> {
+    if let Some(id) = named {
+        let Some(source) = sources.iter().find(|s| s.id() == id) else {
+            let have: Vec<&str> = sources.iter().map(|s| s.id()).collect();
+            anyhow::bail!(
+                "The {kit} kit has no source {id}; it has {}.",
+                have.join(", ")
+            );
+        };
+        return Ok(vec![(Arc::clone(source), names.to_vec())]);
+    }
+    let mut out = Vec::new();
+    for g in phasor_pipeline::source_groups(sources, names) {
+        let Some(source) = g.monthly.or(g.daily) else {
+            let tables = g.tables.join(", ");
+            anyhow::bail!("No source of the {kit} kit publishes {tables}; name one with --source.");
+        };
+        out.push((source, g.tables));
+    }
+    Ok(out)
 }
 
 /// After a run, rebuilds the Iceberg metadata of every table it ingested.

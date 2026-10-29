@@ -12,3 +12,5 @@
 /dist
 /.coverage
 __pycache__/
+# Coverage counters an instrumented binary run outside `just cover` leaves behind
+*.profraw

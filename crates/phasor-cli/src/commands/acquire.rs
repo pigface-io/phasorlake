@@ -3,7 +3,6 @@
 use anyhow::Result;
 use phasor_pipeline::{GetReport, GetRequest, RunOptions};
 use phasor_writer::ManifestHandle;
-use tokio_util::sync::CancellationToken;
 
 use crate::cli::Cli;
 use crate::context::Context;
@@ -21,14 +20,7 @@ pub async fn run(
     let (tx, rx) = tokio::sync::mpsc::channel(4096);
     let fetcher = ctx.fetcher(Some(tx.clone()))?;
     let deps = ctx.deps(fetcher, manifest);
-    let cancel = CancellationToken::new();
-    let c2 = cancel.clone();
-    tokio::spawn(async move {
-        if tokio::signal::ctrl_c().await.is_ok() {
-            eprintln!("interrupted; finishing the files in flight");
-            c2.cancel();
-        }
-    });
+    let cancel = super::common::cancel_on_interrupt();
     let consumer = tokio::spawn(render::consume_events(
         rx,
         ctx.json,

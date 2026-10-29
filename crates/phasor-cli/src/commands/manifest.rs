@@ -10,10 +10,6 @@ use crate::cli::WemCmd;
 use crate::context::Context;
 use crate::render;
 
-fn fail(e: &phasor_writer::error::ManifestError) -> anyhow::Error {
-    anyhow::anyhow!("{}", e.diagnostic().render())
-}
-
 /// `phasor errors`
 #[allow(clippy::too_many_arguments)]
 pub async fn errors(
@@ -27,7 +23,10 @@ pub async fn errors(
 ) -> Result<i32> {
     let (m, thread) = ctx.manifest()?;
     let run_id = if last {
-        m.latest_run().await.map_err(|e| fail(&e))?.map(|r| r.id)
+        m.latest_run()
+            .await
+            .map_err(|e| super::common::fail(&e))?
+            .map(|r| r.id)
     } else {
         run
     };
@@ -38,7 +37,10 @@ pub async fn errors(
         severity: errors_only.then_some(Severity::Error),
         limit,
     };
-    let diags = m.list_diagnostics(filter).await.map_err(|e| fail(&e))?;
+    let diags = m
+        .list_diagnostics(filter)
+        .await
+        .map_err(|e| super::common::fail(&e))?;
     drop(thread);
     // JSON lines either way: newest first with `--json`, oldest first without.
     if ctx.json {
