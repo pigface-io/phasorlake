@@ -77,10 +77,13 @@ jobs:
       - name: Scan the whole history for secrets
         run: just secrets
 
-  # The benchmarks on the machine class the budgets were taken on.
+  # The benchmarks, reported only: the budgets are taken on the developer's
+  # machine, which the pre-push hook holds them to; a shared runner is slower
+  # and noisier, so its numbers are uploaded for comparison, not gated.
   bench:
     runs-on: macos-15
     timeout-minutes: 45
+    continue-on-error: true
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
