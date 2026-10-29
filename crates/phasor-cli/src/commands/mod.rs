@@ -1,7 +1,7 @@
 //! One module per command family; `dispatch` routes the parsed CLI.
 
 mod acquire;
-mod common;
+pub mod common;
 mod fetch;
 mod inspect;
 mod lake;

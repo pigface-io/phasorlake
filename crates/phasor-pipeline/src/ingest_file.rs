@@ -4,20 +4,21 @@
 use std::path::PathBuf;
 use std::sync::Arc;
 
+use crate::decode::{DecodeFile, FileSink, decode_file};
 use crate::entry_times::EntryTimes;
 use phasor_core::event::Event;
 use phasor_core::source_times;
 use phasor_core::{Category, Diagnose, Diagnostic, Fingerprint};
 use phasor_kit::LocalFile;
 use phasor_kit::{
-    Block, BlockSink, DecodeCtx, DecodeOptions, Flow, KitRegistry, RowAt, SourceKit, TableRef,
+    Block, BlockSink, DecodeOptions, DecodeStats, Flow, KitRegistry, RowAt, TableRef,
 };
 use phasor_provenance::layout::listing_offset;
 use phasor_writer::manifest::EntryShare;
 use phasor_writer::{
     IngestSession, Shape, Source, Stamp, StoreError, Times, Transform, WrittenFile,
 };
-use phasor_zip::{Accepts, ArchiveError, WalkError, Walked, has_extension, walk_entries};
+use phasor_zip::ArchiveError;
 use tokio::sync::mpsc;
 
 use crate::plan::RunOptions;
@@ -124,9 +125,15 @@ struct LakeSink<'a> {
     warnings: Vec<Diagnostic>,
     row_errors: Vec<Diagnostic>,
     fail_fast: bool,
+    /// A footer count mismatch fails the entry.
+    strict_footer: bool,
+    /// The request, for diagnostics.
+    request: &'a str,
     events: Option<&'a mpsc::Sender<Event>>,
     /// The entry being read.
     entry: String,
+    /// What was said of each entry read so far, in order.
+    entries: Vec<EntryReport>,
 }
 
 impl LakeSink<'_> {
@@ -271,114 +278,80 @@ impl BlockSink for LakeSink<'_> {
     }
 }
 
-/// Reads one entry through the kit's decoder into the file's sink.
-fn ingest_entry(
-    input: &IngestInput,
-    kit: &SourceKit,
-    entry: &str,
-    zip_entry_modified: Option<i64>,
-    reader: &mut dyn std::io::Read,
-    scan_buf: &mut Vec<u8>,
-    sink: &mut LakeSink<'_>,
-) -> EntryReport {
-    zone!(ENTRY);
-    let ctx = phasor_core::diag::Context {
-        request: Some(input.request.clone()),
-        url: Some(input.local.remote.url.to_string()),
-        file: Some(input.local.path.display().to_string()),
-        entry: Some(entry.to_owned()),
-        table: None,
-        version: None,
-    };
-    let mut report = EntryReport {
-        entry: entry.to_owned(),
-        warnings: vec![],
-        row_errors: vec![],
-        error: None,
-    };
-    let Some(decoder) = kit.decoder_for(entry) else {
-        let mut d = Diagnostic::error(
-            "config.no_decoder",
-            Category::CONFIG,
-            format!(
-                "The entry {entry} is not one the kit {} reads; no decoder accepts its name.",
-                kit.id
-            ),
-        );
-        d.fill_from(&ctx);
-        report.error = Some(d);
-        return report;
-    };
-    sink.begin_entry(entry, zip_entry_modified);
-    let options = DecodeOptions {
-        strictness: input.options.mode,
-        max_bad_rows: input.options.max_bad_rows,
-        batch_rows: input.options.batch_rows,
-    };
-    let dctx = DecodeCtx {
-        file: &input.local,
-        entry,
-        period: input.local.remote.period,
-        options: &options,
-        previous: input.local.previous.as_deref(),
-    };
-    let decoded = {
-        zone!(DECODE);
-        decoder.decode(reader, &dctx, sink, scan_buf)
-    };
-    match decoded {
-        Ok(stats) if stats.footer_mismatch() => {
-            let d = Diagnostic::new(
-                "csv.footer_count_mismatch",
-                Category::CSV,
-                if input.options.strict_footer {
-                    phasor_core::Severity::Error
+impl FileSink for LakeSink<'_> {
+    fn entry_started(&mut self, entry: &str, zip_entry_modified: Option<i64>) {
+        self.begin_entry(entry, zip_entry_modified);
+    }
+
+    fn entry_done(&mut self, entry: &str, result: Result<DecodeStats, Box<Diagnostic>>) -> Flow {
+        let ctx = phasor_core::diag::Context {
+            request: Some(self.request.to_owned()),
+            url: Some(self.local.remote.url.to_string()),
+            file: Some(self.local.path.display().to_string()),
+            entry: Some(entry.to_owned()),
+            table: None,
+            version: None,
+        };
+        let mut report = EntryReport {
+            entry: entry.to_owned(),
+            warnings: vec![],
+            row_errors: vec![],
+            error: None,
+        };
+        match result {
+            Ok(stats) if stats.footer_mismatch() => {
+                let d = Diagnostic::new(
+                    "csv.footer_count_mismatch",
+                    Category::CSV,
+                    if self.strict_footer {
+                        phasor_core::Severity::Error
+                    } else {
+                        phasor_core::Severity::Warning
+                    },
+                    format!(
+                        "The footer says {} lines but {} were read.",
+                        stats.footer_declared.unwrap_or(0),
+                        stats.lines
+                    ),
+                )
+                .expected_observed(
+                    stats.footer_declared.unwrap_or(0).to_string(),
+                    stats.lines.to_string(),
+                );
+                if self.strict_footer {
+                    report.error = Some(d);
                 } else {
-                    phasor_core::Severity::Warning
-                },
-                format!(
-                    "The footer says {} lines but {} were read.",
-                    stats.footer_declared.unwrap_or(0),
-                    stats.lines
-                ),
-            )
-            .expected_observed(
-                stats.footer_declared.unwrap_or(0).to_string(),
-                stats.lines.to_string(),
-            );
-            if input.options.strict_footer {
-                report.error = Some(d);
-            } else {
-                sink.warnings.push(d);
+                    self.warnings.push(d);
+                }
+            }
+            Ok(_) => {}
+            Err(d) => report.error = Some(*d),
+        }
+        for w in &mut self.warnings {
+            w.fill_from(&ctx);
+        }
+        if let Some(e) = &mut report.error {
+            e.fill_from(&ctx);
+        }
+        report.row_errors = std::mem::take(&mut self.row_errors);
+        for d in &mut report.row_errors {
+            d.fill_from(&ctx);
+            // Accepted without these rows; they are in the quarantine file.
+            if report.error.is_none() {
+                d.severity = phasor_core::Severity::Warning;
             }
         }
-        Ok(_) => {}
-        Err(d) => report.error = Some(*d),
+        report.warnings = std::mem::take(&mut self.warnings);
+        let stop = self.fail_fast && report.error.is_some();
+        self.entries.push(report);
+        if stop { Flow::Stop } else { Flow::Continue }
     }
-    for w in &mut sink.warnings {
-        w.fill_from(&ctx);
-    }
-    if let Some(e) = &mut report.error {
-        e.fill_from(&ctx);
-    }
-    report.row_errors = std::mem::take(&mut sink.row_errors);
-    for d in &mut report.row_errors {
-        d.fill_from(&ctx);
-        // Accepted without these rows; they are in the quarantine file.
-        if report.error.is_none() {
-            d.severity = phasor_core::Severity::Warning;
-        }
-    }
-    report.warnings = std::mem::take(&mut sink.warnings);
-    report
 }
 
 /// Ingests one local file, or the entries of a zip (nested included) its kit's decoders read.
 pub fn ingest_file(input: IngestInput) -> FileReport {
     zone!(FILE);
     let path = input.local.path.clone();
-    // The URL's name, so a mirror version `{name}@{stamp}` reads as `{name}`.
-    let name = input.local.remote.file_name();
     let mut entries = Vec::new();
     let mut file_error = None;
     let Some(kit) = input.kits.kit(input.kit) else {
@@ -399,7 +372,6 @@ pub fn ingest_file(input: IngestInput) -> FileReport {
             results: Vec::new(),
         };
     };
-    let mut scan_buf = Vec::new();
     let source = Source {
         url: input.local.remote.url.to_string(),
         sha256: input.local.sha256.clone(),
@@ -425,98 +397,45 @@ pub fn ingest_file(input: IngestInput) -> FileReport {
         warnings: Vec::new(),
         row_errors: Vec::new(),
         fail_fast: input.options.fail_fast,
+        strict_footer: input.options.strict_footer,
+        request: &input.request,
         events: input.events.as_ref(),
         entry: String::new(),
+        entries: Vec::new(),
     };
-    let decodable = kit.decoder_for(&name).is_some();
-    if !decodable && !has_extension(&name, ".zip") {
-        file_error = Some(
-            Diagnostic::error(
-                "config.no_decoder",
-                Category::CONFIG,
-                format!(
-                    "The file {name} is not one the kit {} reads; no decoder accepts its name and it is not a zip.",
-                    kit.id
-                ),
-            )
-            .with_file(path.display().to_string())
-            .with_request(input.request.clone()),
-        );
-    } else if decodable {
-        match std::fs::File::open(&path) {
-            Ok(mut f) => entries.push(ingest_entry(
-                &input,
-                kit,
-                &name,
-                None,
-                &mut f,
-                &mut scan_buf,
-                &mut sink,
-            )),
-            Err(e) => {
-                file_error = Some(
-                    Diagnostic::error(
-                        "csv.read_failed",
-                        Category::CSV,
-                        format!("The file {} could not be opened.", path.display()),
-                    )
-                    .with_file(path.display().to_string())
-                    .caused_by(&e),
-                );
-            }
-        }
-    } else {
-        let fail_fast = input.options.fail_fast;
-        let accepts = Accepts {
-            accepts: &|n: &str| kit.decoder_for(n).is_some() && !input.skip.iter().any(|s| s == n),
-            wanted: "readable",
-        };
-        let result: Result<Walked, WalkError<()>> = walk_entries(
-            &path,
-            &input.tmp_dir,
-            accepts,
-            &mut |e| {
-                // The packer's clock: AEST for AEMO's zips, AWST for the WA host's.
-                let written = e
-                    .modified_at(listing_offset(input.local.remote.url.as_str()))
-                    .map(|s| s.unix() * 1_000_000);
-                let rep = ingest_entry(
-                    &input,
-                    kit,
-                    &e.name,
-                    written,
-                    e.reader,
-                    &mut scan_buf,
-                    &mut sink,
-                );
-                let stop = fail_fast && rep.error.is_some();
-                entries.push(rep);
-                if stop { Err(()) } else { Ok(()) }
+    let options = DecodeOptions {
+        strictness: input.options.mode,
+        max_bad_rows: input.options.max_bad_rows,
+        batch_rows: input.options.batch_rows,
+    };
+    let decode = DecodeFile {
+        kit,
+        local: &input.local,
+        options: &options,
+        tmp_dir: &input.tmp_dir,
+        skip: &input.skip,
+    };
+    let place = |mut d: Diagnostic| {
+        d.request = Some(input.request.clone());
+        d.url = Some(input.local.remote.url.to_string());
+        d.file = Some(path.display().to_string());
+        d
+    };
+    let walked = decode_file(&decode, &mut sink);
+    entries.append(&mut sink.entries);
+    match walked {
+        Ok(failed) => entries.extend(failed.iter().map(|a| EntryReport {
+            entry: match a {
+                ArchiveError::Entry { entry, .. }
+                | ArchiveError::TooDeep { entry, .. }
+                | ArchiveError::Spool { entry, .. } => entry.clone(),
+                ArchiveError::Open { .. } | ArchiveError::NoEntry { .. } => String::new(),
             },
-            &mut |_| {},
-        );
-        let place = |e: &ArchiveError| {
-            let mut d = e.diagnostic();
-            d.request = Some(input.request.clone());
-            d.url = Some(input.local.remote.url.to_string());
-            d.file = Some(path.display().to_string());
-            d
-        };
-        match result {
-            Ok(w) => entries.extend(w.failed.iter().map(|a| EntryReport {
-                entry: match a {
-                    ArchiveError::Entry { entry, .. }
-                    | ArchiveError::TooDeep { entry, .. }
-                    | ArchiveError::Spool { entry, .. } => entry.clone(),
-                    ArchiveError::Open { .. } | ArchiveError::NoEntry { .. } => String::new(),
-                },
-                warnings: Vec::new(),
-                row_errors: Vec::new(),
-                error: Some(place(a)),
-            })),
-            Err(WalkError::Archive(e)) => file_error = Some(place(&e)),
-            Err(WalkError::Callback(())) => {}
-        }
+            warnings: Vec::new(),
+            row_errors: Vec::new(),
+            error: Some(place(a.diagnostic())),
+        })),
+        Err(d) => file_error = Some(place(*d)),
     }
     let (results, committed) = finish(sink, &mut entries, file_error.is_some(), &input.request);
     if let Err(e) = committed {

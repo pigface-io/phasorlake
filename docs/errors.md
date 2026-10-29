@@ -10,7 +10,7 @@ Every error and warning phasor reports carries one of these codes. Codes are sta
 | `config.invalid` | `crates/phasor-core/src/config.rs` |
 | `config.keep_from_missing` | `crates/phasor-mirror/src/error.rs` |
 | `config.mirror_root` | `crates/phasor-mirror/src/error.rs` |
-| `config.no_decoder` | `crates/phasor-pipeline/src/get.rs` |
+| `config.no_decoder` | `crates/phasor-py/src/lib.rs` |
 | `config.parse` | `crates/phasor-mirror/src/config.rs` |
 | `config.read` | `crates/phasor-mirror/src/config.rs` |
 
@@ -69,12 +69,12 @@ Every error and warning phasor reports carries one of these codes. Codes are sta
 | `csv.block_mismatch` | `phasorlake-schemas/crates/phasor-mms-decode/src/diagnose.rs` |
 | `csv.data_before_header` | `phasorlake-schemas/crates/phasor-mms-decode/src/diagnose.rs` |
 | `csv.field_count_mismatch` | `phasorlake-schemas/crates/phasor-mms-decode/src/diagnose.rs` |
-| `csv.footer_count_mismatch` | `crates/phasor-pipeline/src/ingest_file.rs` |
+| `csv.footer_count_mismatch` | `crates/phasor-py/src/lib.rs` |
 | `csv.header_malformed` | `phasorlake-schemas/crates/phasor-mms-decode/src/diagnose.rs` |
 | `csv.header_missing` | `phasorlake-schemas/crates/phasor-plain-decode/src/diagnose.rs` |
 | `csv.line_too_long` | `phasorlake-schemas/crates/phasor-mms-decode/src/diagnose.rs` |
 | `csv.markup_skipped` | `crates/phasor-mms-conform/src/plain.rs` |
-| `csv.read_failed` | `crates/phasor-pipeline/src/ingest_file.rs` |
+| `csv.read_failed` | `crates/phasor-py/src/lib.rs` |
 | `csv.row_too_short` | `phasorlake-schemas/crates/phasor-mms-decode/src/diagnose.rs` |
 | `csv.stopped_fail_fast` | `crates/phasor-mms-conform/src/plain.rs` |
 | `csv.too_many_bad_rows` | `phasorlake-schemas/crates/phasor-mms-decode/src/diagnose.rs` |

@@ -11,7 +11,7 @@ use crate::cli::ListCmd;
 use crate::context::Context;
 use crate::render;
 
-use super::common::{fail, rfc3339, table_id};
+use super::common::{fail, rfc3339, role_of, table_id};
 
 /// What the lake holds of one table, from its live outputs.
 #[derive(Default)]
@@ -193,24 +193,7 @@ fn columns(ctx: &Context, id: TableId) -> Result<i32> {
     let t = r.table(id);
     // The data model's words for each column, as phasor-schemas publishes them.
     let docs: BTreeMap<u32, String> = t.published().docs;
-    let role = |name: &str| -> &'static str {
-        let tp = &t.temporal;
-        if tp.entity.iter().any(|e| e == name) {
-            "entity"
-        } else if tp.valid.column().is_some_and(|c| c == name) {
-            "valid"
-        } else if tp.order.iter().any(|o| o == name) {
-            if tp.cutoff.as_deref() == Some(name) {
-                "order, cutoff"
-            } else {
-                "order"
-            }
-        } else if tp.cutoff.as_deref() == Some(name) {
-            "cutoff"
-        } else {
-            ""
-        }
-    };
+    let role = |name: &str| role_of(t, name);
     let rows: Vec<Vec<String>> = t
         .columns
         .iter()

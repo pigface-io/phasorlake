@@ -15,6 +15,7 @@ macro_rules! zone {
 #[cfg(feature = "zones")]
 pub mod zones;
 
+pub mod decode;
 mod entry_times;
 pub mod get;
 pub mod ingest_file;
@@ -22,6 +23,7 @@ pub mod plan;
 pub mod report;
 pub mod run;
 
+pub use decode::{DecodeFile, FileSink, decode_file};
 pub use get::{
     GetPlan, GetReport, GetRequest, SourceChoice, SourceGroup, Step, days_of, plan_get, run_get,
     source_groups,
