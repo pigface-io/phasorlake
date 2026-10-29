@@ -71,6 +71,8 @@ def test_decode_matches_what_ingest_writes(heads_zip: Path, tmp_path: Path) -> N
         assert files, name
         written = pa.concat_tables([pq.read_table(f) for f in files], promote_options="default")
         columns = [c for c in written.column_names if not c.startswith("_phasor_")]
+        # The same columns in the same order, the lake's provenance columns aside.
+        assert [c for c in got.column_names if c in columns] == columns, name
         assert set(columns) <= set(got.column_names), name
         for c in columns:
             assert got.schema.field(c).type == written.schema.field(c).type, (name, c)

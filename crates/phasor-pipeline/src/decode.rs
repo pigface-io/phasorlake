@@ -4,7 +4,7 @@
 
 use std::path::Path;
 
-use phasor_core::{Category, Diagnostic};
+use phasor_core::{Category, Diagnostic, Severity};
 use phasor_kit::{BlockSink, DecodeCtx, DecodeOptions, DecodeStats, Flow, LocalFile, SourceKit};
 use phasor_provenance::layout::listing_offset;
 use phasor_zip::{Accepts, ArchiveError, WalkError, Walked, has_extension, walk_entries};
@@ -16,6 +16,26 @@ pub trait FileSink: BlockSink {
     fn entry_started(&mut self, entry: &str, zip_entry_modified: Option<i64>);
     /// Entry `entry` was read, or failed; [`Flow::Stop`] leaves the rest of the file.
     fn entry_done(&mut self, entry: &str, result: Result<DecodeStats, Box<Diagnostic>>) -> Flow;
+}
+
+/// The diagnostic for an entry whose footer disagrees with the lines read; none when it agrees.
+pub fn footer_mismatch(stats: &DecodeStats, severity: Severity) -> Option<Diagnostic> {
+    if !stats.footer_mismatch() {
+        return None;
+    }
+    let declared = stats.footer_declared.unwrap_or(0);
+    Some(
+        Diagnostic::new(
+            "csv.footer_count_mismatch",
+            Category::CSV,
+            severity,
+            format!(
+                "The footer says {declared} lines but {} were read.",
+                stats.lines
+            ),
+        )
+        .expected_observed(declared.to_string(), stats.lines.to_string()),
+    )
 }
 
 /// What a file is read with.

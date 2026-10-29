@@ -4,7 +4,7 @@
 use std::path::PathBuf;
 use std::sync::Arc;
 
-use crate::decode::{DecodeFile, FileSink, decode_file};
+use crate::decode::{DecodeFile, FileSink, decode_file, footer_mismatch};
 use crate::entry_times::EntryTimes;
 use phasor_core::event::Event;
 use phasor_core::source_times;
@@ -298,33 +298,21 @@ impl FileSink for LakeSink<'_> {
             row_errors: vec![],
             error: None,
         };
+        let severity = if self.strict_footer {
+            phasor_core::Severity::Error
+        } else {
+            phasor_core::Severity::Warning
+        };
         match result {
-            Ok(stats) if stats.footer_mismatch() => {
-                let d = Diagnostic::new(
-                    "csv.footer_count_mismatch",
-                    Category::CSV,
+            Ok(stats) => {
+                if let Some(d) = footer_mismatch(&stats, severity) {
                     if self.strict_footer {
-                        phasor_core::Severity::Error
+                        report.error = Some(d);
                     } else {
-                        phasor_core::Severity::Warning
-                    },
-                    format!(
-                        "The footer says {} lines but {} were read.",
-                        stats.footer_declared.unwrap_or(0),
-                        stats.lines
-                    ),
-                )
-                .expected_observed(
-                    stats.footer_declared.unwrap_or(0).to_string(),
-                    stats.lines.to_string(),
-                );
-                if self.strict_footer {
-                    report.error = Some(d);
-                } else {
-                    self.warnings.push(d);
+                        self.warnings.push(d);
+                    }
                 }
             }
-            Ok(_) => {}
             Err(d) => report.error = Some(*d),
         }
         for w in &mut self.warnings {

@@ -25,7 +25,9 @@ use phasor_kit::{
 use phasor_mms_conform::inspect::{InspectError, file as inspect_file};
 use phasor_pipeline::ingest_file::ROW_ERRORS_KEPT;
 use phasor_pipeline::run::local_file;
-use phasor_pipeline::{DecodeFile, FileSink, decode_file, local_remote, local_remote_in};
+use phasor_pipeline::{
+    DecodeFile, FileSink, decode_file, footer_mismatch, local_remote, local_remote_in,
+};
 use phasor_registry::Registry;
 use pyo3::exceptions::{PyException, PyUserWarning};
 use pyo3::prelude::*;
@@ -228,22 +230,12 @@ impl FileSink for Collect<'_> {
 
     fn entry_done(&mut self, entry: &str, result: Result<DecodeStats, Box<Diagnostic>>) -> Flow {
         match result {
-            Ok(stats) if stats.footer_mismatch() => {
-                self.warnings.push(
-                    Diagnostic::warning(
-                        "csv.footer_count_mismatch",
-                        Category::CSV,
-                        format!(
-                            "The footer says {} lines but {} were read.",
-                            stats.footer_declared.unwrap_or(0),
-                            stats.lines
-                        ),
-                    )
-                    .with_entry(entry.to_owned()),
-                );
+            Ok(stats) => {
+                if let Some(d) = footer_mismatch(&stats, phasor_core::Severity::Warning) {
+                    self.warnings.push(d.with_entry(entry.to_owned()));
+                }
                 Flow::Continue
             }
-            Ok(_) => Flow::Continue,
             Err(d) => {
                 self.error = Some(d.with_entry(entry.to_owned()));
                 Flow::Stop

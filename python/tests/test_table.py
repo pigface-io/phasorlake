@@ -7,6 +7,8 @@ import pytest
 
 import phasorlake as pl
 
+from .conftest import phasor_json
+
 
 def test_dispatchprice_roles_key_columns_and_schema() -> None:
     t = pl.table("dispatchprice")
@@ -33,6 +35,24 @@ def test_dispatchprice_roles_key_columns_and_schema() -> None:
     metadata = t["schema"].field("RRP").metadata
     assert metadata is not None
     assert metadata[b"PARQUET:field_id"] == str(by_name["RRP"]["field_id"]).encode()
+
+
+def test_table_columns_are_what_the_command_prints() -> None:
+    t = pl.table("DISPATCHPRICE")
+    printed = phasor_json("list", "DISPATCHPRICE")
+    want = [
+        {
+            "name": p["column"],
+            "type": p["type"],
+            "role": p["role"],
+            "field_id": p["field_id"],
+            "nullable": p["nullable"],
+            "description": p["description"],
+        }
+        for p in printed
+        if isinstance(p, dict)
+    ]
+    assert [dict(c) for c in t["columns"]] == want
 
 
 def test_a_report_pair_names_its_table() -> None:

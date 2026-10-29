@@ -8,7 +8,7 @@ import pytest
 
 import phasorlake as pl
 
-from .conftest import HEADS
+from .conftest import HEADS, phasor_json
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -27,6 +27,12 @@ def test_every_block_of_the_zip_is_listed(heads_zip: Path) -> None:
     assert price["line"] == 2
     assert "REGIONID" in price["columns"]
     assert price["fingerprint"].startswith("xxh3:")
+
+
+def test_inspect_is_what_the_command_prints(heads_zip: Path) -> None:
+    (printed,) = phasor_json("inspect", str(heads_zip))
+    assert isinstance(printed, dict)
+    assert pl.inspect(heads_zip) == printed["blocks"]
 
 
 def test_a_csv_is_one_entry_named_for_itself() -> None:

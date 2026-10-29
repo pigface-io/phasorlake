@@ -23,7 +23,7 @@ pub mod plan;
 pub mod report;
 pub mod run;
 
-pub use decode::{DecodeFile, FileSink, decode_file};
+pub use decode::{DecodeFile, FileSink, decode_file, footer_mismatch};
 pub use get::{
     GetPlan, GetReport, GetRequest, SourceChoice, SourceGroup, Step, days_of, plan_get, run_get,
     source_groups,
