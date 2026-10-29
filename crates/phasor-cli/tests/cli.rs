@@ -226,7 +226,9 @@ fn ingest_ls_errors_verify_round_trip() {
         &std::fs::read(meta.with_file_name(format!("v{}.metadata.json", hint.trim()))).unwrap(),
     )
     .unwrap();
-    assert_eq!(doc["properties"]["phasor.temporal.entity"], r#"["DUID"]"#);
+    // A table's key and roles are a reader's: the lake carries neither.
+    assert!(doc["properties"].get("phasor.temporal.entity").is_none());
+    assert!(doc["properties"].get("phasor.key").is_none());
     assert_eq!(doc["properties"]["phasor.lake.format"], "5");
     let built = cli.ok(&["--json", "iceberg", "--table", "DISPATCH_UNIT_SCADA"]);
     assert!(built.contains("\"snapshots\":\"1\""), "{built}");
@@ -286,24 +288,17 @@ fn ingest_ls_errors_verify_round_trip() {
     // What there is.
     let tables = cli.ok(&["list"]);
     assert!(
-        tables.contains("DISPATCH_UNIT_SCADA") && tables.contains("interval_end SETTLEMENTDATE"),
+        tables.contains("DISPATCH_UNIT_SCADA") && tables.contains("SETTLEMENTDATE"),
         "{tables}"
     );
-    let grep = cli.ok(&[
-        "--json",
-        "list",
-        "--grep",
-        "scada",
-        "--kind",
-        "interval_end",
-    ]);
+    let grep = cli.ok(&["--json", "list", "--grep", "scada"]);
     assert!(
         grep.contains("\"table\":\"DISPATCH_UNIT_SCADA\"") && !grep.contains("REGION"),
         "{grep}"
     );
     let cols = cli.ok(&["list", "DISPATCH_UNIT_SCADA"]);
     assert!(
-        cols.contains("SCADAVALUE") && cols.contains("entity") && cols.contains("valid"),
+        cols.contains("SCADAVALUE") && cols.contains("time"),
         "{cols}"
     );
     assert!(
@@ -866,8 +861,8 @@ fn a_fix_in_table_toml_brings_in_the_files_that_deviate() {
     // The fix: QUALITY is a column of the table, and its files from 2020
     // on carry it.
     let fixed = FIXED.replace(
-        "]\n\n[temporal]",
-        "    { id = 4, name = \"QUALITY\", type = \"string\", nullable = true, note = \"Files carry QUALITY from 2020.\" },\n]\n\n[temporal]",
+        "]\n\n[[schema]]",
+        "    { id = 4, name = \"QUALITY\", type = \"string\", nullable = true, note = \"Files carry QUALITY from 2020.\" },\n]\n\n[[schema]]",
     ) + "\n[[schema]]\nid = 1\nfrom = \"2020-01\"\nversions = [1]\ncolumns = [\"SETTLEMENTDATE\", \"UNIT\", \"VALUE\", \"QUALITY\"]\n";
     std::fs::write(&table, &fixed).unwrap();
     assert!(
@@ -961,8 +956,8 @@ fn user_schemas_take_effect() {
     let show = cli.ok(&["schema", "show", "DISPATCH_UNIT_SCADA"]);
     let toml = &show[..show.find("\n# Arrow lake schema").unwrap()];
     let ours = toml.replacen(
-        "]\n\n[temporal]",
-        "    { id = 5, name = \"QUALITY\", type = \"string\", nullable = true },\n]\n\n[temporal]",
+        "]\n\n[[schema]]",
+        "    { id = 5, name = \"QUALITY\", type = \"string\", nullable = true },\n]\n\n[[schema]]",
         1,
     ) + "\n[[schema]]\nid = 9\nfrom = \"2026-09\"\nversions = [2]\ncolumns = [\"SETTLEMENTDATE\", \"DUID\", \"SCADAVALUE\", \"LASTCHANGED\", \"QUALITY\"]\n";
     user_table(&cli, "DISPATCH_UNIT_SCADA", &ours);
@@ -1136,7 +1131,7 @@ fn user_table(cli: &Cli, name: &str, text: &str) -> PathBuf {
 }
 
 /// A user's table for (PHASOR_TEST, FOLLOWS), as a person writes one.
-const FOLLOWS: &str = r#"schema_format = 4
+const FOLLOWS: &str = r#"schema_format = 5
 name = "PHASOR_TEST_FOLLOWS"
 report_pairs = [["PHASOR_TEST", "FOLLOWS"]]
 load_mode = "append"
@@ -1157,10 +1152,6 @@ id = 3
 name = "VALUE"
 type = "double"
 
-[temporal]
-origin = "derived"
-valid = { kind = "timeless" }
-
 [[schema]]
 id = 0
 versions = [1]
@@ -1168,11 +1159,10 @@ columns = ["SETTLEMENTDATE", "UNIT", "VALUE"]
 "#;
 
 /// A user's table for (PHASOR_TEST, FIXED), in the form phasor writes.
-const FIXED: &str = r#"schema_format = 4
+const FIXED: &str = r#"schema_format = 5
 name = "PHASOR_TEST_FIXED"
 report_pairs = [["PHASOR_TEST", "FIXED"]]
 load_mode = "append"
-primary_key = []
 time_column = "SETTLEMENTDATE"
 
 column = [
@@ -1180,12 +1170,6 @@ column = [
     { id = 2, name = "UNIT", type = "string", nullable = true },
     { id = 3, name = "VALUE", type = "double", nullable = true },
 ]
-
-[temporal]
-origin = "derived"
-entity = []
-valid = { kind = "timeless" }
-order = []
 
 [[schema]]
 id = 0

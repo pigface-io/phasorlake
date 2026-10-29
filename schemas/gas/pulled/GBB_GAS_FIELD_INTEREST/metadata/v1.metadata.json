@@ -20,9 +20,8 @@
   "properties": {
     "comment": "Field location",
     "phasor.declared": "true",
-    "phasor.format": "4",
+    "phasor.format": "5",
     "phasor.headers": "{\"1\":\"FieldName\",\"2\":\"FieldInterestId\",\"3\":\"CompanyId\",\"4\":\"CompanyName\",\"5\":\"GroupMembers\",\"6\":\"PercentageShare\",\"7\":\"EffectiveDate\"}",
-    "phasor.key": "[\"FIELDINTERESTID\",\"COMPANYID\"]",
     "phasor.load": "snapshot",
     "phasor.market": "gas",
     "phasor.model": "[\"GAS_FIELD\",\"GAS_FIELD_DETAIL\",\"GAS_FIELDINTEREST\"]",
@@ -30,11 +29,6 @@
     "phasor.offset": "+10:00",
     "phasor.reports": "[[\"GBB\",\"GAS_FIELD_INTEREST\"]]",
     "phasor.table": "GBB_GAS_FIELD_INTEREST",
-    "phasor.temporal.entity": "[\"FIELDINTERESTID\",\"COMPANYID\"]",
-    "phasor.temporal.order": "[]",
-    "phasor.temporal.origin": "hand",
-    "phasor.temporal.valid.column": "EFFECTIVEDATE",
-    "phasor.temporal.valid.kind": "instant",
     "phasor.time": "EFFECTIVEDATE",
     "phasor.visibility": "PUBLIC"
   },
@@ -58,14 +52,14 @@
           "doc": "A unique AEMO defined Field Interest Identifier",
           "id": 2,
           "name": "FIELDINTERESTID",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(6, 0)"
         },
         {
           "id": 3,
           "name": "COMPANYID",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(3, 0)"
         },
         {
           "id": 4,
@@ -93,10 +87,7 @@
           "type": "date"
         }
       ],
-      "identifier-field-ids": [
-        2,
-        3
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     }

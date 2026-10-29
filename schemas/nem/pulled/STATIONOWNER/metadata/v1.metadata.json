@@ -20,19 +20,12 @@
   "properties": {
     "comment": "STATIONOWNER sets out the owner details of each station.",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"EFFECTIVEDATE\",\"PARTICIPANTID\",\"STATIONID\",\"VERSIONNO\"]",
+    "phasor.format": "5",
     "phasor.load": "snapshot",
     "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"VARCHAR(10)\",\"3\":\"VARCHAR(10)\",\"4\":\"NUMERIC(3,0)\",\"5\":\"TIMESTAMP(0)\"}",
     "phasor.package": "PARTICIPANT_REGISTRATION",
     "phasor.reports": "[[\"PARTICIPANT_REGISTRATION\",\"STATIONOWNER\"]]",
     "phasor.table": "STATIONOWNER",
-    "phasor.temporal.cutoff": "LASTCHANGED",
-    "phasor.temporal.entity": "[\"PARTICIPANTID\",\"STATIONID\"]",
-    "phasor.temporal.order": "[\"VERSIONNO\",\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.column": "EFFECTIVEDATE",
-    "phasor.temporal.valid.kind": "from",
     "phasor.visibility": "PUBLIC"
   },
   "refs": {
@@ -48,29 +41,29 @@
           "doc": "Effective date of this record",
           "id": 1,
           "name": "EFFECTIVEDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Unique participant identifier",
           "id": 2,
           "name": "PARTICIPANTID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "Station Identifier",
           "id": 3,
           "name": "STATIONID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "Version no of record within the effective date",
           "id": 4,
           "name": "VERSIONNO",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(3, 0)"
         },
         {
           "doc": "Last date and time record changed",
@@ -80,12 +73,7 @@
           "type": "timestamptz"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3,
-        4
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     }

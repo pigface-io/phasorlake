@@ -20,20 +20,13 @@
   "properties": {
     "comment": "The cleared quantity, cleared price and price sensitivity for each auction product component following each auction run",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"AUCTION_DATE\",\"FACILITY_ID\",\"GAS_DATE\",\"LIMIT_ID\"]",
+    "phasor.format": "5",
     "phasor.load": "append",
     "phasor.market": "gas",
     "phasor.model-types": "{\"1\":\"DATE\",\"2\":\"DATE\",\"3\":\"NUMBER(8,0)\",\"4\":\"VARCHAR2(100)\",\"5\":\"NUMBER(8,0)\",\"6\":\"VARCHAR2(100)\",\"7\":\"VARCHAR2(100)\",\"8\":\"NUMBER(12,4)\",\"9\":\"NUMBER(12,4)\",\"10\":\"NUMBER(12,4)\",\"11\":\"NUMBER(12,4)\",\"12\":\"DATE\"}",
     "phasor.offset": "+10:00",
     "phasor.reports": "[[\"GSH\",\"AUCTION_PRICE_VOLUME\"]]",
     "phasor.table": "GSH_AUCTION_PRICE_VOLUME",
-    "phasor.temporal.cutoff": "LASTCHANGED",
-    "phasor.temporal.entity": "[\"FACILITY_ID\",\"LIMIT_ID\",\"GAS_DATE\"]",
-    "phasor.temporal.order": "[\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "hand",
-    "phasor.temporal.valid.column": "AUCTION_DATE",
-    "phasor.temporal.valid.kind": "instant",
     "phasor.time": "AUCTION_DATE",
     "phasor.visibility": "PUBLIC"
   },
@@ -50,21 +43,21 @@
           "doc": "The date of the auction run. Disregard the time component as this is not applicable.",
           "id": 1,
           "name": "AUCTION_DATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "The gas date that the auction quantities and prices are valid for. Disregard the time component as this is not applicable.",
           "id": 2,
           "name": "GAS_DATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "The unique identifier of the facility.",
           "id": 3,
           "name": "FACILITY_ID",
-          "required": true,
+          "required": false,
           "type": "long"
         },
         {
@@ -78,7 +71,7 @@
           "doc": "The unique identifier of the auction limit.",
           "id": 5,
           "name": "LIMIT_ID",
-          "required": true,
+          "required": false,
           "type": "long"
         },
         {
@@ -131,12 +124,7 @@
           "type": "timestamptz"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        3,
-        2,
-        5
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     }

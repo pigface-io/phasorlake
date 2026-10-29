@@ -20,19 +20,12 @@
   "properties": {
     "comment": "STATIONOPERATINGSTATUS sets out the operating status of each station.",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"EFFECTIVEDATE\",\"STATIONID\",\"VERSIONNO\"]",
+    "phasor.format": "5",
     "phasor.load": "snapshot",
     "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"VARCHAR(10)\",\"3\":\"NUMERIC(3,0)\",\"4\":\"VARCHAR(20)\",\"5\":\"VARCHAR(15)\",\"6\":\"TIMESTAMP(0)\",\"7\":\"TIMESTAMP(0)\"}",
     "phasor.package": "PARTICIPANT_REGISTRATION",
     "phasor.reports": "[[\"PARTICIPANT_REGISTRATION\",\"STATIONOPERATINGSTATUS\"]]",
     "phasor.table": "STATIONOPERATINGSTATUS",
-    "phasor.temporal.cutoff": "LASTCHANGED",
-    "phasor.temporal.entity": "[\"STATIONID\"]",
-    "phasor.temporal.order": "[\"VERSIONNO\",\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.column": "EFFECTIVEDATE",
-    "phasor.temporal.valid.kind": "from",
     "phasor.visibility": "PUBLIC"
   },
   "refs": {
@@ -48,22 +41,22 @@
           "doc": "Effective date of this record",
           "id": 1,
           "name": "EFFECTIVEDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Unique station identifier",
           "id": 2,
           "name": "STATIONID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "Version no of record within the effective date",
           "id": 3,
           "name": "VERSIONNO",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(3, 0)"
         },
         {
           "doc": "The operating status of this station, valid values are COMMISSIONED and DECOMMISSIONED",
@@ -94,11 +87,7 @@
           "type": "timestamptz"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     }

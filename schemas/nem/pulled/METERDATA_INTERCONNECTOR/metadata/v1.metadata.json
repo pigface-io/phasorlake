@@ -20,19 +20,12 @@
   "properties": {
     "comment": "Publishes metering data associated with wholesale interconnectors for a given CASE_ID",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"CASE_ID\",\"SETTLEMENTDATE\",\"INTERCONNECTORID\",\"PERIODID\"]",
+    "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"NUMERIC(15,0)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"VARCHAR(20)\",\"4\":\"NUMERIC(3,0)\",\"5\":\"NUMERIC(18,8)\",\"6\":\"NUMERIC(18,8)\",\"7\":\"TIMESTAMP(0)\"}",
     "phasor.package": "METER_DATA",
     "phasor.reports": "[[\"METERDATA\",\"INTERCONNECTOR\"]]",
     "phasor.table": "METERDATA_INTERCONNECTOR",
-    "phasor.temporal.cutoff": "LASTCHANGED",
-    "phasor.temporal.entity": "[\"CASE_ID\",\"INTERCONNECTORID\",\"PERIODID\"]",
-    "phasor.temporal.order": "[\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "hand",
-    "phasor.temporal.valid.column": "SETTLEMENTDATE",
-    "phasor.temporal.valid.kind": "day",
     "phasor.time": "SETTLEMENTDATE",
     "phasor.visibility": "PUBLIC"
   },
@@ -49,29 +42,29 @@
           "doc": "Case Identifier",
           "id": 1,
           "name": "CASE_ID",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(15, 0)"
         },
         {
           "doc": "Settlement date within the case",
           "id": 2,
           "name": "SETTLEMENTDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Interconnector Identifier",
           "id": 3,
           "name": "INTERCONNECTORID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "Trading Interval.",
           "id": 4,
           "name": "PERIODID",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(3, 0)"
         },
         {
           "doc": "The import direction value for the meter read (MWh)",
@@ -95,12 +88,7 @@
           "type": "timestamptz"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3,
-        4
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     }

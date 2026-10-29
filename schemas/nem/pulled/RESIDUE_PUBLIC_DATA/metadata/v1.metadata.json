@@ -20,18 +20,12 @@
   "properties": {
     "comment": "RESIDUE_PUBLIC_DATA shows the public auction results.\nRESIDUE_PUBLIC_DATA supports the Settlement Residue Auction, by holding the public details of the auction for a given contract. RESIDUE_PUBLIC_DATA joins to RESIDUE_CON_DATA and RESIDUE.",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"CONTRACTID\",\"VERSIONNO\",\"INTERCONNECTORID\",\"FROMREGIONID\"]",
+    "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"VARCHAR(30)\",\"2\":\"NUMERIC(3,0)\",\"3\":\"VARCHAR(10)\",\"4\":\"VARCHAR(10)\",\"5\":\"NUMERIC(5,0)\",\"6\":\"NUMERIC(16,6)\",\"7\":\"NUMERIC(17,5)\",\"8\":\"NUMERIC(17,5)\",\"9\":\"TIMESTAMP(0)\"}",
     "phasor.package": "IRAUCTION",
     "phasor.reports": "[[\"IRAUCTION\",\"RESIDUE_PUBLIC_DATA\"]]",
     "phasor.table": "RESIDUE_PUBLIC_DATA",
-    "phasor.temporal.cutoff": "LASTCHANGED",
-    "phasor.temporal.entity": "[\"CONTRACTID\",\"INTERCONNECTORID\",\"FROMREGIONID\"]",
-    "phasor.temporal.order": "[\"VERSIONNO\",\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.kind": "timeless",
     "phasor.time": "LASTCHANGED",
     "phasor.visibility": "PUBLIC"
   },
@@ -48,28 +42,28 @@
           "doc": "Unique id for each contract to be specified by AEMO",
           "id": 1,
           "name": "CONTRACTID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "Version Number",
           "id": 2,
           "name": "VERSIONNO",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(3, 0)"
         },
         {
           "doc": "Unique interconnector identifier",
           "id": 3,
           "name": "INTERCONNECTORID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "Nominated source region for Interconnector",
           "id": 4,
           "name": "FROMREGIONID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -108,12 +102,7 @@
           "type": "timestamptz"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3,
-        4
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     }

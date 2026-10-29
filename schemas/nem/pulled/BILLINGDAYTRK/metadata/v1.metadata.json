@@ -20,19 +20,12 @@
   "properties": {
     "comment": "BILLINGDAYTRK is key for matching settlement versions with billing runs. BILLINGDAYTRK displays the billrunnos per billing week, and the settlement version numbers per settlement day comprising the billrunno.",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"CONTRACTYEAR\",\"WEEKNO\",\"BILLRUNNO\",\"SETTLEMENTDATE\"]",
+    "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"NUMERIC(4,0)\",\"2\":\"NUMERIC(3,0)\",\"3\":\"NUMERIC(3,0)\",\"4\":\"TIMESTAMP(0)\",\"5\":\"NUMERIC(3,0)\",\"6\":\"TIMESTAMP(0)\"}",
     "phasor.package": "BILLING_RUN",
     "phasor.reports": "[[\"BILLING\",\"DAYTRK\"]]",
     "phasor.table": "BILLINGDAYTRK",
-    "phasor.temporal.cutoff": "LASTCHANGED",
-    "phasor.temporal.entity": "[\"CONTRACTYEAR\",\"WEEKNO\"]",
-    "phasor.temporal.order": "[\"BILLRUNNO\",\"RUNNO\",\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "hand",
-    "phasor.temporal.valid.column": "SETTLEMENTDATE",
-    "phasor.temporal.valid.kind": "day",
     "phasor.time": "SETTLEMENTDATE",
     "phasor.visibility": "PUBLIC"
   },
@@ -49,28 +42,28 @@
           "doc": "AEMO Contract Year number starting in week containing 1st January",
           "id": 1,
           "name": "CONTRACTYEAR",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(4, 0)"
         },
         {
           "doc": "Week no within the contract year. Week no 1 is the week containing 1st January",
           "id": 2,
           "name": "WEEKNO",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(3, 0)"
         },
         {
           "doc": "Unique run no within a given contract year and week no",
           "id": 3,
           "name": "BILLRUNNO",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(3, 0)"
         },
         {
           "doc": "Calendar Settlement Date contained in the billing run.",
           "id": 4,
           "name": "SETTLEMENTDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
@@ -88,12 +81,7 @@
           "type": "timestamptz"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3,
-        4
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     }

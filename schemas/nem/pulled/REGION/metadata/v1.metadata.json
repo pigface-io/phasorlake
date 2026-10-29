@@ -20,18 +20,12 @@
   "properties": {
     "comment": "REGION sets out valid region IDs.",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"REGIONID\"]",
+    "phasor.format": "5",
     "phasor.load": "snapshot",
     "phasor.model-types": "{\"1\":\"VARCHAR(10)\",\"2\":\"VARCHAR(64)\",\"3\":\"VARCHAR(8)\",\"4\":\"TIMESTAMP(0)\"}",
     "phasor.package": "MARKET_CONFIG",
     "phasor.reports": "[[\"MARKET_CONFIG\",\"REGION\"]]",
     "phasor.table": "REGION",
-    "phasor.temporal.cutoff": "LASTCHANGED",
-    "phasor.temporal.entity": "[\"REGIONID\"]",
-    "phasor.temporal.order": "[\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.kind": "timeless",
     "phasor.visibility": "PUBLIC"
   },
   "refs": {
@@ -47,7 +41,7 @@
           "doc": "Differentiates this region from all other regions",
           "id": 1,
           "name": "REGIONID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -72,9 +66,7 @@
           "type": "timestamptz"
         }
       ],
-      "identifier-field-ids": [
-        1
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     }

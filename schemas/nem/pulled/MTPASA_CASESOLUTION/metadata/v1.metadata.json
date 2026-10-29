@@ -20,17 +20,11 @@
   "properties": {
     "comment": "MTPASA_CASESOLUTION is obsolete from 2017 End of Year DM4.27 Release. \nMTPASA_CASESOLUTION holds one record for each entire solution.\nChange Notice 379 announced the replacement of the MT PASA data model so all MTPASAxxx tables become obsolete, replaced by MTPASA_xxx tables.",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[]",
+    "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(3,0)\",\"3\":\"VARCHAR(10)\",\"4\":\"NUMERIC(1,0)\",\"5\":\"NUMERIC(1,0)\",\"6\":\"NUMERIC(12,3)\",\"7\":\"NUMERIC(12,3)\",\"8\":\"NUMERIC(12,3)\",\"9\":\"NUMERIC(12,3)\",\"10\":\"NUMERIC(12,3)\",\"11\":\"TIMESTAMP(0)\",\"12\":\"VARCHAR(50)\",\"13\":\"NUMERIC(12,3)\",\"14\":\"NUMERIC(12,3)\",\"15\":\"NUMERIC(12,3)\",\"16\":\"VARCHAR(10)\",\"17\":\"VARCHAR(10)\",\"18\":\"VARCHAR(10)\",\"19\":\"NUMERIC(3,0)\",\"20\":\"NUMERIC(3,0)\",\"21\":\"NUMERIC(3,0)\"}",
     "phasor.reports": "[[\"MTPASA\",\"CASESOLUTION\"]]",
     "phasor.table": "MTPASA_CASESOLUTION",
-    "phasor.temporal.cutoff": "LASTCHANGED",
-    "phasor.temporal.entity": "[]",
-    "phasor.temporal.order": "[\"RUN_DATETIME\",\"RUN_NO\",\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.kind": "timeless",
     "phasor.time": "RUN_DATETIME",
     "phasor.visibility": "PUBLIC"
   },

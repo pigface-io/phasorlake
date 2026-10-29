@@ -20,19 +20,12 @@
   "properties": {
     "comment": "The security deposit interest rate on a daily basis. This is the public table published when the business enter and authorise a new daily interest rate",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"INTEREST_ACCT_ID\",\"EFFECTIVEDATE\",\"VERSION_DATETIME\"]",
+    "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"VARCHAR(20)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"TIMESTAMP(0)\",\"4\":\"NUMERIC(18,8)\"}",
     "phasor.package": "BILLING_CONFIG",
     "phasor.reports": "[[\"BILLING_CONFIG\",\"SECDEPOSIT_INTEREST_RATE\"]]",
     "phasor.table": "SECDEPOSIT_INTEREST_RATE",
-    "phasor.temporal.cutoff": "VERSION_DATETIME",
-    "phasor.temporal.entity": "[\"INTEREST_ACCT_ID\"]",
-    "phasor.temporal.order": "[\"VERSION_DATETIME\"]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.column": "EFFECTIVEDATE",
-    "phasor.temporal.valid.kind": "from",
     "phasor.time": "EFFECTIVEDATE",
     "phasor.visibility": "PUBLIC"
   },
@@ -49,21 +42,21 @@
           "doc": "The interest account ID for calculating the interest payment",
           "id": 1,
           "name": "INTEREST_ACCT_ID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "The effective date of the interest rate change",
           "id": 2,
           "name": "EFFECTIVEDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Date Time this record was added",
           "id": 3,
           "name": "VERSION_DATETIME",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
@@ -74,11 +67,7 @@
           "type": "decimal(18, 8)"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     }

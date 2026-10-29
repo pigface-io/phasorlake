@@ -20,19 +20,12 @@
   "properties": {
     "comment": "STPASA_CASESOLUTION holds one record containing results pertaining to each entire solution",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"RUN_DATETIME\"]",
+    "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"VARCHAR(10)\",\"3\":\"NUMERIC(1,0)\",\"4\":\"NUMERIC(1,0)\",\"5\":\"NUMERIC(12,3)\",\"6\":\"NUMERIC(12,3)\",\"7\":\"NUMERIC(12,3)\",\"8\":\"NUMERIC(12,3)\",\"9\":\"NUMERIC(12,3)\",\"10\":\"TIMESTAMP(0)\",\"11\":\"NUMERIC(12,3)\",\"12\":\"NUMERIC(12,3)\",\"13\":\"NUMERIC(12,3)\",\"14\":\"VARCHAR(10)\",\"15\":\"VARCHAR(10)\",\"16\":\"VARCHAR(10)\",\"17\":\"NUMERIC(3,0)\",\"18\":\"NUMERIC(3,0)\",\"19\":\"NUMERIC(3,0)\"}",
     "phasor.package": "STPASA_SOLUTION",
     "phasor.reports": "[[\"STPASA\",\"CASESOLUTION\"]]",
     "phasor.table": "STPASA_CASESOLUTION",
-    "phasor.temporal.cutoff": "LASTCHANGED",
-    "phasor.temporal.entity": "[]",
-    "phasor.temporal.order": "[\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.column": "RUN_DATETIME",
-    "phasor.temporal.valid.kind": "instant",
     "phasor.time": "RUN_DATETIME",
     "phasor.visibility": "PUBLIC"
   },
@@ -49,7 +42,7 @@
           "doc": "Unique Timestamp Identifier for this study",
           "id": 1,
           "name": "RUN_DATETIME",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
@@ -179,9 +172,7 @@
           "type": "decimal(3, 0)"
         }
       ],
-      "identifier-field-ids": [
-        1
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     }

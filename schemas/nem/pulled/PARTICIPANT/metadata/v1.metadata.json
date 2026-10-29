@@ -20,18 +20,12 @@
   "properties": {
     "comment": "PARTICIPANT sets out Participant ID, name and class for all participants.",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"PARTICIPANTID\"]",
+    "phasor.format": "5",
     "phasor.load": "snapshot",
     "phasor.model-types": "{\"1\":\"VARCHAR(10)\",\"2\":\"VARCHAR(20)\",\"3\":\"VARCHAR(80)\",\"4\":\"VARCHAR(64)\",\"5\":\"VARCHAR(9)\",\"6\":\"VARCHAR(40)\",\"7\":\"TIMESTAMP(0)\"}",
     "phasor.package": "PARTICIPANT_REGISTRATION",
     "phasor.reports": "[[\"PARTICIPANT_REGISTRATION\",\"PARTICIPANT\"]]",
     "phasor.table": "PARTICIPANT",
-    "phasor.temporal.cutoff": "LASTCHANGED",
-    "phasor.temporal.entity": "[\"PARTICIPANTID\"]",
-    "phasor.temporal.order": "[\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.kind": "timeless",
     "phasor.visibility": "PUBLIC"
   },
   "refs": {
@@ -47,7 +41,7 @@
           "doc": "Unique participant identifier",
           "id": 1,
           "name": "PARTICIPANTID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -93,9 +87,7 @@
           "type": "timestamptz"
         }
       ],
-      "identifier-field-ids": [
-        1
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     }

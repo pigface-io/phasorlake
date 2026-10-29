@@ -20,7 +20,7 @@
   "properties": {
     "comment": "MTPASA_CASESOLUTION is obsolete from 2017 End of Year DM4.27 Release. \nThe MTPASA_REGIONSOLUTION table shows the results of the regional capacity, maximum surplus reserve and maximum spare capacity evaluations for each day and ldcblock of the study.",
     "phasor.declared": "false",
-    "phasor.format": "4",
+    "phasor.format": "5",
     "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(3,0)\",\"3\":\"TIMESTAMP(0)\",\"4\":\"TIMESTAMP(0)\",\"5\":\"NUMERIC(3,0)\",\"6\":\"VARCHAR(10)\",\"7\":\"NUMERIC(12,2)\",\"8\":\"NUMERIC(12,2)\",\"9\":\"NUMERIC(12,2)\",\"10\":\"NUMERIC(12,2)\",\"11\":\"NUMERIC(12,0)\",\"12\":\"NUMERIC(12,0)\",\"13\":\"NUMERIC(12,2)\",\"14\":\"NUMERIC(12,2)\",\"15\":\"NUMERIC(12,2)\",\"16\":\"NUMERIC(1,0)\",\"17\":\"NUMERIC(12,2)\",\"18\":\"NUMERIC(12,2)\",\"19\":\"NUMERIC(1,0)\",\"20\":\"NUMERIC(12,2)\",\"21\":\"NUMERIC(12,2)\",\"22\":\"TIMESTAMP(0)\",\"23\":\"NUMERIC(12,0)\",\"24\":\"VARCHAR(20)\",\"25\":\"NUMERIC(16,6)\",\"26\":\"NUMERIC(16,6)\",\"27\":\"NUMERIC(12,2)\",\"28\":\"NUMERIC(12,2)\",\"29\":\"NUMERIC(15,5)\",\"30\":\"NUMERIC(12,2)\",\"31\":\"NUMERIC(15,5)\",\"32\":\"NUMERIC(12,2)\",\"33\":\"NUMERIC(12,2)\",\"34\":\"NUMERIC(12,2)\",\"35\":\"NUMERIC(16,6)\",\"36\":\"NUMERIC(12,2)\",\"37\":\"NUMERIC(12,2)\",\"38\":\"NUMERIC(15,5)\",\"39\":\"NUMERIC(12,2)\"}",
     "phasor.table": "MTPASA_REGIONSOLUTION"
   },

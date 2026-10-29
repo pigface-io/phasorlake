@@ -20,17 +20,12 @@
   "properties": {
     "comment": "NETWORK_OUTAGECONSTRAINTSET lists the Constraint Set or Sets that are expected to be invoked for the outage once it is confirmed to proceed.",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"OUTAGEID\",\"GENCONSETID\"]",
+    "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"NUMERIC(15,0)\",\"2\":\"VARCHAR(50)\",\"3\":\"TIMESTAMP(0)\",\"4\":\"TIMESTAMP(0)\"}",
     "phasor.package": "NETWORK",
     "phasor.reports": "[[\"NETWORK\",\"OUTAGECONSTRAINTSET\"]]",
     "phasor.table": "NETWORK_OUTAGECONSTRAINTSET",
-    "phasor.temporal.entity": "[\"OUTAGEID\",\"GENCONSETID\"]",
-    "phasor.temporal.order": "[]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.kind": "timeless",
     "phasor.time": "STARTINTERVAL",
     "phasor.visibility": "PUBLIC"
   },
@@ -47,14 +42,14 @@
           "doc": "ID uniquely identifying the outage",
           "id": 1,
           "name": "OUTAGEID",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(15, 0)"
         },
         {
           "doc": "ID for the constraint set",
           "id": 2,
           "name": "GENCONSETID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -72,10 +67,7 @@
           "type": "timestamptz"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     }

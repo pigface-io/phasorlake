@@ -20,18 +20,12 @@
   "properties": {
     "comment": "BILLINGREGIONFIGURES sets out additional summary region details including ancillary service amounts for each billing run.",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"CONTRACTYEAR\",\"WEEKNO\",\"BILLRUNNO\",\"REGIONID\"]",
+    "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"NUMERIC(4,0)\",\"2\":\"NUMERIC(3,0)\",\"3\":\"NUMERIC(3,0)\",\"4\":\"VARCHAR(10)\",\"5\":\"NUMERIC(16,6)\",\"6\":\"NUMERIC(16,6)\",\"7\":\"NUMERIC(16,6)\",\"8\":\"NUMERIC(16,6)\",\"9\":\"NUMERIC(16,6)\",\"10\":\"NUMERIC(16,6)\",\"11\":\"NUMERIC(16,6)\",\"12\":\"NUMERIC(16,6)\",\"13\":\"NUMERIC(16,6)\",\"14\":\"NUMERIC(16,6)\",\"15\":\"NUMERIC(16,6)\",\"16\":\"TIMESTAMP(0)\",\"17\":\"NUMERIC(18,8)\",\"18\":\"NUMERIC(18,8)\"}",
     "phasor.package": "BILLING_RUN",
     "phasor.reports": "[[\"BILLING\",\"REGIONFIGURES\"]]",
     "phasor.table": "BILLINGREGIONFIGURES",
-    "phasor.temporal.cutoff": "LASTCHANGED",
-    "phasor.temporal.entity": "[\"CONTRACTYEAR\",\"WEEKNO\",\"REGIONID\"]",
-    "phasor.temporal.order": "[\"BILLRUNNO\",\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.kind": "timeless",
     "phasor.time": "LASTCHANGED",
     "phasor.visibility": "PUBLIC"
   },
@@ -48,28 +42,28 @@
           "doc": "AEMO Contract Year number starting in week containing 1st January",
           "id": 1,
           "name": "CONTRACTYEAR",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(4, 0)"
         },
         {
           "doc": "Week no within the contract year. Week no 1 is the week containing 1st January",
           "id": 2,
           "name": "WEEKNO",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(3, 0)"
         },
         {
           "doc": "Unique run no within a given contract year and week no",
           "id": 3,
           "name": "BILLRUNNO",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(3, 0)"
         },
         {
           "doc": "Unique region identifier",
           "id": 4,
           "name": "REGIONID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -157,12 +151,7 @@
           "type": "timestamptz"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3,
-        4
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     },
@@ -172,28 +161,28 @@
           "doc": "AEMO Contract Year number starting in week containing 1st January",
           "id": 1,
           "name": "CONTRACTYEAR",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(4, 0)"
         },
         {
           "doc": "Week no within the contract year. Week no 1 is the week containing 1st January",
           "id": 2,
           "name": "WEEKNO",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(3, 0)"
         },
         {
           "doc": "Unique run no within a given contract year and week no",
           "id": 3,
           "name": "BILLRUNNO",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(3, 0)"
         },
         {
           "doc": "Unique region identifier",
           "id": 4,
           "name": "REGIONID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -295,12 +284,7 @@
           "type": "decimal(18, 8)"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3,
-        4
-      ],
+      "identifier-field-ids": [],
       "schema-id": 1,
       "type": "struct"
     }

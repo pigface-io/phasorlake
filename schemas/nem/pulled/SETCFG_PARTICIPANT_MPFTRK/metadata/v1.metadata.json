@@ -20,19 +20,12 @@
   "properties": {
     "comment": "SETCFG_PARTICIPANT_MPFTRK is the tracking table for Market Participation Factors (MPF) data stored in the SETCFG_PARTICIPANT_MPF table for each participant.",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"PARTICIPANTID\",\"EFFECTIVEDATE\",\"VERSIONNO\"]",
+    "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"VARCHAR(10)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"NUMERIC(3,0)\",\"4\":\"VARCHAR(15)\",\"5\":\"TIMESTAMP(0)\",\"6\":\"TIMESTAMP(0)\"}",
     "phasor.package": "SETTLEMENT_CONFIG",
     "phasor.reports": "[[\"SETTLEMENT_CONFIG\",\"SETCFG_PARTICIPANT_MPFTRK\"]]",
     "phasor.table": "SETCFG_PARTICIPANT_MPFTRK",
-    "phasor.temporal.cutoff": "LASTCHANGED",
-    "phasor.temporal.entity": "[\"PARTICIPANTID\"]",
-    "phasor.temporal.order": "[\"VERSIONNO\",\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.column": "EFFECTIVEDATE",
-    "phasor.temporal.valid.kind": "from",
     "phasor.time": "EFFECTIVEDATE",
     "phasor.visibility": "PUBLIC"
   },
@@ -49,22 +42,22 @@
           "doc": "Participant identifier",
           "id": 1,
           "name": "PARTICIPANTID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "Effective date of the MPF data",
           "id": 2,
           "name": "EFFECTIVEDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Version number of the MPF data",
           "id": 3,
           "name": "VERSIONNO",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(3, 0)"
         },
         {
           "doc": "Authorising user",
@@ -88,11 +81,7 @@
           "type": "timestamptz"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     }

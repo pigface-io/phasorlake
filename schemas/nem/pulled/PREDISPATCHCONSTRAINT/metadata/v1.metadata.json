@@ -20,19 +20,12 @@
   "properties": {
     "comment": "PREDISPATCHCONSTRAINT sets out constraints that are binding in each predispatch run and interconnector constraints (whether binding or not). Only binding and interconnector constraints are reported. Binding contracts have marginal value greater than $0. Interconnector constraints are listed so RHS values can be reported for ST PASA.\nConstraint solutions only report fixed loading /MR constraints on the next day.",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"CONSTRAINTID\",\"DATETIME\"]",
+    "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"VARCHAR(20)\",\"2\":\"NUMERIC(3,0)\",\"3\":\"VARCHAR(20)\",\"4\":\"VARCHAR(20)\",\"5\":\"NUMERIC(2,0)\",\"6\":\"NUMERIC(15,5)\",\"7\":\"NUMERIC(15,5)\",\"8\":\"NUMERIC(15,5)\",\"9\":\"TIMESTAMP(0)\",\"10\":\"TIMESTAMP(0)\",\"12\":\"TIMESTAMP(0)\",\"13\":\"NUMERIC(22,0)\",\"14\":\"NUMERIC(15,5)\",\"15\":\"VARCHAR(20)\"}",
     "phasor.package": "PRE_DISPATCH",
     "phasor.reports": "[[\"PREDISPATCH\",\"CONSTRAINT_SOLUTION\"]]",
     "phasor.table": "PREDISPATCHCONSTRAINT",
-    "phasor.temporal.cutoff": "LASTCHANGED",
-    "phasor.temporal.entity": "[\"CONSTRAINTID\",\"INTERVENTION\"]",
-    "phasor.temporal.order": "[\"PREDISPATCHSEQNO\",\"RUNNO\",\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.column": "DATETIME",
-    "phasor.temporal.valid.kind": "interval_end",
     "phasor.time": "DATETIME",
     "phasor.visibility": "PUBLIC"
   },
@@ -63,7 +56,7 @@
           "doc": "Generic constraint identifier",
           "id": 3,
           "name": "CONSTRAINTID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -112,7 +105,7 @@
           "doc": "Period date and time",
           "id": 10,
           "name": "DATETIME",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
@@ -136,10 +129,7 @@
           "type": "double"
         }
       ],
-      "identifier-field-ids": [
-        3,
-        10
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     },
@@ -163,7 +153,7 @@
           "doc": "Generic constraint identifier",
           "id": 3,
           "name": "CONSTRAINTID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -212,7 +202,7 @@
           "doc": "Period date and time",
           "id": 10,
           "name": "DATETIME",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
@@ -243,10 +233,7 @@
           "type": "decimal(15, 5)"
         }
       ],
-      "identifier-field-ids": [
-        3,
-        10
-      ],
+      "identifier-field-ids": [],
       "schema-id": 1,
       "type": "struct"
     },
@@ -270,7 +257,7 @@
           "doc": "Generic constraint identifier",
           "id": 3,
           "name": "CONSTRAINTID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -319,7 +306,7 @@
           "doc": "Period date and time",
           "id": 10,
           "name": "DATETIME",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
@@ -351,10 +338,7 @@
           "type": "decimal(15, 5)"
         }
       ],
-      "identifier-field-ids": [
-        3,
-        10
-      ],
+      "identifier-field-ids": [],
       "schema-id": 2,
       "type": "struct"
     }

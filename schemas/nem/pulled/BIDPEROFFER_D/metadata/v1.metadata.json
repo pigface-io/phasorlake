@@ -20,19 +20,12 @@
   "properties": {
     "comment": "BIDPEROFFER_D shows the public summary of the energy and FCAS offers applicable in the Dispatch for the\nintervals identified. BIDPEROFFER_D is the child to BIDDAYOFFER_D.",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"SETTLEMENTDATE\",\"DUID\",\"BIDTYPE\",\"INTERVAL_DATETIME\"]",
+    "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"VARCHAR(10)\",\"3\":\"VARCHAR(10)\",\"4\":\"TIMESTAMP(0)\",\"5\":\"TIMESTAMP(0)\",\"6\":\"NUMERIC(22,0)\",\"7\":\"NUMERIC(22,0)\",\"8\":\"NUMERIC(12,6)\",\"9\":\"NUMERIC(12,6)\",\"10\":\"NUMERIC(6,0)\",\"11\":\"NUMERIC(6,0)\",\"12\":\"NUMERIC(6,0)\",\"13\":\"NUMERIC(6,0)\",\"14\":\"NUMERIC(6,0)\",\"15\":\"NUMERIC(6,0)\",\"16\":\"NUMERIC(22,0)\",\"17\":\"NUMERIC(22,0)\",\"18\":\"NUMERIC(22,0)\",\"19\":\"NUMERIC(22,0)\",\"20\":\"NUMERIC(22,0)\",\"21\":\"NUMERIC(22,0)\",\"22\":\"NUMERIC(22,0)\",\"23\":\"NUMERIC(22,0)\",\"24\":\"NUMERIC(22,0)\",\"25\":\"NUMERIC(22,0)\",\"26\":\"TIMESTAMP(0)\",\"27\":\"NUMERIC(12,0)\",\"28\":\"TIMESTAMP(0)\",\"29\":\"NUMERIC(6,0)\",\"30\":\"VARCHAR(20)\",\"31\":\"NUMERIC(15,5)\",\"32\":\"NUMERIC(8,3)\"}",
     "phasor.package": "BIDS",
     "phasor.reports": "[[\"BID\",\"BIDPEROFFER_D\"]]",
     "phasor.table": "BIDPEROFFER_D",
-    "phasor.temporal.cutoff": "LASTCHANGED",
-    "phasor.temporal.entity": "[\"DUID\",\"BIDTYPE\",\"INTERVAL_DATETIME\"]",
-    "phasor.temporal.order": "[\"OFFERDATE\",\"VERSIONNO\",\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "hand",
-    "phasor.temporal.valid.column": "SETTLEMENTDATE",
-    "phasor.temporal.valid.kind": "day",
     "phasor.time": "SETTLEMENTDATE",
     "phasor.visibility": "PUBLIC"
   },
@@ -49,21 +42,21 @@
           "doc": "Market date for which the bid applied",
           "id": 1,
           "name": "SETTLEMENTDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Dispatchable Unit identifier",
           "id": 2,
           "name": "DUID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "Bid Type Identifier",
           "id": 3,
           "name": "BIDTYPE",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -238,16 +231,11 @@
           "doc": "Date and Time of the dispatch interval to which the offer applied",
           "id": 28,
           "name": "INTERVAL_DATETIME",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3,
-        28
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     },
@@ -257,21 +245,21 @@
           "doc": "Market date for which the bid applied",
           "id": 1,
           "name": "SETTLEMENTDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Dispatchable Unit identifier",
           "id": 2,
           "name": "DUID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "Bid Type Identifier",
           "id": 3,
           "name": "BIDTYPE",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -446,7 +434,7 @@
           "doc": "Date and Time of the dispatch interval to which the offer applied",
           "id": 28,
           "name": "INTERVAL_DATETIME",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
@@ -457,12 +445,7 @@
           "type": "decimal(6, 0)"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3,
-        28
-      ],
+      "identifier-field-ids": [],
       "schema-id": 1,
       "type": "struct"
     },
@@ -472,21 +455,21 @@
           "doc": "Market date for which the bid applied",
           "id": 1,
           "name": "SETTLEMENTDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Dispatchable Unit identifier",
           "id": 2,
           "name": "DUID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "Bid Type Identifier",
           "id": 3,
           "name": "BIDTYPE",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -500,7 +483,7 @@
           "doc": "Date and Time of the dispatch interval to which the offer applied",
           "id": 28,
           "name": "INTERVAL_DATETIME",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
@@ -686,12 +669,7 @@
           "type": "decimal(15, 5)"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3,
-        28
-      ],
+      "identifier-field-ids": [],
       "schema-id": 2,
       "type": "struct"
     },
@@ -701,21 +679,21 @@
           "doc": "Market date for which the bid applied",
           "id": 1,
           "name": "SETTLEMENTDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Dispatchable Unit identifier",
           "id": 2,
           "name": "DUID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "Bid Type Identifier",
           "id": 3,
           "name": "BIDTYPE",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -890,7 +868,7 @@
           "doc": "Date and Time of the dispatch interval to which the offer applied",
           "id": 28,
           "name": "INTERVAL_DATETIME",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
@@ -915,12 +893,7 @@
           "type": "decimal(8, 3)"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3,
-        28
-      ],
+      "identifier-field-ids": [],
       "schema-id": 3,
       "type": "struct"
     },
@@ -930,21 +903,21 @@
           "doc": "Market date for which the bid applied",
           "id": 1,
           "name": "SETTLEMENTDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Dispatchable Unit identifier",
           "id": 2,
           "name": "DUID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "Bid Type Identifier",
           "id": 3,
           "name": "BIDTYPE",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -958,7 +931,7 @@
           "doc": "Date and Time of the dispatch interval to which the offer applied",
           "id": 28,
           "name": "INTERVAL_DATETIME",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
@@ -1151,12 +1124,7 @@
           "type": "decimal(8, 3)"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3,
-        28
-      ],
+      "identifier-field-ids": [],
       "schema-id": 4,
       "type": "struct"
     }

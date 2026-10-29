@@ -20,18 +20,12 @@
   "properties": {
     "comment": "MARKETFEE sets out fee type and period for each market fee.",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"MARKETFEEID\"]",
+    "phasor.format": "5",
     "phasor.load": "snapshot",
     "phasor.model-types": "{\"1\":\"VARCHAR(10)\",\"2\":\"VARCHAR(20)\",\"3\":\"VARCHAR(12)\",\"4\":\"VARCHAR(64)\",\"5\":\"TIMESTAMP(0)\",\"6\":\"VARCHAR(15)\",\"7\":\"VARCHAR(10)\",\"8\":\"VARCHAR(40)\",\"9\":\"VARCHAR(20)\",\"10\":\"VARCHAR(20)\"}",
     "phasor.package": "SETTLEMENT_CONFIG",
     "phasor.reports": "[[\"SETTLEMENT_CONFIG\",\"MARKETFEE\"]]",
     "phasor.table": "MARKETFEE",
-    "phasor.temporal.cutoff": "LASTCHANGED",
-    "phasor.temporal.entity": "[\"MARKETFEEID\"]",
-    "phasor.temporal.order": "[\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.kind": "timeless",
     "phasor.visibility": "PUBLIC"
   },
   "refs": {
@@ -47,7 +41,7 @@
           "doc": "Identifier for Market Fee",
           "id": 1,
           "name": "MARKETFEEID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -97,9 +91,7 @@
           "type": "string"
         }
       ],
-      "identifier-field-ids": [
-        1
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     },
@@ -109,7 +101,7 @@
           "doc": "Identifier for Market Fee",
           "id": 1,
           "name": "MARKETFEEID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -173,9 +165,7 @@
           "type": "string"
         }
       ],
-      "identifier-field-ids": [
-        1
-      ],
+      "identifier-field-ids": [],
       "schema-id": 1,
       "type": "struct"
     }

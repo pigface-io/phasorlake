@@ -19,20 +19,13 @@
   ],
   "properties": {
     "phasor.declared": "true",
-    "phasor.format": "4",
+    "phasor.format": "5",
     "phasor.headers": "{\"1\":\"compressor_id\",\"2\":\"compressor_name\",\"3\":\"pipe_segment_id\",\"4\":\"min_pressure_delta\",\"5\":\"most_efficient_pressure_delta\",\"6\":\"max_pressure_delta\",\"7\":\"max_compressor_power\",\"8\":\"min_compressor_power\",\"9\":\"compressor_efficiency\",\"10\":\"compressor_efficiency_at_min\",\"11\":\"efficiency_coefficient\",\"12\":\"super_compressability_factor\",\"13\":\"compressor_station_id\",\"14\":\"station_name\",\"15\":\"last_mod_date\",\"16\":\"current_date\"}",
-    "phasor.key": "[\"COMPRESSOR_ID\",\"PIPE_SEGMENT_ID\",\"COMPRESSOR_STATION_ID\"]",
     "phasor.load": "snapshot",
     "phasor.market": "gas",
     "phasor.offset": "+10:00",
     "phasor.reports": "[[\"DWGM\",\"INT260_COMPRESSOR_CHAR_1\"]]",
     "phasor.table": "DWGM_INT260_COMPRESSOR_CHAR",
-    "phasor.temporal.cutoff": "CURRENT_DATE",
-    "phasor.temporal.entity": "[\"COMPRESSOR_ID\",\"PIPE_SEGMENT_ID\",\"COMPRESSOR_STATION_ID\"]",
-    "phasor.temporal.order": "[\"CURRENT_DATE\"]",
-    "phasor.temporal.origin": "hand",
-    "phasor.temporal.valid.column": "LAST_MOD_DATE",
-    "phasor.temporal.valid.kind": "instant",
     "phasor.time": "LAST_MOD_DATE",
     "phasor.visibility": "PUBLIC"
   },
@@ -48,8 +41,8 @@
         {
           "id": 1,
           "name": "COMPRESSOR_ID",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(2, 0)"
         },
         {
           "id": 2,
@@ -60,8 +53,8 @@
         {
           "id": 3,
           "name": "PIPE_SEGMENT_ID",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(2, 0)"
         },
         {
           "id": 4,
@@ -120,8 +113,8 @@
         {
           "id": 13,
           "name": "COMPRESSOR_STATION_ID",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(2, 0)"
         },
         {
           "id": 14,
@@ -142,11 +135,7 @@
           "type": "timestamptz"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        3,
-        13
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     }

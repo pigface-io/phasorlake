@@ -20,19 +20,12 @@
   "properties": {
     "comment": "SET_FCAS_REGULATION_TRK shows FCAS Regulation Service Constraint tracking for Regional FCAS Regulation recovery",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"SETTLEMENTDATE\",\"VERSIONNO\",\"INTERVAL_DATETIME\",\"CONSTRAINTID\"]",
+    "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(3,0)\",\"3\":\"TIMESTAMP(0)\",\"4\":\"VARCHAR(20)\",\"5\":\"NUMERIC(18,8)\",\"6\":\"NUMERIC(18,8)\",\"7\":\"NUMERIC(18,8)\",\"8\":\"NUMERIC(18,8)\",\"9\":\"TIMESTAMP(0)\",\"10\":\"NUMERIC(1,0)\",\"11\":\"NUMERIC(18,8)\",\"12\":\"NUMERIC(18,8)\",\"13\":\"NUMERIC(18,8)\",\"14\":\"NUMERIC(18,8)\",\"15\":\"NUMERIC(18,8)\",\"16\":\"NUMERIC(18,8)\",\"17\":\"NUMERIC(18,8)\",\"18\":\"NUMERIC(18,8)\",\"19\":\"NUMERIC(18,8)\",\"20\":\"NUMERIC(18,8)\",\"21\":\"NUMERIC(18,8)\",\"22\":\"NUMERIC(18,8)\",\"23\":\"NUMERIC(18,8)\",\"24\":\"NUMERIC(18,8)\",\"25\":\"NUMERIC(18,8)\"}",
     "phasor.package": "SETTLEMENT_DATA",
     "phasor.reports": "[[\"SETTLEMENTS\",\"SET_FCAS_REGULATION_TRK\"]]",
     "phasor.table": "SET_FCAS_REGULATION_TRK",
-    "phasor.temporal.cutoff": "LASTCHANGED",
-    "phasor.temporal.entity": "[\"INTERVAL_DATETIME\",\"CONSTRAINTID\"]",
-    "phasor.temporal.order": "[\"VERSIONNO\",\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "hand",
-    "phasor.temporal.valid.column": "SETTLEMENTDATE",
-    "phasor.temporal.valid.kind": "day",
     "phasor.time": "SETTLEMENTDATE",
     "phasor.visibility": "PUBLIC"
   },
@@ -49,28 +42,28 @@
           "doc": "Settlement Date",
           "id": 1,
           "name": "SETTLEMENTDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Settlement Run No",
           "id": 2,
           "name": "VERSIONNO",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(3, 0)"
         },
         {
           "doc": "Dispatch Interval Date Time",
           "id": 3,
           "name": "INTERVAL_DATETIME",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Generic Constraint ID",
           "id": 4,
           "name": "CONSTRAINTID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -109,12 +102,7 @@
           "type": "timestamptz"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3,
-        4
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     },
@@ -124,28 +112,28 @@
           "doc": "Settlement Date",
           "id": 1,
           "name": "SETTLEMENTDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Settlement Run No",
           "id": 2,
           "name": "VERSIONNO",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(3, 0)"
         },
         {
           "doc": "Dispatch Interval Date Time",
           "id": 3,
           "name": "INTERVAL_DATETIME",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Generic Constraint ID",
           "id": 4,
           "name": "CONSTRAINTID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -198,12 +186,7 @@
           "type": "timestamptz"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3,
-        4
-      ],
+      "identifier-field-ids": [],
       "schema-id": 1,
       "type": "struct"
     },
@@ -213,28 +196,28 @@
           "doc": "Settlement Date",
           "id": 1,
           "name": "SETTLEMENTDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Settlement Run No",
           "id": 2,
           "name": "VERSIONNO",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(3, 0)"
         },
         {
           "doc": "Dispatch Interval Date Time",
           "id": 3,
           "name": "INTERVAL_DATETIME",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Generic Constraint ID",
           "id": 4,
           "name": "CONSTRAINTID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -287,12 +270,7 @@
           "type": "decimal(18, 8)"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3,
-        4
-      ],
+      "identifier-field-ids": [],
       "schema-id": 2,
       "type": "struct"
     },
@@ -302,28 +280,28 @@
           "doc": "Settlement Date",
           "id": 1,
           "name": "SETTLEMENTDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Settlement Run No",
           "id": 2,
           "name": "VERSIONNO",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(3, 0)"
         },
         {
           "doc": "Dispatch Interval Date Time",
           "id": 3,
           "name": "INTERVAL_DATETIME",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Generic Constraint ID",
           "id": 4,
           "name": "CONSTRAINTID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -474,12 +452,7 @@
           "type": "decimal(18, 8)"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3,
-        4
-      ],
+      "identifier-field-ids": [],
       "schema-id": 3,
       "type": "struct"
     },
@@ -489,28 +462,28 @@
           "doc": "Settlement Date",
           "id": 1,
           "name": "SETTLEMENTDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Settlement Run No",
           "id": 2,
           "name": "VERSIONNO",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(3, 0)"
         },
         {
           "doc": "Dispatch Interval Date Time",
           "id": 3,
           "name": "INTERVAL_DATETIME",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Generic Constraint ID",
           "id": 4,
           "name": "CONSTRAINTID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -661,12 +634,7 @@
           "type": "timestamptz"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3,
-        4
-      ],
+      "identifier-field-ids": [],
       "schema-id": 4,
       "type": "struct"
     }

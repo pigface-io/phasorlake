@@ -20,19 +20,12 @@
   "properties": {
     "comment": "SETLOCALAREATNI shows the list of TNIs constituent to a local area in a settlement run.",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"SETTLEMENTDATE\",\"SETTLEMENTRUNNO\",\"LOCALAREAID\",\"TNI\"]",
+    "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(3,0)\",\"3\":\"VARCHAR(30)\",\"4\":\"VARCHAR(30)\",\"5\":\"TIMESTAMP(0)\"}",
     "phasor.package": "SETTLEMENT_DATA",
     "phasor.reports": "[[\"SETTLEMENTS\",\"LOCALAREATNI\"]]",
     "phasor.table": "SETLOCALAREATNI",
-    "phasor.temporal.cutoff": "LASTCHANGED",
-    "phasor.temporal.entity": "[\"SETTLEMENTRUNNO\",\"LOCALAREAID\",\"TNI\"]",
-    "phasor.temporal.order": "[\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "hand",
-    "phasor.temporal.valid.column": "SETTLEMENTDATE",
-    "phasor.temporal.valid.kind": "day",
     "phasor.time": "SETTLEMENTDATE",
     "phasor.visibility": "PUBLIC"
   },
@@ -49,28 +42,28 @@
           "doc": "Settlement date of the settlement run",
           "id": 1,
           "name": "SETTLEMENTDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Settlement run number of the settlement run",
           "id": 2,
           "name": "SETTLEMENTRUNNO",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(3, 0)"
         },
         {
           "doc": "Unique identifier for the local area",
           "id": 3,
           "name": "LOCALAREAID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "Unique identifier for a TNI constituent to the local area as at the settlement run",
           "id": 4,
           "name": "TNI",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -81,12 +74,7 @@
           "type": "timestamptz"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3,
-        4
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     }

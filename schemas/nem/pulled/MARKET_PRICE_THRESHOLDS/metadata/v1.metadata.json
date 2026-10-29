@@ -20,19 +20,12 @@
   "properties": {
     "comment": "MARKET_PRICE_THRESHOLDS sets out the market cap , floor and administered price thresholds applying to the electricity market",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"EFFECTIVEDATE\",\"VERSIONNO\"]",
+    "phasor.format": "5",
     "phasor.load": "snapshot",
     "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(4,0)\",\"3\":\"NUMERIC(15,5)\",\"4\":\"NUMERIC(15,5)\",\"5\":\"NUMERIC(15,5)\",\"6\":\"TIMESTAMP(0)\",\"7\":\"VARCHAR(15)\",\"8\":\"TIMESTAMP(0)\"}",
     "phasor.package": "MARKET_CONFIG",
     "phasor.reports": "[[\"MARKET_CONFIG\",\"MARKET_PRICE_THRESHOLDS\"]]",
     "phasor.table": "MARKET_PRICE_THRESHOLDS",
-    "phasor.temporal.cutoff": "LASTCHANGED",
-    "phasor.temporal.entity": "[]",
-    "phasor.temporal.order": "[\"VERSIONNO\",\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.column": "EFFECTIVEDATE",
-    "phasor.temporal.valid.kind": "from",
     "phasor.visibility": "PUBLIC"
   },
   "refs": {
@@ -48,15 +41,15 @@
           "doc": "Calendar date that this record becomes effective",
           "id": 1,
           "name": "EFFECTIVEDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "version no for the effective date",
           "id": 2,
           "name": "VERSIONNO",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(4, 0)"
         },
         {
           "doc": "value of lost load if total supply falls short of demand after load management then involuntary load",
@@ -101,10 +94,7 @@
           "type": "timestamptz"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     }

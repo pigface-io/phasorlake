@@ -20,9 +20,8 @@
   "properties": {
     "comment": "Provide the details of activities that may affect the daily capacity of the facility over the next 12 months.",
     "phasor.declared": "true",
-    "phasor.format": "4",
+    "phasor.format": "5",
     "phasor.headers": "{\"1\":\"FacilityName\",\"2\":\"FacilityId\",\"3\":\"FromGasDate\",\"4\":\"ToGasDate\",\"5\":\"CapacityType\",\"6\":\"FlowDirection\",\"7\":\"ReceiptLocationName\",\"8\":\"ReceiptLocation\",\"9\":\"DeliveryLocationName\",\"10\":\"DeliveryLocation\",\"11\":\"CapacityDescription\",\"12\":\"OutlookQuantity\",\"13\":\"Description\",\"14\":\"LastUpdated\"}",
-    "phasor.key": "[]",
     "phasor.load": "append",
     "phasor.market": "gas",
     "phasor.model": "[\"GAS_MEDIUM_TERM_CAP_OUTLOOK\",\"GAS_FACILITY\"]",
@@ -30,12 +29,6 @@
     "phasor.offset": "+10:00",
     "phasor.reports": "[[\"GBB\",\"MEDIUM_TERM_CAPACITY_OUTLOOK\"],[\"GBB\",\"MEDIUM_TERM_CAPACITY_OUTLOOK_FUTURE\"]]",
     "phasor.table": "GBB_MEDIUM_TERM_CAPACITY_OUTLOOK",
-    "phasor.temporal.cutoff": "LASTUPDATED",
-    "phasor.temporal.entity": "[\"FACILITYID\"]",
-    "phasor.temporal.order": "[\"LASTUPDATED\"]",
-    "phasor.temporal.origin": "hand",
-    "phasor.temporal.valid.column": "FROMGASDATE",
-    "phasor.temporal.valid.kind": "instant",
     "phasor.time": "FROMGASDATE",
     "phasor.visibility": "PUBLIC"
   },

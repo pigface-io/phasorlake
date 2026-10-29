@@ -20,19 +20,12 @@
   "properties": {
     "comment": "DISPATCHCASESOLUTION shows information relating to the complete dispatch run. The fields in DISPATCHCASESOLUTION provide an overview of the dispatch run results allowing immediate identification of conditions such as energy or FCAS deficiencies.",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"SETTLEMENTDATE\",\"RUNNO\"]",
+    "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(3,0)\",\"3\":\"NUMERIC(2,0)\",\"4\":\"VARCHAR(3)\",\"5\":\"NUMERIC(2,0)\",\"6\":\"VARCHAR(20)\",\"7\":\"NUMERIC(1,0)\",\"8\":\"NUMERIC(27,10)\",\"9\":\"NUMERIC(15,5)\",\"10\":\"NUMERIC(15,5)\",\"11\":\"NUMERIC(15,5)\",\"12\":\"NUMERIC(15,5)\",\"13\":\"NUMERIC(15,5)\",\"14\":\"NUMERIC(15,5)\",\"15\":\"NUMERIC(15,5)\",\"16\":\"NUMERIC(15,5)\",\"17\":\"NUMERIC(15,5)\",\"18\":\"NUMERIC(15,5)\",\"19\":\"NUMERIC(15,5)\",\"20\":\"NUMERIC(15,5)\",\"21\":\"TIMESTAMP(0)\",\"22\":\"NUMERIC(1,0)\",\"23\":\"NUMERIC(1,0)\",\"24\":\"NUMERIC(1,0)\"}",
     "phasor.package": "DISPATCH",
     "phasor.reports": "[[\"DISPATCH\",\"CASE_SOLUTION\"]]",
     "phasor.table": "DISPATCHCASESOLUTION",
-    "phasor.temporal.cutoff": "LASTCHANGED",
-    "phasor.temporal.entity": "[\"INTERVENTION\"]",
-    "phasor.temporal.order": "[\"RUNNO\",\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.column": "SETTLEMENTDATE",
-    "phasor.temporal.valid.kind": "interval_end",
     "phasor.time": "SETTLEMENTDATE",
     "phasor.visibility": "PUBLIC"
   },
@@ -49,15 +42,15 @@
           "doc": "Date and time of the dispatch interval (e.g. five minute dispatch interval ending 28/09/2000 16:35)",
           "id": 1,
           "name": "SETTLEMENTDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Dispatch run no; always 1",
           "id": 2,
           "name": "RUNNO",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(3, 0)"
         },
         {
           "doc": "Intervention flag - refer to package documentation for definition and practical query examples",
@@ -214,10 +207,7 @@
           "type": "decimal(1, 0)"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     }

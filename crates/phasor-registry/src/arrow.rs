@@ -87,7 +87,7 @@ mod tests {
         let s = lake_schema(&unit_scada(), &nem());
         assert_eq!(s.fields().len(), 4);
         assert_eq!(s.field(2).metadata()[FIELD_ID_KEY], "3");
-        assert!(!s.field(0).is_nullable());
+        assert!(s.field(0).is_nullable());
         assert_eq!(s.metadata()["phasor:table"], "DISPATCH_UNIT_SCADA");
         assert_eq!(s.metadata()["phasor:market"], "nem");
     }

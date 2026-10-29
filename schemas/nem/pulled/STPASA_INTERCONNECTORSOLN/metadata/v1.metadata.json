@@ -20,19 +20,12 @@
   "properties": {
     "comment": "STPASA_INTERCONNECTORSOLN shows the results of the capacity evaluation for Interconnectors, including the calculated limits for the interval.",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"RUN_DATETIME\",\"INTERVAL_DATETIME\",\"INTERCONNECTORID\",\"RUNTYPE\"]",
+    "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"VARCHAR(10)\",\"4\":\"NUMERIC(12,2)\",\"5\":\"NUMERIC(12,2)\",\"6\":\"NUMERIC(12,2)\",\"7\":\"NUMERIC(12,2)\",\"8\":\"NUMERIC(12,2)\",\"9\":\"TIMESTAMP(0)\",\"10\":\"VARCHAR(20)\",\"11\":\"VARCHAR(20)\",\"12\":\"VARCHAR(20)\",\"13\":\"VARCHAR(20)\"}",
     "phasor.package": "STPASA_SOLUTION",
     "phasor.reports": "[[\"STPASA\",\"INTERCONNECTORSOLN\"]]",
     "phasor.table": "STPASA_INTERCONNECTORSOLN",
-    "phasor.temporal.cutoff": "RUN_DATETIME",
-    "phasor.temporal.entity": "[\"INTERCONNECTORID\",\"RUNTYPE\"]",
-    "phasor.temporal.order": "[\"RUN_DATETIME\",\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.column": "INTERVAL_DATETIME",
-    "phasor.temporal.valid.kind": "interval_end",
     "phasor.time": "INTERVAL_DATETIME",
     "phasor.visibility": "PUBLIC"
   },
@@ -49,21 +42,21 @@
           "doc": "Unique Timestamp Identifier for this study",
           "id": 1,
           "name": "RUN_DATETIME",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "The unique identifier for the interval within this study",
           "id": 2,
           "name": "INTERVAL_DATETIME",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Interconnector Identifier",
           "id": 3,
           "name": "INTERCONNECTORID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -112,7 +105,7 @@
           "doc": "Type of run. Values are RELIABILITY_LRC, OUTAGE_LRC and LOR. Note that the STPASA RELIABILITY_LRC and OUTAGE_LRC Run Types are discontinued from 31 July 2025, with only the LOR Run Type reported.",
           "id": 10,
           "name": "RUNTYPE",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -130,12 +123,7 @@
           "type": "string"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3,
-        10
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     },
@@ -145,21 +133,21 @@
           "doc": "Unique Timestamp Identifier for this study",
           "id": 1,
           "name": "RUN_DATETIME",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "The unique identifier for the interval within this study",
           "id": 2,
           "name": "INTERVAL_DATETIME",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Interconnector Identifier",
           "id": 3,
           "name": "INTERCONNECTORID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -208,7 +196,7 @@
           "doc": "Type of run. Values are RELIABILITY_LRC, OUTAGE_LRC and LOR. Note that the STPASA RELIABILITY_LRC and OUTAGE_LRC Run Types are discontinued from 31 July 2025, with only the LOR Run Type reported.",
           "id": 10,
           "name": "RUNTYPE",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -233,12 +221,7 @@
           "type": "string"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3,
-        10
-      ],
+      "identifier-field-ids": [],
       "schema-id": 1,
       "type": "struct"
     }

@@ -20,18 +20,12 @@
   "properties": {
     "comment": "GENUNITS shows Genset details for each physical unit with the relevant station.",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"GENSETID\"]",
+    "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"VARCHAR(20)\",\"2\":\"VARCHAR(10)\",\"3\":\"NUMERIC(16,6)\",\"4\":\"VARCHAR(10)\",\"5\":\"VARCHAR(2)\",\"6\":\"VARCHAR(2)\",\"7\":\"NUMERIC(6,0)\",\"8\":\"NUMERIC(6,0)\",\"9\":\"VARCHAR(20)\",\"10\":\"VARCHAR(20)\",\"11\":\"VARCHAR(10)\",\"12\":\"VARCHAR(10)\",\"13\":\"NUMERIC(6,0)\",\"14\":\"VARCHAR(15)\",\"15\":\"VARCHAR(40)\",\"16\":\"TIMESTAMP(0)\",\"17\":\"NUMERIC(18,8)\",\"18\":\"VARCHAR(100)\",\"19\":\"VARCHAR(20)\",\"20\":\"NUMERIC(6,0)\",\"21\":\"NUMERIC(6,0)\",\"22\":\"NUMERIC(15,5)\"}",
     "phasor.package": "PARTICIPANT_REGISTRATION",
     "phasor.reports": "[[\"PARTICIPANT_REGISTRATION\",\"GENUNITS\"]]",
     "phasor.table": "GENUNITS",
-    "phasor.temporal.cutoff": "LASTCHANGED",
-    "phasor.temporal.entity": "[\"GENSETID\"]",
-    "phasor.temporal.order": "[\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.kind": "timeless",
     "phasor.time": "LASTCHANGED",
     "phasor.visibility": "PUBLIC"
   },
@@ -48,7 +42,7 @@
           "doc": "Physical Unit identifier",
           "id": 1,
           "name": "GENSETID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -178,9 +172,7 @@
           "type": "string"
         }
       ],
-      "identifier-field-ids": [
-        1
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     },
@@ -190,7 +182,7 @@
           "doc": "Physical Unit identifier",
           "id": 1,
           "name": "GENSETID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -341,9 +333,7 @@
           "type": "decimal(15, 5)"
         }
       ],
-      "identifier-field-ids": [
-        1
-      ],
+      "identifier-field-ids": [],
       "schema-id": 1,
       "type": "struct"
     }

@@ -20,7 +20,7 @@
   "properties": {
     "comment": "MTPASA_INTERCONNECTORSOLUTION is obsolete from 2017 End of Year DM4.27 Release. \nThe MTPASA_INTERCONNECTORSOLUTION table shows the results of the capacity evaluation for Interconnectors, including the calculated limits for the ldcblock within the day.\nChange Notice 379 announced the replacement of the MT PASA data model so all MTPASAxxx tables become obsolete, replaced by MTPASA_xxx tables (see Change Notices 400, 400a and 400b).",
     "phasor.declared": "false",
-    "phasor.format": "4",
+    "phasor.format": "5",
     "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(3,0)\",\"3\":\"TIMESTAMP(0)\",\"4\":\"TIMESTAMP(0)\",\"5\":\"NUMERIC(3,0)\",\"6\":\"VARCHAR(10)\",\"7\":\"NUMERIC(12,2)\",\"8\":\"NUMERIC(12,2)\",\"9\":\"NUMERIC(12,2)\",\"10\":\"NUMERIC(12,2)\",\"11\":\"NUMERIC(12,2)\",\"12\":\"TIMESTAMP(0)\",\"13\":\"VARCHAR(20)\",\"14\":\"VARCHAR(20)\",\"15\":\"VARCHAR(20)\"}",
     "phasor.table": "MTPASA_INTERCONNECTORSOLUTION"
   },

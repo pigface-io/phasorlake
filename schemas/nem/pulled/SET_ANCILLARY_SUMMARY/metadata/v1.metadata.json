@@ -20,19 +20,12 @@
   "properties": {
     "comment": "SET_ANCILLARY_SUMMARY summarises payments for all Ancillary Services to participants on the basis of regions and trading intervals.",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"SETTLEMENTDATE\",\"VERSIONNO\",\"SERVICE\",\"PAYMENTTYPE\",\"REGIONID\",\"PERIODID\"]",
+    "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(3,0)\",\"3\":\"VARCHAR(20)\",\"4\":\"VARCHAR(20)\",\"5\":\"VARCHAR(10)\",\"6\":\"NUMERIC(3,0)\",\"7\":\"NUMERIC(18,8)\",\"8\":\"TIMESTAMP(0)\"}",
     "phasor.package": "SETTLEMENT_DATA",
     "phasor.reports": "[[\"SETTLEMENTS\",\"ANCILLARY_SUMMARY\"]]",
     "phasor.table": "SET_ANCILLARY_SUMMARY",
-    "phasor.temporal.cutoff": "LASTCHANGED",
-    "phasor.temporal.entity": "[\"SERVICE\",\"PAYMENTTYPE\",\"REGIONID\",\"PERIODID\"]",
-    "phasor.temporal.order": "[\"VERSIONNO\",\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "hand",
-    "phasor.temporal.valid.column": "SETTLEMENTDATE",
-    "phasor.temporal.valid.kind": "day",
     "phasor.time": "SETTLEMENTDATE",
     "phasor.visibility": "PUBLIC"
   },
@@ -49,43 +42,43 @@
           "doc": "Settlement Date",
           "id": 1,
           "name": "SETTLEMENTDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Settlement Run No",
           "id": 2,
           "name": "VERSIONNO",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(3, 0)"
         },
         {
           "doc": "Ancillary service identifier (e.g. REACTIVE_POWER)",
           "id": 3,
           "name": "SERVICE",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "Payment type identifier (e.g. COMPENSATION)",
           "id": 4,
           "name": "PAYMENTTYPE",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "Region Identifier",
           "id": 5,
           "name": "REGIONID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "Trading interval",
           "id": 6,
           "name": "PERIODID",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(3, 0)"
         },
         {
           "doc": "The NEM ancillary summary regional payment amount ($)",
@@ -102,14 +95,7 @@
           "type": "timestamptz"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3,
-        4,
-        5,
-        6
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     }

@@ -589,7 +589,7 @@ fn derived_table(market: Market, irow: &IRow<'_>) -> Table {
         format!("{}_{}", irow.report_type, irow.report_subtype)
     };
     let columns: Vec<&str> = irow.columns.to_vec();
-    let mut t = Table {
+    Table {
         market,
         name,
         description: Some(
@@ -600,14 +600,6 @@ fn derived_table(market: Market, irow: &IRow<'_>) -> Table {
         older_names: Vec::new(),
         published: String::new(),
         load_mode: LoadMode::Append,
-        temporal: crate::file_model::Temporal {
-            origin: crate::file_model::RoleOrigin::Derived,
-            entity: Vec::new(),
-            valid: crate::file_model::ValidAxis::Timeless,
-            order: Vec::new(),
-            cutoff: None,
-        },
-        primary_key: vec![],
         time_column: None,
         current_schema: 0,
         columns: columns
@@ -626,12 +618,9 @@ fn derived_table(market: Market, irow: &IRow<'_>) -> Table {
             fields: (1..=columns.len() as u32)
                 .map(|i| (ColumnId(i), false))
                 .collect(),
-            key: Vec::new(),
         }],
         runs: Vec::new(),
-    };
-    t.temporal = crate::file_model::temporal::derive(&t.primary_key, &t.columns);
-    t
+    }
 }
 
 #[cfg(test)]
@@ -700,14 +689,10 @@ mod tests {
         // Overlay replaces REGION with a one-column table and adds a new one.
         let mut t = r.table(r.table_by_name("REGION").unwrap()).clone();
         t.columns.truncate(1);
-        t.primary_key = vec![t.columns[0].name.clone()];
-        t.columns[0].nullable = false;
         t.time_column = None;
         t.schemas.truncate(1);
-        t.schemas[0].fields = vec![(t.columns[0].id, true)];
-        t.schemas[0].key = vec![t.columns[0].id];
+        t.schemas[0].fields = vec![(t.columns[0].id, false)];
         t.runs.retain(|r| r.schema == t.schemas[0].id);
-        t.temporal = crate::file_model::temporal::derive(&t.primary_key, &t.columns);
         write(dir.path(), &t);
         let mut n = t.clone();
         n.name = "NEWTABLE".into();

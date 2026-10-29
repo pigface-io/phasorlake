@@ -78,17 +78,17 @@ uninlined_format_args = "deny"
 phasor-core = { path = "crates/phasor-core" }
 # The Iceberg contract every repository shares: types, schemas, histories,
 # the interval planner and the table writer, at the rev its schemas pin.
-phasor-iceberg = { git = "https://github.com/pigface-io/phasorlake-schemas.git", rev = "da7f4f72e17f456e7e2f7772101e506824420811" }
+phasor-iceberg = { git = "https://github.com/pigface-io/phasorlake-schemas.git", rev = "7bf3909a037cec3cc4d0540f6826298c75661d52" }
 # The diagnostic every error is reported as, and what every decoder shares,
 # from the same repository.
-phasor-diag = { git = "https://github.com/pigface-io/phasorlake-schemas.git", rev = "da7f4f72e17f456e7e2f7772101e506824420811" }
-phasor-decode = { git = "https://github.com/pigface-io/phasorlake-schemas.git", rev = "da7f4f72e17f456e7e2f7772101e506824420811" }
+phasor-diag = { git = "https://github.com/pigface-io/phasorlake-schemas.git", rev = "7bf3909a037cec3cc4d0540f6826298c75661d52" }
+phasor-decode = { git = "https://github.com/pigface-io/phasorlake-schemas.git", rev = "7bf3909a037cec3cc4d0540f6826298c75661d52" }
 # The MMS format layer and the repository gates, from the same repository.
-phasor-mms-decode = { git = "https://github.com/pigface-io/phasorlake-schemas.git", rev = "da7f4f72e17f456e7e2f7772101e506824420811" }
-phasor-plain-decode = { git = "https://github.com/pigface-io/phasorlake-schemas.git", rev = "da7f4f72e17f456e7e2f7772101e506824420811" }
-phasor-gates = { git = "https://github.com/pigface-io/phasorlake-schemas.git", rev = "da7f4f72e17f456e7e2f7772101e506824420811" }
-phasor-zip = { git = "https://github.com/pigface-io/phasorlake-schemas.git", rev = "da7f4f72e17f456e7e2f7772101e506824420811" }
-phasor-provenance = { git = "https://github.com/pigface-io/phasorlake-schemas.git", rev = "da7f4f72e17f456e7e2f7772101e506824420811" }
+phasor-mms-decode = { git = "https://github.com/pigface-io/phasorlake-schemas.git", rev = "7bf3909a037cec3cc4d0540f6826298c75661d52" }
+phasor-plain-decode = { git = "https://github.com/pigface-io/phasorlake-schemas.git", rev = "7bf3909a037cec3cc4d0540f6826298c75661d52" }
+phasor-gates = { git = "https://github.com/pigface-io/phasorlake-schemas.git", rev = "7bf3909a037cec3cc4d0540f6826298c75661d52" }
+phasor-zip = { git = "https://github.com/pigface-io/phasorlake-schemas.git", rev = "7bf3909a037cec3cc4d0540f6826298c75661d52" }
+phasor-provenance = { git = "https://github.com/pigface-io/phasorlake-schemas.git", rev = "7bf3909a037cec3cc4d0540f6826298c75661d52" }
 phasor-iceberg-store = { path = "crates/phasor-iceberg-store" }
 phasor-registry = { path = "crates/phasor-registry" }
 phasor-mms-conform = { path = "crates/phasor-mms-conform" }

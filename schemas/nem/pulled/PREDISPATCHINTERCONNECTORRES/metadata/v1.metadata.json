@@ -20,19 +20,12 @@
   "properties": {
     "comment": "PREDISPATCHINTERCONNECTORRES records Interconnector flows and losses for the periods calculated in each predispatch run. Only binding and interconnector constraints are reported.\nSome fields are for the Frequency Controlled Ancillary Services export and import limits and extra reporting of the generic constraint setting the energy import and export limits.",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"INTERCONNECTORID\",\"DATETIME\"]",
+    "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"VARCHAR(20)\",\"2\":\"NUMERIC(3,0)\",\"3\":\"VARCHAR(10)\",\"4\":\"VARCHAR(20)\",\"5\":\"NUMERIC(2,0)\",\"6\":\"NUMERIC(15,5)\",\"7\":\"NUMERIC(15,5)\",\"8\":\"NUMERIC(15,5)\",\"9\":\"NUMERIC(15,5)\",\"10\":\"NUMERIC(15,5)\",\"11\":\"TIMESTAMP(0)\",\"12\":\"TIMESTAMP(0)\",\"13\":\"NUMERIC(15,5)\",\"14\":\"NUMERIC(15,5)\",\"15\":\"NUMERIC(15,5)\",\"16\":\"VARCHAR(20)\",\"17\":\"VARCHAR(20)\",\"18\":\"NUMERIC(15,5)\",\"19\":\"NUMERIC(15,5)\",\"20\":\"NUMERIC(10,2)\",\"21\":\"NUMERIC(1,0)\",\"22\":\"NUMERIC(10,2)\",\"23\":\"NUMERIC(1,0)\"}",
     "phasor.package": "PRE_DISPATCH",
     "phasor.reports": "[[\"PREDISPATCH\",\"INTERCONNECTOR_SOLN\"]]",
     "phasor.table": "PREDISPATCHINTERCONNECTORRES",
-    "phasor.temporal.cutoff": "LASTCHANGED",
-    "phasor.temporal.entity": "[\"INTERCONNECTORID\",\"INTERVENTION\"]",
-    "phasor.temporal.order": "[\"PREDISPATCHSEQNO\",\"RUNNO\",\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.column": "DATETIME",
-    "phasor.temporal.valid.kind": "interval_end",
     "phasor.time": "DATETIME",
     "phasor.visibility": "PUBLIC"
   },
@@ -63,7 +56,7 @@
           "doc": "Interconnector identifier",
           "id": 3,
           "name": "INTERCONNECTORID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -126,7 +119,7 @@
           "doc": "Period date and time",
           "id": 12,
           "name": "DATETIME",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
@@ -179,10 +172,7 @@
           "type": "decimal(15, 5)"
         }
       ],
-      "identifier-field-ids": [
-        3,
-        12
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     },
@@ -206,7 +196,7 @@
           "doc": "Interconnector identifier",
           "id": 3,
           "name": "INTERCONNECTORID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -269,7 +259,7 @@
           "doc": "Period date and time",
           "id": 12,
           "name": "DATETIME",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
@@ -350,10 +340,7 @@
           "type": "decimal(1, 0)"
         }
       ],
-      "identifier-field-ids": [
-        3,
-        12
-      ],
+      "identifier-field-ids": [],
       "schema-id": 1,
       "type": "struct"
     }

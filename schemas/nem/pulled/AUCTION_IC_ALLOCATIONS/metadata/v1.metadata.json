@@ -20,18 +20,12 @@
   "properties": {
     "comment": "AUCTION_IC_ALLOCATIONS supports the Settlement Residue Auction by providing the basis for setting up contracts for individual tranches. AUCTION_IC_ALLOCATIONS shows the default definitions for the total number of units and proportion applicable to each directional interconnector for a specified auction quarter.",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"CONTRACTYEAR\",\"QUARTER\",\"VERSIONNO\",\"INTERCONNECTORID\",\"FROMREGIONID\"]",
+    "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"NUMERIC(4,0)\",\"2\":\"NUMERIC(1,0)\",\"3\":\"NUMERIC(3,0)\",\"4\":\"VARCHAR(10)\",\"5\":\"VARCHAR(10)\",\"6\":\"NUMERIC(5,0)\",\"7\":\"NUMERIC(8,5)\",\"8\":\"NUMERIC(17,5)\",\"9\":\"TIMESTAMP(0)\",\"10\":\"VARCHAR(15)\",\"11\":\"TIMESTAMP(0)\",\"12\":\"NUMERIC(18,8)\"}",
     "phasor.package": "IRAUCTION",
     "phasor.reports": "[[\"IRAUCTION_CONFIG\",\"AUCTION_IC_ALLOCATIONS\"]]",
     "phasor.table": "AUCTION_IC_ALLOCATIONS",
-    "phasor.temporal.cutoff": "LASTCHANGED",
-    "phasor.temporal.entity": "[\"CONTRACTYEAR\",\"QUARTER\",\"INTERCONNECTORID\",\"FROMREGIONID\"]",
-    "phasor.temporal.order": "[\"VERSIONNO\",\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.kind": "timeless",
     "phasor.time": "LASTCHANGED",
     "phasor.visibility": "PUBLIC"
   },
@@ -48,35 +42,35 @@
           "doc": "SRA Contracted Year",
           "id": 1,
           "name": "CONTRACTYEAR",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(4, 0)"
         },
         {
           "doc": "SRA Contracted Quarter",
           "id": 2,
           "name": "QUARTER",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(1, 0)"
         },
         {
           "doc": "Version of data for other key data - a higher version for same key data takes precedence",
           "id": 3,
           "name": "VERSIONNO",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(3, 0)"
         },
         {
           "doc": "Contracted Interconnector Identifier",
           "id": 4,
           "name": "INTERCONNECTORID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "Nominated source region for Interconnector",
           "id": 5,
           "name": "FROMREGIONID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -122,13 +116,7 @@
           "type": "timestamptz"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3,
-        4,
-        5
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     },
@@ -138,35 +126,35 @@
           "doc": "SRA Contracted Year",
           "id": 1,
           "name": "CONTRACTYEAR",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(4, 0)"
         },
         {
           "doc": "SRA Contracted Quarter",
           "id": 2,
           "name": "QUARTER",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(1, 0)"
         },
         {
           "doc": "Version of data for other key data - a higher version for same key data takes precedence",
           "id": 3,
           "name": "VERSIONNO",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(3, 0)"
         },
         {
           "doc": "Contracted Interconnector Identifier",
           "id": 4,
           "name": "INTERCONNECTORID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "Nominated source region for Interconnector",
           "id": 5,
           "name": "FROMREGIONID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -219,13 +207,7 @@
           "type": "decimal(18, 8)"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3,
-        4,
-        5
-      ],
+      "identifier-field-ids": [],
       "schema-id": 1,
       "type": "struct"
     }

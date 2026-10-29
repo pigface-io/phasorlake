@@ -20,20 +20,12 @@
   "properties": {
     "comment": "NETWORK_EQUIPMENTDETAIL Provides details on equipment that may have outages or ratings. A single piece of equipment may have multiple records if its details change.\nA line will typically have at least two valid records at a time, once for each end of the line.",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"SUBSTATIONID\",\"EQUIPMENTTYPE\",\"EQUIPMENTID\",\"VALIDFROM\"]",
+    "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"VARCHAR(30)\",\"2\":\"VARCHAR(10)\",\"3\":\"VARCHAR(30)\",\"4\":\"TIMESTAMP(3)\",\"5\":\"TIMESTAMP(3)\",\"6\":\"VARCHAR(20)\",\"7\":\"VARCHAR(100)\",\"8\":\"TIMESTAMP(3)\",\"9\":\"NUMERIC(15,0)\"}",
     "phasor.package": "NETWORK",
     "phasor.reports": "[[\"NETWORK\",\"EQUIPMENTDETAIL\"]]",
     "phasor.table": "NETWORK_EQUIPMENTDETAIL",
-    "phasor.temporal.cutoff": "LASTCHANGED",
-    "phasor.temporal.entity": "[\"SUBSTATIONID\",\"EQUIPMENTTYPE\",\"EQUIPMENTID\"]",
-    "phasor.temporal.order": "[\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.column": "VALIDFROM",
-    "phasor.temporal.valid.kind": "from",
-    "phasor.temporal.valid.until": "VALIDTO",
     "phasor.time": "LASTCHANGED",
     "phasor.visibility": "PUBLIC"
   },
@@ -50,28 +42,28 @@
           "doc": "ID uniquely identifying the substation this equipment is located at",
           "id": 1,
           "name": "SUBSTATIONID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "The type of equipment. Valid values are:\nLINE = Line\nTRANS = Transformer\nCB = Circuit breaker\nISOL = Isolator\nCAP = Capacitor\nREAC = Reactor\nUNIT = Unit",
           "id": 2,
           "name": "EQUIPMENTTYPE",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "A unique identifier for this type of equipment at this substation",
           "id": 3,
           "name": "EQUIPMENTID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "The date that this record is applies from (inclusive)",
           "id": 4,
           "name": "VALIDFROM",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
@@ -110,12 +102,7 @@
           "type": "decimal(15, 0)"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3,
-        4
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     }

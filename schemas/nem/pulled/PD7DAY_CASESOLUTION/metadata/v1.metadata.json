@@ -20,17 +20,11 @@
   "properties": {
     "comment": "PD7DAY case solution table",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[]",
+    "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(2,0)\",\"3\":\"TIMESTAMP(0)\"}",
     "phasor.reports": "[[\"PD7DAY\",\"CASESOLUTION\"]]",
     "phasor.table": "PD7DAY_CASESOLUTION",
-    "phasor.temporal.cutoff": "LASTCHANGED",
-    "phasor.temporal.entity": "[\"INTERVENTION\"]",
-    "phasor.temporal.order": "[\"RUN_DATETIME\",\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.kind": "timeless",
     "phasor.time": "RUN_DATETIME",
     "phasor.visibility": "PUBLIC"
   },

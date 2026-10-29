@@ -19,20 +19,13 @@
   ],
   "properties": {
     "phasor.declared": "true",
-    "phasor.format": "4",
+    "phasor.format": "5",
     "phasor.headers": "{\"1\":\"gas_date\",\"2\":\"hub_identifier\",\"3\":\"hub_name\",\"4\":\"company_identifier\",\"5\":\"company_name\",\"6\":\"abn\",\"7\":\"acn\",\"8\":\"organisation_registration_type\",\"9\":\"registered_capacity\",\"10\":\"registered_capacity_status\",\"11\":\"line_1\",\"12\":\"line_2\",\"13\":\"line_3\",\"14\":\"state_id\",\"15\":\"city\",\"16\":\"postal_code\",\"17\":\"phone\",\"18\":\"fax\",\"19\":\"last_update_datetime\",\"20\":\"registration_status\",\"21\":\"report_datetime\"}",
-    "phasor.key": "[\"HUB_IDENTIFIER\",\"COMPANY_IDENTIFIER\",\"STATE_ID\"]",
     "phasor.load": "snapshot",
     "phasor.market": "gas",
     "phasor.offset": "+10:00",
     "phasor.reports": "[[\"STTM\",\"INT670_REGISTERED_PARTICIPANTS_RPT_1\"]]",
     "phasor.table": "STTM_INT670_REGISTERED_PARTICIPANTS",
-    "phasor.temporal.cutoff": "REPORT_DATETIME",
-    "phasor.temporal.entity": "[\"HUB_IDENTIFIER\",\"COMPANY_IDENTIFIER\",\"STATE_ID\"]",
-    "phasor.temporal.order": "[\"REPORT_DATETIME\"]",
-    "phasor.temporal.origin": "hand",
-    "phasor.temporal.valid.column": "GAS_DATE",
-    "phasor.temporal.valid.kind": "instant",
     "phasor.time": "GAS_DATE",
     "phasor.visibility": "PUBLIC"
   },
@@ -54,7 +47,7 @@
         {
           "id": 2,
           "name": "HUB_IDENTIFIER",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -66,8 +59,8 @@
         {
           "id": 4,
           "name": "COMPANY_IDENTIFIER",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(3, 0)"
         },
         {
           "id": 5,
@@ -172,10 +165,7 @@
           "type": "timestamptz"
         }
       ],
-      "identifier-field-ids": [
-        2,
-        4
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     }

@@ -20,18 +20,12 @@
   "properties": {
     "comment": "GENCONSETINVOKE provides details of invoked and revoked generic constraints. GENCONSETINVOKE is the key table for determining what constraints are active in dispatch, predispatch and PASA.\nGENCONSETINVOKE also indicates whether constraints are for interconnector limits, ancillary services, etc.",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"INVOCATION_ID\"]",
+    "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"NUMERIC(9)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"NUMERIC(3,0)\",\"4\":\"VARCHAR(20)\",\"5\":\"TIMESTAMP(0)\",\"6\":\"NUMERIC(3,0)\",\"7\":\"VARCHAR(15)\",\"8\":\"VARCHAR(15)\",\"9\":\"VARCHAR(1)\",\"10\":\"VARCHAR(10)\",\"11\":\"TIMESTAMP(0)\",\"12\":\"TIMESTAMP(0)\",\"13\":\"TIMESTAMP(0)\",\"14\":\"VARCHAR(1)\"}",
     "phasor.package": "GENERIC_CONSTRAINT",
     "phasor.reports": "[[\"GENERIC_CONSTRAINT\",\"GENCONSETINVOKE\"]]",
     "phasor.table": "GENCONSETINVOKE",
-    "phasor.temporal.cutoff": "LASTCHANGED",
-    "phasor.temporal.entity": "[\"INVOCATION_ID\",\"INTERVENTION\"]",
-    "phasor.temporal.order": "[\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.kind": "timeless",
     "phasor.time": "LASTCHANGED",
     "phasor.visibility": "PUBLIC"
   },
@@ -48,8 +42,8 @@
           "doc": "Abstract unique identifier for the record. Allows Invocations to be modified without affecting PK values",
           "id": 1,
           "name": "INVOCATION_ID",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(9, 0)"
         },
         {
           "doc": "Market date of start",
@@ -143,9 +137,7 @@
           "type": "decimal(1, 0)"
         }
       ],
-      "identifier-field-ids": [
-        1
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     },
@@ -246,13 +238,11 @@
           "doc": "Abstract unique identifier for the record. Allows Invocations to be modified without affecting PK values",
           "id": 1,
           "name": "INVOCATION_ID",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(9, 0)"
         }
       ],
-      "identifier-field-ids": [
-        1
-      ],
+      "identifier-field-ids": [],
       "schema-id": 1,
       "type": "struct"
     }

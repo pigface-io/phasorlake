@@ -20,20 +20,13 @@
   "properties": {
     "comment": "The report contains the benchmark prices for the day ahead (non-firm price) PLUS the last two years of daily benchmark prices (firm price)",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"GAS_DATE\",\"PRODUCT_LOCATION\",\"PRODUCT_TYPE\"]",
+    "phasor.format": "5",
     "phasor.load": "append",
     "phasor.market": "gas",
     "phasor.model-types": "{\"1\":\"DATE\",\"2\":\"VARCHAR2(80)\",\"3\":\"VARCHAR2(80)\",\"4\":\"NUMBER(18,8)\",\"5\":\"VARCHAR2(1)\",\"6\":\"DATE\"}",
     "phasor.offset": "+10:00",
     "phasor.reports": "[[\"GSH\",\"BENCHMARK_PRICE\"]]",
     "phasor.table": "GSH_BENCHMARK_PRICE",
-    "phasor.temporal.cutoff": "LASTCHANGED",
-    "phasor.temporal.entity": "[\"PRODUCT_LOCATION\",\"PRODUCT_TYPE\"]",
-    "phasor.temporal.order": "[\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "hand",
-    "phasor.temporal.valid.column": "GAS_DATE",
-    "phasor.temporal.valid.kind": "instant",
     "phasor.time": "GAS_DATE",
     "phasor.visibility": "PUBLIC"
   },
@@ -50,21 +43,21 @@
           "doc": "The gas date that the Wallumbilla benchmark price applies to",
           "id": 1,
           "name": "GAS_DATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "The product location that the benchmark price applies to. Can be one of the following: WALLUMBILLA, RBP, SWQP, QGP.",
           "id": 2,
           "name": "PRODUCT_LOCATION",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "The type of the product that the Wallumbilla benchmark price is calculated for",
           "id": 3,
           "name": "PRODUCT_TYPE",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -89,11 +82,7 @@
           "type": "timestamptz"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     }

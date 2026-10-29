@@ -20,9 +20,8 @@
   "properties": {
     "comment": "Lists all production and demand locations within the Bulletin Board system.",
     "phasor.declared": "true",
-    "phasor.format": "4",
+    "phasor.format": "5",
     "phasor.headers": "{\"1\":\"LocationName\",\"2\":\"LocationId\",\"3\":\"LocationType\",\"4\":\"State\",\"5\":\"Description\",\"6\":\"LastUpdated\"}",
-    "phasor.key": "[\"LOCATIONID\"]",
     "phasor.load": "snapshot",
     "phasor.market": "gas",
     "phasor.model": "[\"GAS_LOCATION\"]",
@@ -30,11 +29,6 @@
     "phasor.offset": "+10:00",
     "phasor.reports": "[[\"GBB\",\"LOCATIONS_LIST\"]]",
     "phasor.table": "GBB_LOCATIONS_LIST",
-    "phasor.temporal.cutoff": "LASTUPDATED",
-    "phasor.temporal.entity": "[\"LOCATIONID\"]",
-    "phasor.temporal.order": "[\"LASTUPDATED\"]",
-    "phasor.temporal.origin": "hand",
-    "phasor.temporal.valid.kind": "timeless",
     "phasor.time": "LASTUPDATED",
     "phasor.visibility": "PUBLIC"
   },
@@ -58,8 +52,8 @@
           "doc": "Unique Node Location Identifier",
           "id": 2,
           "name": "LOCATIONID",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(6, 0)"
         },
         {
           "doc": "Type of location",
@@ -88,9 +82,7 @@
           "type": "timestamptz"
         }
       ],
-      "identifier-field-ids": [
-        2
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     }

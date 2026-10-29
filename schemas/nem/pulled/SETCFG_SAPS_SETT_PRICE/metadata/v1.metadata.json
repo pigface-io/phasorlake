@@ -20,7 +20,7 @@
   "properties": {
     "comment": "The Settlement Price for SAPS Energy in each Region",
     "phasor.declared": "false",
-    "phasor.format": "4",
+    "phasor.format": "5",
     "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"VARCHAR(20)\",\"4\":\"TIMESTAMP(0)\",\"5\":\"NUMERIC(18,8)\",\"6\":\"NUMERIC(3,0)\",\"7\":\"TIMESTAMP(0)\"}",
     "phasor.table": "SETCFG_SAPS_SETT_PRICE"
   },

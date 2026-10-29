@@ -20,19 +20,12 @@
   "properties": {
     "comment": "RESDEMANDTRK defines the existence and versioning information of a forecast for a specific region and trading date.\nRESDEMANDTRK and PERDEMAND have a parent/child relationship, and are for defined forecast regional demands since market start. RESDEMANDTRK defines the existence and versioning information of a forecast for a specific region and trading date. PERDEMAND defines the numerical forecast values for each trading interval of a the trading day for that region. A complete trading day forecast for one region consists of one RESDEMANDTRK record and 48 PERDEMAND records.",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"EFFECTIVEDATE\",\"REGIONID\",\"OFFERDATE\",\"VERSIONNO\"]",
+    "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"VARCHAR(10)\",\"3\":\"TIMESTAMP(0)\",\"4\":\"NUMERIC(3,0)\",\"5\":\"VARCHAR(40)\",\"6\":\"TIMESTAMP(0)\",\"7\":\"VARCHAR(10)\",\"8\":\"TIMESTAMP(0)\"}",
     "phasor.package": "DEMAND_FORECASTS",
     "phasor.reports": "[[\"DEMAND\",\"TRK\"]]",
     "phasor.table": "RESDEMANDTRK",
-    "phasor.temporal.cutoff": "OFFERDATE",
-    "phasor.temporal.entity": "[\"REGIONID\"]",
-    "phasor.temporal.order": "[\"OFFERDATE\",\"VERSIONNO\",\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.column": "EFFECTIVEDATE",
-    "phasor.temporal.valid.kind": "from",
     "phasor.time": "EFFECTIVEDATE",
     "phasor.visibility": "PUBLIC"
   },
@@ -49,29 +42,29 @@
           "doc": "Trading Date of the regional forecast",
           "id": 1,
           "name": "EFFECTIVEDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Unique RegionID",
           "id": 2,
           "name": "REGIONID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "Date the forecast was created",
           "id": 3,
           "name": "OFFERDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Version of this forecast with respect to the Effectivedate and Offerdate",
           "id": 4,
           "name": "VERSIONNO",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(3, 0)"
         },
         {
           "doc": "Tracking purposes only",
@@ -102,12 +95,7 @@
           "type": "timestamptz"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3,
-        4
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     }

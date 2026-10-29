@@ -20,19 +20,12 @@
   "properties": {
     "comment": "MNSP_PARTICIPANT registers MNSP ownership.",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"INTERCONNECTORID\",\"EFFECTIVEDATE\",\"VERSIONNO\",\"PARTICIPANTID\"]",
+    "phasor.format": "5",
     "phasor.load": "snapshot",
     "phasor.model-types": "{\"1\":\"VARCHAR(10)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"NUMERIC(3,0)\",\"4\":\"VARCHAR(10)\",\"5\":\"TIMESTAMP(0)\"}",
     "phasor.package": "PARTICIPANT_REGISTRATION",
     "phasor.reports": "[[\"PARTICIPANT_REGISTRATION\",\"MNSP_PARTICIPANT\"]]",
     "phasor.table": "MNSP_PARTICIPANT",
-    "phasor.temporal.cutoff": "LASTCHANGED",
-    "phasor.temporal.entity": "[\"INTERCONNECTORID\",\"PARTICIPANTID\"]",
-    "phasor.temporal.order": "[\"VERSIONNO\",\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.column": "EFFECTIVEDATE",
-    "phasor.temporal.valid.kind": "from",
     "phasor.visibility": "PUBLIC"
   },
   "refs": {
@@ -48,28 +41,28 @@
           "doc": "Interconnector Identifier",
           "id": 1,
           "name": "INTERCONNECTORID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "Calendar date when Interconnector ownership becomes effective",
           "id": 2,
           "name": "EFFECTIVEDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Version of data for other key data - a higher version for same key data takes precedence",
           "id": 3,
           "name": "VERSIONNO",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(3, 0)"
         },
         {
           "doc": "Participant Identifier",
           "id": 4,
           "name": "PARTICIPANTID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -80,12 +73,7 @@
           "type": "timestamptz"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3,
-        4
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     }

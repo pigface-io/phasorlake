@@ -20,9 +20,8 @@
   "properties": {
     "comment": "Details of all Facility Developments",
     "phasor.declared": "true",
-    "phasor.format": "4",
+    "phasor.format": "5",
     "phasor.headers": "{\"1\":\"DevFacilityId\",\"2\":\"ProposedName\",\"3\":\"EffectiveDate\",\"4\":\"FacilityType\",\"5\":\"MinNameplate\",\"6\":\"MaxNameplate\",\"7\":\"Location\",\"8\":\"PlannedCommissionFrom\",\"9\":\"PlannedCommissionTo\",\"10\":\"DevelopmentStage\",\"11\":\"RelatedFacilityId\",\"12\":\"RelatedFacilityName\",\"13\":\"Comments\",\"14\":\"ReportingEntity\"}",
-    "phasor.key": "[\"DEVFACILITYID\",\"RELATEDFACILITYID\"]",
     "phasor.load": "snapshot",
     "phasor.market": "gas",
     "phasor.model": "[\"GAS_DEVFACILITY\",\"GAS_DEVFACILITY_DETAIL\",\"GAS_DEVFACILITY_FACILITY\"]",
@@ -30,11 +29,6 @@
     "phasor.offset": "+10:00",
     "phasor.reports": "[[\"GBB\",\"FACILITY_DEVELOPMENTS\"]]",
     "phasor.table": "GBB_FACILITY_DEVELOPMENTS",
-    "phasor.temporal.entity": "[\"DEVFACILITYID\",\"RELATEDFACILITYID\"]",
-    "phasor.temporal.order": "[]",
-    "phasor.temporal.origin": "hand",
-    "phasor.temporal.valid.column": "EFFECTIVEDATE",
-    "phasor.temporal.valid.kind": "instant",
     "phasor.time": "EFFECTIVEDATE",
     "phasor.visibility": "PUBLIC"
   },
@@ -51,8 +45,8 @@
           "doc": "A unique AEMO defined Development Facility Identifier",
           "id": 1,
           "name": "DEVFACILITYID",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(6, 0)"
         },
         {
           "doc": "The name of the Facility development",
@@ -143,9 +137,7 @@
           "type": "string"
         }
       ],
-      "identifier-field-ids": [
-        1
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     }

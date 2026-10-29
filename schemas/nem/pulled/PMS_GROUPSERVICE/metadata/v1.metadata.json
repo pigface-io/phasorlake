@@ -20,17 +20,11 @@
   "properties": {
     "comment": "Describe the services a group provides and its relation to a market",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[]",
+    "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"NUMERIC(20,0)\",\"2\":\"NUMERIC(20,0)\",\"3\":\"TIMESTAMP(3)\",\"4\":\"TIMESTAMP(3)\",\"5\":\"TIMESTAMP(3)\",\"6\":\"TIMESTAMP(3)\",\"7\":\"VARCHAR(50)\",\"8\":\"VARCHAR(50)\",\"9\":\"VARCHAR(50)\",\"10\":\"VARCHAR(50)\",\"11\":\"NUMERIC(10,3)\",\"12\":\"VARCHAR(500)\",\"13\":\"NUMERIC(10,0)\",\"14\":\"VARCHAR(20)\",\"15\":\"TIMESTAMP(3)\",\"16\":\"TIMESTAMP(3)\"}",
     "phasor.reports": "[[\"PARTICIPANT_REGISTRATION\",\"PMS_GROUPSERVICE\"]]",
     "phasor.table": "PMS_GROUPSERVICE",
-    "phasor.temporal.cutoff": "LASTCHANGED",
-    "phasor.temporal.entity": "[]",
-    "phasor.temporal.order": "[\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.kind": "timeless",
     "phasor.time": "LASTCHANGED",
     "phasor.visibility": "PUBLIC"
   },

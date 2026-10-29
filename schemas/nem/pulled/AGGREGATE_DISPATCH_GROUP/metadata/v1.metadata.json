@@ -20,17 +20,11 @@
   "properties": {
     "comment": "Entity allowing for compliance monitoring over grouped DUIDs",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[]",
+    "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"VARCHAR(20)\",\"2\":\"VARCHAR(100)\",\"3\":\"TIMESTAMP(0)\"}",
     "phasor.reports": "[[\"PARTICIPANT_REGISTRATION\",\"AGGREGATE_DISPATCH_GROUP\"]]",
     "phasor.table": "AGGREGATE_DISPATCH_GROUP",
-    "phasor.temporal.cutoff": "LASTCHANGED",
-    "phasor.temporal.entity": "[]",
-    "phasor.temporal.order": "[\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.kind": "timeless",
     "phasor.time": "LASTCHANGED",
     "phasor.visibility": "PUBLIC"
   },

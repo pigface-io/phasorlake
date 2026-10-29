@@ -20,17 +20,11 @@
   "properties": {
     "comment": "SSM Contract Enablement Costs for NEM",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[]",
+    "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"VARCHAR(40)\",\"3\":\"NUMERIC(18,8)\",\"4\":\"TIMESTAMP(0)\"}",
     "phasor.reports": "[[\"SSM\",\"ENABLEMENT_COSTS\"]]",
     "phasor.table": "SSM_ENABLEMENT_COSTS",
-    "phasor.temporal.cutoff": "LASTCHANGED",
-    "phasor.temporal.entity": "[]",
-    "phasor.temporal.order": "[\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.kind": "timeless",
     "phasor.time": "LASTCHANGED",
     "phasor.visibility": "PUBLIC"
   },

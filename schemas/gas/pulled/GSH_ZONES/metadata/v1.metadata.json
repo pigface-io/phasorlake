@@ -20,20 +20,13 @@
   "properties": {
     "comment": "Zones currently registered under Part 24 of the Rules for the capacity trading and day ahead auction.",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"EFFECTIVEDATE\",\"VERSION_DATETIME\",\"ZONE_ID\"]",
+    "phasor.format": "5",
     "phasor.load": "snapshot",
     "phasor.market": "gas",
     "phasor.model-types": "{\"1\":\"NUMBER(8,0)\",\"2\":\"VARCHAR2(100)\",\"3\":\"VARCHAR2(20)\",\"4\":\"VARCHAR2(400)\",\"5\":\"VARCHAR2(3)\",\"6\":\"DATE\",\"7\":\"DATE\",\"8\":\"DATE\"}",
     "phasor.offset": "+10:00",
     "phasor.reports": "[[\"GSH\",\"ZONES\"]]",
     "phasor.table": "GSH_ZONES",
-    "phasor.temporal.cutoff": "LASTCHANGED",
-    "phasor.temporal.entity": "[\"ZONE_ID\"]",
-    "phasor.temporal.order": "[\"VERSION_DATETIME\",\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "hand",
-    "phasor.temporal.valid.column": "EFFECTIVEDATE",
-    "phasor.temporal.valid.kind": "instant",
     "phasor.time": "EFFECTIVEDATE",
     "phasor.visibility": "PUBLIC"
   },
@@ -50,7 +43,7 @@
           "doc": "The unique identifier of the zone.",
           "id": 1,
           "name": "ZONE_ID",
-          "required": true,
+          "required": false,
           "type": "long"
         },
         {
@@ -85,14 +78,14 @@
           "doc": "Effective date of the record",
           "id": 6,
           "name": "EFFECTIVEDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Version timestamp of the record",
           "id": 7,
           "name": "VERSION_DATETIME",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
@@ -103,11 +96,7 @@
           "type": "timestamptz"
         }
       ],
-      "identifier-field-ids": [
-        6,
-        7,
-        1
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     }

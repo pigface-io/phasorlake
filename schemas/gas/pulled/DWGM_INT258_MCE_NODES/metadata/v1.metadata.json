@@ -19,20 +19,13 @@
   ],
   "properties": {
     "phasor.declared": "true",
-    "phasor.format": "4",
+    "phasor.format": "5",
     "phasor.headers": "{\"1\":\"pipeline_id\",\"2\":\"point_group_identifier_id\",\"3\":\"point_group_identifier_name\",\"4\":\"nodal_altitude\",\"5\":\"last_mod_date\",\"6\":\"current_date\"}",
-    "phasor.key": "[\"PIPELINE_ID\",\"POINT_GROUP_IDENTIFIER_ID\"]",
     "phasor.load": "snapshot",
     "phasor.market": "gas",
     "phasor.offset": "+10:00",
     "phasor.reports": "[[\"DWGM\",\"INT258_MCE_NODES_1\"]]",
     "phasor.table": "DWGM_INT258_MCE_NODES",
-    "phasor.temporal.cutoff": "CURRENT_DATE",
-    "phasor.temporal.entity": "[\"PIPELINE_ID\",\"POINT_GROUP_IDENTIFIER_ID\"]",
-    "phasor.temporal.order": "[\"CURRENT_DATE\"]",
-    "phasor.temporal.origin": "hand",
-    "phasor.temporal.valid.column": "LAST_MOD_DATE",
-    "phasor.temporal.valid.kind": "instant",
     "phasor.time": "LAST_MOD_DATE",
     "phasor.visibility": "PUBLIC"
   },
@@ -48,14 +41,14 @@
         {
           "id": 1,
           "name": "PIPELINE_ID",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(1, 0)"
         },
         {
           "id": 2,
           "name": "POINT_GROUP_IDENTIFIER_ID",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(2, 0)"
         },
         {
           "id": 3,
@@ -82,10 +75,7 @@
           "type": "timestamptz"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     }

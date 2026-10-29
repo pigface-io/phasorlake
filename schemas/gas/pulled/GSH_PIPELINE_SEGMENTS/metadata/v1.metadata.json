@@ -20,20 +20,13 @@
   "properties": {
     "comment": "Pipeline Segments currently registered under Part 24 of the Rules for the capacity trading and day ahead auction.",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"CONNECTION_TYPE\",\"EFFECTIVEDATE\",\"FACILITY_ID\",\"FROM_ID\",\"SEGMENT_ID\",\"TO_ID\",\"VERSION_DATETIME\"]",
+    "phasor.format": "5",
     "phasor.load": "snapshot",
     "phasor.market": "gas",
     "phasor.model-types": "{\"1\":\"NUMBER(8,0)\",\"2\":\"VARCHAR2(100)\",\"3\":\"NUMBER(8,0)\",\"4\":\"VARCHAR2(100)\",\"5\":\"VARCHAR2 (20)\",\"6\":\"NUMBER(8,0)\",\"7\":\"VARCHAR2(100)\",\"8\":\"NUMBER(8,0)\",\"9\":\"VARCHAR2 (100)\",\"10\":\"VARCHAR2(3)\",\"11\":\"DATE\",\"12\":\"DATE\",\"13\":\"VARCHAR2(20)\",\"14\":\"DATE\"}",
     "phasor.offset": "+10:00",
     "phasor.reports": "[[\"GSH\",\"PIPELINE_SEGMENTS\"]]",
     "phasor.table": "GSH_PIPELINE_SEGMENTS",
-    "phasor.temporal.cutoff": "LASTCHANGED",
-    "phasor.temporal.entity": "[\"CONNECTION_TYPE\",\"FACILITY_ID\",\"FROM_ID\",\"SEGMENT_ID\",\"TO_ID\"]",
-    "phasor.temporal.order": "[\"VERSION_DATETIME\",\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "hand",
-    "phasor.temporal.valid.column": "EFFECTIVEDATE",
-    "phasor.temporal.valid.kind": "instant",
     "phasor.time": "EFFECTIVEDATE",
     "phasor.visibility": "PUBLIC"
   },
@@ -50,7 +43,7 @@
           "doc": "The unique identifier of the parent facility.",
           "id": 1,
           "name": "FACILITY_ID",
-          "required": true,
+          "required": false,
           "type": "long"
         },
         {
@@ -64,7 +57,7 @@
           "doc": "The unique identifier of the pipeline segment or compression service.",
           "id": 3,
           "name": "SEGMENT_ID",
-          "required": true,
+          "required": false,
           "type": "long"
         },
         {
@@ -85,7 +78,7 @@
           "doc": "The unique identifier of the zone for forward haul pipeline segments and compression services or the service point for backhaul pipeline segments.",
           "id": 6,
           "name": "FROM_ID",
-          "required": true,
+          "required": false,
           "type": "long"
         },
         {
@@ -99,7 +92,7 @@
           "doc": "The unique identifier of the zone for forward haul pipeline segments and compression services or the service point for backhaul pipeline segments.",
           "id": 8,
           "name": "TO_ID",
-          "required": true,
+          "required": false,
           "type": "long"
         },
         {
@@ -120,21 +113,21 @@
           "doc": "The effective date of the segment.",
           "id": 11,
           "name": "EFFECTIVEDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "The version timestamp of the record",
           "id": 12,
           "name": "VERSION_DATETIME",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Type of connection (eg. SERVICE_POINT, ZONE)",
           "id": 13,
           "name": "CONNECTION_TYPE",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -145,15 +138,7 @@
           "type": "timestamptz"
         }
       ],
-      "identifier-field-ids": [
-        13,
-        11,
-        1,
-        6,
-        3,
-        8,
-        12
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     }

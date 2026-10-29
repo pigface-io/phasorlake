@@ -20,19 +20,12 @@
   "properties": {
     "comment": "DUALLOC cross references dispatch unit identifier to genset ID for each participant.",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"EFFECTIVEDATE\",\"VERSIONNO\",\"DUID\",\"GENSETID\"]",
+    "phasor.format": "5",
     "phasor.load": "snapshot",
     "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(3,0)\",\"3\":\"VARCHAR(10)\",\"4\":\"VARCHAR(20)\",\"5\":\"TIMESTAMP(0)\"}",
     "phasor.package": "PARTICIPANT_REGISTRATION",
     "phasor.reports": "[[\"PARTICIPANT_REGISTRATION\",\"DUALLOC\"]]",
     "phasor.table": "DUALLOC",
-    "phasor.temporal.cutoff": "LASTCHANGED",
-    "phasor.temporal.entity": "[\"DUID\",\"GENSETID\"]",
-    "phasor.temporal.order": "[\"VERSIONNO\",\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.column": "EFFECTIVEDATE",
-    "phasor.temporal.valid.kind": "from",
     "phasor.visibility": "PUBLIC"
   },
   "refs": {
@@ -48,28 +41,28 @@
           "doc": "Effective calendar date of record",
           "id": 1,
           "name": "EFFECTIVEDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Version no of record",
           "id": 2,
           "name": "VERSIONNO",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(3, 0)"
         },
         {
           "doc": "Dispatchable Unit identifier",
           "id": 3,
           "name": "DUID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "Physical unit identifier",
           "id": 4,
           "name": "GENSETID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -80,12 +73,7 @@
           "type": "timestamptz"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3,
-        4
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     }

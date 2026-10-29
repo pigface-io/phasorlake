@@ -20,18 +20,12 @@
   "properties": {
     "comment": "MARKETNOTICETYPE sets out the different types of market notices (e.g. market systems).",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"TYPEID\"]",
+    "phasor.format": "5",
     "phasor.load": "snapshot",
     "phasor.model-types": "{\"1\":\"VARCHAR(25)\",\"2\":\"VARCHAR(64)\",\"3\":\"VARCHAR(10)\",\"4\":\"TIMESTAMP(0)\"}",
     "phasor.package": "MARKET_NOTICE",
     "phasor.reports": "[[\"MARKET_NOTICE\",\"MARKETNOTICETYPE\"]]",
     "phasor.table": "MARKETNOTICETYPE",
-    "phasor.temporal.cutoff": "LASTCHANGED",
-    "phasor.temporal.entity": "[\"TYPEID\"]",
-    "phasor.temporal.order": "[\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.kind": "timeless",
     "phasor.visibility": "PUBLIC"
   },
   "refs": {
@@ -47,7 +41,7 @@
           "doc": "Identifier for market notice type",
           "id": 1,
           "name": "TYPEID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -72,9 +66,7 @@
           "type": "timestamptz"
         }
       ],
-      "identifier-field-ids": [
-        1
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     }

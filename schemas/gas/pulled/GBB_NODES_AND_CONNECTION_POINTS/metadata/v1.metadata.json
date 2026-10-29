@@ -20,9 +20,8 @@
   "properties": {
     "comment": "A container for up to four connections",
     "phasor.declared": "true",
-    "phasor.format": "4",
+    "phasor.format": "5",
     "phasor.headers": "{\"1\":\"FacilityName\",\"2\":\"FacilityId\",\"3\":\"FacilityType\",\"4\":\"ConnectionPointId\",\"5\":\"ConnectionPointName\",\"6\":\"FlowDirection\",\"7\":\"Exempt\",\"8\":\"ExemptionDescription\",\"9\":\"NodeId\",\"10\":\"StateId\",\"11\":\"StateName\",\"12\":\"LocationName\",\"13\":\"LocationId\",\"14\":\"LastUpdated\",\"15\":\"OperatingState\",\"16\":\"EffectiveDate\"}",
-    "phasor.key": "[\"FACILITYID\",\"CONNECTIONPOINTID\",\"NODEID\",\"STATEID\",\"LOCATIONID\"]",
     "phasor.load": "snapshot",
     "phasor.market": "gas",
     "phasor.model": "[\"GAS_NODE\",\"GAS_FACILITY_NODE\",\"GAS_FACILITY_NODE_CONNECTION\",\"GAS_LOCATION_NODE\"]",
@@ -30,12 +29,6 @@
     "phasor.offset": "+10:00",
     "phasor.reports": "[[\"GBB\",\"NODES_AND_CONNECTION_POINTS_FULL\"],[\"GBB\",\"NODES_AND_CONNECTION_POINTS\"]]",
     "phasor.table": "GBB_NODES_AND_CONNECTION_POINTS",
-    "phasor.temporal.cutoff": "LASTUPDATED",
-    "phasor.temporal.entity": "[\"FACILITYID\",\"CONNECTIONPOINTID\",\"NODEID\",\"STATEID\",\"LOCATIONID\"]",
-    "phasor.temporal.order": "[\"LASTUPDATED\"]",
-    "phasor.temporal.origin": "hand",
-    "phasor.temporal.valid.column": "EFFECTIVEDATE",
-    "phasor.temporal.valid.kind": "instant",
     "phasor.time": "EFFECTIVEDATE",
     "phasor.visibility": "PUBLIC"
   },
@@ -58,8 +51,8 @@
           "doc": "Unique Facility Identifier",
           "id": 2,
           "name": "FACILITYID",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(6, 0)"
         },
         {
           "id": 3,
@@ -71,8 +64,8 @@
           "doc": "Unique connection point identifier.",
           "id": 4,
           "name": "CONNECTIONPOINTID",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(7, 0)"
         },
         {
           "doc": "Name of the Connection point",
@@ -105,15 +98,15 @@
           "doc": "Unique Node Identifier",
           "id": 9,
           "name": "NODEID",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(5, 0)"
         },
         {
           "doc": "Unique StateIdentifier",
           "id": 10,
           "name": "STATEID",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(1, 0)"
         },
         {
           "id": 11,
@@ -131,8 +124,8 @@
           "doc": "Unique Location Identifier",
           "id": 13,
           "name": "LOCATIONID",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(6, 0)"
         },
         {
           "id": 14,
@@ -141,13 +134,7 @@
           "type": "timestamptz"
         }
       ],
-      "identifier-field-ids": [
-        2,
-        4,
-        9,
-        10,
-        13
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     },
@@ -163,8 +150,8 @@
           "doc": "Unique Facility Identifier",
           "id": 2,
           "name": "FACILITYID",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(6, 0)"
         },
         {
           "id": 3,
@@ -182,8 +169,8 @@
           "doc": "Unique connection point identifier.",
           "id": 4,
           "name": "CONNECTIONPOINTID",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(7, 0)"
         },
         {
           "doc": "Name of the Connection point",
@@ -216,15 +203,15 @@
           "doc": "Unique Node Identifier",
           "id": 9,
           "name": "NODEID",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(5, 0)"
         },
         {
           "doc": "Unique StateIdentifier",
           "id": 10,
           "name": "STATEID",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(1, 0)"
         },
         {
           "id": 11,
@@ -242,8 +229,8 @@
           "doc": "Unique Location Identifier",
           "id": 13,
           "name": "LOCATIONID",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(6, 0)"
         },
         {
           "doc": "Effective date of the record",
@@ -259,13 +246,7 @@
           "type": "timestamptz"
         }
       ],
-      "identifier-field-ids": [
-        2,
-        4,
-        9,
-        10,
-        13
-      ],
+      "identifier-field-ids": [],
       "schema-id": 1,
       "type": "struct"
     }

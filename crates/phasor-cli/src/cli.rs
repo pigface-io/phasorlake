@@ -418,10 +418,6 @@ pub struct ListCmd {
     /// Only this package of AEMO's data model, e.g. `--package DISPATCH`.
     #[arg(long)]
     pub package: Option<String>,
-    /// Only tables whose valid time is of this kind, e.g. `--kind from`
-    /// (`interval_end`, `instant`, `day`, `from`, `timeless`).
-    #[arg(long)]
-    pub kind: Option<String>,
     /// Only tables whose name or description has this text, e.g. `--grep price`.
     #[arg(long)]
     pub grep: Option<String>,
@@ -452,13 +448,11 @@ pub struct ListCmd {
 const LIST_EXAMPLES: &str = "\
 Examples:
   phasor list
-      Every table: market, kind, entity columns, rows and span in the lake, what it is.
+      Every table: market, time column, load mode, rows and span in the lake, what it is.
   phasor list --grep price --json
       The ones about prices, as JSON.
-  phasor list --kind from
-      The standing-data tables, in force from an effective date.
   phasor list DUDETAIL
-      Its columns: type, role, field id, AEMO's words.
+      Its columns: type, the time column, field id, AEMO's words.
   phasor list DISPATCHPRICE --coverage
       The months the lake holds, the gaps, where each month came from.
   phasor list DISPATCHPRICE --files

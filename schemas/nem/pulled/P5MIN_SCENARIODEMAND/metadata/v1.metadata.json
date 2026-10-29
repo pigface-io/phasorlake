@@ -20,16 +20,11 @@
   "properties": {
     "comment": "The P5Min scenario MW offsets",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[]",
+    "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"NUMERIC(2,0)\",\"4\":\"VARCHAR(20)\",\"5\":\"NUMERIC(4,0)\"}",
     "phasor.reports": "[[\"P5MIN\",\"SCENARIODEMAND\"]]",
     "phasor.table": "P5MIN_SCENARIODEMAND",
-    "phasor.temporal.entity": "[]",
-    "phasor.temporal.order": "[\"VERSION_DATETIME\"]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.kind": "timeless",
     "phasor.time": "EFFECTIVEDATE",
     "phasor.visibility": "PUBLIC"
   },

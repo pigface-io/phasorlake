@@ -20,19 +20,12 @@
   "properties": {
     "comment": "REGIONAPC defines Administered Price profiles (Energy and FCAS) for a region.",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"REGIONID\",\"EFFECTIVEDATE\",\"VERSIONNO\"]",
+    "phasor.format": "5",
     "phasor.load": "snapshot",
     "phasor.model-types": "{\"1\":\"VARCHAR(10)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"NUMERIC(3,0)\",\"4\":\"TIMESTAMP(0)\",\"5\":\"VARCHAR(10)\",\"6\":\"TIMESTAMP(0)\"}",
     "phasor.package": "FORCE_MAJEURE",
     "phasor.reports": "[[\"AP\",\"REGIONAPC\"]]",
     "phasor.table": "REGIONAPC",
-    "phasor.temporal.cutoff": "LASTCHANGED",
-    "phasor.temporal.entity": "[\"REGIONID\"]",
-    "phasor.temporal.order": "[\"VERSIONNO\",\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.column": "EFFECTIVEDATE",
-    "phasor.temporal.valid.kind": "from",
     "phasor.visibility": "PUBLIC"
   },
   "refs": {
@@ -48,22 +41,22 @@
           "doc": "Region Identifier",
           "id": 1,
           "name": "REGIONID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "Date the APC profile applies from",
           "id": 2,
           "name": "EFFECTIVEDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Version number for the same date",
           "id": 3,
           "name": "VERSIONNO",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(3, 0)"
         },
         {
           "doc": "Authorised date",
@@ -87,11 +80,7 @@
           "type": "timestamptz"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     }

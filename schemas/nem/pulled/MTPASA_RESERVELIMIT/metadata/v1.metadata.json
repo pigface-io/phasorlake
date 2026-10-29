@@ -20,19 +20,12 @@
   "properties": {
     "comment": "MT PASA input table defining a MT PASA Reserve Requirement within a single set. An MT PASA Reserve Requirement can span more than one region.",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"EFFECTIVEDATE\",\"VERSION_DATETIME\",\"RESERVELIMITID\"]",
+    "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"VARCHAR(20)\",\"4\":\"VARCHAR(200)\",\"5\":\"NUMERIC(16,6)\",\"6\":\"TIMESTAMP(0)\"}",
     "phasor.package": "RESERVE_DATA",
     "phasor.reports": "[[\"MTPASA\",\"RESERVELIMIT\"]]",
     "phasor.table": "MTPASA_RESERVELIMIT",
-    "phasor.temporal.cutoff": "VERSION_DATETIME",
-    "phasor.temporal.entity": "[\"RESERVELIMITID\"]",
-    "phasor.temporal.order": "[\"VERSION_DATETIME\",\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.column": "EFFECTIVEDATE",
-    "phasor.temporal.valid.kind": "from",
     "phasor.time": "EFFECTIVEDATE",
     "phasor.visibility": "PUBLIC"
   },
@@ -49,21 +42,21 @@
           "doc": "Trade date when the set of reserve requirements become effective",
           "id": 1,
           "name": "EFFECTIVEDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Timestamp when the set of reserve requirements become effective",
           "id": 2,
           "name": "VERSION_DATETIME",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "MT PASA Reserve Requirement identifier",
           "id": 3,
           "name": "RESERVELIMITID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -88,11 +81,7 @@
           "type": "timestamptz"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     }

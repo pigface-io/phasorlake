@@ -23,8 +23,8 @@ metadata in `metadata/`, kept current by every ingest. Two ways in:
   reader. Its current schema is every field the table has ever had, by
   field id, under each field's newest name, so every column of every file
   reads, whatever schema the file came in under. The table's properties
-  carry its roles (`phasor.temporal.*`), key, the columns a table takes
-  when it shares a report pair (`phasor.with-columns`), any breaks
+  carry the columns a table takes when it shares a report pair
+  (`phasor.with-columns`), any breaks
   (`phasor.breaks`) and the data model's words; each snapshot is a run
   of AEMO files under one schema, for a read of the table as it was.
 - **The Parquet files**: `read_parquet('lake/nem/dudetail/data/**/*.parquet',
@@ -38,8 +38,9 @@ reads the same through `iceberg_scan`.
 
 ## A table's roles
 
-The queries are the same for every table but for its columns.
-`phasor list TABLE` (or `--json`) names them:
+The queries are the same for every table but for its columns, and which
+columns play which role is the reader's decision: the lake keeps every
+row and says nothing of what one row is. For DISPATCHPRICE, for instance:
 
 | role | what it is | DISPATCHPRICE |
 |---|---|---|

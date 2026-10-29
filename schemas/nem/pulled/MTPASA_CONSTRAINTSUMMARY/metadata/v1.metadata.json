@@ -20,19 +20,12 @@
   "properties": {
     "comment": "Constraint Summary results over aggregation periods",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"RUN_DATETIME\",\"RUN_NO\",\"RUNTYPE\",\"DEMAND_POE_TYPE\",\"DAY\",\"CONSTRAINTID\",\"AGGREGATION_PERIOD\"]",
+    "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(4)\",\"3\":\"VARCHAR(20)\",\"4\":\"VARCHAR(20)\",\"5\":\"TIMESTAMP(0)\",\"6\":\"VARCHAR(20)\",\"7\":\"VARCHAR(20)\",\"8\":\"TIMESTAMP(0)\",\"9\":\"NUMERIC(3,0)\",\"10\":\"NUMERIC(12,2)\",\"11\":\"TIMESTAMP(0)\"}",
     "phasor.package": "MTPASA",
     "phasor.reports": "[[\"MTPASA\",\"CONSTRAINTSUMMARY\"]]",
     "phasor.table": "MTPASA_CONSTRAINTSUMMARY",
-    "phasor.temporal.cutoff": "RUN_DATETIME",
-    "phasor.temporal.entity": "[\"RUNTYPE\",\"DEMAND_POE_TYPE\",\"CONSTRAINTID\",\"AGGREGATION_PERIOD\"]",
-    "phasor.temporal.order": "[\"RUN_DATETIME\",\"RUN_NO\",\"VERSIONNO\",\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.column": "DAY",
-    "phasor.temporal.valid.kind": "instant",
     "phasor.time": "RUN_DATETIME",
     "phasor.visibility": "PUBLIC"
   },
@@ -49,49 +42,49 @@
           "doc": "Date processing of the run begins.",
           "id": 1,
           "name": "RUN_DATETIME",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Unique run id.",
           "id": 2,
           "name": "RUN_NO",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(4, 0)"
         },
         {
           "doc": "Type of run. Always RELIABILITY",
           "id": 3,
           "name": "RUNTYPE",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "Demand POE type used. Value is POE10",
           "id": 4,
           "name": "DEMAND_POE_TYPE",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "Day this result is for",
           "id": 5,
           "name": "DAY",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "The unique identifier for the constraint. Only binding or violating constraints are reported",
           "id": 6,
           "name": "CONSTRAINTID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "Period data is aggregated over. Values are PEAK, SHOULDER, OFFPEAK. PEAK = 14:00-19:59, SHOULDER = 07:00-13:59 and 20:00-21:59, OFFPEAK = 22:00-06:59",
           "id": 7,
           "name": "AGGREGATION_PERIOD",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -123,15 +116,7 @@
           "type": "timestamptz"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3,
-        4,
-        5,
-        6,
-        7
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     },
@@ -141,42 +126,42 @@
           "doc": "Date processing of the run begins.",
           "id": 1,
           "name": "RUN_DATETIME",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Unique run id.",
           "id": 2,
           "name": "RUN_NO",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(4, 0)"
         },
         {
           "doc": "Type of run. Always RELIABILITY",
           "id": 3,
           "name": "RUNTYPE",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "Demand POE type used. Value is POE10",
           "id": 4,
           "name": "DEMAND_POE_TYPE",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "Day this result is for",
           "id": 5,
           "name": "DAY",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "The unique identifier for the constraint. Only binding or violating constraints are reported",
           "id": 6,
           "name": "CONSTRAINTID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -197,7 +182,7 @@
           "doc": "Period data is aggregated over. Values are PEAK, SHOULDER, OFFPEAK. PEAK = 14:00-19:59, SHOULDER = 07:00-13:59 and 20:00-21:59, OFFPEAK = 22:00-06:59",
           "id": 7,
           "name": "AGGREGATION_PERIOD",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -215,15 +200,7 @@
           "type": "timestamptz"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3,
-        4,
-        5,
-        6,
-        7
-      ],
+      "identifier-field-ids": [],
       "schema-id": 1,
       "type": "struct"
     }

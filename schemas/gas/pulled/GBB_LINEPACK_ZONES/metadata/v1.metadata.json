@@ -20,19 +20,14 @@
   "properties": {
     "comment": "Lists all production and demand locations within the Bulletin Board system.",
     "phasor.declared": "true",
-    "phasor.format": "4",
+    "phasor.format": "5",
     "phasor.headers": "{\"1\":\"Operator\",\"2\":\"LinepackZone\",\"3\":\"LinepackZoneDescription\"}",
-    "phasor.key": "[]",
     "phasor.load": "append",
     "phasor.market": "gas",
     "phasor.model": "[\"GAS_LOCATION\",\"GAS_LOCATION_NODE\"]",
     "phasor.offset": "+10:00",
     "phasor.reports": "[[\"GBB\",\"LINEPACK_ZONES\"]]",
     "phasor.table": "GBB_LINEPACK_ZONES",
-    "phasor.temporal.entity": "[]",
-    "phasor.temporal.order": "[]",
-    "phasor.temporal.origin": "hand",
-    "phasor.temporal.valid.kind": "timeless",
     "phasor.visibility": "PUBLIC"
   },
   "refs": {

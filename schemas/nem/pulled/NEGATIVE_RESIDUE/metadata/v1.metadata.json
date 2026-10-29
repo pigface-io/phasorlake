@@ -20,18 +20,12 @@
   "properties": {
     "comment": "Shows the inputs provided to the Negative Residue Constraints in the Dispatch horizon",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"SETTLEMENTDATE\",\"NRM_DATETIME\",\"DIRECTIONAL_INTERCONNECTORID\"]",
+    "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"VARCHAR(30)\",\"4\":\"NUMERIC(1,0)\",\"5\":\"NUMERIC(15,5)\",\"6\":\"NUMERIC(15,5)\",\"7\":\"NUMERIC(15,5)\",\"8\":\"NUMERIC(15,5)\",\"9\":\"VARCHAR(30)\",\"10\":\"VARCHAR(20)\",\"11\":\"TIMESTAMP(0)\",\"12\":\"TIMESTAMP(0)\",\"13\":\"NUMERIC(2,0)\",\"14\":\"NUMERIC(2,0)\",\"15\":\"NUMERIC(1,0)\",\"17\":\"NUMERIC(1,0)\"}",
     "phasor.package": "DISPATCH",
     "phasor.reports": "[[\"DISPATCH\",\"NEGATIVE_RESIDUE\"]]",
     "phasor.table": "NEGATIVE_RESIDUE",
-    "phasor.temporal.entity": "[\"NRM_DATETIME\",\"DIRECTIONAL_INTERCONNECTORID\"]",
-    "phasor.temporal.order": "[\"PREDISPATCHSEQNO\"]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.column": "SETTLEMENTDATE",
-    "phasor.temporal.valid.kind": "interval_end",
     "phasor.time": "SETTLEMENTDATE",
     "phasor.visibility": "PUBLIC"
   },
@@ -48,21 +42,21 @@
           "doc": "Dispatch Interval",
           "id": 1,
           "name": "SETTLEMENTDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "The time that residue information is processed",
           "id": 2,
           "name": "NRM_DATETIME",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Negative residue related direction interconnector id",
           "id": 3,
           "name": "DIRECTIONAL_INTERCONNECTORID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -150,11 +144,7 @@
           "type": "long"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     },
@@ -164,21 +154,21 @@
           "doc": "Dispatch Interval",
           "id": 1,
           "name": "SETTLEMENTDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "The time that residue information is processed",
           "id": 2,
           "name": "NRM_DATETIME",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Negative residue related direction interconnector id",
           "id": 3,
           "name": "DIRECTIONAL_INTERCONNECTORID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -265,11 +255,7 @@
           "type": "decimal(1, 0)"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3
-      ],
+      "identifier-field-ids": [],
       "schema-id": 1,
       "type": "struct"
     },
@@ -279,21 +265,21 @@
           "doc": "Dispatch Interval",
           "id": 1,
           "name": "SETTLEMENTDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "The time that residue information is processed",
           "id": 2,
           "name": "NRM_DATETIME",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Negative residue related direction interconnector id",
           "id": 3,
           "name": "DIRECTIONAL_INTERCONNECTORID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -387,11 +373,7 @@
           "type": "decimal(1, 0)"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3
-      ],
+      "identifier-field-ids": [],
       "schema-id": 2,
       "type": "struct"
     },
@@ -401,21 +383,21 @@
           "doc": "Dispatch Interval",
           "id": 1,
           "name": "SETTLEMENTDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "The time that residue information is processed",
           "id": 2,
           "name": "NRM_DATETIME",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Negative residue related direction interconnector id",
           "id": 3,
           "name": "DIRECTIONAL_INTERCONNECTORID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -510,11 +492,7 @@
           "type": "decimal(1, 0)"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3
-      ],
+      "identifier-field-ids": [],
       "schema-id": 3,
       "type": "struct"
     }

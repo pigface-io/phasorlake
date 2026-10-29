@@ -20,9 +20,8 @@
   "properties": {
     "comment": "Field Interest annual reporting date",
     "phasor.declared": "true",
-    "phasor.format": "4",
+    "phasor.format": "5",
     "phasor.headers": "{\"1\":\"FieldInterestId\",\"2\":\"FieldName\",\"3\":\"CompanyId\",\"4\":\"CompanyName\",\"5\":\"Description\",\"6\":\"EffectiveDate\",\"7\":\"PetroleumTenements\",\"8\":\"TenementShare\",\"9\":\"ProcessingFacilities\",\"10\":\"ResourceClassification\",\"11\":\"ResourceSubClassification\",\"12\":\"NatureOfGas\",\"13\":\"AnnualReportingDate\",\"14\":\"BasinId\",\"15\":\"BasinName\",\"16\":\"State\",\"17\":\"OperatingState\",\"18\":\"VersionDateTime\"}",
-    "phasor.key": "[\"FIELDINTERESTID\",\"COMPANYID\",\"BASINID\"]",
     "phasor.load": "snapshot",
     "phasor.market": "gas",
     "phasor.model": "[\"GAS_FIELDINTEREST\",\"GAS_FIELDINTEREST_DETAIL\",\"GAS_FIELDINTEREST_PARTICIPANT\",\"GAS_FIELDINTEREST_SHARE\"]",
@@ -30,12 +29,6 @@
     "phasor.offset": "+10:00",
     "phasor.reports": "[[\"GBB\",\"FIELD_INTEREST_INFORMATION\"]]",
     "phasor.table": "GBB_FIELD_INTEREST_INFORMATION",
-    "phasor.temporal.cutoff": "VERSIONDATETIME",
-    "phasor.temporal.entity": "[\"FIELDINTERESTID\",\"COMPANYID\",\"BASINID\"]",
-    "phasor.temporal.order": "[\"VERSIONDATETIME\"]",
-    "phasor.temporal.origin": "hand",
-    "phasor.temporal.valid.column": "EFFECTIVEDATE",
-    "phasor.temporal.valid.kind": "instant",
     "phasor.time": "EFFECTIVEDATE",
     "phasor.visibility": "PUBLIC"
   },
@@ -52,8 +45,8 @@
           "doc": "A unique AEMO defined Field Interest Identifier",
           "id": 1,
           "name": "FIELDINTERESTID",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(6, 0)"
         },
         {
           "id": 2,
@@ -65,8 +58,8 @@
           "doc": "The company ID of the responsible field owner",
           "id": 3,
           "name": "COMPANYID",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(3, 0)"
         },
         {
           "id": 4,
@@ -139,8 +132,8 @@
         {
           "id": 14,
           "name": "BASINID",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(5, 0)"
         },
         {
           "id": 15,
@@ -168,11 +161,7 @@
           "type": "timestamptz"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        3,
-        14
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     }

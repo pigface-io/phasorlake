@@ -8,7 +8,7 @@ use phasor_iceberg::from_metadata;
 use phasor_iceberg::table::TableMetadata;
 
 use crate::file_model::error::SchemaFileError;
-use crate::file_model::file::{TemporalFile, norm};
+use crate::file_model::file::norm;
 use crate::file_model::model::{
     Column, ColumnId, LakeType, LoadMode, Market, Run, Table, TableSchema,
 };
@@ -55,10 +55,6 @@ pub fn parse_doc(
                 decl.load_mode
             ))
         })?;
-    let temporal: TemporalFile = serde_json::to_value(&decl.temporal)
-        .ok()
-        .and_then(|v| serde_json::from_value(v).ok())
-        .ok_or_else(|| invalid("its temporal roles are not ones phasor knows".into()))?;
     let mut columns: Vec<Column> = Vec::new();
     for f in h.fields() {
         if let Some(other) = columns.iter().find(|c| c.name == f.name) {
@@ -101,11 +97,6 @@ pub fn parse_doc(
                 .iter()
                 .map(|f| (ColumnId(f.id), f.required))
                 .collect(),
-            key: s
-                .identifier_field_ids
-                .iter()
-                .map(|&i| ColumnId(i))
-                .collect(),
         });
     }
     let month = |m: &str| {
@@ -127,16 +118,6 @@ pub fn parse_doc(
         });
     }
     let is_column = |n: &String| columns.iter().any(|c| &c.name == n);
-    let mut temporal = temporal.roles().map_err(|m| invalid(m.to_owned()))?;
-    temporal.entity.retain(is_column);
-    temporal.order.retain(is_column);
-    temporal.cutoff = temporal.cutoff.filter(is_column);
-    if temporal.valid.column().is_some_and(|c| !is_column(c)) {
-        temporal.valid = crate::file_model::temporal::ValidAxis::Timeless;
-    }
-    if let crate::file_model::temporal::ValidAxis::From { until, .. } = &mut temporal.valid {
-        *until = until.take().filter(is_column);
-    }
     let mut buf = String::new();
     let mut report_pairs: Vec<(String, String)> = decl
         .report_pairs
@@ -160,8 +141,6 @@ pub fn parse_doc(
         })
         .expect("maps of strings serialise"),
         load_mode,
-        temporal,
-        primary_key: decl.primary_key.clone(),
         time_column: decl.time_column.clone().filter(is_column),
         columns,
         schemas,
@@ -182,7 +161,7 @@ pub fn read_doc(dir: &Path, market: Market) -> Result<Option<Table>, SchemaFileE
 
 #[cfg(test)]
 pub(crate) mod tests {
-    use phasor_iceberg::publish::{Declaration, Published, Temporal, Valid};
+    use phasor_iceberg::publish::{Declaration, Published};
     use phasor_iceberg::to_metadata;
     use serde_json::json;
 
@@ -204,21 +183,9 @@ pub(crate) mod tests {
                     .map(|(a, b)| [a.clone(), b.clone()])
                     .collect(),
                 with_columns: t.with_columns.clone(),
-                primary_key: t.primary_key.clone(),
                 time_column: t.time_column.clone(),
                 load_mode: "append".into(),
                 visibility: "PUBLIC".into(),
-                temporal: Temporal {
-                    valid: Valid {
-                        kind: "interval_end".into(),
-                        column: Some("SETTLEMENTDATE".into()),
-                        until: None,
-                    },
-                    entity: vec!["DUID".into()],
-                    order: vec!["LASTCHANGED".into()],
-                    cutoff: Some("LASTCHANGED".into()),
-                    origin: "derived".into(),
-                },
             }),
             description: t.description.clone(),
             docs: Default::default(),
@@ -244,7 +211,7 @@ pub(crate) mod tests {
         t.map(|mut t| {
             let p = t.published();
             assert_eq!(p.properties["phasor.declared"], "true");
-            assert!(p.properties.contains_key("phasor.temporal.entity"));
+            assert!(!p.properties.contains_key("phasor.temporal.entity"));
             t.published.clear();
             t
         })
@@ -263,22 +230,11 @@ pub(crate) mod tests {
         let t = parse(&d).unwrap().unwrap();
         assert!(t.columns[3].nullable);
         assert_eq!(t.schemas[1].fields[3], (ColumnId(4), true));
-        // A time column and roles naming a column no file has: dropped.
+        // A time column naming a column no file has: dropped.
         let mut d = scada_doc();
         d["properties"]["phasor.time"] = json!("NOWHERE");
-        d["properties"]["phasor.temporal.valid.column"] = json!("NOWHERE");
-        d["properties"]["phasor.temporal.entity"] = json!("[\"DUID\",\"NOWHERE\"]");
-        d["properties"]["phasor.temporal.cutoff"] = json!("NOWHERE");
         let t = parse(&d).unwrap().unwrap();
         assert_eq!(t.time_column, None);
-        assert_eq!(
-            t.temporal.valid,
-            crate::file_model::temporal::ValidAxis::Timeless
-        );
-        assert_eq!(
-            (t.temporal.entity.as_slice(), t.temporal.cutoff),
-            (&["DUID".to_owned()][..], None)
-        );
     }
 
     #[test]
@@ -297,9 +253,6 @@ pub(crate) mod tests {
         d["properties"]["phasor.load"] = json!("weekly");
         assert!(err(&d).contains("is not append or snapshot"), "{}", err(&d));
         let mut d = scada_doc();
-        d["properties"]["phasor.temporal.origin"] = json!("guessed");
-        assert!(err(&d).contains("not ones phasor knows"), "{}", err(&d));
-        let mut d = scada_doc();
         d["snapshots"][0]["summary"]["phasor.from.release"] = json!("2024");
         assert!(err(&d).contains("not a month"), "{}", err(&d));
         let mut d = scada_doc();
@@ -309,10 +262,6 @@ pub(crate) mod tests {
         d["schemas"][0]["schema-id"] = json!(70_000);
         d["snapshots"][0]["schema-id"] = json!(70_000);
         assert!(err(&d).contains("beyond"), "{}", err(&d));
-        let mut d = scada_doc();
-        d["properties"]["phasor.temporal.valid.kind"] = json!("timeless");
-        d["properties"]["phasor.temporal.valid.column"] = json!("X");
-        assert!(err(&d).contains("takes no column"), "{}", err(&d));
         let e = parse_doc(Path::new("t.json"), "{\n\"name\": 3}", Market::Nem).unwrap_err();
         assert!(
             matches!(e, SchemaFileError::Parse { line: Some(2), .. }),

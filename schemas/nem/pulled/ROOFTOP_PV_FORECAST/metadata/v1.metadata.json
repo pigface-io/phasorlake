@@ -20,19 +20,12 @@
   "properties": {
     "comment": "Regional forecasts of Rooftop Solar generation across the half-hour intervals over 8 days. AEMO plans to remove this table in a Data Model version release after 5.6.",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"VERSION_DATETIME\",\"REGIONID\",\"INTERVAL_DATETIME\"]",
+    "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"VARCHAR(20)\",\"3\":\"TIMESTAMP(0)\",\"4\":\"NUMERIC(12,3)\",\"5\":\"NUMERIC(12,3)\",\"6\":\"NUMERIC(12,3)\",\"7\":\"NUMERIC(12,3)\",\"8\":\"TIMESTAMP(0)\"}",
     "phasor.package": "DEMAND_FORECASTS",
     "phasor.reports": "[[\"ROOFTOP\",\"FORECAST\"]]",
     "phasor.table": "ROOFTOP_PV_FORECAST",
-    "phasor.temporal.cutoff": "VERSION_DATETIME",
-    "phasor.temporal.entity": "[\"REGIONID\"]",
-    "phasor.temporal.order": "[\"VERSION_DATETIME\",\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.column": "INTERVAL_DATETIME",
-    "phasor.temporal.valid.kind": "interval_end",
     "phasor.time": "INTERVAL_DATETIME",
     "phasor.visibility": "PUBLIC"
   },
@@ -49,21 +42,21 @@
           "doc": "Date time this forecast was produced",
           "id": 1,
           "name": "VERSION_DATETIME",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Region identifier",
           "id": 2,
           "name": "REGIONID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "The forecast half-hour interval (time ending)",
           "id": 3,
           "name": "INTERVAL_DATETIME",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
@@ -102,11 +95,7 @@
           "type": "timestamptz"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     }

@@ -20,19 +20,12 @@
   "properties": {
     "comment": "DAYTRACK identifies the actual settlement run processed for each settlement day. Settlement run is in the column EXPOSTRUNNO. Generally, the number of the settlement run used in the latest statement is the maximum number.",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"SETTLEMENTDATE\",\"EXPOSTRUNNO\"]",
+    "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"VARCHAR(10)\",\"3\":\"VARCHAR(15)\",\"4\":\"NUMERIC(3,0)\",\"5\":\"VARCHAR(15)\",\"6\":\"NUMERIC(3,0)\",\"7\":\"TIMESTAMP(0)\",\"9\":\"NUMERIC(3,0)\",\"10\":\"NUMERIC(5,0)\",\"11\":\"VARCHAR(10)\"}",
     "phasor.package": "SETTLEMENT_DATA",
     "phasor.reports": "[[\"SETTLEMENTS\",\"DAYTRACK\"]]",
     "phasor.table": "DAYTRACK",
-    "phasor.temporal.cutoff": "LASTCHANGED",
-    "phasor.temporal.entity": "[\"EXPOSTRUNNO\"]",
-    "phasor.temporal.order": "[\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "hand",
-    "phasor.temporal.valid.column": "SETTLEMENTDATE",
-    "phasor.temporal.valid.kind": "day",
     "phasor.time": "SETTLEMENTDATE",
     "phasor.visibility": "PUBLIC"
   },
@@ -49,7 +42,7 @@
           "doc": "Calendar Settlement Date",
           "id": 1,
           "name": "SETTLEMENTDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
@@ -84,8 +77,8 @@
           "doc": "Settlement Run No",
           "id": 6,
           "name": "EXPOSTRUNNO",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(3, 0)"
         },
         {
           "doc": "Last date and time record changed",
@@ -95,10 +88,7 @@
           "type": "timestamptz"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        6
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     },
@@ -108,7 +98,7 @@
           "doc": "Calendar Settlement Date",
           "id": 1,
           "name": "SETTLEMENTDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
@@ -143,8 +133,8 @@
           "doc": "Settlement Run No",
           "id": 6,
           "name": "EXPOSTRUNNO",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(3, 0)"
         },
         {
           "doc": "Last date and time record changed",
@@ -160,10 +150,7 @@
           "type": "string"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        6
-      ],
+      "identifier-field-ids": [],
       "schema-id": 1,
       "type": "struct"
     },
@@ -173,7 +160,7 @@
           "doc": "Calendar Settlement Date",
           "id": 1,
           "name": "SETTLEMENTDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
@@ -208,8 +195,8 @@
           "doc": "Settlement Run No",
           "id": 6,
           "name": "EXPOSTRUNNO",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(3, 0)"
         },
         {
           "doc": "Last date and time record changed",
@@ -232,10 +219,7 @@
           "type": "decimal(3, 0)"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        6
-      ],
+      "identifier-field-ids": [],
       "schema-id": 2,
       "type": "struct"
     },
@@ -245,7 +229,7 @@
           "doc": "Calendar Settlement Date",
           "id": 1,
           "name": "SETTLEMENTDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
@@ -280,8 +264,8 @@
           "doc": "Settlement Run No",
           "id": 6,
           "name": "EXPOSTRUNNO",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(3, 0)"
         },
         {
           "doc": "Last date and time record changed",
@@ -298,10 +282,7 @@
           "type": "decimal(3, 0)"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        6
-      ],
+      "identifier-field-ids": [],
       "schema-id": 3,
       "type": "struct"
     },
@@ -311,7 +292,7 @@
           "doc": "Calendar Settlement Date",
           "id": 1,
           "name": "SETTLEMENTDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
@@ -346,8 +327,8 @@
           "doc": "Settlement Run No",
           "id": 6,
           "name": "EXPOSTRUNNO",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(3, 0)"
         },
         {
           "doc": "Last date and time record changed",
@@ -378,10 +359,7 @@
           "type": "string"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        6
-      ],
+      "identifier-field-ids": [],
       "schema-id": 4,
       "type": "struct"
     },
@@ -391,7 +369,7 @@
           "doc": "Calendar Settlement Date",
           "id": 1,
           "name": "SETTLEMENTDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
@@ -426,8 +404,8 @@
           "doc": "Settlement Run No",
           "id": 6,
           "name": "EXPOSTRUNNO",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(3, 0)"
         },
         {
           "doc": "Last date and time record changed",
@@ -464,10 +442,7 @@
           "type": "string"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        6
-      ],
+      "identifier-field-ids": [],
       "schema-id": 5,
       "type": "struct"
     }

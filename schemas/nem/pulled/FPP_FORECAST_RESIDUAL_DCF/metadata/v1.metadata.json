@@ -20,17 +20,11 @@
   "properties": {
     "comment": "This report delivers the forecast residual default contribution factors (DCF) effective for a billing period (aligned to the settlement week)",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[]",
+    "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"VARCHAR(20)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"TIMESTAMP(0)\",\"4\":\"NUMERIC(10)\",\"5\":\"VARCHAR(10)\",\"6\":\"NUMERIC(18,8)\",\"7\":\"NUMERIC(5)\",\"8\":\"NUMERIC(18,8)\",\"9\":\"TIMESTAMP(0)\"}",
     "phasor.reports": "[[\"FPP\",\"FORECAST_RESIDUAL_DCF\"]]",
     "phasor.table": "FPP_FORECAST_RESIDUAL_DCF",
-    "phasor.temporal.cutoff": "LASTCHANGED",
-    "phasor.temporal.entity": "[]",
-    "phasor.temporal.order": "[\"VERSIONNO\",\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.kind": "timeless",
     "phasor.time": "LASTCHANGED",
     "phasor.visibility": "PUBLIC"
   },

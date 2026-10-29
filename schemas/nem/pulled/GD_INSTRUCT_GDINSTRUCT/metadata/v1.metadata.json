@@ -19,7 +19,7 @@
   ],
   "properties": {
     "phasor.declared": "false",
-    "phasor.format": "4",
+    "phasor.format": "5",
     "phasor.table": "GD_INSTRUCT_GDINSTRUCT"
   },
   "refs": {

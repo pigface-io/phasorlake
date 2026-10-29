@@ -20,18 +20,12 @@
   "properties": {
     "comment": "APEVENTREGION is the Region detail for an administered pricing event defined through APEVENT.",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"APEVENTID\",\"REGIONID\"]",
+    "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"NUMERIC(22,0)\",\"2\":\"VARCHAR(10)\",\"3\":\"TIMESTAMP(0)\",\"4\":\"NUMERIC(1,0)\",\"5\":\"NUMERIC(1,0)\",\"6\":\"NUMERIC(1,0)\",\"7\":\"NUMERIC(1,0)\",\"8\":\"NUMERIC(1,0)\",\"9\":\"NUMERIC(1,0)\",\"10\":\"NUMERIC(1,0)\",\"11\":\"NUMERIC(1,0)\",\"12\":\"NUMERIC(1,0)\",\"13\":\"NUMERIC(3,0)\",\"14\":\"NUMERIC(3,0)\"}",
     "phasor.package": "FORCE_MAJEURE",
     "phasor.reports": "[[\"AP\",\"APEVENTREGION\"]]",
     "phasor.table": "APEVENTREGION",
-    "phasor.temporal.cutoff": "LASTCHANGED",
-    "phasor.temporal.entity": "[\"APEVENTID\",\"REGIONID\"]",
-    "phasor.temporal.order": "[\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.kind": "timeless",
     "phasor.time": "LASTCHANGED",
     "phasor.visibility": "PUBLIC"
   },
@@ -48,14 +42,14 @@
           "doc": "Unique identifier for this administered pricing event",
           "id": 1,
           "name": "APEVENTID",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "double"
         },
         {
           "doc": "Date-Time of the first Dispatch Interval to which the administered event applies",
           "id": 2,
           "name": "REGIONID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -129,10 +123,7 @@
           "type": "decimal(1, 0)"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     },
@@ -142,14 +133,14 @@
           "doc": "Unique identifier for this administered pricing event",
           "id": 1,
           "name": "APEVENTID",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "double"
         },
         {
           "doc": "Date-Time of the first Dispatch Interval to which the administered event applies",
           "id": 2,
           "name": "REGIONID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -237,10 +228,7 @@
           "type": "decimal(1, 0)"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2
-      ],
+      "identifier-field-ids": [],
       "schema-id": 1,
       "type": "struct"
     },
@@ -250,14 +238,14 @@
           "doc": "Unique identifier for this administered pricing event",
           "id": 1,
           "name": "APEVENTID",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "double"
         },
         {
           "doc": "Date-Time of the first Dispatch Interval to which the administered event applies",
           "id": 2,
           "name": "REGIONID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -345,10 +333,7 @@
           "type": "decimal(3, 0)"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2
-      ],
+      "identifier-field-ids": [],
       "schema-id": 2,
       "type": "struct"
     }

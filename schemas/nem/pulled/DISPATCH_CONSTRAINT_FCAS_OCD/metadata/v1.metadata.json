@@ -20,19 +20,12 @@
   "properties": {
     "comment": "FCAS constraint solution from OCD re-run.",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"SETTLEMENTDATE\",\"RUNNO\",\"INTERVENTION\",\"CONSTRAINTID\",\"VERSIONNO\"]",
+    "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(3)\",\"3\":\"NUMERIC(2)\",\"4\":\"VARCHAR(20)\",\"5\":\"NUMERIC(3)\",\"6\":\"TIMESTAMP(0)\",\"7\":\"NUMERIC(15,5)\",\"8\":\"NUMERIC(15,5)\",\"9\":\"NUMERIC(15,5)\"}",
     "phasor.package": "DISPATCH",
     "phasor.reports": "[[\"PRICELOAD\",\"CONSTRAINT_FCAS_OCD\"]]",
     "phasor.table": "DISPATCH_CONSTRAINT_FCAS_OCD",
-    "phasor.temporal.cutoff": "LASTCHANGED",
-    "phasor.temporal.entity": "[\"INTERVENTION\",\"CONSTRAINTID\"]",
-    "phasor.temporal.order": "[\"RUNNO\",\"VERSIONNO\",\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.column": "SETTLEMENTDATE",
-    "phasor.temporal.valid.kind": "interval_end",
     "phasor.time": "SETTLEMENTDATE",
     "phasor.visibility": "PUBLIC"
   },
@@ -49,36 +42,36 @@
           "doc": "Dispatch interval that the prices were loaded to",
           "id": 1,
           "name": "SETTLEMENTDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Dispatch run no; always 1",
           "id": 2,
           "name": "RUNNO",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(3, 0)"
         },
         {
           "doc": "Intervention 0/1",
           "id": 3,
           "name": "INTERVENTION",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(2, 0)"
         },
         {
           "doc": "ConstraintID/GenconID",
           "id": 4,
           "name": "CONSTRAINTID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "VersionNo",
           "id": 5,
           "name": "VERSIONNO",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(3, 0)"
         },
         {
           "doc": "The datetime that the record was last changed",
@@ -109,13 +102,7 @@
           "type": "decimal(15, 5)"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3,
-        4,
-        5
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     },
@@ -125,36 +112,36 @@
           "doc": "Dispatch interval that the prices were loaded to",
           "id": 1,
           "name": "SETTLEMENTDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Dispatch run no; always 1",
           "id": 2,
           "name": "RUNNO",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(3, 0)"
         },
         {
           "doc": "Intervention 0/1",
           "id": 3,
           "name": "INTERVENTION",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(2, 0)"
         },
         {
           "doc": "ConstraintID/GenconID",
           "id": 4,
           "name": "CONSTRAINTID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "VersionNo",
           "id": 5,
           "name": "VERSIONNO",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(3, 0)"
         },
         {
           "doc": "RHS from OCD re-run",
@@ -185,13 +172,7 @@
           "type": "timestamptz"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3,
-        4,
-        5
-      ],
+      "identifier-field-ids": [],
       "schema-id": 1,
       "type": "struct"
     }

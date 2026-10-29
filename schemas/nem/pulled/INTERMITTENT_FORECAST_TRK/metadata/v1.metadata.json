@@ -20,18 +20,12 @@
   "properties": {
     "comment": "Uniquely tracks which Intermittent Generation forecast was used for the DUID in which Dispatch run",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"SETTLEMENTDATE\",\"DUID\"]",
+    "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"VARCHAR(20)\",\"3\":\"VARCHAR(20)\",\"4\":\"NUMERIC(10,0)\",\"5\":\"TIMESTAMP(0)\"}",
     "phasor.package": "DISPATCH",
     "phasor.reports": "[[\"DISPATCH\",\"INTERMITTENT_FORECAST_TRK\"]]",
     "phasor.table": "INTERMITTENT_FORECAST_TRK",
-    "phasor.temporal.entity": "[\"DUID\"]",
-    "phasor.temporal.order": "[\"OFFERDATETIME\"]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.column": "SETTLEMENTDATE",
-    "phasor.temporal.valid.kind": "interval_end",
     "phasor.time": "SETTLEMENTDATE",
     "phasor.visibility": "PUBLIC"
   },
@@ -48,14 +42,14 @@
           "doc": "DateTime of the Dispatch run (dispatch interval ending)",
           "id": 1,
           "name": "SETTLEMENTDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Tracks to INTERMITTENT_DS_RUN.DUID",
           "id": 2,
           "name": "DUID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -80,10 +74,7 @@
           "type": "timestamptz"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     }

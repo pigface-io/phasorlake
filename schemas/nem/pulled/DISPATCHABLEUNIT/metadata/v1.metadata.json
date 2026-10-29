@@ -20,18 +20,12 @@
   "properties": {
     "comment": "DISPATCHABLEUNIT sets out the unit name and type of each dispatchable unit in the market.",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"DUID\"]",
+    "phasor.format": "5",
     "phasor.load": "snapshot",
     "phasor.model-types": "{\"1\":\"VARCHAR(10)\",\"2\":\"VARCHAR(20)\",\"3\":\"VARCHAR(20)\",\"4\":\"TIMESTAMP(0)\"}",
     "phasor.package": "PARTICIPANT_REGISTRATION",
     "phasor.reports": "[[\"PARTICIPANT_REGISTRATION\",\"DISPATCHABLEUNIT\"]]",
     "phasor.table": "DISPATCHABLEUNIT",
-    "phasor.temporal.cutoff": "LASTCHANGED",
-    "phasor.temporal.entity": "[\"DUID\"]",
-    "phasor.temporal.order": "[\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.kind": "timeless",
     "phasor.visibility": "PUBLIC"
   },
   "refs": {
@@ -47,7 +41,7 @@
           "doc": "Dispatchable Unit Identifier",
           "id": 1,
           "name": "DUID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -72,9 +66,7 @@
           "type": "timestamptz"
         }
       ],
-      "identifier-field-ids": [
-        1
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     }

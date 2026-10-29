@@ -20,19 +20,12 @@
   "properties": {
     "comment": "BIDOFFERPERIOD shows 5-minute period-based Energy and Ancillary Service bid data.BIDOFFERPERIOD is a child table of BIDDAYOFFER",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"DUID\",\"BIDTYPE\",\"TRADINGDATE\",\"OFFERDATETIME\",\"PERIODID\"]",
+    "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"VARCHAR(20)\",\"2\":\"VARCHAR(10)\",\"3\":\"TIMESTAMP(0)\",\"4\":\"TIMESTAMP(3)\",\"5\":\"NUMERIC(3,0)\",\"6\":\"NUMERIC(8,3)\",\"7\":\"NUMERIC(8,3)\",\"8\":\"NUMERIC(6)\",\"9\":\"NUMERIC(6)\",\"10\":\"NUMERIC(8,3)\",\"11\":\"NUMERIC(8,3)\",\"12\":\"NUMERIC(8,3)\",\"13\":\"NUMERIC(8,3)\",\"14\":\"NUMERIC(8,3)\",\"15\":\"NUMERIC(8,3)\",\"16\":\"NUMERIC(8,3)\",\"17\":\"NUMERIC(8,3)\",\"18\":\"NUMERIC(8,3)\",\"19\":\"NUMERIC(8,3)\",\"20\":\"NUMERIC(8,3)\",\"21\":\"NUMERIC(8,3)\",\"22\":\"NUMERIC(8,3)\",\"23\":\"NUMERIC(8,3)\",\"24\":\"NUMERIC(8,3)\",\"25\":\"VARCHAR(20)\",\"26\":\"NUMERIC(15,5)\",\"27\":\"NUMERIC(3,0)\",\"28\":\"NUMERIC(8,3)\"}",
     "phasor.package": "BIDS",
     "phasor.reports": "[[\"BIDS\",\"BIDOFFERPERIOD\"]]",
     "phasor.table": "BIDOFFERPERIOD",
-    "phasor.temporal.cutoff": "OFFERDATETIME",
-    "phasor.temporal.entity": "[\"DUID\",\"BIDTYPE\",\"PERIODID\"]",
-    "phasor.temporal.order": "[\"OFFERDATETIME\"]",
-    "phasor.temporal.origin": "hand",
-    "phasor.temporal.valid.column": "TRADINGDATE",
-    "phasor.temporal.valid.kind": "day",
     "phasor.time": "TRADINGDATE",
     "phasor.visibility": "PUBLIC"
   },
@@ -49,36 +42,36 @@
           "doc": "Dispatchable Unit ID",
           "id": 1,
           "name": "DUID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "The type of bid, one-of ENERGY, RAISE6SEC, RAISE60SEC, RAISE5MIN, RAISEREG, LOWER6SEC, LOWER60SEC, LOWER5MIN, LOWERREG",
           "id": 2,
           "name": "BIDTYPE",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "The trading date this bid is for",
           "id": 3,
           "name": "TRADINGDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Time this bid was processed and loaded",
           "id": 4,
           "name": "OFFERDATETIME",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Period ID 1 to 288",
           "id": 5,
           "name": "PERIODID",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(3, 0)"
         },
         {
           "doc": "Maximum availability for this BidType in this period",
@@ -214,13 +207,7 @@
           "type": "decimal(8, 3)"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3,
-        4,
-        5
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     },
@@ -230,36 +217,36 @@
           "doc": "Dispatchable Unit ID",
           "id": 1,
           "name": "DUID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "The type of bid, one-of ENERGY, RAISE6SEC, RAISE60SEC, RAISE5MIN, RAISEREG, LOWER6SEC, LOWER60SEC, LOWER5MIN, LOWERREG",
           "id": 2,
           "name": "BIDTYPE",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "The trading date this bid is for",
           "id": 3,
           "name": "TRADINGDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Time this bid was processed and loaded",
           "id": 4,
           "name": "OFFERDATETIME",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Period ID 1 to 288",
           "id": 5,
           "name": "PERIODID",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(3, 0)"
         },
         {
           "doc": "Maximum availability for this BidType in this period",
@@ -402,13 +389,7 @@
           "type": "string"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3,
-        4,
-        5
-      ],
+      "identifier-field-ids": [],
       "schema-id": 1,
       "type": "struct"
     },
@@ -418,36 +399,36 @@
           "doc": "Dispatchable Unit ID",
           "id": 1,
           "name": "DUID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "The type of bid, one-of ENERGY, RAISE6SEC, RAISE60SEC, RAISE5MIN, RAISEREG, LOWER6SEC, LOWER60SEC, LOWER5MIN, LOWERREG",
           "id": 2,
           "name": "BIDTYPE",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "The trading date this bid is for",
           "id": 3,
           "name": "TRADINGDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Time this bid was processed and loaded",
           "id": 4,
           "name": "OFFERDATETIME",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Period ID 1 to 288",
           "id": 5,
           "name": "PERIODID",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(3, 0)"
         },
         {
           "doc": "Maximum availability for this BidType in this period",
@@ -604,13 +585,7 @@
           "type": "decimal(3, 0)"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3,
-        4,
-        5
-      ],
+      "identifier-field-ids": [],
       "schema-id": 2,
       "type": "struct"
     },
@@ -620,28 +595,28 @@
           "doc": "Dispatchable Unit ID",
           "id": 1,
           "name": "DUID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "The type of bid, one-of ENERGY, RAISE6SEC, RAISE60SEC, RAISE5MIN, RAISEREG, LOWER6SEC, LOWER60SEC, LOWER5MIN, LOWERREG",
           "id": 2,
           "name": "BIDTYPE",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "The trading date this bid is for",
           "id": 3,
           "name": "TRADINGDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Time this bid was processed and loaded",
           "id": 4,
           "name": "OFFERDATETIME",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
@@ -655,8 +630,8 @@
           "doc": "Period ID 1 to 288",
           "id": 5,
           "name": "PERIODID",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(3, 0)"
         },
         {
           "doc": "Maximum availability for this BidType in this period",
@@ -806,13 +781,7 @@
           "type": "decimal(3, 0)"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3,
-        4,
-        5
-      ],
+      "identifier-field-ids": [],
       "schema-id": 3,
       "type": "struct"
     },
@@ -822,28 +791,28 @@
           "doc": "Dispatchable Unit ID",
           "id": 1,
           "name": "DUID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "The type of bid, one-of ENERGY, RAISE6SEC, RAISE60SEC, RAISE5MIN, RAISEREG, LOWER6SEC, LOWER60SEC, LOWER5MIN, LOWERREG",
           "id": 2,
           "name": "BIDTYPE",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "The trading date this bid is for",
           "id": 3,
           "name": "TRADINGDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Time this bid was processed and loaded",
           "id": 4,
           "name": "OFFERDATETIME",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
@@ -857,8 +826,8 @@
           "doc": "Period ID 1 to 288",
           "id": 5,
           "name": "PERIODID",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(3, 0)"
         },
         {
           "doc": "Maximum availability for this BidType in this period",
@@ -1015,13 +984,7 @@
           "type": "decimal(8, 3)"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3,
-        4,
-        5
-      ],
+      "identifier-field-ids": [],
       "schema-id": 4,
       "type": "struct"
     }

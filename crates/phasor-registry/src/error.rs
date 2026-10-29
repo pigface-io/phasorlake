@@ -36,18 +36,6 @@ pub enum ResolveError {
         /// The columns both have come in another order.
         reordered: bool,
     },
-    /// A primary-key column is absent from the I row.
-    #[error(
-        "Table {table} (schema {schema}): the I row lacks primary-key column {column}; rows could not be deduplicated, so the block is refused."
-    )]
-    MissingKey {
-        /// Table.
-        table: String,
-        /// The schema in force.
-        schema: u16,
-        /// The missing key column.
-        column: String,
-    },
     /// The I row has no columns after the version field.
     #[error("The I row for ({report_type}, {report_subtype}) version {version} names no columns.")]
     NoColumns {
@@ -77,14 +65,6 @@ impl Diagnose for ResolveError {
                 .with_table(table.clone())
                 .with_version(*schema)
                 .expected_observed(expected.clone(), observed.clone()),
-            Self::MissingKey {
-                table,
-                schema,
-                column,
-            } => Diagnostic::error("schema.missing_key", Category::SCHEMA, msg)
-                .with_table(table.clone())
-                .with_version(*schema)
-                .with_column(column.clone()),
             Self::NoColumns { version, .. } => {
                 Diagnostic::error("schema.no_columns", Category::SCHEMA, msg).with_version(*version)
             }
@@ -122,14 +102,6 @@ mod tests {
             .code,
             "schema.unknown_table"
         );
-        let d = ResolveError::MissingKey {
-            table: "T".into(),
-            schema: 1,
-            column: "K".into(),
-        }
-        .diagnostic();
-        assert_eq!(d.code, "schema.missing_key");
-        assert_eq!(d.column.as_deref(), Some("K"));
         assert_eq!(
             ResolveError::NoColumns {
                 report_type: "A".into(),

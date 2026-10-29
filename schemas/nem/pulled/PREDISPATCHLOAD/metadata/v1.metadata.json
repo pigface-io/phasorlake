@@ -20,19 +20,12 @@
   "properties": {
     "comment": "PREDISPATCHLOAD shows pre-dispatch targets for each dispatchable unit, including additional fields to handle the Ancillary Services functionality. No record is written where a unit is not dispatched. PREDISPATCHLOAD shows all the results for each period.",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"DUID\",\"DATETIME\"]",
+    "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"VARCHAR(20)\",\"2\":\"NUMERIC(3,0)\",\"3\":\"VARCHAR(10)\",\"4\":\"NUMERIC(2,0)\",\"5\":\"VARCHAR(20)\",\"6\":\"NUMERIC(2,0)\",\"7\":\"VARCHAR(12)\",\"8\":\"NUMERIC(2,0)\",\"9\":\"NUMERIC(2,0)\",\"10\":\"NUMERIC(15,5)\",\"11\":\"NUMERIC(15,5)\",\"12\":\"NUMERIC(15,5)\",\"13\":\"NUMERIC(15,5)\",\"14\":\"NUMERIC(15,5)\",\"15\":\"NUMERIC(15,5)\",\"16\":\"NUMERIC(15,5)\",\"17\":\"NUMERIC(15,5)\",\"18\":\"NUMERIC(15,5)\",\"19\":\"NUMERIC(15,5)\",\"20\":\"NUMERIC(15,5)\",\"21\":\"NUMERIC(15,5)\",\"22\":\"NUMERIC(15,5)\",\"23\":\"NUMERIC(15,5)\",\"24\":\"NUMERIC(15,5)\",\"25\":\"NUMERIC(15,5)\",\"26\":\"NUMERIC(15,5)\",\"27\":\"NUMERIC(15,5)\",\"28\":\"NUMERIC(15,5)\",\"29\":\"NUMERIC(15,5)\",\"30\":\"TIMESTAMP(0)\",\"31\":\"TIMESTAMP(0)\",\"32\":\"NUMERIC(15,5)\",\"33\":\"NUMERIC(15,5)\",\"34\":\"NUMERIC(15,5)\",\"35\":\"NUMERIC(3,0)\",\"36\":\"NUMERIC(3,0)\",\"37\":\"NUMERIC(3,0)\",\"38\":\"NUMERIC(3,0)\",\"39\":\"NUMERIC(3,0)\",\"40\":\"NUMERIC(3,0)\",\"41\":\"NUMERIC(3,0)\",\"42\":\"NUMERIC(3,0)\",\"43\":\"NUMERIC(16,6)\",\"44\":\"NUMERIC(16,6)\",\"45\":\"NUMERIC(16,6)\",\"46\":\"NUMERIC(16,6)\",\"47\":\"NUMERIC(16,6)\",\"48\":\"NUMERIC(16,6)\",\"49\":\"NUMERIC(16,6)\",\"50\":\"NUMERIC(16,6)\",\"51\":\"NUMERIC(3,0)\",\"52\":\"NUMERIC(15,5)\",\"53\":\"NUMERIC(15,5)\",\"54\":\"NUMERIC(3,0)\",\"55\":\"NUMERIC(3,0)\",\"56\":\"NUMERIC(16,6)\",\"57\":\"NUMERIC(16,6)\",\"58\":\"NUMERIC(6,0)\",\"59\":\"NUMERIC(15,5)\",\"60\":\"NUMERIC(15,5)\",\"61\":\"NUMERIC(15,5)\",\"62\":\"NUMERIC(15,5)\",\"63\":\"NUMERIC(15,5)\",\"64\":\"NUMERIC(15,5)\",\"65\":\"NUMERIC(5,0)\"}",
     "phasor.package": "PRE_DISPATCH",
     "phasor.reports": "[[\"PREDISPATCH\",\"UNIT_SOLUTION\"]]",
     "phasor.table": "PREDISPATCHLOAD",
-    "phasor.temporal.cutoff": "LASTCHANGED",
-    "phasor.temporal.entity": "[\"DUID\",\"INTERVENTION\"]",
-    "phasor.temporal.order": "[\"PREDISPATCHSEQNO\",\"RUNNO\",\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.column": "DATETIME",
-    "phasor.temporal.valid.kind": "interval_end",
     "phasor.time": "DATETIME",
     "phasor.visibility": "PUBLIC"
   },
@@ -63,7 +56,7 @@
           "doc": "Dispatchable unit identifier for fast start",
           "id": 3,
           "name": "DUID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -259,7 +252,7 @@
           "doc": "Period date and time",
           "id": 31,
           "name": "DATETIME",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
@@ -403,10 +396,7 @@
           "type": "decimal(3, 0)"
         }
       ],
-      "identifier-field-ids": [
-        3,
-        31
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     },
@@ -430,7 +420,7 @@
           "doc": "Dispatchable unit identifier for fast start",
           "id": 3,
           "name": "DUID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -626,7 +616,7 @@
           "doc": "Period date and time",
           "id": 31,
           "name": "DATETIME",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
@@ -826,10 +816,7 @@
           "type": "decimal(15, 5)"
         }
       ],
-      "identifier-field-ids": [
-        3,
-        31
-      ],
+      "identifier-field-ids": [],
       "schema-id": 1,
       "type": "struct"
     },
@@ -853,7 +840,7 @@
           "doc": "Dispatchable unit identifier for fast start",
           "id": 3,
           "name": "DUID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -1049,7 +1036,7 @@
           "doc": "Period date and time",
           "id": 31,
           "name": "DATETIME",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
@@ -1270,10 +1257,7 @@
           "type": "decimal(15, 5)"
         }
       ],
-      "identifier-field-ids": [
-        3,
-        31
-      ],
+      "identifier-field-ids": [],
       "schema-id": 2,
       "type": "struct"
     },
@@ -1297,7 +1281,7 @@
           "doc": "Dispatchable unit identifier for fast start",
           "id": 3,
           "name": "DUID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -1493,7 +1477,7 @@
           "doc": "Period date and time",
           "id": 31,
           "name": "DATETIME",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
@@ -1728,10 +1712,7 @@
           "type": "decimal(15, 5)"
         }
       ],
-      "identifier-field-ids": [
-        3,
-        31
-      ],
+      "identifier-field-ids": [],
       "schema-id": 3,
       "type": "struct"
     },
@@ -1755,7 +1736,7 @@
           "doc": "Dispatchable unit identifier for fast start",
           "id": 3,
           "name": "DUID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -1951,7 +1932,7 @@
           "doc": "Period date and time",
           "id": 31,
           "name": "DATETIME",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
@@ -2165,10 +2146,7 @@
           "type": "decimal(15, 5)"
         }
       ],
-      "identifier-field-ids": [
-        3,
-        31
-      ],
+      "identifier-field-ids": [],
       "schema-id": 4,
       "type": "struct"
     },
@@ -2192,7 +2170,7 @@
           "doc": "Dispatchable unit identifier for fast start",
           "id": 3,
           "name": "DUID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -2388,7 +2366,7 @@
           "doc": "Period date and time",
           "id": 31,
           "name": "DATETIME",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
@@ -2630,10 +2608,7 @@
           "type": "long"
         }
       ],
-      "identifier-field-ids": [
-        3,
-        31
-      ],
+      "identifier-field-ids": [],
       "schema-id": 5,
       "type": "struct"
     },
@@ -2657,7 +2632,7 @@
           "doc": "Dispatchable unit identifier for fast start",
           "id": 3,
           "name": "DUID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -2853,7 +2828,7 @@
           "doc": "Period date and time",
           "id": 31,
           "name": "DATETIME",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
@@ -3081,10 +3056,7 @@
           "type": "long"
         }
       ],
-      "identifier-field-ids": [
-        3,
-        31
-      ],
+      "identifier-field-ids": [],
       "schema-id": 6,
       "type": "struct"
     },
@@ -3108,7 +3080,7 @@
           "doc": "Dispatchable unit identifier for fast start",
           "id": 3,
           "name": "DUID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -3304,7 +3276,7 @@
           "doc": "Period date and time",
           "id": 31,
           "name": "DATETIME",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
@@ -3525,10 +3497,7 @@
           "type": "long"
         }
       ],
-      "identifier-field-ids": [
-        3,
-        31
-      ],
+      "identifier-field-ids": [],
       "schema-id": 7,
       "type": "struct"
     }

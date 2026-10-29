@@ -20,9 +20,8 @@
   "properties": {
     "comment": "Provides a list of nodes within a location.",
     "phasor.declared": "true",
-    "phasor.format": "4",
+    "phasor.format": "5",
     "phasor.headers": "{\"1\":\"FacilityName\",\"2\":\"FacilityType\",\"3\":\"FacilityId\",\"4\":\"NodeId\",\"5\":\"ConnectionPointId\",\"6\":\"FlowDirection\",\"7\":\"ConnectionPointName\",\"8\":\"State\",\"9\":\"DemandZone\"}",
-    "phasor.key": "[\"FACILITYID\",\"NODEID\",\"CONNECTIONPOINTID\"]",
     "phasor.load": "snapshot",
     "phasor.market": "gas",
     "phasor.model": "[\"GAS_LOCATION_NODE\",\"GAS_FACILITY_NODE_CONNECTION\"]",
@@ -30,10 +29,6 @@
     "phasor.offset": "+10:00",
     "phasor.reports": "[[\"GBB\",\"DEMAND_ZONES_PIPELINE_CONNECTION_POINT_MAPPING\"]]",
     "phasor.table": "GBB_DEMAND_ZONES_PIPELINE_CONNECTION_POINT_MAPPING",
-    "phasor.temporal.entity": "[\"FACILITYID\",\"NODEID\",\"CONNECTIONPOINTID\"]",
-    "phasor.temporal.order": "[]",
-    "phasor.temporal.origin": "hand",
-    "phasor.temporal.valid.kind": "timeless",
     "phasor.visibility": "PUBLIC"
   },
   "refs": {
@@ -61,22 +56,22 @@
           "doc": "Unique Facility Identifier",
           "id": 3,
           "name": "FACILITYID",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(6, 0)"
         },
         {
           "doc": "Unique Node Identifier",
           "id": 4,
           "name": "NODEID",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(5, 0)"
         },
         {
           "doc": "Unique connection point identifier.",
           "id": 5,
           "name": "CONNECTIONPOINTID",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(7, 0)"
         },
         {
           "doc": "Direction of flow for the submission record. Must be one of ‘RECEIPT’ or ‘DELIVERY’",
@@ -105,11 +100,7 @@
           "type": "string"
         }
       ],
-      "identifier-field-ids": [
-        3,
-        4,
-        5
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     }

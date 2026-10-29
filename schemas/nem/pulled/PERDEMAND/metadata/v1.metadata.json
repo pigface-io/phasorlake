@@ -20,19 +20,12 @@
   "properties": {
     "comment": "PERDEMAND sets out the regional demands and MR schedule data for each half-hour period. PERDEMAND is a child table to RESDEMANDTRK.",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"SETTLEMENTDATE\",\"REGIONID\",\"OFFERDATE\",\"PERIODID\",\"VERSIONNO\"]",
+    "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"VARCHAR(10)\",\"4\":\"TIMESTAMP(0)\",\"5\":\"NUMERIC(3,0)\",\"6\":\"NUMERIC(3,0)\",\"7\":\"NUMERIC(10,0)\",\"8\":\"NUMERIC(10,0)\",\"9\":\"NUMERIC(10,0)\",\"10\":\"TIMESTAMP(0)\",\"11\":\"NUMERIC(6,0)\"}",
     "phasor.package": "DEMAND_FORECASTS",
     "phasor.reports": "[[\"DEMAND\",\"PERIOD\"]]",
     "phasor.table": "PERDEMAND",
-    "phasor.temporal.cutoff": "OFFERDATE",
-    "phasor.temporal.entity": "[\"REGIONID\",\"PERIODID\"]",
-    "phasor.temporal.order": "[\"OFFERDATE\",\"VERSIONNO\",\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "hand",
-    "phasor.temporal.valid.column": "SETTLEMENTDATE",
-    "phasor.temporal.valid.kind": "day",
     "phasor.time": "SETTLEMENTDATE",
     "phasor.visibility": "PUBLIC"
   },
@@ -56,36 +49,36 @@
           "doc": "Market date of forecast up to 7 days ahead.",
           "id": 2,
           "name": "SETTLEMENTDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Differentiates this region from all other regions",
           "id": 3,
           "name": "REGIONID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "Date record issued",
           "id": 4,
           "name": "OFFERDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Half hourly trading intervals from 04:30.",
           "id": 5,
           "name": "PERIODID",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(3, 0)"
         },
         {
           "doc": "The version of the RESDEMAND file for this date",
           "id": 6,
           "name": "VERSIONNO",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(3, 0)"
         },
         {
           "doc": "Base Demand forecast for period",
@@ -123,13 +116,7 @@
           "type": "decimal(6, 0)"
         }
       ],
-      "identifier-field-ids": [
-        2,
-        3,
-        4,
-        5,
-        6
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     }

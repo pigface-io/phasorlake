@@ -20,19 +20,12 @@
   "properties": {
     "comment": "Lists asset owners planned outages for transmission equipment. This also includes details for transmission equipment that will not have an outage, but associated secondary equipment has an outage and a related constraint set may be invoked. This scenario is indicated by the ISSECONDARY field in the table",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"OUTAGEID\",\"SUBSTATIONID\",\"EQUIPMENTTYPE\",\"EQUIPMENTID\",\"STARTTIME\"]",
+    "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"NUMERIC(15,0)\",\"2\":\"VARCHAR(30)\",\"3\":\"VARCHAR(10)\",\"4\":\"VARCHAR(30)\",\"5\":\"TIMESTAMP(0)\",\"6\":\"TIMESTAMP(0)\",\"7\":\"TIMESTAMP(0)\",\"8\":\"VARCHAR(10)\",\"9\":\"VARCHAR(50)\",\"10\":\"NUMERIC(15,0)\",\"11\":\"NUMERIC(10,0)\",\"12\":\"NUMERIC(10,0)\",\"13\":\"TIMESTAMP(3)\",\"14\":\"VARCHAR(100)\",\"15\":\"NUMERIC(1,0)\",\"16\":\"TIMESTAMP(0)\",\"17\":\"TIMESTAMP(0)\",\"18\":\"VARCHAR(20)\",\"19\":\"NUMERIC(15,0)\"}",
     "phasor.package": "NETWORK",
     "phasor.reports": "[[\"NETWORK\",\"OUTAGEDETAIL\"]]",
     "phasor.table": "NETWORK_OUTAGEDETAIL",
-    "phasor.temporal.cutoff": "LASTCHANGED",
-    "phasor.temporal.entity": "[\"OUTAGEID\",\"SUBSTATIONID\",\"EQUIPMENTTYPE\",\"EQUIPMENTID\"]",
-    "phasor.temporal.order": "[\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.column": "STARTTIME",
-    "phasor.temporal.valid.kind": "instant",
     "phasor.time": "LASTCHANGED",
     "phasor.visibility": "PUBLIC"
   },
@@ -49,35 +42,35 @@
           "doc": "ID uniquely identifying the outage",
           "id": 1,
           "name": "OUTAGEID",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(15, 0)"
         },
         {
           "doc": "The substation this equipment is located at",
           "id": 2,
           "name": "SUBSTATIONID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "The type of equipment. Valid values are:\nLINE = Line\nTRANS = Transformer\nCB = Circuit breaker\nISOL = Isolator\nCAP = Capacitor\nREAC = Reactor\nUNIT = Unit",
           "id": 3,
           "name": "EQUIPMENTTYPE",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "A unique identifier for this equipment at this substation, and based on its type",
           "id": 4,
           "name": "EQUIPMENTID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "The planned starting date and time of the outage",
           "id": 5,
           "name": "STARTTIME",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
@@ -179,13 +172,7 @@
           "type": "decimal(15, 0)"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3,
-        4,
-        5
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     }

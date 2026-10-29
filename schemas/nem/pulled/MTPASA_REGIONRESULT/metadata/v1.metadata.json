@@ -20,19 +20,12 @@
   "properties": {
     "comment": "Region results for interval of max demand per day.",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"RUN_DATETIME\",\"RUN_NO\",\"RUNTYPE\",\"DEMAND_POE_TYPE\",\"DAY\",\"REGIONID\"]",
+    "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(4)\",\"3\":\"VARCHAR(20)\",\"4\":\"VARCHAR(20)\",\"5\":\"TIMESTAMP(0)\",\"6\":\"VARCHAR(20)\",\"7\":\"NUMERIC(3,0)\",\"8\":\"NUMERIC(12,2)\",\"9\":\"NUMERIC(12,2)\",\"10\":\"NUMERIC(12,2)\",\"11\":\"NUMERIC(12,2)\",\"12\":\"NUMERIC(12,2)\",\"13\":\"NUMERIC(12,2)\",\"14\":\"NUMERIC(12,2)\",\"15\":\"NUMERIC(12,2)\",\"16\":\"NUMERIC(12,2)\",\"17\":\"NUMERIC(12,2)\",\"18\":\"NUMERIC(12,2)\",\"19\":\"NUMERIC(12,2)\",\"20\":\"NUMERIC(12,2)\",\"21\":\"NUMERIC(12,2)\",\"22\":\"NUMERIC(12,2)\",\"23\":\"NUMERIC(12,2)\",\"24\":\"NUMERIC(12,2)\",\"25\":\"NUMERIC(12,2)\",\"26\":\"NUMERIC(12,2)\",\"27\":\"NUMERIC(12,2)\",\"28\":\"TIMESTAMP(0)\",\"29\":\"NUMERIC(12,2)\",\"30\":\"NUMERIC(12,2)\",\"31\":\"NUMERIC(12,2)\",\"32\":\"NUMERIC(12,2)\",\"33\":\"NUMERIC(12,2)\",\"34\":\"NUMERIC(12,2)\",\"35\":\"NUMERIC(12,2)\",\"36\":\"NUMERIC(12,2)\"}",
     "phasor.package": "MTPASA",
     "phasor.reports": "[[\"MTPASA\",\"REGIONRESULT\"]]",
     "phasor.table": "MTPASA_REGIONRESULT",
-    "phasor.temporal.cutoff": "RUN_DATETIME",
-    "phasor.temporal.entity": "[\"RUNTYPE\",\"DEMAND_POE_TYPE\",\"REGIONID\"]",
-    "phasor.temporal.order": "[\"RUN_DATETIME\",\"RUN_NO\",\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.column": "DAY",
-    "phasor.temporal.valid.kind": "instant",
     "phasor.time": "RUN_DATETIME",
     "phasor.visibility": "PUBLIC"
   },
@@ -49,42 +42,42 @@
           "doc": "Date processing of the run begins.",
           "id": 1,
           "name": "RUN_DATETIME",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Unique run id.",
           "id": 2,
           "name": "RUN_NO",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(4, 0)"
         },
         {
           "doc": "Type of run. Always RELIABILITY",
           "id": 3,
           "name": "RUNTYPE",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "Demand POE type used. Value is POE10",
           "id": 4,
           "name": "DEMAND_POE_TYPE",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "Day this result is for",
           "id": 5,
           "name": "DAY",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "The unique region identifier",
           "id": 6,
           "name": "REGIONID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -263,14 +256,7 @@
           "type": "decimal(12, 2)"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3,
-        4,
-        5,
-        6
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     },
@@ -280,42 +266,42 @@
           "doc": "Date processing of the run begins.",
           "id": 1,
           "name": "RUN_DATETIME",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Unique run id.",
           "id": 2,
           "name": "RUN_NO",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(4, 0)"
         },
         {
           "doc": "Type of run. Always RELIABILITY",
           "id": 3,
           "name": "RUNTYPE",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "Demand POE type used. Value is POE10",
           "id": 4,
           "name": "DEMAND_POE_TYPE",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "Day this result is for",
           "id": 5,
           "name": "DAY",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "The unique region identifier",
           "id": 6,
           "name": "REGIONID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -529,14 +515,7 @@
           "type": "decimal(12, 2)"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3,
-        4,
-        5,
-        6
-      ],
+      "identifier-field-ids": [],
       "schema-id": 1,
       "type": "struct"
     }

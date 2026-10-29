@@ -20,18 +20,12 @@
   "properties": {
     "comment": "Summary of Market Suspension timings",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"SUSPENSION_ID\",\"REGIONID\"]",
+    "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"VARCHAR(20)\",\"2\":\"VARCHAR(20)\",\"3\":\"TIMESTAMP(0)\",\"4\":\"TIMESTAMP(0)\",\"5\":\"TIMESTAMP(0)\",\"6\":\"TIMESTAMP(0)\"}",
     "phasor.package": "FORCE_MAJEURE",
     "phasor.reports": "[[\"FORCE_MAJEURE\",\"MARKET_SUSPEND_REGION_SUM\"]]",
     "phasor.table": "MARKET_SUSPEND_REGION_SUM",
-    "phasor.temporal.cutoff": "LASTCHANGED",
-    "phasor.temporal.entity": "[\"SUSPENSION_ID\",\"REGIONID\"]",
-    "phasor.temporal.order": "[\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.kind": "timeless",
     "phasor.time": "LASTCHANGED",
     "phasor.visibility": "PUBLIC"
   },
@@ -48,14 +42,14 @@
           "doc": "Unique identifier for this suspension event",
           "id": 1,
           "name": "SUSPENSION_ID",
-          "required": true,
+          "required": false,
           "type": "decimal(13, 1)"
         },
         {
           "doc": "Region(s) covered by the Suspension event",
           "id": 2,
           "name": "REGIONID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -87,10 +81,7 @@
           "type": "timestamptz"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     }

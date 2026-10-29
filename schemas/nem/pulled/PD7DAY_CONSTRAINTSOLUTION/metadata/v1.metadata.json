@@ -20,17 +20,11 @@
   "properties": {
     "comment": "PD7DAY constraint solution",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[]",
+    "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(2,0)\",\"3\":\"TIMESTAMP(0)\",\"4\":\"VARCHAR(20)\",\"5\":\"NUMERIC(15,5)\",\"6\":\"NUMERIC(15,5)\",\"7\":\"NUMERIC(15,5)\",\"8\":\"NUMERIC(15,5)\",\"9\":\"TIMESTAMP(0)\"}",
     "phasor.reports": "[[\"PD7DAY\",\"CONSTRAINTSOLUTION\"]]",
     "phasor.table": "PD7DAY_CONSTRAINTSOLUTION",
-    "phasor.temporal.cutoff": "LASTCHANGED",
-    "phasor.temporal.entity": "[\"INTERVENTION\"]",
-    "phasor.temporal.order": "[\"RUN_DATETIME\",\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.kind": "timeless",
     "phasor.time": "INTERVAL_DATETIME",
     "phasor.visibility": "PUBLIC"
   },

@@ -20,19 +20,12 @@
   "properties": {
     "comment": "Stores the Region-aggregate offered PASA Availability of scheduled generators for each day over the Medium Term PASA period. The data in this table is an aggregate of input data to the MT PASA process it is not part of the MTPASA solution. The aggregate availability does not reflect any energy limitations in the MT PASA offers.",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"PUBLISH_DATETIME\",\"DAY\",\"REGIONID\"]",
+    "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"VARCHAR(20)\",\"4\":\"NUMERIC(12,0)\",\"5\":\"TIMESTAMP(0)\",\"6\":\"NUMERIC(12,0)\",\"7\":\"NUMERIC(12,0)\",\"8\":\"NUMERIC(12,2)\",\"9\":\"NUMERIC(12,2)\",\"10\":\"NUMERIC(12,2)\",\"11\":\"NUMERIC(12,2)\",\"12\":\"NUMERIC(12,2)\",\"13\":\"TIMESTAMP(0)\",\"14\":\"NUMERIC(12,2)\",\"15\":\"NUMERIC(12,2)\",\"16\":\"NUMERIC(12,2)\",\"17\":\"NUMERIC(12,2)\",\"18\":\"NUMERIC(12,0)\"}",
     "phasor.package": "MTPASA",
     "phasor.reports": "[[\"MTPASA\",\"REGIONAVAILABILITY\"]]",
     "phasor.table": "MTPASA_REGIONAVAILABILITY",
-    "phasor.temporal.cutoff": "PUBLISH_DATETIME",
-    "phasor.temporal.entity": "[\"REGIONID\"]",
-    "phasor.temporal.order": "[\"PUBLISH_DATETIME\",\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.column": "DAY",
-    "phasor.temporal.valid.kind": "instant",
     "phasor.time": "DAY",
     "phasor.visibility": "PUBLIC"
   },
@@ -49,21 +42,21 @@
           "doc": "Date Time the report was published.",
           "id": 1,
           "name": "PUBLISH_DATETIME",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Date on which the aggregation applies.",
           "id": 2,
           "name": "DAY",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "NEM Region.",
           "id": 3,
           "name": "REGIONID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -172,11 +165,7 @@
           "type": "decimal(12, 0)"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     }

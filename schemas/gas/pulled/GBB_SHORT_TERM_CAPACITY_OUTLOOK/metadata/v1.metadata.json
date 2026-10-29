@@ -20,9 +20,8 @@
   "properties": {
     "comment": "Provides on each gas day D, the BB facility operator’s good faith estimate of the daily capacity of the BB Facility for gas days D+1 to D+7.",
     "phasor.declared": "true",
-    "phasor.format": "4",
+    "phasor.format": "5",
     "phasor.headers": "{\"1\":\"FacilityId\",\"2\":\"FacilityName\",\"3\":\"CapacityType\",\"4\":\"CapacityTypeDescription\",\"5\":\"FlowDirection\",\"6\":\"GasDate\",\"7\":\"OutlookQuantity\",\"8\":\"Description\",\"9\":\"CapacityDescription\",\"10\":\"ReceiptLocation\",\"11\":\"ReceiptLocationName\",\"12\":\"DeliveryLocation\",\"13\":\"DeliveryLocationName\",\"14\":\"LastUpdated\"}",
-    "phasor.key": "[]",
     "phasor.load": "append",
     "phasor.market": "gas",
     "phasor.model": "[\"GAS_SHORT_TERM_CAP_OUTLOOK\",\"GAS_FACILITY\"]",
@@ -30,12 +29,6 @@
     "phasor.offset": "+10:00",
     "phasor.reports": "[[\"GBB\",\"SHORT_TERM_CAPACITY_OUTLOOK\"],[\"GBB\",\"SHORT_TERM_CAPACITY_OUTLOOK_FUTURE\"]]",
     "phasor.table": "GBB_SHORT_TERM_CAPACITY_OUTLOOK",
-    "phasor.temporal.cutoff": "LASTUPDATED",
-    "phasor.temporal.entity": "[\"FACILITYID\"]",
-    "phasor.temporal.order": "[\"LASTUPDATED\"]",
-    "phasor.temporal.origin": "hand",
-    "phasor.temporal.valid.column": "GASDATE",
-    "phasor.temporal.valid.kind": "instant",
     "phasor.time": "GASDATE",
     "phasor.visibility": "PUBLIC"
   },

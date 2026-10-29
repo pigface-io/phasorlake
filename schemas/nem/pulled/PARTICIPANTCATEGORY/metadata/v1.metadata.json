@@ -20,18 +20,12 @@
   "properties": {
     "comment": "PARTICIPANTCATEGORY sets out valid participant categories.",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"PARTICIPANTCATEGORYID\"]",
+    "phasor.format": "5",
     "phasor.load": "snapshot",
     "phasor.model-types": "{\"1\":\"VARCHAR(10)\",\"2\":\"VARCHAR(64)\",\"3\":\"TIMESTAMP(0)\"}",
     "phasor.package": "PARTICIPANT_REGISTRATION",
     "phasor.reports": "[[\"PARTICIPANT_REGISTRATION\",\"PARTICIPANTCATEGORY\"]]",
     "phasor.table": "PARTICIPANTCATEGORY",
-    "phasor.temporal.cutoff": "LASTCHANGED",
-    "phasor.temporal.entity": "[\"PARTICIPANTCATEGORYID\"]",
-    "phasor.temporal.order": "[\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.kind": "timeless",
     "phasor.visibility": "PUBLIC"
   },
   "refs": {
@@ -47,7 +41,7 @@
           "doc": "Participant category identifier",
           "id": 1,
           "name": "PARTICIPANTCATEGORYID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -65,9 +59,7 @@
           "type": "timestamptz"
         }
       ],
-      "identifier-field-ids": [
-        1
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     }

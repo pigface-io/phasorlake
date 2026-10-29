@@ -68,7 +68,7 @@ pub enum Origin {
 /// The generation of the conversions the code itself performs.
 ///
 /// Raise it when the same plan would be written differently by a newer phasor.
-pub const PLAN_FORMAT: u32 = 9;
+pub const PLAN_FORMAT: u32 = 10;
 
 /// The identity of a plan: everything that decides what files of its shape are written as.
 ///
@@ -111,7 +111,6 @@ struct PlanIdentity<'a> {
     directory: &'a str,
     load_mode: LoadMode,
     schema: u16,
-    key: Vec<&'a str>,
     time: Option<&'a str>,
     routes: Vec<RouteIdentity<'a>>,
 }
@@ -126,7 +125,6 @@ impl PlanHash {
             directory: &plan.directory,
             load_mode: plan.load_mode,
             schema: plan.schema,
-            key: plan.key_columns.iter().map(|&k| name(k)).collect(),
             time: plan.time_column.map(name),
             routes: plan
                 .routes
@@ -200,8 +198,6 @@ pub struct ConformancePlan {
     pub load_mode: LoadMode,
     /// The schema of the table's history the shape was read against.
     pub schema: u16,
-    /// Output field indexes of the primary key.
-    pub key_columns: Vec<u16>,
     /// Output field index of the partition column.
     pub time_column: Option<u16>,
     /// The output columns: the lake's, then any the file carries beyond them.
@@ -314,7 +310,6 @@ impl ConformancePlan {
             directory: dir.to_owned(),
             load_mode: t.load_mode,
             schema,
-            key_columns: t.primary_key.iter().filter_map(|k| index(k)).collect(),
             time_column: t.time_column.as_deref().and_then(index),
             fields: arrow
                 .fields()

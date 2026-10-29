@@ -20,19 +20,12 @@
   "properties": {
     "comment": "MNSP_DAYOFFER updates as bids are processed. All bids are available as part of next day market data. MNSP_DAYOFFER is the parent table to MNSP_BIDOFFERPERIOD, and joins to BIDOFFERFILETRK for 5MS Bids.",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"SETTLEMENTDATE\",\"OFFERDATE\",\"VERSIONNO\",\"PARTICIPANTID\",\"LINKID\"]",
+    "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"TIMESTAMP(3)\",\"3\":\"NUMERIC(3,0)\",\"4\":\"VARCHAR(10)\",\"5\":\"VARCHAR(10)\",\"6\":\"VARCHAR(20)\",\"7\":\"VARCHAR(500)\",\"8\":\"NUMERIC(9,2)\",\"9\":\"NUMERIC(9,2)\",\"10\":\"NUMERIC(9,2)\",\"11\":\"NUMERIC(9,2)\",\"12\":\"NUMERIC(9,2)\",\"13\":\"NUMERIC(9,2)\",\"14\":\"NUMERIC(9,2)\",\"15\":\"NUMERIC(9,2)\",\"16\":\"NUMERIC(9,2)\",\"17\":\"NUMERIC(9,2)\",\"18\":\"TIMESTAMP(0)\",\"19\":\"VARCHAR(20)\",\"20\":\"VARCHAR(20)\",\"21\":\"VARCHAR(20)\",\"22\":\"VARCHAR(1)\",\"23\":\"VARCHAR(100)\",\"24\":\"NUMERIC(16,6)\"}",
     "phasor.package": "BIDS",
     "phasor.reports": "[[\"BIDS\",\"MNSP_DAYOFFER\"]]",
     "phasor.table": "MNSP_DAYOFFER",
-    "phasor.temporal.cutoff": "OFFERDATE",
-    "phasor.temporal.entity": "[\"PARTICIPANTID\",\"LINKID\"]",
-    "phasor.temporal.order": "[\"OFFERDATE\",\"VERSIONNO\",\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "hand",
-    "phasor.temporal.valid.column": "SETTLEMENTDATE",
-    "phasor.temporal.valid.kind": "day",
     "phasor.time": "SETTLEMENTDATE",
     "phasor.visibility": "PUBLIC"
   },
@@ -49,35 +42,35 @@
           "doc": "Market Date from which bid is active",
           "id": 1,
           "name": "SETTLEMENTDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Time this bid was processed and loaded",
           "id": 2,
           "name": "OFFERDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Version of data for other key data - a higher version for same key data will take precedence",
           "id": 3,
           "name": "VERSIONNO",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(3, 0)"
         },
         {
           "doc": "Participant Identifier",
           "id": 4,
           "name": "PARTICIPANTID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "Identifier for each of the two MNSP Interconnector Links. Each link pertains to the direction from and to.",
           "id": 5,
           "name": "LINKID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -207,13 +200,7 @@
           "type": "string"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3,
-        4,
-        5
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     },
@@ -223,35 +210,35 @@
           "doc": "Market Date from which bid is active",
           "id": 1,
           "name": "SETTLEMENTDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Time this bid was processed and loaded",
           "id": 2,
           "name": "OFFERDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Version of data for other key data - a higher version for same key data will take precedence",
           "id": 3,
           "name": "VERSIONNO",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(3, 0)"
         },
         {
           "doc": "Participant Identifier",
           "id": 4,
           "name": "PARTICIPANTID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "Identifier for each of the two MNSP Interconnector Links. Each link pertains to the direction from and to.",
           "id": 5,
           "name": "LINKID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -388,13 +375,7 @@
           "type": "string"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3,
-        4,
-        5
-      ],
+      "identifier-field-ids": [],
       "schema-id": 1,
       "type": "struct"
     }

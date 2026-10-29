@@ -31,30 +31,13 @@ class Block(TypedDict):
     """The table that claims its report pair."""
 
 
-class Valid(TypedDict):
-    """When a row applies."""
-
-    column: str | None
-    kind: str
-    """`interval_end`, `instant`, `day`, `from` or `timeless`."""
-
-
-class Roles(TypedDict):
-    """A table's temporal model: what a fact is about, when, and which revision is newest."""
-
-    entity: list[str]
-    valid: Valid
-    order: list[str]
-    cutoff: str | None
-
-
 class Column(TypedDict):
     """One lake column."""
 
     name: str
     type: str
     role: str
-    """`entity`, `valid`, `order`, `order, cutoff`, `cutoff`, or empty."""
+    """`time` for the table's time column, else empty."""
     field_id: int
     """The Iceberg and Parquet field id."""
     nullable: bool
@@ -66,9 +49,7 @@ class _TableBase(TypedDict):
     market: str
     description: str | None
     load_mode: Literal["append", "snapshot"]
-    key: list[str]
     time_column: str | None
-    roles: Roles
     columns: list[Column]
 
 

@@ -20,19 +20,12 @@
   "properties": {
     "comment": "Sets out local pricing offsets associated with each DUID connection point for each dispatch period",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"DATETIME\",\"DUID\"]",
+    "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"VARCHAR(20)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"VARCHAR(20)\",\"4\":\"VARCHAR(20)\",\"5\":\"NUMERIC(10,2)\",\"6\":\"NUMERIC(1,0)\",\"7\":\"TIMESTAMP(0)\"}",
     "phasor.package": "PRE_DISPATCH",
     "phasor.reports": "[[\"PREDISPATCH\",\"LOCAL_PRICE\"]]",
     "phasor.table": "PREDISPATCH_LOCAL_PRICE",
-    "phasor.temporal.cutoff": "LASTCHANGED",
-    "phasor.temporal.entity": "[\"DUID\"]",
-    "phasor.temporal.order": "[\"PREDISPATCHSEQNO\",\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.column": "DATETIME",
-    "phasor.temporal.valid.kind": "interval_end",
     "phasor.time": "DATETIME",
     "phasor.visibility": "PUBLIC"
   },
@@ -56,14 +49,14 @@
           "doc": "The unique identifier for the interval within this study",
           "id": 2,
           "name": "DATETIME",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Dispatchable unit identifier",
           "id": 3,
           "name": "DUID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -95,10 +88,7 @@
           "type": "timestamptz"
         }
       ],
-      "identifier-field-ids": [
-        2,
-        3
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     }

@@ -20,19 +20,12 @@
   "properties": {
     "comment": "DISPATCHPRICE records 5 minute dispatch prices for energy and FCAS, including whether an intervention has occurred, or price override (e.g. for Administered Price Cap). DISPATCHPRICE updates when price adjustments occur, in which case the new price is written to the RRP field, and the old price to the ROP field as an audit trail.",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"SETTLEMENTDATE\",\"RUNNO\",\"REGIONID\",\"DISPATCHINTERVAL\",\"INTERVENTION\"]",
+    "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(3,0)\",\"3\":\"VARCHAR(10)\",\"4\":\"VARCHAR(22)\",\"5\":\"NUMERIC(2,0)\",\"6\":\"NUMERIC(15,5)\",\"7\":\"NUMERIC(15,5)\",\"8\":\"NUMERIC(15,5)\",\"9\":\"NUMERIC(3,0)\",\"10\":\"NUMERIC(3,0)\",\"11\":\"TIMESTAMP(0)\",\"12\":\"NUMERIC(15,5)\",\"13\":\"NUMERIC(15,5)\",\"14\":\"NUMERIC(3,0)\",\"15\":\"NUMERIC(15,5)\",\"16\":\"NUMERIC(15,5)\",\"17\":\"NUMERIC(3,0)\",\"18\":\"NUMERIC(15,5)\",\"19\":\"NUMERIC(15,5)\",\"20\":\"NUMERIC(3,0)\",\"21\":\"NUMERIC(15,5)\",\"22\":\"NUMERIC(15,5)\",\"23\":\"NUMERIC(3,0)\",\"24\":\"NUMERIC(15,5)\",\"25\":\"NUMERIC(15,5)\",\"26\":\"NUMERIC(3,0)\",\"27\":\"NUMERIC(15,5)\",\"28\":\"NUMERIC(15,5)\",\"29\":\"NUMERIC(3,0)\",\"30\":\"NUMERIC(15,5)\",\"31\":\"NUMERIC(15,5)\",\"32\":\"NUMERIC(3,0)\",\"33\":\"NUMERIC(15,5)\",\"34\":\"NUMERIC(15,5)\",\"35\":\"NUMERIC(3,0)\",\"36\":\"VARCHAR(20)\",\"37\":\"NUMERIC(15,5)\",\"38\":\"NUMERIC(15,5)\",\"39\":\"NUMERIC(15,5)\",\"40\":\"NUMERIC(15,5)\",\"41\":\"NUMERIC(15,5)\",\"42\":\"NUMERIC(15,5)\",\"43\":\"NUMERIC(15,5)\",\"44\":\"NUMERIC(15,5)\",\"45\":\"NUMERIC(15,5)\",\"46\":\"NUMERIC(15,5)\",\"47\":\"NUMERIC(15,5)\",\"48\":\"NUMERIC(15,5)\",\"49\":\"NUMERIC(15,5)\",\"50\":\"NUMERIC(15,5)\",\"51\":\"NUMERIC(15,5)\",\"52\":\"NUMERIC(15,5)\",\"53\":\"NUMERIC(15,5)\",\"54\":\"NUMERIC(15,5)\",\"55\":\"VARCHAR(14)\",\"56\":\"VARCHAR(21)\",\"57\":\"NUMERIC(15,5)\",\"58\":\"NUMERIC(15,5)\",\"59\":\"NUMERIC(3,0)\",\"60\":\"NUMERIC(15,5)\",\"61\":\"NUMERIC(15,5)\",\"62\":\"NUMERIC(3,0)\",\"63\":\"NUMERIC(15,5)\",\"64\":\"NUMERIC(15,5)\",\"65\":\"NUMERIC(15,5)\",\"66\":\"NUMERIC(15,5)\"}",
     "phasor.package": "DISPATCH",
     "phasor.reports": "[[\"DISPATCH\",\"PRICE\"]]",
     "phasor.table": "DISPATCHPRICE",
-    "phasor.temporal.cutoff": "LASTCHANGED",
-    "phasor.temporal.entity": "[\"REGIONID\",\"DISPATCHINTERVAL\",\"INTERVENTION\"]",
-    "phasor.temporal.order": "[\"RUNNO\",\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.column": "SETTLEMENTDATE",
-    "phasor.temporal.valid.kind": "interval_end",
     "phasor.time": "SETTLEMENTDATE",
     "phasor.visibility": "PUBLIC"
   },
@@ -49,36 +42,36 @@
           "doc": "Market date and time starting at 04:05",
           "id": 1,
           "name": "SETTLEMENTDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Dispatch run no; always 1",
           "id": 2,
           "name": "RUNNO",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(3, 0)"
         },
         {
           "doc": "Region Identifier",
           "id": 3,
           "name": "REGIONID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "Dispatch interval identifier 001 to 288 in format YYYYMMDDPPP",
           "id": 4,
           "name": "DISPATCHINTERVAL",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(11, 0)"
         },
         {
           "doc": "Manual intervention flag",
           "id": 5,
           "name": "INTERVENTION",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(2, 0)"
         },
         {
           "doc": "Regional Reference Price for this dispatch period. RRP is the price used to settle the market",
@@ -274,13 +267,7 @@
           "type": "string"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3,
-        4,
-        5
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     },
@@ -290,36 +277,36 @@
           "doc": "Market date and time starting at 04:05",
           "id": 1,
           "name": "SETTLEMENTDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Dispatch run no; always 1",
           "id": 2,
           "name": "RUNNO",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(3, 0)"
         },
         {
           "doc": "Region Identifier",
           "id": 3,
           "name": "REGIONID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "Dispatch interval identifier 001 to 288 in format YYYYMMDDPPP",
           "id": 4,
           "name": "DISPATCHINTERVAL",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(11, 0)"
         },
         {
           "doc": "Manual intervention flag",
           "id": 5,
           "name": "INTERVENTION",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(2, 0)"
         },
         {
           "doc": "Regional Reference Price for this dispatch period. RRP is the price used to settle the market",
@@ -641,13 +628,7 @@
           "type": "decimal(15, 6)"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3,
-        4,
-        5
-      ],
+      "identifier-field-ids": [],
       "schema-id": 1,
       "type": "struct"
     },
@@ -657,36 +638,36 @@
           "doc": "Market date and time starting at 04:05",
           "id": 1,
           "name": "SETTLEMENTDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Dispatch run no; always 1",
           "id": 2,
           "name": "RUNNO",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(3, 0)"
         },
         {
           "doc": "Region Identifier",
           "id": 3,
           "name": "REGIONID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "Dispatch interval identifier 001 to 288 in format YYYYMMDDPPP",
           "id": 4,
           "name": "DISPATCHINTERVAL",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(11, 0)"
         },
         {
           "doc": "Manual intervention flag",
           "id": 5,
           "name": "INTERVENTION",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(2, 0)"
         },
         {
           "doc": "Regional Reference Price for this dispatch period. RRP is the price used to settle the market",
@@ -1092,13 +1073,7 @@
           "type": "decimal(15, 5)"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3,
-        4,
-        5
-      ],
+      "identifier-field-ids": [],
       "schema-id": 2,
       "type": "struct"
     },
@@ -1108,36 +1083,36 @@
           "doc": "Market date and time starting at 04:05",
           "id": 1,
           "name": "SETTLEMENTDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Dispatch run no; always 1",
           "id": 2,
           "name": "RUNNO",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(3, 0)"
         },
         {
           "doc": "Region Identifier",
           "id": 3,
           "name": "REGIONID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "Dispatch interval identifier 001 to 288 in format YYYYMMDDPPP",
           "id": 4,
           "name": "DISPATCHINTERVAL",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(11, 0)"
         },
         {
           "doc": "Manual intervention flag",
           "id": 5,
           "name": "INTERVENTION",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(2, 0)"
         },
         {
           "doc": "Regional Reference Price for this dispatch period. RRP is the price used to settle the market",
@@ -1543,13 +1518,7 @@
           "type": "string"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3,
-        4,
-        5
-      ],
+      "identifier-field-ids": [],
       "schema-id": 3,
       "type": "struct"
     }

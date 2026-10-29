@@ -20,20 +20,13 @@
   "properties": {
     "comment": "Notifies participants when the market delay or cancellation process is triggered",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"NOTICE_ID\"]",
+    "phasor.format": "5",
     "phasor.load": "append",
     "phasor.market": "gas",
     "phasor.model-types": "{\"1\":\"NUMBER(8,0)\",\"2\":\"DATE\",\"3\":\"DATE\",\"4\":\"NUMBER(8,0)\",\"5\":\"VARCHAR2 (100)\",\"6\":\"VARCHAR2 (20)\",\"7\":\"VARCHAR2 (50)\",\"8\":\"VARCHAR2 (1000)\",\"9\":\"DATE\"}",
     "phasor.offset": "+10:00",
     "phasor.reports": "[[\"GSH\",\"CAPACITY_TRANSFER_AUCTION_NT\"]]",
     "phasor.table": "GSH_CAP_XFR_AUCTION_NOTICE",
-    "phasor.temporal.cutoff": "LASTCHANGED",
-    "phasor.temporal.entity": "[\"NOTICE_ID\"]",
-    "phasor.temporal.order": "[\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "hand",
-    "phasor.temporal.valid.column": "NOTICE_DATE",
-    "phasor.temporal.valid.kind": "instant",
     "phasor.time": "NOTICE_DATE",
     "phasor.visibility": "PUBLIC"
   },
@@ -50,7 +43,7 @@
           "doc": "The unique identifier of the notice.",
           "id": 1,
           "name": "NOTICE_ID",
-          "required": true,
+          "required": false,
           "type": "long"
         },
         {
@@ -110,9 +103,7 @@
           "type": "timestamptz"
         }
       ],
-      "identifier-field-ids": [
-        1
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     }

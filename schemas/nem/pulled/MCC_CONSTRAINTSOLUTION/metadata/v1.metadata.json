@@ -20,18 +20,12 @@
   "properties": {
     "comment": "Constraint solution data from the MCC dispatch rerun process. Note only constraints with a non-zero marginal value are published.",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"RUN_DATETIME\",\"CONSTRAINTID\"]",
+    "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"VARCHAR(20)\",\"3\":\"NUMERIC(15,5)\",\"4\":\"NUMERIC(15,5)\"}",
     "phasor.package": "MCC_DISPATCH",
     "phasor.reports": "[[\"MCC\",\"CONSTRAINTSOLUTION\"]]",
     "phasor.table": "MCC_CONSTRAINTSOLUTION",
-    "phasor.temporal.entity": "[\"CONSTRAINTID\"]",
-    "phasor.temporal.order": "[]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.column": "RUN_DATETIME",
-    "phasor.temporal.valid.kind": "instant",
     "phasor.time": "RUN_DATETIME",
     "phasor.visibility": "PUBLIC"
   },
@@ -48,14 +42,14 @@
           "doc": "5-minute Dispatch Run identifier",
           "id": 1,
           "name": "RUN_DATETIME",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Generic Constraint identifier (synonymous with GenConID)",
           "id": 2,
           "name": "CONSTRAINTID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -73,10 +67,7 @@
           "type": "decimal(15, 5)"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     },
@@ -86,14 +77,14 @@
           "doc": "5-minute Dispatch Run identifier",
           "id": 1,
           "name": "RUN_DATETIME",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Generic Constraint identifier (synonymous with GenConID)",
           "id": 2,
           "name": "CONSTRAINTID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -117,10 +108,7 @@
           "type": "string"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2
-      ],
+      "identifier-field-ids": [],
       "schema-id": 1,
       "type": "struct"
     }

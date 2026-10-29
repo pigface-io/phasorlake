@@ -20,18 +20,12 @@
   "properties": {
     "comment": "NETWORK_OUTAGESTATUSCODE describes the different outage status codes",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"OUTAGESTATUSCODE\"]",
+    "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"VARCHAR(10)\",\"2\":\"VARCHAR(100)\",\"3\":\"TIMESTAMP(0)\"}",
     "phasor.package": "NETWORK",
     "phasor.reports": "[[\"NETWORK\",\"OUTAGESTATUSCODE\"]]",
     "phasor.table": "NETWORK_OUTAGESTATUSCODE",
-    "phasor.temporal.cutoff": "LASTCHANGED",
-    "phasor.temporal.entity": "[\"OUTAGESTATUSCODE\"]",
-    "phasor.temporal.order": "[\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.kind": "timeless",
     "phasor.time": "LASTCHANGED",
     "phasor.visibility": "PUBLIC"
   },
@@ -48,7 +42,7 @@
           "doc": "A code representing the status of an outage",
           "id": 1,
           "name": "OUTAGESTATUSCODE",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -66,9 +60,7 @@
           "type": "timestamptz"
         }
       ],
-      "identifier-field-ids": [
-        1
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     }

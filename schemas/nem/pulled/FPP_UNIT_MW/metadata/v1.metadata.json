@@ -20,7 +20,7 @@
   "properties": {
     "comment": "This report delivers the curated 4 second measurement MW data for each FPP unit",
     "phasor.declared": "false",
-    "phasor.format": "4",
+    "phasor.format": "5",
     "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"VARCHAR(20)\",\"4\":\"NUMERIC(5)\",\"5\":\"NUMERIC(18,8)\",\"6\":\"NUMERIC(5)\",\"7\":\"NUMERIC(18,5)\",\"8\":\"NUMERIC(18,5)\",\"9\":\"VARCHAR(20)\",\"10\":\"TIMESTAMP(0)\"}",
     "phasor.table": "FPP_UNIT_MW"
   },

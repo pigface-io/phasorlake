@@ -59,15 +59,16 @@ for block in pl.inspect("testdata/csv/multi_block_dispatchis.csv"):
 ## Describe a table
 
 What the registry says of a table, as `phasor list TABLE --json` does: its
-roles (`entity`, `valid`, `order`, `cutoff`), key, columns with their field
-ids, and the lake schema as a `pyarrow.Schema`.
+load mode, time column, columns with their field ids, and the lake schema as
+a `pyarrow.Schema`. What one row is (a key) and which restatement is the
+latest (temporal roles) are a reader's decisions, so the registry says
+neither.
 
 ```python
 import phasorlake as pl
 
 t = pl.table("DISPATCHPRICE")
-assert t["roles"]["entity"] == ["REGIONID", "DISPATCHINTERVAL", "INTERVENTION"]
-assert t["roles"]["valid"] == {"column": "SETTLEMENTDATE", "kind": "interval_end"}
+assert t["time_column"] == "SETTLEMENTDATE"
 print(t["schema"])
 ```
 

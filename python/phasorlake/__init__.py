@@ -9,16 +9,14 @@ reads the lake: that is your own engine's work (`docs/reading.md`).
 from phasorlake._api import __version__, decode, inspect, table
 from phasorlake._cli import run
 from phasorlake._native import PhasorError, PhasorWarning
-from phasorlake._types import Block, Column, Roles, Table, Valid
+from phasorlake._types import Block, Column, Table
 
 __all__ = [
     "Block",
     "Column",
     "PhasorError",
     "PhasorWarning",
-    "Roles",
     "Table",
-    "Valid",
     "__version__",
     "decode",
     "inspect",

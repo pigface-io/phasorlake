@@ -20,18 +20,12 @@
   "properties": {
     "comment": "PREDISPATCH_MNSPBIDTRK shows the MNSP bid tracking, including the bid version used in each predispatch run for each MNSP Interconnector Link. PREDISPATCH_MNSPBIDTRK shows the audit trail of the bid used for each predispatch run.",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"PREDISPATCHSEQNO\",\"LINKID\",\"PERIODID\"]",
+    "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"VARCHAR(20)\",\"2\":\"VARCHAR(10)\",\"3\":\"VARCHAR(20)\",\"4\":\"VARCHAR(10)\",\"5\":\"TIMESTAMP(0)\",\"6\":\"TIMESTAMP(3)\",\"7\":\"NUMERIC(3,0)\",\"8\":\"TIMESTAMP(0)\",\"9\":\"TIMESTAMP(0)\"}",
     "phasor.package": "PRE_DISPATCH",
     "phasor.reports": "[[\"PREDISPATCH\",\"MNSPBIDTRK\"]]",
     "phasor.table": "PREDISPATCH_MNSPBIDTRK",
-    "phasor.temporal.cutoff": "LASTCHANGED",
-    "phasor.temporal.entity": "[\"LINKID\",\"PERIODID\"]",
-    "phasor.temporal.order": "[\"PREDISPATCHSEQNO\",\"OFFERDATE\",\"VERSIONNO\",\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.kind": "timeless",
     "phasor.time": "SETTLEMENTDATE",
     "phasor.visibility": "PUBLIC"
   },
@@ -48,22 +42,22 @@
           "doc": "Predispatch run identifier",
           "id": 1,
           "name": "PREDISPATCHSEQNO",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(10, 0)"
         },
         {
           "doc": "Identifier for each of the two MNSP Interconnector Links. Each link pertains to the direction from and to.",
           "id": 2,
           "name": "LINKID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "Trading Interval number",
           "id": 3,
           "name": "PERIODID",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(10, 0)"
         },
         {
           "doc": "Participant Identifier",
@@ -108,11 +102,7 @@
           "type": "timestamptz"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     }

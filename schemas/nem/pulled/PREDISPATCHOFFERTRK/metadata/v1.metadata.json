@@ -20,18 +20,12 @@
   "properties": {
     "comment": "PREDISPATCHOFFERTRK is for the ancillary service bid tracking of predispatch processing. PREDISPATCHOFFERTRK identifies which bids from BIDDAYOFFER and BIDOFFERPERIOD were applied for a given unit and ancillary service for each predispatch run.",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"PREDISPATCHSEQNO\",\"DUID\",\"BIDTYPE\",\"PERIODID\"]",
+    "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"VARCHAR(20)\",\"2\":\"VARCHAR(10)\",\"3\":\"VARCHAR(20)\",\"4\":\"VARCHAR(20)\",\"5\":\"TIMESTAMP(0)\",\"6\":\"TIMESTAMP(3)\",\"7\":\"TIMESTAMP(0)\",\"8\":\"TIMESTAMP(0)\"}",
     "phasor.package": "PRE_DISPATCH",
     "phasor.reports": "[[\"PREDISPATCH\",\"OFFERTRK\"]]",
     "phasor.table": "PREDISPATCHOFFERTRK",
-    "phasor.temporal.cutoff": "LASTCHANGED",
-    "phasor.temporal.entity": "[\"DUID\",\"BIDTYPE\",\"PERIODID\"]",
-    "phasor.temporal.order": "[\"PREDISPATCHSEQNO\",\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.kind": "timeless",
     "phasor.time": "DATETIME",
     "phasor.visibility": "PUBLIC"
   },
@@ -48,29 +42,29 @@
           "doc": "Unique identifier of predispatch run in the form YYYYMMDDPP with 01 at 04:30",
           "id": 1,
           "name": "PREDISPATCHSEQNO",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(10, 0)"
         },
         {
           "doc": "Dispatchable Unit identifier",
           "id": 2,
           "name": "DUID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "Bid type Identifier - the ancillary service to which the bid applies",
           "id": 3,
           "name": "BIDTYPE",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "PERIODID is just a period count, starting from 1 for each predispatch run. Use DATETIME to determine half hour period.",
           "id": 4,
           "name": "PERIODID",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(10, 0)"
         },
         {
           "doc": "Settlement date of bid applied",
@@ -101,12 +95,7 @@
           "type": "timestamptz"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3,
-        4
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     }

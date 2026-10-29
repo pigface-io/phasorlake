@@ -20,9 +20,8 @@
   "properties": {
     "comment": "The linepack adequacy (flag) for each of the (non-exempt) BB pipelines",
     "phasor.declared": "true",
-    "phasor.format": "4",
+    "phasor.format": "5",
     "phasor.headers": "{\"1\":\"FacilityName\",\"2\":\"FacilityId\",\"3\":\"FacilityType\",\"4\":\"GasDate\",\"5\":\"Flag\",\"6\":\"Description\",\"7\":\"LastUpdated\"}",
-    "phasor.key": "[]",
     "phasor.load": "append",
     "phasor.market": "gas",
     "phasor.model": "[\"GAS_LINEPACK_ADEQUACY\",\"GAS_FACILITY\"]",
@@ -30,12 +29,6 @@
     "phasor.offset": "+10:00",
     "phasor.reports": "[[\"GBB\",\"LINEPACK_CAPACITY_ADEQUACY_FULL_LIST\"],[\"GBB\",\"LINEPACK_CAPACITY_ADEQUACY_FUTURE\"]]",
     "phasor.table": "GBB_LINEPACK_CAPACITY_ADEQUACY",
-    "phasor.temporal.cutoff": "LASTUPDATED",
-    "phasor.temporal.entity": "[\"FACILITYID\"]",
-    "phasor.temporal.order": "[\"LASTUPDATED\"]",
-    "phasor.temporal.origin": "hand",
-    "phasor.temporal.valid.column": "GASDATE",
-    "phasor.temporal.valid.kind": "instant",
     "phasor.time": "GASDATE",
     "phasor.visibility": "PUBLIC"
   },

@@ -2,11 +2,11 @@
 
 The lake keeps every row of every file: every revision of every fact, and
 every copy of it from every source that published it. This page says what
-a table's columns mean in time, the roles that say which rows are
-revisions of one fact, and what each row records of where it came from.
-`docs/reading.md` turns these into queries. The rules come from each
-table's published roles, so the same queries read every declared table of
-every market and no table needs code of its own.
+a table's columns mean in time, the roles a reader gives them to say
+which rows are revisions of one fact, and what each row records of where
+it came from. `docs/reading.md` turns these into queries. The lake
+decides none of it: it keeps every row, and a reader names each table's
+roles.
 
 ## Two time axes
 
@@ -25,9 +25,10 @@ as known at some time.
 
 ## The roles
 
-Every declared table carries roles in its Iceberg metadata
-(`phasor.temporal.*`), derived from AEMO's primary key and the table's
-columns (`crates/phasor-registry/src/file_model/temporal.rs`):
+A reader gives each table its roles; the lake carries none. AEMO's data
+model names a primary key per table, from which most roles follow, but
+the key changes between releases (`DIRECTION` joined the bid tables' in
+5.3) and only the rows can say whether a key holds:
 
 | role | meaning | example (DISPATCHPRICE) |
 |---|---|---|
@@ -40,11 +41,8 @@ columns (`crates/phasor-registry/src/file_model/temporal.rs`):
 `INTERVENTION` is always an entity: AEMO publishes an intervention run's
 rows beside the normal run's, and merging them would lose one.
 
-The roles are one rule, shared with the publisher
-(`phasor_iceberg::derive`), run over the key and the columns; a table
-whose declaration carries a `[temporal]` block has roles a person set
-(`origin = hand`). The `day` kind is such a choice: the census shows a
-valid column seen only at midnight, and the fold says so.
+A day label is a reader's choice too: a valid column whose every value is
+at midnight is a trading day, not an instant.
 
 ## The window
 

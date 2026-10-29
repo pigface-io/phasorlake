@@ -20,7 +20,7 @@
   "properties": {
     "comment": "MTPASA_RESERVELIMITSOLUTION is obsolete from 2017 End of Year DM4.27 Release. \nMT PASA Solution table reporting whether a MT PASA Reserve requirement is binding for each day and LDC block of the run.",
     "phasor.declared": "false",
-    "phasor.format": "4",
+    "phasor.format": "5",
     "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(3,0)\",\"3\":\"VARCHAR(20)\",\"4\":\"TIMESTAMP(0)\",\"5\":\"TIMESTAMP(0)\",\"6\":\"NUMERIC(3,0)\",\"7\":\"VARCHAR(20)\",\"8\":\"NUMERIC(16,6)\",\"9\":\"TIMESTAMP(0)\"}",
     "phasor.table": "MTPASA_RESERVELIMITSOLUTION"
   },

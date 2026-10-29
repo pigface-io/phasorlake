@@ -42,7 +42,6 @@ fn an_area_report_goes_to_its_area_table_and_a_regional_one_to_the_regions() {
     assert_eq!(r.table(region.table).name, "ROOFTOP_PV_ACTUAL");
     assert_eq!(r.table(area.table).name, "ROOFTOP_PV_ACTUAL_AREA");
     assert_eq!(area.status, Status::Conforms, "{:?}", area.warnings);
-    assert_eq!(r.table(area.table).temporal.entity, ["AREAID", "TYPE"]);
     // The name of a pair is its regional table.
     assert_eq!(
         r.table_by_pair(phasor_registry::Market::Nem, "ROOFTOP", "ACTUAL"),

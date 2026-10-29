@@ -19,18 +19,13 @@
   ],
   "properties": {
     "phasor.declared": "true",
-    "phasor.format": "4",
+    "phasor.format": "5",
     "phasor.headers": "{\"1\":\"zftc_name\",\"2\":\"commencement_date\",\"3\":\"termination_date\",\"4\":\"daily_max_net_inj_qty_gj\",\"5\":\"daily_max_net_wdl_qty_gj\",\"6\":\"ti\",\"7\":\"hourly_max_net_inj_qty_gj\",\"8\":\"hourly_max_net_wdl_qty_gj\",\"9\":\"mod_datetime\",\"10\":\"current_date\"}",
-    "phasor.key": "[]",
     "phasor.load": "append",
     "phasor.market": "gas",
     "phasor.offset": "+10:00",
     "phasor.reports": "[[\"DWGM\",\"INT112D_ZFTC_1\"]]",
     "phasor.table": "DWGM_INT112D_ZFTC",
-    "phasor.temporal.entity": "[]",
-    "phasor.temporal.order": "[\"CURRENT_DATE\"]",
-    "phasor.temporal.origin": "hand",
-    "phasor.temporal.valid.kind": "timeless",
     "phasor.visibility": "PUBLIC"
   },
   "refs": {

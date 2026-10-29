@@ -20,18 +20,11 @@
   "properties": {
     "comment": "BILLSMELTERRATE is standing data, setting out the rates used in smelter reduction calculations.",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"EFFECTIVEDATE\",\"VERSIONNO\",\"CONTRACTYEAR\"]",
+    "phasor.format": "5",
     "phasor.load": "snapshot",
     "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(3,0)\",\"3\":\"NUMERIC(22,0)\",\"4\":\"NUMERIC(6,2)\",\"5\":\"NUMERIC(6,2)\",\"6\":\"TIMESTAMP(0)\",\"7\":\"VARCHAR(10)\",\"8\":\"TIMESTAMP(0)\"}",
     "phasor.reports": "[[\"BILLING_CONFIG\",\"BILLSMELTERRATE\"]]",
     "phasor.table": "BILLSMELTERRATE",
-    "phasor.temporal.cutoff": "LASTCHANGED",
-    "phasor.temporal.entity": "[\"CONTRACTYEAR\"]",
-    "phasor.temporal.order": "[\"VERSIONNO\",\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.column": "EFFECTIVEDATE",
-    "phasor.temporal.valid.kind": "from",
     "phasor.visibility": "PUBLIC"
   },
   "refs": {
@@ -47,22 +40,22 @@
           "doc": "Calendar settlement date record becomes effective",
           "id": 1,
           "name": "EFFECTIVEDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Version no of the record for the given effective date",
           "id": 2,
           "name": "VERSIONNO",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(3, 0)"
         },
         {
           "doc": "AEMO Contract Year number starting in week containing 1st January",
           "id": 3,
           "name": "CONTRACTYEAR",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "double"
         },
         {
           "doc": "Smelter rate 1",
@@ -100,11 +93,7 @@
           "type": "timestamptz"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     }

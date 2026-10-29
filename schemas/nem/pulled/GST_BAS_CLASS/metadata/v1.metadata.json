@@ -20,18 +20,12 @@
   "properties": {
     "comment": "GST_BAS_CLASS contains a static list of BAS (Business Activity Statement) classifications supported by the MMS.",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"BAS_CLASS\"]",
+    "phasor.format": "5",
     "phasor.load": "snapshot",
     "phasor.model-types": "{\"1\":\"VARCHAR(30)\",\"2\":\"VARCHAR(100)\",\"3\":\"TIMESTAMP(0)\"}",
     "phasor.package": "BILLING_CONFIG",
     "phasor.reports": "[[\"BILLING_CONFIG\",\"GST_BAS_CLASS\"]]",
     "phasor.table": "GST_BAS_CLASS",
-    "phasor.temporal.cutoff": "LASTCHANGED",
-    "phasor.temporal.entity": "[\"BAS_CLASS\"]",
-    "phasor.temporal.order": "[\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.kind": "timeless",
     "phasor.visibility": "PUBLIC"
   },
   "refs": {
@@ -47,7 +41,7 @@
           "doc": "The BAS classification",
           "id": 1,
           "name": "BAS_CLASS",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -65,9 +59,7 @@
           "type": "timestamptz"
         }
       ],
-      "identifier-field-ids": [
-        1
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     }

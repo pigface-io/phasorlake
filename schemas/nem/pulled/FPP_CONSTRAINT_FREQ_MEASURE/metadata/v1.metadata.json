@@ -20,17 +20,11 @@
   "properties": {
     "comment": "This report delivers the weighted 4 second frequency measure data for each constraint",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[]",
+    "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"VARCHAR(20)\",\"4\":\"NUMERIC(5)\",\"5\":\"VARCHAR(10)\",\"6\":\"NUMERIC(18,8)\",\"7\":\"NUMERIC(18,8)\",\"8\":\"NUMERIC(5)\",\"9\":\"NUMERIC(5)\",\"10\":\"TIMESTAMP(0)\"}",
     "phasor.reports": "[[\"FPP\",\"CONSTRAINT_FREQ_MEASURE\"]]",
     "phasor.table": "FPP_CONSTRAINT_FREQ_MEASURE",
-    "phasor.temporal.cutoff": "LASTCHANGED",
-    "phasor.temporal.entity": "[]",
-    "phasor.temporal.order": "[\"VERSIONNO\",\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.kind": "timeless",
     "phasor.time": "INTERVAL_DATETIME",
     "phasor.visibility": "PUBLIC"
   },

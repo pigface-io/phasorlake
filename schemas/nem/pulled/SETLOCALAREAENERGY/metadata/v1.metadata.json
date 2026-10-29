@@ -20,19 +20,12 @@
   "properties": {
     "comment": "SETLOCALAREAENERGY shows the UFE, AGE and associated values for each local area and trading interval in a settlement run.",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"SETTLEMENTDATE\",\"SETTLEMENTRUNNO\",\"LOCALAREAID\",\"PERIODID\"]",
+    "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(3,0)\",\"3\":\"NUMERIC(3,0)\",\"4\":\"VARCHAR(30)\",\"5\":\"NUMERIC(18,8)\",\"6\":\"NUMERIC(18,8)\",\"7\":\"NUMERIC(18,8)\",\"8\":\"NUMERIC(18,8)\",\"9\":\"NUMERIC(18,8)\",\"10\":\"TIMESTAMP(0)\"}",
     "phasor.package": "SETTLEMENT_DATA",
     "phasor.reports": "[[\"SETTLEMENTS\",\"LOCALAREAENERGY\"]]",
     "phasor.table": "SETLOCALAREAENERGY",
-    "phasor.temporal.cutoff": "LASTCHANGED",
-    "phasor.temporal.entity": "[\"SETTLEMENTRUNNO\",\"LOCALAREAID\",\"PERIODID\"]",
-    "phasor.temporal.order": "[\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "hand",
-    "phasor.temporal.valid.column": "SETTLEMENTDATE",
-    "phasor.temporal.valid.kind": "day",
     "phasor.time": "SETTLEMENTDATE",
     "phasor.visibility": "PUBLIC"
   },
@@ -49,28 +42,28 @@
           "doc": "Settlement date of the settlement run",
           "id": 1,
           "name": "SETTLEMENTDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Settlement run number of the settlement run",
           "id": 2,
           "name": "SETTLEMENTRUNNO",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(3, 0)"
         },
         {
           "doc": "Settlement Trading Interval",
           "id": 3,
           "name": "PERIODID",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(3, 0)"
         },
         {
           "doc": "Unique identifier for the local area",
           "id": 4,
           "name": "LOCALAREAID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -116,12 +109,7 @@
           "type": "timestamptz"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        4,
-        3
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     },
@@ -131,29 +119,29 @@
           "doc": "Settlement date of the settlement run",
           "id": 1,
           "name": "SETTLEMENTDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Settlement run number of the settlement run",
           "id": 2,
           "name": "SETTLEMENTRUNNO",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(3, 0)"
         },
         {
           "doc": "Unique identifier for the local area",
           "id": 4,
           "name": "LOCALAREAID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "Settlement Trading Interval",
           "id": 3,
           "name": "PERIODID",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(3, 0)"
         },
         {
           "doc": "Total unaccounted-for energy for the local area in this trading interval, in MWh",
@@ -198,12 +186,7 @@
           "type": "timestamptz"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        4,
-        3
-      ],
+      "identifier-field-ids": [],
       "schema-id": 1,
       "type": "struct"
     }

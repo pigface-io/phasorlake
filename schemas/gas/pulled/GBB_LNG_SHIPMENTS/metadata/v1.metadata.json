@@ -20,9 +20,8 @@
   "properties": {
     "comment": "This table displays a list of all LNG shipments",
     "phasor.declared": "true",
-    "phasor.format": "4",
+    "phasor.format": "5",
     "phasor.headers": "{\"1\":\"TransactionId\",\"2\":\"FacilityId\",\"3\":\"FacilityName\",\"4\":\"VolumePJ\",\"5\":\"ShipmentDate\",\"6\":\"VersionDateTime\"}",
-    "phasor.key": "[]",
     "phasor.load": "append",
     "phasor.market": "gas",
     "phasor.model": "[\"GAS_LNG_SHIPMENT\"]",
@@ -30,12 +29,6 @@
     "phasor.offset": "+10:00",
     "phasor.reports": "[[\"GBB\",\"LNG_SHIPMENTS\"]]",
     "phasor.table": "GBB_LNG_SHIPMENTS",
-    "phasor.temporal.cutoff": "VERSIONDATETIME",
-    "phasor.temporal.entity": "[\"TRANSACTIONID\",\"FACILITYID\"]",
-    "phasor.temporal.order": "[\"VERSIONDATETIME\"]",
-    "phasor.temporal.origin": "hand",
-    "phasor.temporal.valid.column": "SHIPMENTDATE",
-    "phasor.temporal.valid.kind": "instant",
     "phasor.time": "SHIPMENTDATE",
     "phasor.visibility": "PUBLIC"
   },

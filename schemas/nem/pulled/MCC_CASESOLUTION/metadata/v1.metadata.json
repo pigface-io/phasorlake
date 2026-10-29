@@ -20,18 +20,12 @@
   "properties": {
     "comment": "Top level table for each MCC dispatch rerun process. Note there will be one record for each dispatch interval",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"RUN_DATETIME\"]",
+    "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\"}",
     "phasor.package": "MCC_DISPATCH",
     "phasor.reports": "[[\"MCC\",\"CASESOLUTION\"]]",
     "phasor.table": "MCC_CASESOLUTION",
-    "phasor.temporal.entity": "[]",
-    "phasor.temporal.order": "[]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.column": "RUN_DATETIME",
-    "phasor.temporal.valid.kind": "instant",
     "phasor.time": "RUN_DATETIME",
     "phasor.visibility": "PUBLIC"
   },
@@ -48,13 +42,11 @@
           "doc": "5-minute Dispatch Run identifier",
           "id": 1,
           "name": "RUN_DATETIME",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         }
       ],
-      "identifier-field-ids": [
-        1
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     }

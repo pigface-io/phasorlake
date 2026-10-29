@@ -20,17 +20,12 @@
   "properties": {
     "comment": "BILLING_NMAS_TEST_RECVRY_TRK tracks the energy data used to allocate the test payment recovery over the recovery period. This Table may also be used for NSCAS and Type 1 transitional services procured by AEMO under the ISF framework during 2025 and prior to the implementation of all system changes. During this time descriptions in these tables may not be correct.",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"CONTRACTYEAR\",\"WEEKNO\",\"BILLRUNNO\",\"RECOVERY_CONTRACTYEAR\",\"RECOVERY_WEEKNO\",\"RECOVERY_BILLRUNNO\"]",
+    "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"NUMERIC(4,0)\",\"2\":\"NUMERIC(3,0)\",\"3\":\"NUMERIC(3,0)\",\"4\":\"NUMERIC(4,0)\",\"5\":\"NUMERIC(3,0)\",\"6\":\"NUMERIC(3,0)\"}",
     "phasor.package": "BILLING_RUN",
     "phasor.reports": "[[\"BILLING\",\"NMAS_TST_RECVRY_TRK\"]]",
     "phasor.table": "BILLING_NMAS_TST_RECVRY_TRK",
-    "phasor.temporal.entity": "[\"CONTRACTYEAR\",\"WEEKNO\",\"RECOVERY_CONTRACTYEAR\",\"RECOVERY_WEEKNO\",\"RECOVERY_BILLRUNNO\"]",
-    "phasor.temporal.order": "[\"BILLRUNNO\"]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.kind": "timeless",
     "phasor.visibility": "PUBLIC"
   },
   "refs": {
@@ -46,53 +41,46 @@
           "doc": "AEMO Contract Year number starting in week containing 1 January",
           "id": 1,
           "name": "CONTRACTYEAR",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(4, 0)"
         },
         {
           "doc": "Week no within the contract year. Week no 1 is the week containing 1 January",
           "id": 2,
           "name": "WEEKNO",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(3, 0)"
         },
         {
           "doc": "The current Billing RunNo for the week",
           "id": 3,
           "name": "BILLRUNNO",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(3, 0)"
         },
         {
           "doc": "AEMO Contract Year for energy data used in recovery calculation",
           "id": 4,
           "name": "RECOVERY_CONTRACTYEAR",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(4, 0)"
         },
         {
           "doc": "Week no for energy data used in recovery calculation",
           "id": 5,
           "name": "RECOVERY_WEEKNO",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(3, 0)"
         },
         {
           "doc": "Billing RunNo for energy data used in recovery calculation",
           "id": 6,
           "name": "RECOVERY_BILLRUNNO",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(3, 0)"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3,
-        4,
-        5,
-        6
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     }

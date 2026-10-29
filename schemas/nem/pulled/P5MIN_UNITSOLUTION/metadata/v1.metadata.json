@@ -20,18 +20,11 @@
   "properties": {
     "comment": "The five-minute predispatch (P5Min) is a MMS system providing projected dispatch for 12 Dispatch cycles (one hour). The 5-minute Predispatch cycle runs every 5-minutes to produce a dispatch and pricing schedule to a 5-minute resolution covering the next hour, a total of twelve periods.\nP5MIN_UNITSOLUTION shows the Unit results from the capacity evaluations for each period of the study.",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"RUN_DATETIME\",\"INTERVAL_DATETIME\",\"DUID\"]",
+    "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"VARCHAR(10)\",\"4\":\"VARCHAR(12)\",\"5\":\"NUMERIC(2,0)\",\"6\":\"NUMERIC(2,0)\",\"7\":\"NUMERIC(15,5)\",\"8\":\"NUMERIC(15,5)\",\"9\":\"NUMERIC(15,5)\",\"10\":\"NUMERIC(15,5)\",\"11\":\"NUMERIC(15,5)\",\"12\":\"NUMERIC(15,5)\",\"13\":\"NUMERIC(15,5)\",\"14\":\"NUMERIC(15,5)\",\"15\":\"NUMERIC(15,5)\",\"16\":\"NUMERIC(15,5)\",\"17\":\"NUMERIC(15,5)\",\"18\":\"NUMERIC(15,5)\",\"19\":\"NUMERIC(15,5)\",\"20\":\"NUMERIC(3,0)\",\"21\":\"NUMERIC(3,0)\",\"22\":\"NUMERIC(3,0)\",\"23\":\"NUMERIC(3,0)\",\"24\":\"NUMERIC(3,0)\",\"25\":\"NUMERIC(3,0)\",\"26\":\"NUMERIC(3,0)\",\"27\":\"NUMERIC(3,0)\",\"28\":\"TIMESTAMP(0)\",\"29\":\"NUMERIC(3,0)\",\"30\":\"NUMERIC(2,0)\",\"31\":\"NUMERIC(4,0)\",\"32\":\"NUMERIC(15,5)\",\"33\":\"NUMERIC(15,5)\",\"34\":\"NUMERIC(3,0)\",\"35\":\"NUMERIC(3,0)\",\"36\":\"NUMERIC(6,0)\",\"37\":\"NUMERIC(15,5)\",\"38\":\"NUMERIC(15,5)\",\"39\":\"NUMERIC(15,5)\",\"40\":\"NUMERIC(15,5)\",\"41\":\"NUMERIC(15,5)\",\"42\":\"NUMERIC(15,5)\"}",
     "phasor.reports": "[[\"P5MIN\",\"UNITSOLUTION\"]]",
     "phasor.table": "P5MIN_UNITSOLUTION",
-    "phasor.temporal.cutoff": "RUN_DATETIME",
-    "phasor.temporal.entity": "[\"DUID\",\"INTERVENTION\"]",
-    "phasor.temporal.order": "[\"RUN_DATETIME\",\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.column": "INTERVAL_DATETIME",
-    "phasor.temporal.valid.kind": "interval_end",
     "phasor.time": "INTERVAL_DATETIME",
     "phasor.visibility": "PUBLIC"
   },
@@ -48,21 +41,21 @@
           "doc": "Unique Timestamp Identifier for this study",
           "id": 1,
           "name": "RUN_DATETIME",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "The unique identifier for the interval within this study",
           "id": 2,
           "name": "INTERVAL_DATETIME",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Dispatchable unit identifier",
           "id": 3,
           "name": "DUID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -248,11 +241,7 @@
           "type": "decimal(3, 0)"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     },
@@ -262,7 +251,7 @@
           "doc": "Unique Timestamp Identifier for this study",
           "id": 1,
           "name": "RUN_DATETIME",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
@@ -276,14 +265,14 @@
           "doc": "The unique identifier for the interval within this study",
           "id": 2,
           "name": "INTERVAL_DATETIME",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Dispatchable unit identifier",
           "id": 3,
           "name": "DUID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -469,11 +458,7 @@
           "type": "decimal(3, 0)"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3
-      ],
+      "identifier-field-ids": [],
       "schema-id": 1,
       "type": "struct"
     },
@@ -483,7 +468,7 @@
           "doc": "Unique Timestamp Identifier for this study",
           "id": 1,
           "name": "RUN_DATETIME",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
@@ -497,14 +482,14 @@
           "doc": "The unique identifier for the interval within this study",
           "id": 2,
           "name": "INTERVAL_DATETIME",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Dispatchable unit identifier",
           "id": 3,
           "name": "DUID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -697,11 +682,7 @@
           "type": "decimal(4, 0)"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3
-      ],
+      "identifier-field-ids": [],
       "schema-id": 2,
       "type": "struct"
     },
@@ -711,7 +692,7 @@
           "doc": "Unique Timestamp Identifier for this study",
           "id": 1,
           "name": "RUN_DATETIME",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
@@ -725,14 +706,14 @@
           "doc": "The unique identifier for the interval within this study",
           "id": 2,
           "name": "INTERVAL_DATETIME",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Dispatchable unit identifier",
           "id": 3,
           "name": "DUID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -967,11 +948,7 @@
           "type": "decimal(15, 5)"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3
-      ],
+      "identifier-field-ids": [],
       "schema-id": 3,
       "type": "struct"
     },
@@ -981,7 +958,7 @@
           "doc": "Unique Timestamp Identifier for this study",
           "id": 1,
           "name": "RUN_DATETIME",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
@@ -995,14 +972,14 @@
           "doc": "The unique identifier for the interval within this study",
           "id": 2,
           "name": "INTERVAL_DATETIME",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Dispatchable unit identifier",
           "id": 3,
           "name": "DUID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -1237,11 +1214,7 @@
           "type": "decimal(15, 5)"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3
-      ],
+      "identifier-field-ids": [],
       "schema-id": 4,
       "type": "struct"
     },
@@ -1251,7 +1224,7 @@
           "doc": "Unique Timestamp Identifier for this study",
           "id": 1,
           "name": "RUN_DATETIME",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
@@ -1265,14 +1238,14 @@
           "doc": "The unique identifier for the interval within this study",
           "id": 2,
           "name": "INTERVAL_DATETIME",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Dispatchable unit identifier",
           "id": 3,
           "name": "DUID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -1542,11 +1515,7 @@
           "type": "decimal(15, 5)"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3
-      ],
+      "identifier-field-ids": [],
       "schema-id": 5,
       "type": "struct"
     },
@@ -1556,7 +1525,7 @@
           "doc": "Unique Timestamp Identifier for this study",
           "id": 1,
           "name": "RUN_DATETIME",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
@@ -1570,14 +1539,14 @@
           "doc": "The unique identifier for the interval within this study",
           "id": 2,
           "name": "INTERVAL_DATETIME",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Dispatchable unit identifier",
           "id": 3,
           "name": "DUID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -1847,11 +1816,7 @@
           "type": "decimal(15, 5)"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3
-      ],
+      "identifier-field-ids": [],
       "schema-id": 6,
       "type": "struct"
     }

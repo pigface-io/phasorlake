@@ -216,17 +216,6 @@ impl Registry {
             } = &r.status
         {
             let t = self.table(id);
-            if let Some(k) = t
-                .primary_key
-                .iter()
-                .find(|k| !irow.columns.contains(&k.as_str()))
-            {
-                return Err(ResolveError::MissingKey {
-                    table: t.name.clone(),
-                    schema: r.version,
-                    column: k.clone(),
-                });
-            }
             return Err(ResolveError::Deviates {
                 table: t.name.clone(),
                 schema: r.version,
@@ -323,27 +312,6 @@ impl Registry {
         d.expected = Some(expected.join(","));
         d.observed = Some(irow.columns.join(","));
         warnings.push(d);
-        let keys: Vec<&str> = t
-            .primary_key
-            .iter()
-            .map(String::as_str)
-            .filter(|k| !irow.columns.contains(k))
-            .collect();
-        if !keys.is_empty() {
-            warnings.push(
-                Diagnostic::warning(
-                    "schema.missing_key",
-                    Category::SCHEMA,
-                    format!(
-                        "This file of table {} lacks primary-key column(s) {}; its rows are kept with those columns null, and cannot be told apart by key.",
-                        t.name,
-                        keys.join(", ")
-                    ),
-                )
-                .with_table(t.name.clone())
-                .with_version(irow.version),
-            );
-        }
         Resolution {
             plan,
             status: Status::Deviates {
@@ -458,16 +426,13 @@ mod tests {
                 Cast::TimestampNanos {
                     offset_secs: 36_000
                 },
-                false
+                true
             )
         );
-        assert_eq!(route(&p.routes[1]), (Some(1), Cast::Utf8, false));
+        assert_eq!(route(&p.routes[1]), (Some(1), Cast::Utf8, true));
         assert_eq!(route(&p.routes[2]), (Some(2), Cast::Float64, true));
         assert!(p.missing.is_empty());
-        assert_eq!(
-            (p.key_columns.as_slice(), p.time_column),
-            (&[0, 1][..], Some(0))
-        );
+        assert_eq!(p.time_column, Some(0));
         // Strict mode takes it too, with the same plan.
         let strict = ResolveOptions {
             mode: Mode::Strict,
@@ -570,17 +535,15 @@ mod tests {
         ];
         let res = r.resolve(&scada(&five), opts).unwrap();
         assert_eq!(res.plan.routes[3].origin, Origin::Declared);
-        // A block without a key column: kept with a warning, or refused.
-        let keyless = ["SETTLEMENTDATE", "SCADAVALUE"];
-        let res = r.resolve(&scada(&keyless), opts).unwrap();
-        assert!(res.warnings.iter().any(|w| w.code == "schema.missing_key"));
-        assert!(
-            res.plan.arrow.field(1).is_nullable(),
-            "the key takes nulls here"
-        );
+        // A block without one of the table's columns: kept, its rows null
+        // there, or refused as deviating in strict mode. No column is a key.
+        let fewer = ["SETTLEMENTDATE", "SCADAVALUE"];
+        let res = r.resolve(&scada(&fewer), opts).unwrap();
+        assert!(res.warnings.iter().all(|w| w.code != "schema.missing_key"));
+        assert!(res.plan.arrow.field(1).is_nullable());
         assert!(!res.plan.fields.is_empty());
-        let e = r.resolve(&scada(&keyless), strict).unwrap_err();
-        assert!(matches!(e, ResolveError::MissingKey { ref column, .. } if column == "DUID"));
+        let e = r.resolve(&scada(&fewer), strict).unwrap_err();
+        assert!(matches!(e, ResolveError::Deviates { .. }), "{e}");
         // Another report pair of the table fits none of its runs.
         let mut t = unit_scada();
         t.report_pairs

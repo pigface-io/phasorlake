@@ -8,7 +8,6 @@ pub mod error;
 pub mod file;
 pub mod folders;
 pub mod model;
-pub mod temporal;
 pub mod validate;
 
 pub use error::SchemaFileError;
@@ -17,4 +16,3 @@ pub use model::{
     Column, ColumnId, LakeType, LoadMode, Market, MarketDef, Run, Table, TableSchema,
     TimestampFormat,
 };
-pub use temporal::{RoleOrigin, Temporal, ValidAxis};

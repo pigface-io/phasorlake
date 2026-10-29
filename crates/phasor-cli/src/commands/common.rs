@@ -5,7 +5,6 @@ use phasor_core::timetext;
 use phasor_core::{Diagnose, TimeRange, YearMonth};
 use phasor_pipeline::days_of;
 use phasor_registry::file_model::MarketDef;
-use phasor_registry::file_model::Table;
 use phasor_registry::{Market, Registry, TableId};
 
 use crate::cli::{TablesArg, WindowArgs};
@@ -173,27 +172,6 @@ pub fn request(verb: &str, sel: &Selection, w: Option<&Window>, def: &MarketDef)
             rfc3339(w.instants.1, def.utc_offset_secs)
         ),
         None => format!("{verb} {} {tables}", sel.kit),
-    }
-}
-
-/// A column's role in its table's temporal model: `entity`, `valid`, `order`,
-/// `order, cutoff`, `cutoff`, or none.
-pub fn role_of(t: &Table, name: &str) -> &'static str {
-    let tp = &t.temporal;
-    if tp.entity.iter().any(|e| e == name) {
-        "entity"
-    } else if tp.valid.column().is_some_and(|c| c == name) {
-        "valid"
-    } else if tp.order.iter().any(|o| o == name) {
-        if tp.cutoff.as_deref() == Some(name) {
-            "order, cutoff"
-        } else {
-            "order"
-        }
-    } else if tp.cutoff.as_deref() == Some(name) {
-        "cutoff"
-    } else {
-        ""
     }
 }
 

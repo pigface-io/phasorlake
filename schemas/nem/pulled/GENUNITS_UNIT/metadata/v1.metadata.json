@@ -20,19 +20,12 @@
   "properties": {
     "comment": "Physical units within a Gen Unit Set",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"GENSETID\",\"EFFECTIVEDATE\",\"VERSIONNO\",\"UNIT_GROUPING_LABEL\"]",
+    "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"VARCHAR(20)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"NUMERIC(6,0)\",\"4\":\"VARCHAR(20)\",\"5\":\"NUMERIC(10,0)\",\"6\":\"NUMERIC(8,3)\",\"7\":\"NUMERIC(8,3)\",\"8\":\"NUMERIC(1,0)\",\"9\":\"TIMESTAMP(0)\",\"10\":\"NUMERIC(8,3)\",\"11\":\"NUMERIC(15,5)\",\"12\":\"NUMERIC(8,3)\",\"13\":\"NUMERIC(8,3)\"}",
     "phasor.package": "PARTICIPANT_REGISTRATION",
     "phasor.reports": "[[\"PARTICIPANT_REGISTRATION\",\"GENUNITS_UNIT\"]]",
     "phasor.table": "GENUNITS_UNIT",
-    "phasor.temporal.cutoff": "LASTCHANGED",
-    "phasor.temporal.entity": "[\"GENSETID\",\"UNIT_GROUPING_LABEL\"]",
-    "phasor.temporal.order": "[\"VERSIONNO\",\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.column": "EFFECTIVEDATE",
-    "phasor.temporal.valid.kind": "from",
     "phasor.time": "EFFECTIVEDATE",
     "phasor.visibility": "PUBLIC"
   },
@@ -49,28 +42,28 @@
           "doc": "System wide unique Generating Set ID",
           "id": 1,
           "name": "GENSETID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "Effective Date of this detail record",
           "id": 2,
           "name": "EFFECTIVEDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Version with respect to the effective date",
           "id": 3,
           "name": "VERSIONNO",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(6, 0)"
         },
         {
           "doc": "Label of Physical Units within the station",
           "id": 4,
           "name": "UNIT_GROUPING_LABEL",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -137,12 +130,7 @@
           "type": "decimal(8, 3)"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3,
-        4
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     }

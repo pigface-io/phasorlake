@@ -20,18 +20,12 @@
   "properties": {
     "comment": "Carbon Dioxide Intensity Index publication tracking table",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"CONTRACTYEAR\",\"WEEKNO\"]",
+    "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"NUMERIC(4)\",\"2\":\"NUMERIC(3)\",\"3\":\"NUMERIC(3)\",\"4\":\"TIMESTAMP(0)\"}",
     "phasor.package": "BILLING_RUN",
     "phasor.reports": "[[\"BILLING\",\"BILLING_CO2E_PUBLICATION_TRK\"]]",
     "phasor.table": "BILLING_CO2E_PUBLICATION_TRK",
-    "phasor.temporal.cutoff": "LASTCHANGED",
-    "phasor.temporal.entity": "[\"CONTRACTYEAR\",\"WEEKNO\"]",
-    "phasor.temporal.order": "[\"BILLRUNNO\",\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.kind": "timeless",
     "phasor.time": "LASTCHANGED",
     "phasor.visibility": "PUBLIC"
   },
@@ -48,15 +42,15 @@
           "doc": "Billing contract year",
           "id": 1,
           "name": "CONTRACTYEAR",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(4, 0)"
         },
         {
           "doc": "Billing week no",
           "id": 2,
           "name": "WEEKNO",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(3, 0)"
         },
         {
           "doc": "Billing run no",
@@ -73,10 +67,7 @@
           "type": "timestamptz"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     }

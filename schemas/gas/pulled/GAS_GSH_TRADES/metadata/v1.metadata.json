@@ -20,19 +20,13 @@
   "properties": {
     "comment": "Provides participants (buyer and seller) a confirmation whenever a trade is executed through auto matching of bids and offers or by off-market trades. Also provides participants with a list of all their future trades when triggered daily after the end of the trades for the current day",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"LOCATION\",\"PRODUCT\",\"TRADE_DATE\",\"TRADE_PRICE\",\"TYPE\"]",
+    "phasor.format": "5",
     "phasor.load": "append",
     "phasor.market": "gas",
     "phasor.model-types": "{\"1\":\"DATE\",\"3\":\"VARCHAR2(80)\",\"4\":\"VARCHAR2(100)\",\"5\":\"NUMBER(18,8)\",\"6\":\"NUMBER(18,8)\",\"7\":\"DATE\",\"8\":\"DATE\",\"9\":\"VARCHAR2(50)\"}",
     "phasor.offset": "+10:00",
     "phasor.reports": "[[\"GSH\",\"GAS_TRADES\"]]",
     "phasor.table": "GAS_GSH_TRADES",
-    "phasor.temporal.entity": "[\"LOCATION\",\"PRODUCT\",\"TRADE_PRICE\",\"TYPE\"]",
-    "phasor.temporal.order": "[]",
-    "phasor.temporal.origin": "hand",
-    "phasor.temporal.valid.column": "TRADE_DATE",
-    "phasor.temporal.valid.kind": "instant",
     "phasor.time": "TRADE_DATE",
     "phasor.visibility": "PUBLIC"
   },
@@ -49,7 +43,7 @@
           "doc": "Date and time the trade is executed",
           "id": 1,
           "name": "TRADE_DATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
@@ -108,9 +102,7 @@
           "type": "string"
         }
       ],
-      "identifier-field-ids": [
-        1
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     }

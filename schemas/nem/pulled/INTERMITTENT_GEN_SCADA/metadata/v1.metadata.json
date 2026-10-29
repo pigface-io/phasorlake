@@ -20,17 +20,11 @@
   "properties": {
     "comment": "INTERMITTENT_GEN_SCADA provides the SCADA Availability for every intermittent generating unit, including Elements Available (wind turbines/solar inverters) and Local Limit",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[]",
+    "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"VARCHAR(20)\",\"3\":\"VARCHAR(20)\",\"4\":\"NUMERIC(15,5)\",\"5\":\"VARCHAR(20)\",\"6\":\"TIMESTAMP(0)\"}",
     "phasor.reports": "[[\"DEMAND\",\"INTERMITTENT_GEN_SCADA\"]]",
     "phasor.table": "INTERMITTENT_GEN_SCADA",
-    "phasor.temporal.cutoff": "LASTCHANGED",
-    "phasor.temporal.entity": "[]",
-    "phasor.temporal.order": "[\"RUN_DATETIME\",\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.kind": "timeless",
     "phasor.time": "RUN_DATETIME",
     "phasor.visibility": "PUBLIC"
   },

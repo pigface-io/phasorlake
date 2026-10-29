@@ -20,20 +20,13 @@
   "properties": {
     "comment": "Operating Status of Participant",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"EFFECTIVEDATE\",\"MARKET_ID\",\"PARTICIPANT_ID\",\"VERSION_DATETIME\"]",
+    "phasor.format": "5",
     "phasor.load": "snapshot",
     "phasor.market": "gas",
     "phasor.model-types": "{\"1\":\"VARCHAR2(20)\",\"2\":\"VARCHAR2(20)\",\"3\":\"DATE\",\"4\":\"DATE\",\"5\":\"VARCHAR2(30)\",\"6\":\"DATE\",\"7\":\"DATE\"}",
     "phasor.offset": "+10:00",
     "phasor.reports": "[[\"GSH\",\"PARTICIPANT_OPSTATE\"]]",
     "phasor.table": "GSH_PARTICIPANT_OPSTATE",
-    "phasor.temporal.cutoff": "LASTCHANGED",
-    "phasor.temporal.entity": "[\"MARKET_ID\",\"PARTICIPANT_ID\"]",
-    "phasor.temporal.order": "[\"VERSION_DATETIME\",\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "hand",
-    "phasor.temporal.valid.column": "EFFECTIVEDATE",
-    "phasor.temporal.valid.kind": "instant",
     "phasor.time": "EFFECTIVEDATE",
     "phasor.visibility": "PUBLIC"
   },
@@ -50,28 +43,28 @@
           "doc": "Unique Market ID",
           "id": 1,
           "name": "MARKET_ID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "Unique Participant ID for this market",
           "id": 2,
           "name": "PARTICIPANT_ID",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(4, 0)"
         },
         {
           "doc": "The Effective date of the Participant Operating State",
           "id": 3,
           "name": "EFFECTIVEDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Versioning with EffectiveDate",
           "id": 4,
           "name": "VERSION_DATETIME",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
@@ -96,12 +89,7 @@
           "type": "timestamptz"
         }
       ],
-      "identifier-field-ids": [
-        3,
-        1,
-        2,
-        4
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     }

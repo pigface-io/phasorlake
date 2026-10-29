@@ -20,19 +20,12 @@
   "properties": {
     "comment": "Tracks the evolution of pricing regimes applied to the suspended region and from which Dispatch Interval",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"SUSPENSION_ID\",\"REGIONID\",\"START_INTERVAL\"]",
+    "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"VARCHAR(20)\",\"2\":\"VARCHAR(20)\",\"3\":\"TIMESTAMP(0)\",\"4\":\"TIMESTAMP(0)\",\"5\":\"VARCHAR(20)\",\"6\":\"TIMESTAMP(0)\"}",
     "phasor.package": "FORCE_MAJEURE",
     "phasor.reports": "[[\"FORCE_MAJEURE\",\"MARKET_SUSPEND_REGIME_SUM\"]]",
     "phasor.table": "MARKET_SUSPEND_REGIME_SUM",
-    "phasor.temporal.cutoff": "LASTCHANGED",
-    "phasor.temporal.entity": "[\"SUSPENSION_ID\",\"REGIONID\"]",
-    "phasor.temporal.order": "[\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.column": "START_INTERVAL",
-    "phasor.temporal.valid.kind": "instant",
     "phasor.time": "LASTCHANGED",
     "phasor.visibility": "PUBLIC"
   },
@@ -49,21 +42,21 @@
           "doc": "Unique identifier for this suspension event",
           "id": 1,
           "name": "SUSPENSION_ID",
-          "required": true,
+          "required": false,
           "type": "decimal(13, 1)"
         },
         {
           "doc": "Region(s) covered by this evolution of the event",
           "id": 2,
           "name": "REGIONID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "First Dispatch interval from which this regime applies",
           "id": 3,
           "name": "START_INTERVAL",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
@@ -88,11 +81,7 @@
           "type": "timestamptz"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     }

@@ -20,19 +20,12 @@
   "properties": {
     "comment": "GENCONSETTRK assists in determining the correct version of a generic constraint set that has been invoked in GENCONSETINVOKE.",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"GENCONSETID\",\"EFFECTIVEDATE\",\"VERSIONNO\"]",
+    "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"VARCHAR(20)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"NUMERIC(3,0)\",\"4\":\"VARCHAR(256)\",\"5\":\"VARCHAR(15)\",\"6\":\"TIMESTAMP(0)\",\"7\":\"TIMESTAMP(0)\",\"8\":\"VARCHAR(64)\",\"9\":\"VARCHAR(256)\",\"10\":\"VARCHAR(1)\",\"11\":\"VARCHAR(256)\"}",
     "phasor.package": "GENERIC_CONSTRAINT",
     "phasor.reports": "[[\"GENCONSETTRK\",\"\"],[\"GENCONSETTRK\",\"NULL\"]]",
     "phasor.table": "GENCONSETTRK",
-    "phasor.temporal.cutoff": "LASTCHANGED",
-    "phasor.temporal.entity": "[\"GENCONSETID\"]",
-    "phasor.temporal.order": "[\"VERSIONNO\",\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.column": "EFFECTIVEDATE",
-    "phasor.temporal.valid.kind": "from",
     "phasor.time": "EFFECTIVEDATE",
     "phasor.visibility": "PUBLIC"
   },
@@ -49,22 +42,22 @@
           "doc": "Unique ID for the Constraint Set",
           "id": 1,
           "name": "GENCONSETID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "Date this record becomes effective",
           "id": 2,
           "name": "EFFECTIVEDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Version no of the record for the given effective date",
           "id": 3,
           "name": "VERSIONNO",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(3, 0)"
         },
         {
           "doc": "Description of the constraint",
@@ -123,11 +116,7 @@
           "type": "string"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     },
@@ -137,22 +126,22 @@
           "doc": "Unique ID for the Constraint Set",
           "id": 1,
           "name": "GENCONSETID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "Date this record becomes effective",
           "id": 2,
           "name": "EFFECTIVEDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Version no of the record for the given effective date",
           "id": 3,
           "name": "VERSIONNO",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(3, 0)"
         },
         {
           "doc": "Description of the constraint",
@@ -211,11 +200,7 @@
           "type": "string"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3
-      ],
+      "identifier-field-ids": [],
       "schema-id": 1,
       "type": "struct"
     }

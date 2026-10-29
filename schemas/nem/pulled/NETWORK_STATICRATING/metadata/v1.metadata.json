@@ -20,20 +20,12 @@
   "properties": {
     "comment": "NETWORK_STATICRATING lists the static rating values that will apply for a Rating Application ID.\nThis data does not provide information for when the rating actually applies in the NEM. This is dependent on the Rating Application definition.\nFor information on the Rating Applications please refer to the information published on the AEMO website under the topic \"Transmission Equipment Ratings\". The Rating Applications are referred to as Alternate Value Application Ratings.\nRatings that normally use dynamic values will also have static rating values defined. These are used as a fallback if the dynamic rating fails.",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"SUBSTATIONID\",\"EQUIPMENTTYPE\",\"EQUIPMENTID\",\"RATINGLEVEL\",\"APPLICATIONID\",\"VALIDFROM\"]",
+    "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"VARCHAR(30)\",\"2\":\"VARCHAR(10)\",\"3\":\"VARCHAR(30)\",\"4\":\"VARCHAR(10)\",\"5\":\"VARCHAR(20)\",\"6\":\"TIMESTAMP(0)\",\"7\":\"TIMESTAMP(0)\",\"8\":\"NUMERIC(16,6)\",\"9\":\"TIMESTAMP(0)\"}",
     "phasor.package": "NETWORK",
     "phasor.reports": "[[\"NETWORK\",\"STATICRATING\"]]",
     "phasor.table": "NETWORK_STATICRATING",
-    "phasor.temporal.cutoff": "LASTCHANGED",
-    "phasor.temporal.entity": "[\"SUBSTATIONID\",\"EQUIPMENTTYPE\",\"EQUIPMENTID\",\"RATINGLEVEL\",\"APPLICATIONID\"]",
-    "phasor.temporal.order": "[\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.column": "VALIDFROM",
-    "phasor.temporal.valid.kind": "from",
-    "phasor.temporal.valid.until": "VALIDTO",
     "phasor.time": "LASTCHANGED",
     "phasor.visibility": "PUBLIC"
   },
@@ -50,42 +42,42 @@
           "doc": "The substation the equipment is located at",
           "id": 1,
           "name": "SUBSTATIONID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "The type of equipment. Valid values are:\nLINE = Line\nTRANS = Transformer\nCB = Circuit breaker\nISOL = Isolator\nCAP = Capacitor\nREAC = Reactor\nUNIT = Unit",
           "id": 2,
           "name": "EQUIPMENTTYPE",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "A unique identifier for this type of equipment at this substation",
           "id": 3,
           "name": "EQUIPMENTID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "The rating level of the value used, one of:\nNORM = Continuous rating value. Applied under pre-contingent conditions.\nEMER = Continuous rating value. Applied under pre-contingent conditions\nLDSH = Load Shedding",
           "id": 4,
           "name": "RATINGLEVEL",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "The applicationid which defines the application timeframes of this rating.",
           "id": 5,
           "name": "APPLICATIONID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "The date that this record is applies from (inclusive)",
           "id": 6,
           "name": "VALIDFROM",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
@@ -110,14 +102,7 @@
           "type": "timestamptz"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3,
-        4,
-        5,
-        6
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     }

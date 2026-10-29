@@ -20,18 +20,12 @@
   "properties": {
     "comment": "BILLING_NMAS_TEST_RECVRY_RBF sets out the NSCAS/SRAS Testing Payment recovery data for the posted billing week.",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"CONTRACTYEAR\",\"WEEKNO\",\"BILLRUNNO\",\"SERVICE\",\"CONTRACTID\",\"REGIONID\"]",
+    "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"NUMERIC(4,0)\",\"2\":\"NUMERIC(3,0)\",\"3\":\"NUMERIC(3,0)\",\"4\":\"VARCHAR(10)\",\"5\":\"VARCHAR(10)\",\"6\":\"VARCHAR(10)\",\"7\":\"NUMERIC(18,8)\",\"8\":\"NUMERIC(18,8)\",\"9\":\"NUMERIC(18,8)\",\"10\":\"TIMESTAMP(0)\"}",
     "phasor.package": "BILLING_RUN",
     "phasor.reports": "[[\"BILLING\",\"NMAS_TST_RECVRY_RBF\"]]",
     "phasor.table": "BILLING_NMAS_TST_RECVRY_RBF",
-    "phasor.temporal.cutoff": "LASTCHANGED",
-    "phasor.temporal.entity": "[\"CONTRACTYEAR\",\"WEEKNO\",\"SERVICE\",\"CONTRACTID\",\"REGIONID\"]",
-    "phasor.temporal.order": "[\"BILLRUNNO\",\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.kind": "timeless",
     "phasor.time": "LASTCHANGED",
     "phasor.visibility": "PUBLIC"
   },
@@ -48,42 +42,42 @@
           "doc": "AEMO Contract Year number starting in week containing 1 January",
           "id": 1,
           "name": "CONTRACTYEAR",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(4, 0)"
         },
         {
           "doc": "Week no within the contract year. Week no 1 is the week containing 1 January",
           "id": 2,
           "name": "WEEKNO",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(3, 0)"
         },
         {
           "doc": "The current Billing RunNo for the week",
           "id": 3,
           "name": "BILLRUNNO",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(3, 0)"
         },
         {
           "doc": "The type of NSCAS service. Current value values are:\n- REACTIVE\n- LOADSHED",
           "id": 4,
           "name": "SERVICE",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "The NMAS Contract Id",
           "id": 5,
           "name": "CONTRACTID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "The region from where the amount is recovered",
           "id": 6,
           "name": "REGIONID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -115,14 +109,7 @@
           "type": "timestamptz"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3,
-        4,
-        5,
-        6
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     }

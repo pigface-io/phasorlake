@@ -20,18 +20,12 @@
   "properties": {
     "comment": "MARKETSUSREGION  is obsolete from 2017 End of Year DM4.27 Release. \nMARKETSUSREGION sets out a regions affected by a market suspension.",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"SUSPENSIONID\",\"REGIONID\"]",
+    "phasor.format": "5",
     "phasor.load": "snapshot",
     "phasor.model-types": "{\"1\":\"VARCHAR(10)\",\"2\":\"VARCHAR(10)\",\"3\":\"TIMESTAMP(0)\"}",
     "phasor.package": "HISTORICAL TABLES",
     "phasor.reports": "[[\"FORCE_MAJEURE\",\"MARKETSUSREGION\"]]",
     "phasor.table": "MARKETSUSREGION",
-    "phasor.temporal.cutoff": "LASTCHANGED",
-    "phasor.temporal.entity": "[\"SUSPENSIONID\",\"REGIONID\"]",
-    "phasor.temporal.order": "[\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.kind": "timeless",
     "phasor.visibility": "PUBLIC"
   },
   "refs": {
@@ -47,14 +41,14 @@
           "doc": "Unique identifier of suspension",
           "id": 1,
           "name": "SUSPENSIONID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "Differentiates this region from all other regions",
           "id": 2,
           "name": "REGIONID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -65,10 +59,7 @@
           "type": "timestamptz"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     }

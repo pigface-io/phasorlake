@@ -20,19 +20,12 @@
   "properties": {
     "comment": "SPDCONNECTIONPOINTCONSTRAINT sets out details of connections point constraints issued in dispatch, predispatch and STPASA.",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"CONNECTIONPOINTID\",\"EFFECTIVEDATE\",\"VERSIONNO\",\"GENCONID\",\"BIDTYPE\"]",
+    "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"VARCHAR(12)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"NUMERIC(3,0)\",\"4\":\"VARCHAR(20)\",\"5\":\"NUMERIC(16,6)\",\"6\":\"TIMESTAMP(0)\",\"7\":\"VARCHAR(12)\"}",
     "phasor.package": "GENERIC_CONSTRAINT",
     "phasor.reports": "[[\"SPDCPC\",\"\"],[\"SPDCPC\",\"NULL\"]]",
     "phasor.table": "SPDCONNECTIONPOINTCONSTRAINT",
-    "phasor.temporal.cutoff": "LASTCHANGED",
-    "phasor.temporal.entity": "[\"CONNECTIONPOINTID\",\"GENCONID\",\"BIDTYPE\"]",
-    "phasor.temporal.order": "[\"VERSIONNO\",\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.column": "EFFECTIVEDATE",
-    "phasor.temporal.valid.kind": "from",
     "phasor.time": "EFFECTIVEDATE",
     "phasor.visibility": "PUBLIC"
   },
@@ -49,28 +42,28 @@
           "doc": "Connection Point Identifier",
           "id": 1,
           "name": "CONNECTIONPOINTID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "Effective date of this record",
           "id": 2,
           "name": "EFFECTIVEDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Version no of this record for the effective date",
           "id": 3,
           "name": "VERSIONNO",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(3, 0)"
         },
         {
           "doc": "Generic Constraint Identifier",
           "id": 4,
           "name": "GENCONID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -91,17 +84,11 @@
           "doc": "Bid Type Identifier; one of (RAISE6SEC, RAISE60SEC, RAISE5MIN, LOWER6SEC, LOWER60SEC, LOWER5MIN, RAISEREG, LOWERREG)",
           "id": 7,
           "name": "BIDTYPE",
-          "required": true,
+          "required": false,
           "type": "string"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3,
-        4,
-        7
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     }

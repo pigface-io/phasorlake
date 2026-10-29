@@ -20,19 +20,12 @@
   "properties": {
     "comment": "Unconstrained Intermittent Generation Forecasts (UIGF) for Dispatch",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"RUN_DATETIME\",\"DUID\",\"OFFERDATETIME\",\"INTERVAL_DATETIME\",\"ORIGIN\",\"FORECAST_PRIORITY\"]",
+    "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"VARCHAR(20)\",\"3\":\"VARCHAR(20)\",\"4\":\"NUMERIC(10,0)\",\"5\":\"TIMESTAMP(0)\",\"6\":\"TIMESTAMP(0)\",\"7\":\"NUMERIC(18,8)\",\"8\":\"NUMERIC(18,8)\",\"9\":\"NUMERIC(18,8)\",\"10\":\"NUMERIC(18,8)\"}",
     "phasor.package": "DEMAND_FORECASTS",
     "phasor.reports": "[[\"DEMAND\",\"INTERMITTENT_DS_PRED\"]]",
     "phasor.table": "INTERMITTENT_DS_PRED",
-    "phasor.temporal.cutoff": "RUN_DATETIME",
-    "phasor.temporal.entity": "[\"DUID\",\"ORIGIN\",\"FORECAST_PRIORITY\"]",
-    "phasor.temporal.order": "[\"RUN_DATETIME\",\"OFFERDATETIME\"]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.column": "INTERVAL_DATETIME",
-    "phasor.temporal.valid.kind": "interval_end",
     "phasor.time": "INTERVAL_DATETIME",
     "phasor.visibility": "PUBLIC"
   },
@@ -49,42 +42,42 @@
           "doc": "Date and Time when the forecast applies (dispatch interval ending)",
           "id": 1,
           "name": "RUN_DATETIME",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "DUID (or Area for non-scheduled) where this forecast applies",
           "id": 2,
           "name": "DUID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "Origin of this forecast (PARTICIPANTID, AWEFS/ASEFS, or another vendor)",
           "id": 3,
           "name": "ORIGIN",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "Unsuppressed forecasts with higher priority values are used in Dispatch in preference to unsuppressed forecasts with lower priority values",
           "id": 4,
           "name": "FORECAST_PRIORITY",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(10, 0)"
         },
         {
           "doc": "Date and Time when this forecast submission was loaded",
           "id": 5,
           "name": "OFFERDATETIME",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Date and Time when the forecast applies (dispatch interval ending)",
           "id": 6,
           "name": "INTERVAL_DATETIME",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
@@ -116,14 +109,7 @@
           "type": "decimal(18, 8)"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        5,
-        6,
-        3,
-        4
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     },
@@ -133,43 +119,43 @@
           "doc": "Date and Time when the forecast applies (dispatch interval ending)",
           "id": 1,
           "name": "RUN_DATETIME",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "DUID (or Area for non-scheduled) where this forecast applies",
           "id": 2,
           "name": "DUID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "Date and Time when this forecast submission was loaded",
           "id": 5,
           "name": "OFFERDATETIME",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Date and Time when the forecast applies (dispatch interval ending)",
           "id": 6,
           "name": "INTERVAL_DATETIME",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Origin of this forecast (PARTICIPANTID, AWEFS/ASEFS, or another vendor)",
           "id": 3,
           "name": "ORIGIN",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "Unsuppressed forecasts with higher priority values are used in Dispatch in preference to unsuppressed forecasts with lower priority values",
           "id": 4,
           "name": "FORECAST_PRIORITY",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(10, 0)"
         },
         {
           "doc": "Forecast MW value for this interval_DateTime",
@@ -200,14 +186,7 @@
           "type": "decimal(18, 8)"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        5,
-        6,
-        3,
-        4
-      ],
+      "identifier-field-ids": [],
       "schema-id": 1,
       "type": "struct"
     }

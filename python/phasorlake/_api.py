@@ -75,7 +75,7 @@ def table(name: str) -> Table:
         name: The table's name (`DISPATCHPRICE`), or its report pair (`DISPATCH.PRICE`).
 
     Returns:
-        The table's roles, key, columns and its lake schema.
+        The table's load mode, time column, columns and its lake schema.
 
     Raises:
         PhasorError: No table has that name (`schema.unknown_table`).
@@ -86,9 +86,7 @@ def table(name: str) -> Table:
         market=t["market"],
         description=t["description"],
         load_mode=t["load_mode"],
-        key=t["key"],
         time_column=t["time_column"],
-        roles=t["roles"],
         columns=t["columns"],
         # The native schema speaks the Arrow C data interface, which pyarrow's stubs do not name.
         schema=pa.schema(cast("Iterable[pa.Field[pa.DataType]]", t["schema"])),

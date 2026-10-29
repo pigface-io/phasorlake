@@ -20,19 +20,12 @@
   "properties": {
     "comment": "PREDISPATCHPRICESENSITIVITIES sets out the sensitivity prices for each region by period.",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"REGIONID\",\"DATETIME\"]",
+    "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"VARCHAR(20)\",\"2\":\"NUMERIC(3,0)\",\"3\":\"VARCHAR(10)\",\"4\":\"VARCHAR(20)\",\"5\":\"NUMERIC(2,0)\",\"6\":\"NUMERIC(15,5)\",\"7\":\"NUMERIC(15,5)\",\"8\":\"NUMERIC(15,5)\",\"9\":\"NUMERIC(15,5)\",\"10\":\"NUMERIC(15,5)\",\"11\":\"NUMERIC(15,5)\",\"12\":\"NUMERIC(15,5)\",\"13\":\"NUMERIC(15,5)\",\"14\":\"NUMERIC(15,5)\",\"15\":\"NUMERIC(15,5)\",\"16\":\"NUMERIC(15,5)\",\"17\":\"NUMERIC(15,5)\",\"18\":\"NUMERIC(15,5)\",\"19\":\"NUMERIC(15,5)\",\"20\":\"NUMERIC(15,5)\",\"21\":\"NUMERIC(15,5)\",\"22\":\"NUMERIC(15,5)\",\"23\":\"NUMERIC(15,5)\",\"24\":\"NUMERIC(15,5)\",\"25\":\"NUMERIC(15,5)\",\"26\":\"NUMERIC(15,5)\",\"27\":\"NUMERIC(15,5)\",\"28\":\"NUMERIC(15,5)\",\"29\":\"NUMERIC(15,5)\",\"30\":\"NUMERIC(15,5)\",\"31\":\"NUMERIC(15,5)\",\"32\":\"NUMERIC(15,5)\",\"33\":\"NUMERIC(15,5)\",\"34\":\"TIMESTAMP(0)\",\"35\":\"TIMESTAMP(0)\",\"36\":\"NUMERIC(15,5)\",\"37\":\"NUMERIC(15,5)\",\"38\":\"NUMERIC(15,5)\",\"39\":\"NUMERIC(15,5)\",\"40\":\"NUMERIC(15,5)\",\"41\":\"NUMERIC(15,5)\",\"42\":\"NUMERIC(15,5)\",\"43\":\"NUMERIC(1,0)\",\"44\":\"NUMERIC(15,5)\",\"45\":\"NUMERIC(15,5)\",\"46\":\"NUMERIC(15,5)\",\"47\":\"NUMERIC(15,5)\",\"48\":\"NUMERIC(15,5)\",\"49\":\"NUMERIC(15,5)\",\"50\":\"NUMERIC(15,5)\",\"51\":\"NUMERIC(15,5)\"}",
     "phasor.package": "PRE_DISPATCH",
     "phasor.reports": "[[\"PREDISPATCH\",\"PRICESENSITIVITIES\"]]",
     "phasor.table": "PREDISPATCHPRICESENSITIVITIES",
-    "phasor.temporal.cutoff": "LASTCHANGED",
-    "phasor.temporal.entity": "[\"REGIONID\",\"INTERVENTION\"]",
-    "phasor.temporal.order": "[\"PREDISPATCHSEQNO\",\"RUNNO\",\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.column": "DATETIME",
-    "phasor.temporal.valid.kind": "interval_end",
     "phasor.time": "DATETIME",
     "phasor.visibility": "PUBLIC"
   },
@@ -63,7 +56,7 @@
           "doc": "Unique region identifier",
           "id": 3,
           "name": "REGIONID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -287,7 +280,7 @@
           "doc": "Period date and time",
           "id": 35,
           "name": "DATETIME",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
@@ -403,10 +396,7 @@
           "type": "decimal(15, 5)"
         }
       ],
-      "identifier-field-ids": [
-        3,
-        35
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     },
@@ -430,7 +420,7 @@
           "doc": "Unique region identifier",
           "id": 3,
           "name": "REGIONID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -647,7 +637,7 @@
           "doc": "Period date and time",
           "id": 35,
           "name": "DATETIME",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
@@ -770,10 +760,7 @@
           "type": "decimal(15, 5)"
         }
       ],
-      "identifier-field-ids": [
-        3,
-        35
-      ],
+      "identifier-field-ids": [],
       "schema-id": 1,
       "type": "struct"
     }

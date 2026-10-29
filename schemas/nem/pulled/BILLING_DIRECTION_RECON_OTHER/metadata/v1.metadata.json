@@ -20,17 +20,12 @@
   "properties": {
     "comment": "Billing reconciliation result table for both provisional and final directions",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"CONTRACTYEAR\",\"WEEKNO\",\"BILLRUNNO\",\"DIRECTION_ID\",\"REGIONID\"]",
+    "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"NUMERIC(4)\",\"2\":\"NUMERIC(3)\",\"3\":\"NUMERIC(3)\",\"4\":\"VARCHAR(20)\",\"5\":\"VARCHAR(20)\",\"6\":\"VARCHAR(200)\",\"7\":\"VARCHAR(20)\",\"8\":\"TIMESTAMP(0)\",\"9\":\"TIMESTAMP(0)\",\"10\":\"TIMESTAMP(0)\",\"11\":\"TIMESTAMP(0)\",\"12\":\"NUMERIC(18,8)\",\"13\":\"NUMERIC(18,8)\",\"14\":\"NUMERIC(18,8)\",\"15\":\"NUMERIC(18,8)\",\"16\":\"NUMERIC(18,8)\",\"17\":\"NUMERIC(18,8)\",\"18\":\"NUMERIC(18,8)\",\"19\":\"NUMERIC(18,8)\",\"20\":\"NUMERIC(18,8)\",\"21\":\"VARCHAR(20)\"}",
     "phasor.package": "BILLING_RUN",
     "phasor.reports": "[[\"BILLING\",\"BILLING_DIRECTION_RECON_OTHER\"]]",
     "phasor.table": "BILLING_DIRECTION_RECON_OTHER",
-    "phasor.temporal.entity": "[\"CONTRACTYEAR\",\"WEEKNO\",\"DIRECTION_ID\",\"REGIONID\"]",
-    "phasor.temporal.order": "[\"BILLRUNNO\"]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.kind": "timeless",
     "phasor.time": "DIRECTION_START_DATE",
     "phasor.visibility": "PUBLIC"
   },
@@ -47,35 +42,35 @@
           "doc": "Billing contract year",
           "id": 1,
           "name": "CONTRACTYEAR",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(4, 0)"
         },
         {
           "doc": "Billing week no",
           "id": 2,
           "name": "WEEKNO",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(3, 0)"
         },
         {
           "doc": "Billing run no",
           "id": 3,
           "name": "BILLRUNNO",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(3, 0)"
         },
         {
           "doc": "Direction identifier",
           "id": 4,
           "name": "DIRECTION_ID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "Region Identifier",
           "id": 5,
           "name": "REGIONID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -170,13 +165,7 @@
           "type": "decimal(18, 8)"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3,
-        4,
-        5
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     },
@@ -186,35 +175,35 @@
           "doc": "Billing contract year",
           "id": 1,
           "name": "CONTRACTYEAR",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(4, 0)"
         },
         {
           "doc": "Billing week no",
           "id": 2,
           "name": "WEEKNO",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(3, 0)"
         },
         {
           "doc": "Billing run no",
           "id": 3,
           "name": "BILLRUNNO",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(3, 0)"
         },
         {
           "doc": "Direction identifier",
           "id": 4,
           "name": "DIRECTION_ID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "Region Identifier",
           "id": 5,
           "name": "REGIONID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -330,13 +319,7 @@
           "type": "string"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3,
-        4,
-        5
-      ],
+      "identifier-field-ids": [],
       "schema-id": 1,
       "type": "struct"
     }

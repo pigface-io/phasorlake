@@ -20,18 +20,12 @@
   "properties": {
     "comment": "Parent record for Voltage Instructions (MVAr Dispatch). 'SIGNAL' records will have no children; 'INSTRUCTION' records will have children",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"RUN_DATETIME\",\"VERSION_DATETIME\"]",
+    "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"VARCHAR(20)\",\"3\":\"TIMESTAMP(0)\",\"4\":\"TIMESTAMP(0)\",\"5\":\"VARCHAR(60)\",\"6\":\"VARCHAR(60)\",\"7\":\"VARCHAR(60)\",\"8\":\"VARCHAR(100)\",\"9\":\"TIMESTAMP(0)\",\"10\":\"TIMESTAMP(0)\"}",
     "phasor.package": "VOLTAGE_INSTRUCTIONS",
     "phasor.reports": "[[\"VOLTAGE_INSTRUCTION\",\"TRACK\"]]",
     "phasor.table": "VOLTAGE_INSTRUCTION_TRK",
-    "phasor.temporal.entity": "[]",
-    "phasor.temporal.order": "[\"VERSION_DATETIME\"]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.column": "RUN_DATETIME",
-    "phasor.temporal.valid.kind": "instant",
     "phasor.time": "RUN_DATETIME",
     "phasor.visibility": "PUBLIC"
   },
@@ -48,7 +42,7 @@
           "doc": "MVAr Interval - a timestamp of when instructions issued",
           "id": 1,
           "name": "RUN_DATETIME",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
@@ -62,7 +56,7 @@
           "doc": "Datetime the file was published by VDS - Versions differ from Run_DateTime only for Supplemental runs",
           "id": 3,
           "name": "VERSION_DATETIME",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
@@ -115,10 +109,7 @@
           "type": "timestamptz"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        3
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     }

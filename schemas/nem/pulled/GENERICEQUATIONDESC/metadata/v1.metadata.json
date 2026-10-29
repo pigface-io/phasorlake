@@ -20,18 +20,12 @@
   "properties": {
     "comment": "GENERICEQUATIONDESC defines a generic equation identifier with a description. The formulation of the generic equation is detailed in GENERICEQUATIONRHS.",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"EQUATIONID\"]",
+    "phasor.format": "5",
     "phasor.load": "snapshot",
     "phasor.model-types": "{\"1\":\"VARCHAR(20)\",\"2\":\"VARCHAR(256)\",\"3\":\"TIMESTAMP(0)\",\"4\":\"VARCHAR(64)\",\"5\":\"VARCHAR(128)\",\"6\":\"VARCHAR(64)\",\"7\":\"VARCHAR(256)\",\"8\":\"VARCHAR(256)\",\"9\":\"VARCHAR(256)\"}",
     "phasor.package": "GENERIC_CONSTRAINT",
     "phasor.reports": "[[\"GEQDESC\",\"\"],[\"GEQDESC\",\"NULL\"]]",
     "phasor.table": "GENERICEQUATIONDESC",
-    "phasor.temporal.cutoff": "LASTCHANGED",
-    "phasor.temporal.entity": "[\"EQUATIONID\"]",
-    "phasor.temporal.order": "[\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.kind": "timeless",
     "phasor.visibility": "PUBLIC"
   },
   "refs": {
@@ -47,7 +41,7 @@
           "doc": "Generic Equation Identifier",
           "id": 1,
           "name": "EQUATIONID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -107,9 +101,7 @@
           "type": "string"
         }
       ],
-      "identifier-field-ids": [
-        1
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     }

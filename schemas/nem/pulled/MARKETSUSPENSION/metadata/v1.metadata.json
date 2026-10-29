@@ -20,18 +20,12 @@
   "properties": {
     "comment": "MARKETSUSPENSION is obsolete from 2017 End of Year DM4.27 Release. \nMARKETSUSPENSION sets out a start and end periods of any market suspension and the reason.",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"SUSPENSIONID\"]",
+    "phasor.format": "5",
     "phasor.load": "snapshot",
     "phasor.model-types": "{\"1\":\"VARCHAR(10)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"NUMERIC(3,0)\",\"4\":\"TIMESTAMP(0)\",\"5\":\"NUMERIC(3,0)\",\"6\":\"VARCHAR(64)\",\"7\":\"VARCHAR(15)\",\"8\":\"VARCHAR(15)\",\"9\":\"TIMESTAMP(0)\"}",
     "phasor.package": "HISTORICAL TABLES",
     "phasor.reports": "[[\"FORCE_MAJEURE\",\"MARKETSUSPENSION\"]]",
     "phasor.table": "MARKETSUSPENSION",
-    "phasor.temporal.cutoff": "LASTCHANGED",
-    "phasor.temporal.entity": "[\"SUSPENSIONID\"]",
-    "phasor.temporal.order": "[\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.kind": "timeless",
     "phasor.visibility": "PUBLIC"
   },
   "refs": {
@@ -47,7 +41,7 @@
           "doc": "Unique identifier for suspension",
           "id": 1,
           "name": "SUSPENSIONID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -107,9 +101,7 @@
           "type": "timestamptz"
         }
       ],
-      "identifier-field-ids": [
-        1
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     }

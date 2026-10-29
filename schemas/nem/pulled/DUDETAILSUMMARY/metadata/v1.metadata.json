@@ -20,20 +20,12 @@
   "properties": {
     "comment": "DUDETAILSUMMARY sets out a single summary unit table so reducing the need for participants to use the various dispatchable unit detail and owner tables to establish generating unit specific details.",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"DUID\",\"START_DATE\"]",
+    "phasor.format": "5",
     "phasor.load": "snapshot",
     "phasor.model-types": "{\"1\":\"VARCHAR(10)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"TIMESTAMP(0)\",\"4\":\"VARCHAR(20)\",\"5\":\"VARCHAR(10)\",\"6\":\"VARCHAR(10)\",\"7\":\"VARCHAR(10)\",\"8\":\"VARCHAR(10)\",\"9\":\"TIMESTAMP(0)\",\"10\":\"NUMERIC(15,5)\",\"11\":\"VARCHAR(20)\",\"12\":\"NUMERIC(15,5)\",\"13\":\"NUMERIC(9,2)\",\"14\":\"NUMERIC(9,2)\",\"15\":\"VARCHAR(20)\",\"16\":\"NUMERIC(6,0)\",\"17\":\"NUMERIC(6,0)\",\"18\":\"NUMERIC(6,0)\",\"19\":\"NUMERIC(6,0)\",\"20\":\"NUMERIC(1,0)\",\"21\":\"VARCHAR(20)\",\"22\":\"VARCHAR(20)\",\"23\":\"NUMERIC(9,2)\",\"24\":\"NUMERIC(9,2)\",\"25\":\"NUMERIC(6,0)\",\"26\":\"NUMERIC(6,0)\",\"27\":\"NUMERIC(6,0)\",\"28\":\"NUMERIC(6,0)\",\"29\":\"NUMERIC(18,8)\"}",
     "phasor.package": "PARTICIPANT_REGISTRATION",
     "phasor.reports": "[[\"PARTICIPANT_REGISTRATION\",\"DUDETAILSUMMARY\"]]",
     "phasor.table": "DUDETAILSUMMARY",
-    "phasor.temporal.cutoff": "LASTCHANGED",
-    "phasor.temporal.entity": "[\"DUID\"]",
-    "phasor.temporal.order": "[\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.column": "START_DATE",
-    "phasor.temporal.valid.kind": "from",
-    "phasor.temporal.valid.until": "END_DATE",
     "phasor.visibility": "PUBLIC"
   },
   "refs": {
@@ -49,14 +41,14 @@
           "doc": "Dispatchable Unit Identifier",
           "id": 1,
           "name": "DUID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "Start date for effective record",
           "id": 2,
           "name": "START_DATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
@@ -151,10 +143,7 @@
           "type": "string"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     },
@@ -164,14 +153,14 @@
           "doc": "Dispatchable Unit Identifier",
           "id": 1,
           "name": "DUID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "Start date for effective record",
           "id": 2,
           "name": "START_DATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
@@ -301,10 +290,7 @@
           "type": "decimal(1, 0)"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2
-      ],
+      "identifier-field-ids": [],
       "schema-id": 1,
       "type": "struct"
     },
@@ -314,14 +300,14 @@
           "doc": "Dispatchable Unit Identifier",
           "id": 1,
           "name": "DUID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "Start date for effective record",
           "id": 2,
           "name": "START_DATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
@@ -458,10 +444,7 @@
           "type": "string"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2
-      ],
+      "identifier-field-ids": [],
       "schema-id": 2,
       "type": "struct"
     },
@@ -471,14 +454,14 @@
           "doc": "Dispatchable Unit Identifier",
           "id": 1,
           "name": "DUID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "Start date for effective record",
           "id": 2,
           "name": "START_DATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
@@ -671,10 +654,7 @@
           "type": "decimal(18, 8)"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2
-      ],
+      "identifier-field-ids": [],
       "schema-id": 3,
       "type": "struct"
     }

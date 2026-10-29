@@ -20,19 +20,12 @@
   "properties": {
     "comment": "BIDTYPES, together with the associated tracking data in BIDTYPESTRK, define a set of ancillary services with bidding parameters from a given date.\nBIDTYPES is static data describing each type of bid quantity, the number of applicable bands, how many days ahead a price lock down becomes effective and the validation rule that applies.",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"BIDTYPE\",\"EFFECTIVEDATE\",\"VERSIONNO\"]",
+    "phasor.format": "5",
     "phasor.load": "snapshot",
     "phasor.model-types": "{\"1\":\"VARCHAR(10)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"NUMERIC(3,0)\",\"4\":\"VARCHAR(64)\",\"5\":\"NUMERIC(3,0)\",\"6\":\"NUMERIC(2,0)\",\"7\":\"VARCHAR(10)\",\"8\":\"TIMESTAMP(0)\",\"9\":\"VARCHAR(10)\"}",
     "phasor.package": "MARKET_CONFIG",
     "phasor.reports": "[[\"MARKET_CONFIG\",\"BIDTYPES\"]]",
     "phasor.table": "BIDTYPES",
-    "phasor.temporal.cutoff": "LASTCHANGED",
-    "phasor.temporal.entity": "[\"BIDTYPE\"]",
-    "phasor.temporal.order": "[\"VERSIONNO\",\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.column": "EFFECTIVEDATE",
-    "phasor.temporal.valid.kind": "from",
     "phasor.visibility": "PUBLIC"
   },
   "refs": {
@@ -48,22 +41,22 @@
           "doc": "Bid Type Identifier",
           "id": 1,
           "name": "BIDTYPE",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "Market date starting at 04:30 inclusive",
           "id": 2,
           "name": "EFFECTIVEDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Record version number",
           "id": 3,
           "name": "VERSIONNO",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(3, 0)"
         },
         {
           "doc": "Description of this Bid Type",
@@ -108,11 +101,7 @@
           "type": "string"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     }

@@ -20,17 +20,11 @@
   "properties": {
     "comment": "This report delivers the forward estimated residual cost rate based on PREDISPATCH runs. These high-level estimates (i.e. assuming that all is unused FCAS) will be provided for each constraint for each 30 minute pre- dispatch interval.",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[]",
+    "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"VARCHAR(20)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"NUMERIC(5)\",\"4\":\"TIMESTAMP(0)\",\"5\":\"VARCHAR(20)\",\"6\":\"NUMERIC(5)\",\"7\":\"VARCHAR(10)\",\"8\":\"VARCHAR(200)\",\"9\":\"NUMERIC(18,8)\",\"10\":\"TIMESTAMP(0)\"}",
     "phasor.reports": "[[\"FPP\",\"PD_FWD_EST_RESIDUALRATE\"]]",
     "phasor.table": "FPP_PD_FWD_EST_RESIDUALRATE",
-    "phasor.temporal.cutoff": "LASTCHANGED",
-    "phasor.temporal.entity": "[]",
-    "phasor.temporal.order": "[\"RUN_DATETIME\",\"PREDISPATCHSEQNO\",\"VERSIONNO\",\"RUNNO\",\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.kind": "timeless",
     "phasor.time": "INTERVAL_DATETIME",
     "phasor.visibility": "PUBLIC"
   },

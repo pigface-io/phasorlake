@@ -20,18 +20,12 @@
   "properties": {
     "comment": "BILLINGRUNTRK identifies the Statement type (i.e. Status of PRELIM, FINAL, REVISE) and date of the BillRunNo posted, per WeekNo. This provides a further extension of tracking data from the BILLINGDAYTRK table.",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"CONTRACTYEAR\",\"WEEKNO\",\"BILLRUNNO\"]",
+    "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"NUMERIC(4,0)\",\"2\":\"NUMERIC(3,0)\",\"3\":\"NUMERIC(3,0)\",\"4\":\"VARCHAR(6)\",\"5\":\"VARCHAR(1)\",\"6\":\"TIMESTAMP(0)\",\"7\":\"VARCHAR(10)\",\"8\":\"TIMESTAMP(0)\",\"9\":\"VARCHAR(10)\",\"10\":\"TIMESTAMP(0)\",\"11\":\"TIMESTAMP(0)\",\"12\":\"VARCHAR(10)\",\"13\":\"TIMESTAMP(0)\",\"14\":\"VARCHAR(10)\",\"15\":\"NUMERIC(16,6)\",\"16\":\"NUMERIC(15,5)\",\"17\":\"NUMERIC(3,0)\"}",
     "phasor.package": "BILLING_RUN",
     "phasor.reports": "[[\"BILLING\",\"RUNTRK\"]]",
     "phasor.table": "BILLINGRUNTRK",
-    "phasor.temporal.cutoff": "LASTCHANGED",
-    "phasor.temporal.entity": "[\"CONTRACTYEAR\",\"WEEKNO\"]",
-    "phasor.temporal.order": "[\"BILLRUNNO\",\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.kind": "timeless",
     "phasor.time": "LASTCHANGED",
     "phasor.visibility": "PUBLIC"
   },
@@ -48,22 +42,22 @@
           "doc": "Year of the run",
           "id": 1,
           "name": "CONTRACTYEAR",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(4, 0)"
         },
         {
           "doc": "Week number of the run",
           "id": 2,
           "name": "WEEKNO",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(3, 0)"
         },
         {
           "doc": "Sequential run number",
           "id": 3,
           "name": "BILLRUNNO",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(3, 0)"
         },
         {
           "doc": "The billing run type, PRELIM, FINAL, REVISE or INTERIM",
@@ -157,11 +151,7 @@
           "type": "decimal(15, 8)"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     },
@@ -171,22 +161,22 @@
           "doc": "Year of the run",
           "id": 1,
           "name": "CONTRACTYEAR",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(4, 0)"
         },
         {
           "doc": "Week number of the run",
           "id": 2,
           "name": "WEEKNO",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(3, 0)"
         },
         {
           "doc": "Sequential run number",
           "id": 3,
           "name": "BILLRUNNO",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(3, 0)"
         },
         {
           "doc": "The billing run type, PRELIM, FINAL, REVISE or INTERIM",
@@ -287,11 +277,7 @@
           "type": "long"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3
-      ],
+      "identifier-field-ids": [],
       "schema-id": 1,
       "type": "struct"
     }

@@ -15,7 +15,7 @@ use arrow::ffi::FFI_ArrowSchema;
 use arrow::ffi_stream::FFI_ArrowArrayStream;
 use arrow_array::{ArrayRef, RecordBatch, RecordBatchIterator, new_null_array};
 use arrow_schema::{Field, Schema, SchemaRef};
-use phasor_cli::commands::common::{role_of, table_id};
+use phasor_cli::commands::common::table_id;
 use phasor_core::config::Config;
 use phasor_core::{Category, Diagnose as _, Diagnostic, Fingerprint};
 use phasor_kit::{
@@ -463,23 +463,14 @@ fn table<'py>(py: Python<'py>, name: &str) -> PyResult<Bound<'py, PyDict>> {
             phasor_registry::file_model::LoadMode::Snapshot => "snapshot",
         },
     )?;
-    out.set_item("key", &t.primary_key)?;
     out.set_item("time_column", t.time_column.as_deref())?;
-    let roles = PyDict::new(py);
-    roles.set_item("entity", &t.temporal.entity)?;
-    let valid = PyDict::new(py);
-    valid.set_item("column", t.temporal.valid.column())?;
-    valid.set_item("kind", t.temporal.valid.kind())?;
-    roles.set_item("valid", valid)?;
-    roles.set_item("order", &t.temporal.order)?;
-    roles.set_item("cutoff", t.temporal.cutoff.as_deref())?;
-    out.set_item("roles", roles)?;
     let columns = PyList::empty(py);
     for c in &t.columns {
         let d = PyDict::new(py);
         d.set_item("name", &c.name)?;
         d.set_item("type", c.ty.to_string())?;
-        d.set_item("role", role_of(t, &c.name))?;
+        let time = t.time_column.as_deref() == Some(c.name.as_str());
+        d.set_item("role", if time { "time" } else { "" })?;
         d.set_item("field_id", c.id.0)?;
         d.set_item("nullable", c.nullable)?;
         d.set_item("description", docs.get(&c.id.0))?;

@@ -20,19 +20,12 @@
   "properties": {
     "comment": "Shows Actual Operational Demand for a particular date time interval.",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"INTERVAL_DATETIME\",\"REGIONID\"]",
+    "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"VARCHAR(20)\",\"3\":\"NUMERIC(10,0)\",\"4\":\"TIMESTAMP(0)\",\"5\":\"NUMERIC(10,0)\",\"6\":\"NUMERIC(10)\"}",
     "phasor.package": "DEMAND_FORECASTS",
     "phasor.reports": "[[\"OPERATIONAL_DEMAND\",\"ACTUAL\"]]",
     "phasor.table": "DEMANDOPERATIONALACTUAL",
-    "phasor.temporal.cutoff": "LASTCHANGED",
-    "phasor.temporal.entity": "[\"REGIONID\"]",
-    "phasor.temporal.order": "[\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.column": "INTERVAL_DATETIME",
-    "phasor.temporal.valid.kind": "interval_end",
     "phasor.time": "INTERVAL_DATETIME",
     "phasor.visibility": "PUBLIC"
   },
@@ -49,14 +42,14 @@
           "doc": "Date time interval for operational demand value",
           "id": 1,
           "name": "INTERVAL_DATETIME",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Region identifier",
           "id": 2,
           "name": "REGIONID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -88,10 +81,7 @@
           "type": "decimal(10, 0)"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     },
@@ -101,14 +91,14 @@
           "doc": "Region identifier",
           "id": 2,
           "name": "REGIONID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "Date time interval for operational demand value",
           "id": 1,
           "name": "INTERVAL_DATETIME",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
@@ -140,10 +130,7 @@
           "type": "timestamptz"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2
-      ],
+      "identifier-field-ids": [],
       "schema-id": 1,
       "type": "struct"
     }

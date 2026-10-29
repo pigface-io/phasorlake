@@ -20,19 +20,12 @@
   "properties": {
     "comment": "Reflects the 30-minute average price (the pre-5MS trading price).",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"PERIODDATE\",\"REGIONID\"]",
+    "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"VARCHAR(10)\",\"3\":\"NUMERIC(3,0)\",\"4\":\"NUMERIC(15,5)\",\"5\":\"VARCHAR(20)\",\"6\":\"TIMESTAMP(0)\"}",
     "phasor.package": "TRADING_DATA",
     "phasor.reports": "[[\"TRADING\",\"AVERAGEPRICE30\"]]",
     "phasor.table": "AVERAGEPRICE30",
-    "phasor.temporal.cutoff": "LASTCHANGED",
-    "phasor.temporal.entity": "[\"REGIONID\"]",
-    "phasor.temporal.order": "[\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.column": "PERIODDATE",
-    "phasor.temporal.valid.kind": "instant",
     "phasor.time": "LASTCHANGED",
     "phasor.visibility": "PUBLIC"
   },
@@ -49,14 +42,14 @@
           "doc": "30-minute interval period, 1 to 48 from the start of the calendar day",
           "id": 1,
           "name": "PERIODDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Region Identifier",
           "id": 2,
           "name": "REGIONID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -88,10 +81,7 @@
           "type": "timestamptz"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     }

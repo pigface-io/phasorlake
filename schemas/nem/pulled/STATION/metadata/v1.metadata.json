@@ -20,18 +20,12 @@
   "properties": {
     "comment": "STATION sets out valid station identifiers.",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"STATIONID\"]",
+    "phasor.format": "5",
     "phasor.load": "snapshot",
     "phasor.model-types": "{\"1\":\"VARCHAR(10)\",\"2\":\"VARCHAR(80)\",\"3\":\"VARCHAR(80)\",\"4\":\"VARCHAR(80)\",\"5\":\"VARCHAR(80)\",\"6\":\"VARCHAR(80)\",\"7\":\"VARCHAR(40)\",\"8\":\"VARCHAR(10)\",\"9\":\"VARCHAR(10)\",\"10\":\"TIMESTAMP(0)\",\"11\":\"VARCHAR(10)\"}",
     "phasor.package": "PARTICIPANT_REGISTRATION",
     "phasor.reports": "[[\"PARTICIPANT_REGISTRATION\",\"STATION\"]]",
     "phasor.table": "STATION",
-    "phasor.temporal.cutoff": "LASTCHANGED",
-    "phasor.temporal.entity": "[\"STATIONID\"]",
-    "phasor.temporal.order": "[\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.kind": "timeless",
     "phasor.visibility": "PUBLIC"
   },
   "refs": {
@@ -47,7 +41,7 @@
           "doc": "Station Identifier",
           "id": 1,
           "name": "STATIONID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -121,9 +115,7 @@
           "type": "string"
         }
       ],
-      "identifier-field-ids": [
-        1
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     }

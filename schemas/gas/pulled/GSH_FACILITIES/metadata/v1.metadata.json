@@ -20,20 +20,13 @@
   "properties": {
     "comment": "Facilities currently registered, for capacity trading and day ahead auction.",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"EFFECTIVEDATE\",\"FACILITY_ID\",\"VERSION_DATETIME\"]",
+    "phasor.format": "5",
     "phasor.load": "snapshot",
     "phasor.market": "gas",
     "phasor.model-types": "{\"1\":\"NUMBER(8,0)\",\"2\":\"VARCHAR2(100)\",\"3\":\"VARCHAR2(400)\",\"4\":\"VARCHAR2(20)\",\"5\":\"VARCHAR2(20)\",\"6\":\"VARCHAR2(100)\",\"7\":\"DATE\",\"8\":\"DATE\",\"9\":\"DATE\"}",
     "phasor.offset": "+10:00",
     "phasor.reports": "[[\"GSH\",\"FACILITIES\"]]",
     "phasor.table": "GSH_FACILITIES",
-    "phasor.temporal.cutoff": "LASTCHANGED",
-    "phasor.temporal.entity": "[\"FACILITY_ID\"]",
-    "phasor.temporal.order": "[\"VERSION_DATETIME\",\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "hand",
-    "phasor.temporal.valid.column": "EFFECTIVEDATE",
-    "phasor.temporal.valid.kind": "instant",
     "phasor.time": "EFFECTIVEDATE",
     "phasor.visibility": "PUBLIC"
   },
@@ -50,7 +43,7 @@
           "doc": "The unique identifier of the facility.",
           "id": 1,
           "name": "FACILITY_ID",
-          "required": true,
+          "required": false,
           "type": "long"
         },
         {
@@ -92,14 +85,14 @@
           "doc": "Effective date of the record",
           "id": 7,
           "name": "EFFECTIVEDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Version timestamp of the record",
           "id": 8,
           "name": "VERSION_DATETIME",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
@@ -110,11 +103,7 @@
           "type": "timestamptz"
         }
       ],
-      "identifier-field-ids": [
-        7,
-        1,
-        8
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     }

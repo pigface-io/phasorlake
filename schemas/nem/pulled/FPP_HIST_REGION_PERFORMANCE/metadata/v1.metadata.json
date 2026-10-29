@@ -20,17 +20,11 @@
   "properties": {
     "comment": "This report delivers the historical region performance calculated based on a historical period and effective for a billing period (aligned to the settlement week). This calculated historical region performance calculation is an input into the constraint level residual default contribution factor (DCF) which is published in FPP_FORECAST_RESIDUAL_DCF",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[]",
+    "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"VARCHAR(20)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"TIMESTAMP(0)\",\"4\":\"NUMERIC(10)\",\"5\":\"TIMESTAMP(0)\",\"6\":\"TIMESTAMP(0)\",\"7\":\"NUMERIC(18,5)\",\"8\":\"NUMERIC(18,5)\",\"9\":\"NUMERIC(18,5)\",\"10\":\"NUMERIC(18,5)\",\"11\":\"TIMESTAMP(0)\"}",
     "phasor.reports": "[[\"FPP\",\"HIST_REGION_PERFORMANCE\"]]",
     "phasor.table": "FPP_HIST_REGION_PERFORMANCE",
-    "phasor.temporal.cutoff": "LASTCHANGED",
-    "phasor.temporal.entity": "[]",
-    "phasor.temporal.order": "[\"VERSIONNO\",\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.kind": "timeless",
     "phasor.time": "LASTCHANGED",
     "phasor.visibility": "PUBLIC"
   },

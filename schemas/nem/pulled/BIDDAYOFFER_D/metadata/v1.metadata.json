@@ -20,19 +20,12 @@
   "properties": {
     "comment": "BIDDAYOFFER_D shows the public summary of the energy and FCAS offers applicable in the Dispatch for the\nintervals identified. BIDDAYOFFER_D is the parent table to BIDPEROFFER_D.",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"SETTLEMENTDATE\",\"DUID\",\"BIDTYPE\"]",
+    "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"VARCHAR(10)\",\"3\":\"VARCHAR(10)\",\"4\":\"TIMESTAMP(0)\",\"5\":\"TIMESTAMP(0)\",\"6\":\"NUMERIC(22,0)\",\"7\":\"VARCHAR(10)\",\"8\":\"NUMERIC(12,6)\",\"9\":\"VARCHAR(500)\",\"10\":\"NUMERIC(9,2)\",\"11\":\"NUMERIC(9,2)\",\"12\":\"NUMERIC(9,2)\",\"13\":\"NUMERIC(9,2)\",\"14\":\"NUMERIC(9,2)\",\"15\":\"NUMERIC(9,2)\",\"16\":\"NUMERIC(9,2)\",\"17\":\"NUMERIC(9,2)\",\"18\":\"NUMERIC(9,2)\",\"19\":\"NUMERIC(9,2)\",\"20\":\"NUMERIC(22,0)\",\"21\":\"NUMERIC(22,0)\",\"22\":\"NUMERIC(22,0)\",\"23\":\"NUMERIC(22,0)\",\"24\":\"NUMERIC(22,0)\",\"25\":\"VARCHAR(3)\",\"26\":\"TIMESTAMP(0)\",\"27\":\"NUMERIC(16,6)\",\"28\":\"VARCHAR(20)\",\"29\":\"VARCHAR(20)\"}",
     "phasor.package": "BIDS",
     "phasor.reports": "[[\"BID\",\"BIDDAYOFFER_D\"]]",
     "phasor.table": "BIDDAYOFFER_D",
-    "phasor.temporal.cutoff": "LASTCHANGED",
-    "phasor.temporal.entity": "[\"DUID\",\"BIDTYPE\"]",
-    "phasor.temporal.order": "[\"OFFERDATE\",\"VERSIONNO\",\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "hand",
-    "phasor.temporal.valid.column": "SETTLEMENTDATE",
-    "phasor.temporal.valid.kind": "day",
     "phasor.time": "SETTLEMENTDATE",
     "phasor.visibility": "PUBLIC"
   },
@@ -49,21 +42,21 @@
           "doc": "Market date for which the bid applied",
           "id": 1,
           "name": "SETTLEMENTDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Dispatchable unit identifier",
           "id": 2,
           "name": "DUID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "Bid Type Identifier",
           "id": 3,
           "name": "BIDTYPE",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -242,11 +235,7 @@
           "type": "string"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     },
@@ -256,21 +245,21 @@
           "doc": "Market date for which the bid applied",
           "id": 1,
           "name": "SETTLEMENTDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Dispatchable unit identifier",
           "id": 2,
           "name": "DUID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "Bid Type Identifier",
           "id": 3,
           "name": "BIDTYPE",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -456,11 +445,7 @@
           "type": "string"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3
-      ],
+      "identifier-field-ids": [],
       "schema-id": 1,
       "type": "struct"
     },
@@ -470,21 +455,21 @@
           "doc": "Market date for which the bid applied",
           "id": 1,
           "name": "SETTLEMENTDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Dispatchable unit identifier",
           "id": 2,
           "name": "DUID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "Bid Type Identifier",
           "id": 3,
           "name": "BIDTYPE",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -663,11 +648,7 @@
           "type": "string"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3
-      ],
+      "identifier-field-ids": [],
       "schema-id": 2,
       "type": "struct"
     }

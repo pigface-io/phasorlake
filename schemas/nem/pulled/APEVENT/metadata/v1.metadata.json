@@ -20,18 +20,12 @@
   "properties": {
     "comment": "APEVENT is the driving data defining the existence and timeframes of an administered pricing event.",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"APEVENTID\"]",
+    "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"NUMERIC(22,0)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"TIMESTAMP(0)\",\"4\":\"VARCHAR(2000)\",\"5\":\"VARCHAR(15)\",\"6\":\"TIMESTAMP(0)\",\"7\":\"VARCHAR(15)\",\"8\":\"TIMESTAMP(0)\",\"9\":\"TIMESTAMP(0)\"}",
     "phasor.package": "FORCE_MAJEURE",
     "phasor.reports": "[[\"AP\",\"APEVENT\"]]",
     "phasor.table": "APEVENT",
-    "phasor.temporal.cutoff": "LASTCHANGED",
-    "phasor.temporal.entity": "[\"APEVENTID\"]",
-    "phasor.temporal.order": "[\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.kind": "timeless",
     "phasor.time": "LASTCHANGED",
     "phasor.visibility": "PUBLIC"
   },
@@ -48,8 +42,8 @@
           "doc": "Unique identifier for this administered pricing event",
           "id": 1,
           "name": "APEVENTID",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "double"
         },
         {
           "doc": "Date Time of the first Dispatch Interval to which the administered event applies",
@@ -108,9 +102,7 @@
           "type": "timestamptz"
         }
       ],
-      "identifier-field-ids": [
-        1
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     }

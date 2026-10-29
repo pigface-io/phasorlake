@@ -20,19 +20,12 @@
   "properties": {
     "comment": "DUDETAIL sets out a records specific details for each unit including start type and whether normally on or off load. Much of this data is information only and is not used in dispatch or settlements.",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"DUID\",\"EFFECTIVEDATE\",\"VERSIONNO\"]",
+    "phasor.format": "5",
     "phasor.load": "snapshot",
     "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"VARCHAR(10)\",\"3\":\"NUMERIC(3,0)\",\"4\":\"VARCHAR(10)\",\"5\":\"VARCHAR(10)\",\"6\":\"NUMERIC(6,0)\",\"7\":\"VARCHAR(1)\",\"8\":\"VARCHAR(20)\",\"9\":\"NUMERIC(6,0)\",\"10\":\"VARCHAR(20)\",\"11\":\"VARCHAR(1)\",\"12\":\"VARCHAR(1)\",\"13\":\"VARCHAR(1)\",\"14\":\"VARCHAR(15)\",\"15\":\"TIMESTAMP(0)\",\"16\":\"TIMESTAMP(0)\",\"17\":\"VARCHAR(1)\",\"18\":\"VARCHAR(1)\",\"19\":\"NUMERIC(6,0)\",\"20\":\"NUMERIC(6,0)\",\"21\":\"VARCHAR(20)\",\"22\":\"VARCHAR(20)\",\"23\":\"NUMERIC(6,0)\",\"24\":\"NUMERIC(6,0)\",\"25\":\"NUMERIC(6,0)\",\"26\":\"NUMERIC(6,0)\",\"27\":\"NUMERIC(15,5)\",\"28\":\"NUMERIC(15,5)\",\"29\":\"NUMERIC(15,5)\",\"30\":\"NUMERIC(6,0)\",\"31\":\"NUMERIC(6,0)\",\"32\":\"NUMERIC(6,0)\",\"33\":\"NUMERIC(6,0)\",\"34\":\"NUMERIC(1,0)\"}",
     "phasor.package": "PARTICIPANT_REGISTRATION",
     "phasor.reports": "[[\"PARTICIPANT_REGISTRATION\",\"DUDETAIL\"]]",
     "phasor.table": "DUDETAIL",
-    "phasor.temporal.cutoff": "LASTCHANGED",
-    "phasor.temporal.entity": "[\"DUID\"]",
-    "phasor.temporal.order": "[\"VERSIONNO\",\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.column": "EFFECTIVEDATE",
-    "phasor.temporal.valid.kind": "from",
     "phasor.visibility": "PUBLIC"
   },
   "refs": {
@@ -48,22 +41,22 @@
           "doc": "Effective calendar date of record",
           "id": 1,
           "name": "EFFECTIVEDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Dispatchable Unit Identifier",
           "id": 2,
           "name": "DUID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "version of Dispatchable Unit details for this effective date",
           "id": 3,
           "name": "VERSIONNO",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(3, 0)"
         },
         {
           "doc": "Country wide - Unique id of a connection point",
@@ -171,11 +164,7 @@
           "type": "string"
         }
       ],
-      "identifier-field-ids": [
-        2,
-        1,
-        3
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     },
@@ -185,22 +174,22 @@
           "doc": "Effective calendar date of record",
           "id": 1,
           "name": "EFFECTIVEDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Dispatchable Unit Identifier",
           "id": 2,
           "name": "DUID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "version of Dispatchable Unit details for this effective date",
           "id": 3,
           "name": "VERSIONNO",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(3, 0)"
         },
         {
           "doc": "Country wide - Unique id of a connection point",
@@ -322,11 +311,7 @@
           "type": "decimal(6, 0)"
         }
       ],
-      "identifier-field-ids": [
-        2,
-        1,
-        3
-      ],
+      "identifier-field-ids": [],
       "schema-id": 1,
       "type": "struct"
     },
@@ -336,22 +321,22 @@
           "doc": "Effective calendar date of record",
           "id": 1,
           "name": "EFFECTIVEDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Dispatchable Unit Identifier",
           "id": 2,
           "name": "DUID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "version of Dispatchable Unit details for this effective date",
           "id": 3,
           "name": "VERSIONNO",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(3, 0)"
         },
         {
           "doc": "Country wide - Unique id of a connection point",
@@ -480,11 +465,7 @@
           "type": "string"
         }
       ],
-      "identifier-field-ids": [
-        2,
-        1,
-        3
-      ],
+      "identifier-field-ids": [],
       "schema-id": 2,
       "type": "struct"
     },
@@ -494,22 +475,22 @@
           "doc": "Dispatchable Unit Identifier",
           "id": 2,
           "name": "DUID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "Effective calendar date of record",
           "id": 1,
           "name": "EFFECTIVEDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "version of Dispatchable Unit details for this effective date",
           "id": 3,
           "name": "VERSIONNO",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(3, 0)"
         },
         {
           "doc": "Country wide - Unique id of a connection point",
@@ -645,11 +626,7 @@
           "type": "string"
         }
       ],
-      "identifier-field-ids": [
-        2,
-        1,
-        3
-      ],
+      "identifier-field-ids": [],
       "schema-id": 3,
       "type": "struct"
     },
@@ -659,22 +636,22 @@
           "doc": "Dispatchable Unit Identifier",
           "id": 2,
           "name": "DUID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "Effective calendar date of record",
           "id": 1,
           "name": "EFFECTIVEDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "version of Dispatchable Unit details for this effective date",
           "id": 3,
           "name": "VERSIONNO",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(3, 0)"
         },
         {
           "doc": "Country wide - Unique id of a connection point",
@@ -887,11 +864,7 @@
           "type": "decimal(6, 0)"
         }
       ],
-      "identifier-field-ids": [
-        2,
-        1,
-        3
-      ],
+      "identifier-field-ids": [],
       "schema-id": 4,
       "type": "struct"
     },
@@ -901,22 +874,22 @@
           "doc": "Effective calendar date of record",
           "id": 1,
           "name": "EFFECTIVEDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Dispatchable Unit Identifier",
           "id": 2,
           "name": "DUID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "version of Dispatchable Unit details for this effective date",
           "id": 3,
           "name": "VERSIONNO",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(3, 0)"
         },
         {
           "doc": "Country wide - Unique id of a connection point",
@@ -1129,11 +1102,7 @@
           "type": "decimal(6, 0)"
         }
       ],
-      "identifier-field-ids": [
-        2,
-        1,
-        3
-      ],
+      "identifier-field-ids": [],
       "schema-id": 5,
       "type": "struct"
     },
@@ -1143,22 +1112,22 @@
           "doc": "Effective calendar date of record",
           "id": 1,
           "name": "EFFECTIVEDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Dispatchable Unit Identifier",
           "id": 2,
           "name": "DUID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "version of Dispatchable Unit details for this effective date",
           "id": 3,
           "name": "VERSIONNO",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(3, 0)"
         },
         {
           "doc": "Country wide - Unique id of a connection point",
@@ -1378,11 +1347,7 @@
           "type": "decimal(1, 0)"
         }
       ],
-      "identifier-field-ids": [
-        2,
-        1,
-        3
-      ],
+      "identifier-field-ids": [],
       "schema-id": 6,
       "type": "struct"
     }

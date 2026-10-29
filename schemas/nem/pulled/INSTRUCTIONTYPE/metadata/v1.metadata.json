@@ -20,18 +20,12 @@
   "properties": {
     "comment": "Dispatch instruction (GD instruct) has types and subtypes. INSTRUCTIONTYPE, together with INSTRUCTIONSUBTYPE, sets out valid instruction types.",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"INSTRUCTIONTYPEID\"]",
+    "phasor.format": "5",
     "phasor.load": "snapshot",
     "phasor.model-types": "{\"1\":\"VARCHAR(10)\",\"2\":\"VARCHAR(64)\",\"3\":\"VARCHAR(10)\",\"4\":\"TIMESTAMP(0)\"}",
     "phasor.package": "GD_INSTRUCT",
     "phasor.reports": "[[\"GD_INSTRUCT\",\"INSTRUCTIONTYPE\"]]",
     "phasor.table": "INSTRUCTIONTYPE",
-    "phasor.temporal.cutoff": "LASTCHANGED",
-    "phasor.temporal.entity": "[\"INSTRUCTIONTYPEID\"]",
-    "phasor.temporal.order": "[\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.kind": "timeless",
     "phasor.visibility": "PUBLIC"
   },
   "refs": {
@@ -47,7 +41,7 @@
           "doc": "Dispatch instruction type for example FCAS service.",
           "id": 1,
           "name": "INSTRUCTIONTYPEID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -72,9 +66,7 @@
           "type": "timestamptz"
         }
       ],
-      "identifier-field-ids": [
-        1
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     }

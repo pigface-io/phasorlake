@@ -20,19 +20,12 @@
   "properties": {
     "comment": "MARKETFEEDATA sets out actual fee rates, as adjusted from time to time.",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"MARKETFEEID\",\"MARKETFEEVERSIONNO\",\"EFFECTIVEDATE\"]",
+    "phasor.format": "5",
     "phasor.load": "snapshot",
     "phasor.model-types": "{\"1\":\"VARCHAR(10)\",\"2\":\"NUMERIC(3,0)\",\"3\":\"TIMESTAMP(0)\",\"4\":\"NUMERIC(22,8)\",\"5\":\"TIMESTAMP(0)\"}",
     "phasor.package": "SETTLEMENT_CONFIG",
     "phasor.reports": "[[\"SETTLEMENT_CONFIG\",\"MARKETFEEDATA\"]]",
     "phasor.table": "MARKETFEEDATA",
-    "phasor.temporal.cutoff": "LASTCHANGED",
-    "phasor.temporal.entity": "[\"MARKETFEEID\",\"MARKETFEEVERSIONNO\"]",
-    "phasor.temporal.order": "[\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.column": "EFFECTIVEDATE",
-    "phasor.temporal.valid.kind": "from",
     "phasor.visibility": "PUBLIC"
   },
   "refs": {
@@ -48,21 +41,21 @@
           "doc": "Identifier for Market Fee",
           "id": 1,
           "name": "MARKETFEEID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "Version of fees for this id",
           "id": 2,
           "name": "MARKETFEEVERSIONNO",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(3, 0)"
         },
         {
           "doc": "Date on which this data becomes effective",
           "id": 3,
           "name": "EFFECTIVEDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
@@ -80,11 +73,7 @@
           "type": "timestamptz"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     }

@@ -20,19 +20,12 @@
   "properties": {
     "comment": "SETCPDATAREGION sets out summary meter settlement data for each region. The table is populated for participants using Data Model 5.2. For participants using Data Model 5.3 or higher, SET_ENERGY_REGION_SUMMARY replace SETCPDATAREGION.",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"SETTLEMENTDATE\",\"VERSIONNO\",\"PERIODID\",\"REGIONID\"]",
+    "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(22,10)\",\"3\":\"NUMERIC(22,10)\",\"4\":\"VARCHAR(10)\",\"5\":\"NUMERIC(27,5)\",\"6\":\"NUMERIC(27,5)\",\"7\":\"NUMERIC(27,5)\",\"8\":\"NUMERIC(27,5)\",\"9\":\"NUMERIC(22,0)\",\"10\":\"NUMERIC(22,0)\",\"11\":\"TIMESTAMP(0)\",\"12\":\"NUMERIC(15,5)\"}",
     "phasor.package": "SETTLEMENT_DATA",
     "phasor.reports": "[[\"SETTLEMENTS\",\"CPDATAREGION\"]]",
     "phasor.table": "SETCPDATAREGION",
-    "phasor.temporal.cutoff": "LASTCHANGED",
-    "phasor.temporal.entity": "[\"PERIODID\",\"REGIONID\"]",
-    "phasor.temporal.order": "[\"VERSIONNO\",\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "hand",
-    "phasor.temporal.valid.column": "SETTLEMENTDATE",
-    "phasor.temporal.valid.kind": "day",
     "phasor.time": "SETTLEMENTDATE",
     "phasor.visibility": "PUBLIC"
   },
@@ -49,28 +42,28 @@
           "doc": "Calendar Settlement Date",
           "id": 1,
           "name": "SETTLEMENTDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Settlement run no",
           "id": 2,
           "name": "VERSIONNO",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "double"
         },
         {
           "doc": "Settlements Trading Interval.",
           "id": 3,
           "name": "PERIODID",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "double"
         },
         {
           "doc": "Region Identifier",
           "id": 4,
           "name": "REGIONID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -130,12 +123,7 @@
           "type": "double"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3,
-        4
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     },
@@ -145,28 +133,28 @@
           "doc": "Calendar Settlement Date",
           "id": 1,
           "name": "SETTLEMENTDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Settlement run no",
           "id": 2,
           "name": "VERSIONNO",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "double"
         },
         {
           "doc": "Settlements Trading Interval.",
           "id": 3,
           "name": "PERIODID",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "double"
         },
         {
           "doc": "Region Identifier",
           "id": 4,
           "name": "REGIONID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -219,12 +207,7 @@
           "type": "timestamptz"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3,
-        4
-      ],
+      "identifier-field-ids": [],
       "schema-id": 1,
       "type": "struct"
     }

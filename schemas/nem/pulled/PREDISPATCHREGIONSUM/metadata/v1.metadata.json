@@ -20,19 +20,12 @@
   "properties": {
     "comment": "PREDISPATCHREGIONSUM sets out the overall regional Pre-Dispatch results for base case details (excluding price).",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"REGIONID\",\"DATETIME\"]",
+    "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"VARCHAR(20)\",\"2\":\"NUMERIC(3,0)\",\"3\":\"VARCHAR(10)\",\"4\":\"VARCHAR(20)\",\"5\":\"NUMERIC(2,0)\",\"6\":\"NUMERIC(15,5)\",\"7\":\"NUMERIC(15,5)\",\"8\":\"NUMERIC(15,5)\",\"9\":\"NUMERIC(15,5)\",\"10\":\"NUMERIC(15,5)\",\"11\":\"NUMERIC(15,5)\",\"12\":\"NUMERIC(15,5)\",\"13\":\"NUMERIC(15,5)\",\"14\":\"NUMERIC(15,5)\",\"15\":\"NUMERIC(15,5)\",\"16\":\"NUMERIC(15,5)\",\"17\":\"NUMERIC(15,5)\",\"18\":\"NUMERIC(15,5)\",\"19\":\"NUMERIC(15,5)\",\"20\":\"NUMERIC(15,5)\",\"21\":\"NUMERIC(15,5)\",\"22\":\"NUMERIC(15,5)\",\"23\":\"NUMERIC(15,5)\",\"24\":\"NUMERIC(15,5)\",\"25\":\"NUMERIC(15,5)\",\"26\":\"NUMERIC(15,5)\",\"27\":\"NUMERIC(15,5)\",\"28\":\"NUMERIC(15,5)\",\"29\":\"NUMERIC(15,5)\",\"30\":\"NUMERIC(15,5)\",\"31\":\"NUMERIC(15,5)\",\"32\":\"NUMERIC(15,5)\",\"33\":\"NUMERIC(15,5)\",\"34\":\"NUMERIC(15,5)\",\"35\":\"NUMERIC(15,5)\",\"36\":\"NUMERIC(15,5)\",\"37\":\"NUMERIC(15,5)\",\"38\":\"NUMERIC(15,5)\",\"39\":\"NUMERIC(15,5)\",\"40\":\"NUMERIC(15,5)\",\"41\":\"NUMERIC(15,5)\",\"42\":\"NUMERIC(15,5)\",\"43\":\"NUMERIC(15,5)\",\"44\":\"NUMERIC(15,5)\",\"45\":\"NUMERIC(15,5)\",\"46\":\"NUMERIC(15,5)\",\"47\":\"NUMERIC(15,5)\",\"48\":\"NUMERIC(15,5)\",\"49\":\"NUMERIC(15,5)\",\"50\":\"NUMERIC(15,5)\",\"51\":\"NUMERIC(15,5)\",\"52\":\"NUMERIC(15,5)\",\"53\":\"NUMERIC(15,5)\",\"54\":\"NUMERIC(15,5)\",\"55\":\"NUMERIC(15,5)\",\"56\":\"NUMERIC(15,5)\",\"57\":\"NUMERIC(15,5)\",\"58\":\"NUMERIC(15,5)\",\"59\":\"NUMERIC(15,5)\",\"60\":\"NUMERIC(15,5)\",\"61\":\"NUMERIC(15,5)\",\"62\":\"TIMESTAMP(0)\",\"63\":\"TIMESTAMP(0)\",\"64\":\"NUMERIC(15,5)\",\"65\":\"NUMERIC(15,5)\",\"66\":\"NUMERIC(15,5)\",\"67\":\"NUMERIC(15,5)\",\"68\":\"NUMERIC(15,5)\",\"69\":\"NUMERIC(15,5)\",\"70\":\"NUMERIC(15,5)\",\"71\":\"NUMERIC(15,5)\",\"72\":\"NUMERIC(15,5)\",\"73\":\"NUMERIC(15,5)\",\"74\":\"NUMERIC(15,5)\",\"75\":\"NUMERIC(15,5)\",\"76\":\"NUMERIC(15,5)\",\"77\":\"NUMERIC(15,5)\",\"78\":\"NUMERIC(15,5)\",\"79\":\"NUMERIC(15,5)\",\"80\":\"NUMERIC(15,5)\",\"81\":\"NUMERIC(15,5)\",\"82\":\"NUMERIC(15,5)\",\"83\":\"NUMERIC(15,5)\",\"84\":\"NUMERIC(15,5)\",\"85\":\"NUMERIC(15,5)\",\"86\":\"NUMERIC(15,5)\",\"87\":\"NUMERIC(15,5)\",\"88\":\"NUMERIC(15,5)\",\"89\":\"NUMERIC(15,5)\",\"90\":\"NUMERIC(16,6)\",\"91\":\"NUMERIC(16,6)\",\"92\":\"NUMERIC(16,6)\",\"93\":\"NUMERIC(16,6)\",\"94\":\"NUMERIC(16,6)\",\"95\":\"NUMERIC(16,6)\",\"96\":\"NUMERIC(16,6)\",\"97\":\"NUMERIC(16,6)\",\"98\":\"NUMERIC(16,6)\",\"99\":\"NUMERIC(16,6)\",\"100\":\"NUMERIC(16,6)\",\"101\":\"NUMERIC(15,5)\",\"102\":\"NUMERIC(15,5)\",\"103\":\"NUMERIC(15,5)\",\"104\":\"NUMERIC(15,5)\",\"105\":\"NUMERIC(15,5)\",\"106\":\"NUMERIC(15,5)\",\"107\":\"NUMERIC(15,5)\",\"108\":\"NUMERIC(15,5)\",\"109\":\"NUMERIC(15,5)\",\"110\":\"NUMERIC(15,5)\",\"111\":\"NUMERIC(15,5)\",\"112\":\"NUMERIC(15,5)\",\"113\":\"NUMERIC(15,5)\",\"114\":\"NUMERIC(15,5)\",\"115\":\"NUMERIC(15,5)\",\"116\":\"NUMERIC(15,5)\",\"117\":\"NUMERIC(16,6)\",\"118\":\"NUMERIC(16,6)\",\"119\":\"NUMERIC(15,5)\",\"120\":\"NUMERIC(15,5)\",\"121\":\"NUMERIC(15,5)\",\"122\":\"NUMERIC(15,5)\",\"123\":\"NUMERIC(15,5)\",\"124\":\"NUMERIC(15,5)\",\"125\":\"NUMERIC(15,5)\",\"126\":\"NUMERIC(15,5)\",\"127\":\"NUMERIC(15,5)\"}",
     "phasor.package": "PRE_DISPATCH",
     "phasor.reports": "[[\"PREDISPATCH\",\"REGION_SOLUTION\"]]",
     "phasor.table": "PREDISPATCHREGIONSUM",
-    "phasor.temporal.cutoff": "LASTCHANGED",
-    "phasor.temporal.entity": "[\"REGIONID\",\"INTERVENTION\"]",
-    "phasor.temporal.order": "[\"PREDISPATCHSEQNO\",\"RUNNO\",\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.column": "DATETIME",
-    "phasor.temporal.valid.kind": "interval_end",
     "phasor.time": "DATETIME",
     "phasor.visibility": "PUBLIC"
   },
@@ -63,7 +56,7 @@
           "doc": "Unique region identifier",
           "id": 3,
           "name": "REGIONID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -483,7 +476,7 @@
           "doc": "Period expressed as Date/Time",
           "id": 63,
           "name": "DATETIME",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
@@ -781,10 +774,7 @@
           "type": "decimal(15, 5)"
         }
       ],
-      "identifier-field-ids": [
-        3,
-        63
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     },
@@ -808,7 +798,7 @@
           "doc": "Unique region identifier",
           "id": 3,
           "name": "REGIONID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -1228,7 +1218,7 @@
           "doc": "Period expressed as Date/Time",
           "id": 63,
           "name": "DATETIME",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
@@ -1568,10 +1558,7 @@
           "type": "decimal(15, 5)"
         }
       ],
-      "identifier-field-ids": [
-        3,
-        63
-      ],
+      "identifier-field-ids": [],
       "schema-id": 1,
       "type": "struct"
     },
@@ -1595,7 +1582,7 @@
           "doc": "Unique region identifier",
           "id": 3,
           "name": "REGIONID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -2015,7 +2002,7 @@
           "doc": "Period expressed as Date/Time",
           "id": 63,
           "name": "DATETIME",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
@@ -2376,10 +2363,7 @@
           "type": "decimal(15, 5)"
         }
       ],
-      "identifier-field-ids": [
-        3,
-        63
-      ],
+      "identifier-field-ids": [],
       "schema-id": 2,
       "type": "struct"
     },
@@ -2403,7 +2387,7 @@
           "doc": "Unique region identifier",
           "id": 3,
           "name": "REGIONID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -2823,7 +2807,7 @@
           "doc": "Period expressed as Date/Time",
           "id": 63,
           "name": "DATETIME",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
@@ -3226,10 +3210,7 @@
           "type": "decimal(15, 5)"
         }
       ],
-      "identifier-field-ids": [
-        3,
-        63
-      ],
+      "identifier-field-ids": [],
       "schema-id": 3,
       "type": "struct"
     },
@@ -3253,7 +3234,7 @@
           "doc": "Unique region identifier",
           "id": 3,
           "name": "REGIONID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -3673,7 +3654,7 @@
           "doc": "Period expressed as Date/Time",
           "id": 63,
           "name": "DATETIME",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
@@ -4111,10 +4092,7 @@
           "type": "decimal(15, 6)"
         }
       ],
-      "identifier-field-ids": [
-        3,
-        63
-      ],
+      "identifier-field-ids": [],
       "schema-id": 4,
       "type": "struct"
     },
@@ -4138,7 +4116,7 @@
           "doc": "Unique region identifier",
           "id": 3,
           "name": "REGIONID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -4558,7 +4536,7 @@
           "doc": "Period expressed as Date/Time",
           "id": 63,
           "name": "DATETIME",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
@@ -4996,10 +4974,7 @@
           "type": "decimal(15, 6)"
         }
       ],
-      "identifier-field-ids": [
-        3,
-        63
-      ],
+      "identifier-field-ids": [],
       "schema-id": 5,
       "type": "struct"
     },
@@ -5023,7 +4998,7 @@
           "doc": "Unique region identifier",
           "id": 3,
           "name": "REGIONID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -5443,7 +5418,7 @@
           "doc": "Period expressed as Date/Time",
           "id": 63,
           "name": "DATETIME",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
@@ -5895,10 +5870,7 @@
           "type": "decimal(15, 5)"
         }
       ],
-      "identifier-field-ids": [
-        3,
-        63
-      ],
+      "identifier-field-ids": [],
       "schema-id": 6,
       "type": "struct"
     },
@@ -5922,7 +5894,7 @@
           "doc": "Unique region identifier",
           "id": 3,
           "name": "REGIONID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -6342,7 +6314,7 @@
           "doc": "Period expressed as Date/Time",
           "id": 63,
           "name": "DATETIME",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
@@ -6794,10 +6766,7 @@
           "type": "decimal(15, 5)"
         }
       ],
-      "identifier-field-ids": [
-        3,
-        63
-      ],
+      "identifier-field-ids": [],
       "schema-id": 7,
       "type": "struct"
     }

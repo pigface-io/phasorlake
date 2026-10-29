@@ -20,19 +20,12 @@
   "properties": {
     "comment": "Region results for Unserved Energy (USE)",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"RUN_DATETIME\",\"RUN_NO\",\"RUNTYPE\",\"DEMAND_POE_TYPE\",\"AGGREGATION_PERIOD\",\"PERIOD_ENDING\",\"REGIONID\",\"USE_ITERATION_ID\"]",
+    "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(4)\",\"3\":\"VARCHAR(20)\",\"4\":\"VARCHAR(20)\",\"5\":\"VARCHAR(20)\",\"6\":\"TIMESTAMP(0)\",\"7\":\"VARCHAR(20)\",\"8\":\"NUMERIC(5)\",\"9\":\"NUMERIC(12,2)\",\"10\":\"NUMERIC(12,2)\",\"11\":\"TIMESTAMP(0)\"}",
     "phasor.package": "MTPASA",
     "phasor.reports": "[[\"MTPASA\",\"REGIONITERATION\"]]",
     "phasor.table": "MTPASA_REGIONITERATION",
-    "phasor.temporal.cutoff": "RUN_DATETIME",
-    "phasor.temporal.entity": "[\"RUNTYPE\",\"DEMAND_POE_TYPE\",\"AGGREGATION_PERIOD\",\"REGIONID\",\"USE_ITERATION_ID\"]",
-    "phasor.temporal.order": "[\"RUN_DATETIME\",\"RUN_NO\",\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.column": "PERIOD_ENDING",
-    "phasor.temporal.valid.kind": "interval_end",
     "phasor.time": "RUN_DATETIME",
     "phasor.visibility": "PUBLIC"
   },
@@ -49,57 +42,57 @@
           "doc": "Date processing of the run begins.",
           "id": 1,
           "name": "RUN_DATETIME",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Unique run id.",
           "id": 2,
           "name": "RUN_NO",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(4, 0)"
         },
         {
           "doc": "Type of run. Always RELIABILITY",
           "id": 3,
           "name": "RUNTYPE",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "Demand POE type used. Value is POE10 or POE50",
           "id": 4,
           "name": "DEMAND_POE_TYPE",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "Period data is aggregated over. Values are YEAR",
           "id": 5,
           "name": "AGGREGATION_PERIOD",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "Datetime of day at end of period (i.e. last day of year reported)",
           "id": 6,
           "name": "PERIOD_ENDING",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "The unique region identifier",
           "id": 7,
           "name": "REGIONID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "Iteration ID, only produced for iterations showing unserved energy>0",
           "id": 8,
           "name": "USE_ITERATION_ID",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(5, 0)"
         },
         {
           "doc": "Number of half hours showing unserved energy over year, for iteration",
@@ -123,16 +116,7 @@
           "type": "timestamptz"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3,
-        4,
-        5,
-        6,
-        7,
-        8
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     }

@@ -20,9 +20,8 @@
   "properties": {
     "comment": "This report displays a list of all basins",
     "phasor.declared": "true",
-    "phasor.format": "4",
+    "phasor.format": "5",
     "phasor.headers": "{\"1\":\"BasinId\",\"2\":\"BasinName\"}",
-    "phasor.key": "[\"BASINID\"]",
     "phasor.load": "snapshot",
     "phasor.market": "gas",
     "phasor.model": "[\"GAS_BASIN\"]",
@@ -30,10 +29,6 @@
     "phasor.offset": "+10:00",
     "phasor.reports": "[[\"GBB\",\"BASINS\"]]",
     "phasor.table": "GBB_BASINS",
-    "phasor.temporal.entity": "[\"BASINID\"]",
-    "phasor.temporal.order": "[]",
-    "phasor.temporal.origin": "hand",
-    "phasor.temporal.valid.kind": "timeless",
     "phasor.visibility": "PUBLIC"
   },
   "refs": {
@@ -49,8 +44,8 @@
           "doc": "A unique AEMO defined Facility Identifier",
           "id": 1,
           "name": "BASINID",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(5, 0)"
         },
         {
           "doc": "The name of the basin. If short name exists then short name included in report",
@@ -60,9 +55,7 @@
           "type": "string"
         }
       ],
-      "identifier-field-ids": [
-        1
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     }

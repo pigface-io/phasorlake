@@ -20,9 +20,8 @@
   "properties": {
     "comment": "Provide the nameplate rating of each facility or information about any planned permanent capacity reduction or expansion due to modification of the facility.",
     "phasor.declared": "true",
-    "phasor.format": "4",
+    "phasor.format": "5",
     "phasor.headers": "{\"1\":\"facilityname\",\"2\":\"facilityid\",\"3\":\"facilitytype\",\"4\":\"capacitytype\",\"5\":\"receiptlocation\",\"6\":\"ReceiptLocationName\",\"7\":\"deliverylocation\",\"8\":\"DeliveryLocationName\",\"9\":\"capacitydescription\",\"10\":\"flowdirection\",\"11\":\"capacityquantity\",\"12\":\"effectivedate\",\"13\":\"description\",\"14\":\"LastUpdated\"}",
-    "phasor.key": "[]",
     "phasor.load": "append",
     "phasor.market": "gas",
     "phasor.model": "[\"GAS_NAMEPLATE_RATING\",\"GAS_FACILITY\",\"GAS_LOCATION\"]",
@@ -30,12 +29,6 @@
     "phasor.offset": "+10:00",
     "phasor.reports": "[[\"GBB\",\"NAMEPLATE_RATING\"],[\"GBB\",\"NAMEPLATE_RATING_CURRENT\"]]",
     "phasor.table": "GBB_NAMEPLATE_RATING",
-    "phasor.temporal.cutoff": "LASTUPDATED",
-    "phasor.temporal.entity": "[\"FACILITYID\"]",
-    "phasor.temporal.order": "[\"LASTUPDATED\"]",
-    "phasor.temporal.origin": "hand",
-    "phasor.temporal.valid.column": "EFFECTIVEDATE",
-    "phasor.temporal.valid.kind": "instant",
     "phasor.time": "EFFECTIVEDATE",
     "phasor.visibility": "PUBLIC"
   },

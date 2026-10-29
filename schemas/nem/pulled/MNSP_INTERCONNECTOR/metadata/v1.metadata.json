@@ -20,19 +20,12 @@
   "properties": {
     "comment": "MNSP_INTERCONNECTOR sets out attributes of each interconnector.",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"LINKID\",\"EFFECTIVEDATE\",\"VERSIONNO\"]",
+    "phasor.format": "5",
     "phasor.load": "snapshot",
     "phasor.model-types": "{\"1\":\"VARCHAR(10)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"NUMERIC(3,0)\",\"4\":\"VARCHAR(10)\",\"5\":\"VARCHAR(10)\",\"6\":\"VARCHAR(10)\",\"7\":\"NUMERIC(5,0)\",\"8\":\"NUMERIC(12,7)\",\"9\":\"NUMERIC(12,7)\",\"10\":\"NUMERIC(12,7)\",\"11\":\"TIMESTAMP(0)\",\"12\":\"VARCHAR(15)\",\"13\":\"TIMESTAMP(0)\",\"14\":\"NUMERIC(12,7)\",\"15\":\"NUMERIC(12,7)\"}",
     "phasor.package": "PARTICIPANT_REGISTRATION",
     "phasor.reports": "[[\"PARTICIPANT_REGISTRATION\",\"MNSP_INTERCONNECTOR\"]]",
     "phasor.table": "MNSP_INTERCONNECTOR",
-    "phasor.temporal.cutoff": "LASTCHANGED",
-    "phasor.temporal.entity": "[\"LINKID\"]",
-    "phasor.temporal.order": "[\"VERSIONNO\",\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.column": "EFFECTIVEDATE",
-    "phasor.temporal.valid.kind": "from",
     "phasor.visibility": "PUBLIC"
   },
   "refs": {
@@ -48,22 +41,22 @@
           "doc": "Identifier for each of the two MNSP Interconnector Links. Each link pertains to the direction from and to.",
           "id": 1,
           "name": "LINKID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "Date when Interconnector becomes effective",
           "id": 2,
           "name": "EFFECTIVEDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Version of data for other key data - a higher version for same key data will take precedence",
           "id": 3,
           "name": "VERSIONNO",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(3, 0)"
         },
         {
           "doc": "Interconnector Identifier",
@@ -136,11 +129,7 @@
           "type": "timestamptz"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     },
@@ -150,22 +139,22 @@
           "doc": "Identifier for each of the two MNSP Interconnector Links. Each link pertains to the direction from and to.",
           "id": 1,
           "name": "LINKID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "Date when Interconnector becomes effective",
           "id": 2,
           "name": "EFFECTIVEDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Version of data for other key data - a higher version for same key data will take precedence",
           "id": 3,
           "name": "VERSIONNO",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(3, 0)"
         },
         {
           "doc": "Interconnector Identifier",
@@ -252,11 +241,7 @@
           "type": "decimal(12, 7)"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3
-      ],
+      "identifier-field-ids": [],
       "schema-id": 1,
       "type": "struct"
     }

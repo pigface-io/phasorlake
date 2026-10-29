@@ -20,19 +20,12 @@
   "properties": {
     "comment": "PREDISPATCH_FCAS_REQ shows Predispatch Constraint tracking for Regional FCAS Requirements.",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"GENCONID\",\"REGIONID\",\"BIDTYPE\",\"DATETIME\"]",
+    "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"VARCHAR(20)\",\"2\":\"NUMERIC(3,0)\",\"3\":\"NUMERIC(2,0)\",\"4\":\"VARCHAR(20)\",\"5\":\"VARCHAR(20)\",\"6\":\"VARCHAR(10)\",\"7\":\"VARCHAR(10)\",\"8\":\"TIMESTAMP(0)\",\"9\":\"NUMERIC(3,0)\",\"10\":\"NUMERIC(16,6)\",\"11\":\"TIMESTAMP(0)\",\"12\":\"TIMESTAMP(0)\",\"13\":\"NUMERIC(18,8)\",\"14\":\"NUMERIC(18,8)\",\"15\":\"NUMERIC(18,8)\",\"16\":\"NUMERIC(18,8)\",\"17\":\"NUMERIC(18,8)\",\"18\":\"NUMERIC(18,8)\"}",
     "phasor.package": "PRE_DISPATCH",
     "phasor.reports": "[[\"PREDISPATCH\",\"REGIONFCASREQUIREMENT\"]]",
     "phasor.table": "PREDISPATCH_FCAS_REQ",
-    "phasor.temporal.cutoff": "LASTCHANGED",
-    "phasor.temporal.entity": "[\"GENCONID\",\"REGIONID\",\"BIDTYPE\",\"INTERVENTION\"]",
-    "phasor.temporal.order": "[\"PREDISPATCHSEQNO\",\"RUNNO\",\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.column": "DATETIME",
-    "phasor.temporal.valid.kind": "interval_end",
     "phasor.time": "DATETIME",
     "phasor.visibility": "PUBLIC"
   },
@@ -77,21 +70,21 @@
           "doc": "Generic Constraint ID - Join to table GenConData",
           "id": 5,
           "name": "GENCONID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "Region ID",
           "id": 6,
           "name": "REGIONID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "Bid Type Identifier",
           "id": 7,
           "name": "BIDTYPE",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -119,7 +112,7 @@
           "doc": "Date and Time of trading interval",
           "id": 11,
           "name": "DATETIME",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
@@ -172,12 +165,7 @@
           "type": "decimal(18, 8)"
         }
       ],
-      "identifier-field-ids": [
-        5,
-        6,
-        7,
-        11
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     }

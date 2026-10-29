@@ -20,19 +20,12 @@
   "properties": {
     "comment": "MT PASA input table defining a set of MT PASA Reserve Requirements. Note only one set can be active on a given date.",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"EFFECTIVEDATE\",\"VERSION_DATETIME\"]",
+    "phasor.format": "5",
     "phasor.load": "snapshot",
     "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"VARCHAR(20)\",\"4\":\"VARCHAR(200)\",\"5\":\"TIMESTAMP(0)\",\"6\":\"VARCHAR(20)\",\"7\":\"TIMESTAMP(0)\"}",
     "phasor.package": "RESERVE_DATA",
     "phasor.reports": "[[\"MTPASA\",\"RESERVELIMIT_SET\"]]",
     "phasor.table": "MTPASA_RESERVELIMIT_SET",
-    "phasor.temporal.cutoff": "VERSION_DATETIME",
-    "phasor.temporal.entity": "[]",
-    "phasor.temporal.order": "[\"VERSION_DATETIME\",\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.column": "EFFECTIVEDATE",
-    "phasor.temporal.valid.kind": "from",
     "phasor.visibility": "PUBLIC"
   },
   "refs": {
@@ -48,14 +41,14 @@
           "doc": "Trade date when the set of reserve requirements become effective",
           "id": 1,
           "name": "EFFECTIVEDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Timestamp when the set of reserve requirements become effective",
           "id": 2,
           "name": "VERSION_DATETIME",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
@@ -94,10 +87,7 @@
           "type": "timestamptz"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     }

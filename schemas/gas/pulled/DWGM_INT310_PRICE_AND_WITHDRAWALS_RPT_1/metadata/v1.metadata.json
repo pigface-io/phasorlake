@@ -19,18 +19,13 @@
   ],
   "properties": {
     "phasor.declared": "true",
-    "phasor.format": "4",
+    "phasor.format": "5",
     "phasor.headers": "{\"1\":\"gas_date\",\"2\":\"gas_hour\",\"3\":\"transmission_id\",\"4\":\"ctm_d1_inj\",\"5\":\"ctm_d1_wdl\",\"6\":\"price_value\",\"7\":\"administered_price\",\"8\":\"total_gas_withdrawals\",\"9\":\"total_gas_injections\"}",
-    "phasor.key": "[]",
     "phasor.load": "append",
     "phasor.market": "gas",
     "phasor.offset": "+10:00",
     "phasor.reports": "[[\"DWGM\",\"INT310_PRICE_AND_WITHDRAWALS_RPT_1\"]]",
     "phasor.table": "DWGM_INT310_PRICE_AND_WITHDRAWALS_RPT_1",
-    "phasor.temporal.entity": "[\"TRANSMISSION_ID\"]",
-    "phasor.temporal.order": "[]",
-    "phasor.temporal.origin": "hand",
-    "phasor.temporal.valid.kind": "timeless",
     "phasor.visibility": "PUBLIC"
   },
   "refs": {

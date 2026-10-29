@@ -20,19 +20,12 @@
   "properties": {
     "comment": "TRANSMISSIONLOSSFACTOR shows the Transmission Loss factors applied at each connection point.",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"EFFECTIVEDATE\",\"VERSIONNO\",\"CONNECTIONPOINTID\"]",
+    "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"NUMERIC(15,5)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"NUMERIC(22,0)\",\"4\":\"VARCHAR(10)\",\"5\":\"VARCHAR(10)\",\"6\":\"TIMESTAMP(0)\",\"7\":\"NUMERIC(18,8)\"}",
     "phasor.package": "MARKET_CONFIG",
     "phasor.reports": "[[\"MARKET_CONFIG\",\"TRANSMISSIONLOSSFACTOR\"]]",
     "phasor.table": "TRANSMISSIONLOSSFACTOR",
-    "phasor.temporal.cutoff": "LASTCHANGED",
-    "phasor.temporal.entity": "[\"CONNECTIONPOINTID\"]",
-    "phasor.temporal.order": "[\"VERSIONNO\",\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.column": "EFFECTIVEDATE",
-    "phasor.temporal.valid.kind": "from",
     "phasor.time": "EFFECTIVEDATE",
     "phasor.visibility": "PUBLIC"
   },
@@ -56,21 +49,21 @@
           "doc": "Effective date of record",
           "id": 2,
           "name": "EFFECTIVEDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Version no of record for given effective date",
           "id": 3,
           "name": "VERSIONNO",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "double"
         },
         {
           "doc": "Connection Point ID",
           "id": 4,
           "name": "CONNECTIONPOINTID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -88,11 +81,7 @@
           "type": "timestamptz"
         }
       ],
-      "identifier-field-ids": [
-        2,
-        3,
-        4
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     },
@@ -109,21 +98,21 @@
           "doc": "Effective date of record",
           "id": 2,
           "name": "EFFECTIVEDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Version no of record for given effective date",
           "id": 3,
           "name": "VERSIONNO",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "double"
         },
         {
           "doc": "Connection Point ID",
           "id": 4,
           "name": "CONNECTIONPOINTID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -148,11 +137,7 @@
           "type": "decimal(18, 8)"
         }
       ],
-      "identifier-field-ids": [
-        2,
-        3,
-        4
-      ],
+      "identifier-field-ids": [],
       "schema-id": 1,
       "type": "struct"
     }

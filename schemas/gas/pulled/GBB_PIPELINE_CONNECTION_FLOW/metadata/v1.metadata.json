@@ -20,9 +20,8 @@
   "properties": {
     "comment": "Provides on each gas day D, the BB facility operator’s daily gas flow data for injections and withdrawals at each connection point for gas day D-1.",
     "phasor.declared": "true",
-    "phasor.format": "4",
+    "phasor.format": "5",
     "phasor.headers": "{\"1\":\"GasDate\",\"2\":\"FacilityName\",\"3\":\"FacilityId\",\"4\":\"ConnectionPointName\",\"5\":\"ConnectionPointId\",\"6\":\"ActualQuantity\",\"7\":\"FlowDirection\",\"8\":\"State\",\"9\":\"LocationName\",\"10\":\"LocationId\",\"11\":\"Quality\",\"12\":\"LastUpdated\"}",
-    "phasor.key": "[]",
     "phasor.load": "append",
     "phasor.market": "gas",
     "phasor.model": "[\"GAS_DAILY_FLOW_ACTUAL\",\"GAS_FACILITY\",\"GAS_LOCATION\"]",
@@ -30,12 +29,6 @@
     "phasor.offset": "+10:00",
     "phasor.reports": "[[\"GBB\",\"PIPELINE_CONNECTION_FLOW\"],[\"GBB\",\"PIPELINE_CONNECTION_FLOW_LAST31\"]]",
     "phasor.table": "GBB_PIPELINE_CONNECTION_FLOW",
-    "phasor.temporal.cutoff": "LASTUPDATED",
-    "phasor.temporal.entity": "[\"FACILITYID\",\"CONNECTIONPOINTID\",\"LOCATIONID\"]",
-    "phasor.temporal.order": "[\"LASTUPDATED\"]",
-    "phasor.temporal.origin": "hand",
-    "phasor.temporal.valid.column": "GASDATE",
-    "phasor.temporal.valid.kind": "instant",
     "phasor.time": "GASDATE",
     "phasor.visibility": "PUBLIC"
   },

@@ -20,18 +20,12 @@
   "properties": {
     "comment": "PARTICIPANTCATEGORYALLOC sets out the assignment of participants to particular categories.",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"PARTICIPANTCATEGORYID\",\"PARTICIPANTID\"]",
+    "phasor.format": "5",
     "phasor.load": "snapshot",
     "phasor.model-types": "{\"1\":\"VARCHAR(10)\",\"2\":\"VARCHAR(10)\",\"3\":\"TIMESTAMP(0)\"}",
     "phasor.package": "PARTICIPANT_REGISTRATION",
     "phasor.reports": "[[\"PARTICIPANT_REGISTRATION\",\"PARTICIPANTCATEGORYALLOC\"]]",
     "phasor.table": "PARTICIPANTCATEGORYALLOC",
-    "phasor.temporal.cutoff": "LASTCHANGED",
-    "phasor.temporal.entity": "[\"PARTICIPANTCATEGORYID\",\"PARTICIPANTID\"]",
-    "phasor.temporal.order": "[\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.kind": "timeless",
     "phasor.visibility": "PUBLIC"
   },
   "refs": {
@@ -47,14 +41,14 @@
           "doc": "Category unique identifier",
           "id": 1,
           "name": "PARTICIPANTCATEGORYID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "Unique participant identifier",
           "id": 2,
           "name": "PARTICIPANTID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -65,10 +59,7 @@
           "type": "timestamptz"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     }

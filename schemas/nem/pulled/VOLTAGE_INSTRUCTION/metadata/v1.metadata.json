@@ -20,18 +20,12 @@
   "properties": {
     "comment": "Child record for Voltage Instructions (MVAr Dispatch)",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"RUN_DATETIME\",\"EMS_ID\",\"VERSION_DATETIME\"]",
+    "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"VARCHAR(60)\",\"3\":\"VARCHAR(20)\",\"4\":\"VARCHAR(60)\",\"5\":\"VARCHAR(60)\",\"6\":\"VARCHAR(20)\",\"7\":\"VARCHAR(20)\",\"8\":\"NUMERIC(20,5)\",\"9\":\"NUMERIC(1,0)\",\"10\":\"VARCHAR(400)\",\"11\":\"TIMESTAMP(0)\",\"12\":\"NUMERIC(4,0)\",\"13\":\"VARCHAR(60)\"}",
     "phasor.package": "VOLTAGE_INSTRUCTIONS",
     "phasor.reports": "[[\"VOLTAGE_INSTRUCTION\",\"INSTRUCTION\"]]",
     "phasor.table": "VOLTAGE_INSTRUCTION",
-    "phasor.temporal.entity": "[\"EMS_ID\"]",
-    "phasor.temporal.order": "[\"VERSION_DATETIME\"]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.column": "RUN_DATETIME",
-    "phasor.temporal.valid.kind": "instant",
     "phasor.time": "RUN_DATETIME",
     "phasor.visibility": "PUBLIC"
   },
@@ -48,14 +42,14 @@
           "doc": "MVAr Interval – a timestamp of when instructions issued",
           "id": 1,
           "name": "RUN_DATETIME",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "The unique identifier for reference within AEMO –matches equipment names between NOS and EMS",
           "id": 2,
           "name": "EMS_ID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -118,7 +112,7 @@
           "doc": "Datetime the file was published by VDS - Versions differ from Run_DateTime only for Supplemental runs",
           "id": 11,
           "name": "VERSION_DATETIME",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
@@ -136,11 +130,7 @@
           "type": "string"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        11
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     }

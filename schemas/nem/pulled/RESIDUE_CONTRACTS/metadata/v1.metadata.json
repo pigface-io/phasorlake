@@ -20,18 +20,12 @@
   "properties": {
     "comment": "RESIDUE_CONTRACTS supports the Settlement Residue Auction, by holding the contract details for each period for which a residue contract will be offered.",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"CONTRACTYEAR\",\"QUARTER\",\"TRANCHE\"]",
+    "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"NUMERIC(4,0)\",\"2\":\"NUMERIC(1,0)\",\"3\":\"NUMERIC(2,0)\",\"4\":\"VARCHAR(30)\",\"5\":\"TIMESTAMP(0)\",\"6\":\"TIMESTAMP(0)\",\"7\":\"TIMESTAMP(0)\",\"8\":\"TIMESTAMP(0)\",\"9\":\"VARCHAR(20)\",\"10\":\"TIMESTAMP(0)\",\"11\":\"VARCHAR(15)\",\"12\":\"TIMESTAMP(0)\",\"13\":\"VARCHAR(15)\",\"14\":\"TIMESTAMP(0)\",\"15\":\"VARCHAR(15)\",\"16\":\"TIMESTAMP(0)\",\"17\":\"VARCHAR(80)\",\"18\":\"VARCHAR(30)\"}",
     "phasor.package": "IRAUCTION",
     "phasor.reports": "[[\"IRAUCTION\",\"RESIDUE_CONTRACTS\"]]",
     "phasor.table": "RESIDUE_CONTRACTS",
-    "phasor.temporal.cutoff": "LASTCHANGED",
-    "phasor.temporal.entity": "[\"CONTRACTYEAR\",\"QUARTER\",\"TRANCHE\"]",
-    "phasor.temporal.order": "[\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.kind": "timeless",
     "phasor.time": "LASTCHANGED",
     "phasor.visibility": "PUBLIC"
   },
@@ -48,22 +42,22 @@
           "doc": "SRA Contracted Year",
           "id": 1,
           "name": "CONTRACTYEAR",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(4, 0)"
         },
         {
           "doc": "SRA Contracted Quarter",
           "id": 2,
           "name": "QUARTER",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(1, 0)"
         },
         {
           "doc": "Label identifying the arbitrary segmented share of the Interconnector flow",
           "id": 3,
           "name": "TRANCHE",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(2, 0)"
         },
         {
           "doc": "Unique identifier for each SRA Contract as specified by AEMO",
@@ -171,11 +165,7 @@
           "type": "string"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     }

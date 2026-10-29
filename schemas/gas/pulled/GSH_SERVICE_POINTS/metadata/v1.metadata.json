@@ -20,20 +20,13 @@
   "properties": {
     "comment": "Service Points currently registered under Part 24 of the Rules for the capacity trading and day ahead auction.",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"AUCTION_PRODUCT_TYPE\",\"EFFECTIVEDATE\",\"FACILITY_ID\",\"SERVICE_POINT_ID\",\"SERVICE_POINT_TYPE\",\"VERSION_DATETIME\"]",
+    "phasor.format": "5",
     "phasor.load": "snapshot",
     "phasor.market": "gas",
     "phasor.model-types": "{\"1\":\"NUMBER(8,0)\",\"2\":\"VARCHAR2(100)\",\"3\":\"NUMBER(8,0)\",\"4\":\"VARCHAR2(100)\",\"5\":\"VARCHAR2(20)\",\"6\":\"VARCHAR2(100)\",\"7\":\"VARCHAR2(255)\",\"8\":\"VARCHAR2(3)\",\"9\":\"NUMBER(8,0)\",\"10\":\"VARCHAR2(100)\",\"11\":\"NUMBER(8,0)\",\"12\":\"VARCHAR2(100)\",\"13\":\"VARCHAR2(3)\",\"14\":\"DATE\",\"15\":\"DATE\",\"16\":\"DATE\"}",
     "phasor.offset": "+10:00",
     "phasor.reports": "[[\"GSH\",\"SERVICE_POINTS\"]]",
     "phasor.table": "GSH_SERVICE_POINTS",
-    "phasor.temporal.cutoff": "LASTCHANGED",
-    "phasor.temporal.entity": "[\"AUCTION_PRODUCT_TYPE\",\"FACILITY_ID\",\"SERVICE_POINT_ID\",\"SERVICE_POINT_TYPE\"]",
-    "phasor.temporal.order": "[\"VERSION_DATETIME\",\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "hand",
-    "phasor.temporal.valid.column": "EFFECTIVEDATE",
-    "phasor.temporal.valid.kind": "instant",
     "phasor.time": "EFFECTIVEDATE",
     "phasor.visibility": "PUBLIC"
   },
@@ -50,7 +43,7 @@
           "doc": "The unique identifier of the parent facility.",
           "id": 1,
           "name": "FACILITY_ID",
-          "required": true,
+          "required": false,
           "type": "long"
         },
         {
@@ -64,7 +57,7 @@
           "doc": "The unique identifier of the service point.",
           "id": 3,
           "name": "SERVICE_POINT_ID",
-          "required": true,
+          "required": false,
           "type": "long"
         },
         {
@@ -78,14 +71,14 @@
           "doc": "Auction Product Type for Service Point",
           "id": 5,
           "name": "AUCTION_PRODUCT_TYPE",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "The type of service point, for example forward haul receipt point, forward haul delivery point, backhaul receipt point, backhaul delivery point, compression receipt point or compression delivery point.",
           "id": 6,
           "name": "SERVICE_POINT_TYPE",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -141,14 +134,14 @@
           "doc": "The effective date of the service point.",
           "id": 14,
           "name": "EFFECTIVEDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "The version timestamp of the record",
           "id": 15,
           "name": "VERSION_DATETIME",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
@@ -159,14 +152,7 @@
           "type": "timestamptz"
         }
       ],
-      "identifier-field-ids": [
-        5,
-        14,
-        1,
-        3,
-        6,
-        15
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     }

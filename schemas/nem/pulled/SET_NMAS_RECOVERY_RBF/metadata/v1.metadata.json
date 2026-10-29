@@ -20,19 +20,12 @@
   "properties": {
     "comment": "SET_NMAS_RECOVERY_RBF publishes the RBF for NSCAS non testing payments on a half hourly basis. This Table may also be used for NSCAS and Type 1 transitional services procured by AEMO under the ISF framework during 2025 and prior to the implementation of all system changes. During this time descriptions in these tables may not be correct.",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"SETTLEMENTDATE\",\"VERSIONNO\",\"PERIODID\",\"SERVICE\",\"CONTRACTID\",\"PAYMENTTYPE\",\"REGIONID\"]",
+    "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(3,0)\",\"3\":\"NUMERIC(3,0)\",\"4\":\"VARCHAR(20)\",\"5\":\"VARCHAR(20)\",\"6\":\"VARCHAR(20)\",\"7\":\"VARCHAR(10)\",\"8\":\"NUMERIC(18,8)\",\"9\":\"NUMERIC(18,8)\",\"10\":\"NUMERIC(18,8)\",\"11\":\"TIMESTAMP(0)\"}",
     "phasor.package": "SETTLEMENT_DATA",
     "phasor.reports": "[[\"SETTLEMENTS\",\"NMAS_RECOVERY_RBF\"]]",
     "phasor.table": "SET_NMAS_RECOVERY_RBF",
-    "phasor.temporal.cutoff": "LASTCHANGED",
-    "phasor.temporal.entity": "[\"PERIODID\",\"SERVICE\",\"CONTRACTID\",\"PAYMENTTYPE\",\"REGIONID\"]",
-    "phasor.temporal.order": "[\"VERSIONNO\",\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "hand",
-    "phasor.temporal.valid.column": "SETTLEMENTDATE",
-    "phasor.temporal.valid.kind": "day",
     "phasor.time": "SETTLEMENTDATE",
     "phasor.visibility": "PUBLIC"
   },
@@ -49,49 +42,49 @@
           "doc": "Settlement Date",
           "id": 1,
           "name": "SETTLEMENTDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Settlement run number",
           "id": 2,
           "name": "VERSIONNO",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(3, 0)"
         },
         {
           "doc": "Settlements Trading Interval.",
           "id": 3,
           "name": "PERIODID",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(3, 0)"
         },
         {
           "doc": "The type of NSCAS service incl ISF Services. Current value values are:\n- REACTIVE\n- LOADSHED\n- RESTART\n- INERTIA, SYSTEM STRENGTH, TYPE1, TYPE2",
           "id": 4,
           "name": "SERVICE",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "The NMAS/ISF Contract Id",
           "id": 5,
           "name": "CONTRACTID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "The type of payment being recovered. Valid values are:\n- AVAILABILITY\n- ENABLEMENT\n- COMPENSATION",
           "id": 6,
           "name": "PAYMENTTYPE",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "The region from where the amount is recovered",
           "id": 7,
           "name": "REGIONID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -123,15 +116,7 @@
           "type": "timestamptz"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3,
-        4,
-        5,
-        6,
-        7
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     }

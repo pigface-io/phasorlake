@@ -110,7 +110,6 @@ Every error and warning phasor reports carries one of these codes. Codes are sta
 | `schema.file_invalid` | `crates/phasor-registry/src/file_model/error.rs` |
 | `schema.file_parse` | `crates/phasor-registry/src/file_model/error.rs` |
 | `schema.file_read` | `crates/phasor-registry/src/file_model/error.rs` |
-| `schema.missing_key` | `crates/phasor-registry/src/error.rs` |
 | `schema.no_columns` | `crates/phasor-registry/src/error.rs` |
 | `schema.unknown_table` | `crates/phasor-registry/src/error.rs` |
 | `schema.unseen_version` | `crates/phasor-registry/src/resolve.rs` |

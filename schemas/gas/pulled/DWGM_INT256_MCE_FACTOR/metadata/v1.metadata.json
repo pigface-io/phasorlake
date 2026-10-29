@@ -19,20 +19,13 @@
   ],
   "properties": {
     "phasor.declared": "true",
-    "phasor.format": "4",
+    "phasor.format": "5",
     "phasor.headers": "{\"1\":\"general_information_id\",\"2\":\"r_factor\",\"3\":\"super_compressability_factor\",\"4\":\"t_factor\",\"5\":\"viscosity\",\"6\":\"voll_price\",\"7\":\"number_of_steps\",\"8\":\"eod_linepack_min\",\"9\":\"eod_linepack_max\",\"10\":\"commencement_date\",\"11\":\"termination_date\",\"12\":\"last_mod_date\",\"13\":\"current_date\"}",
-    "phasor.key": "[\"GENERAL_INFORMATION_ID\"]",
     "phasor.load": "snapshot",
     "phasor.market": "gas",
     "phasor.offset": "+10:00",
     "phasor.reports": "[[\"DWGM\",\"INT256_MCE_FACTOR_1\"]]",
     "phasor.table": "DWGM_INT256_MCE_FACTOR",
-    "phasor.temporal.cutoff": "CURRENT_DATE",
-    "phasor.temporal.entity": "[\"GENERAL_INFORMATION_ID\"]",
-    "phasor.temporal.order": "[\"CURRENT_DATE\"]",
-    "phasor.temporal.origin": "hand",
-    "phasor.temporal.valid.column": "COMMENCEMENT_DATE",
-    "phasor.temporal.valid.kind": "instant",
     "phasor.time": "COMMENCEMENT_DATE",
     "phasor.visibility": "PUBLIC"
   },
@@ -48,8 +41,8 @@
         {
           "id": 1,
           "name": "GENERAL_INFORMATION_ID",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(1, 0)"
         },
         {
           "id": 2,
@@ -124,9 +117,7 @@
           "type": "timestamptz"
         }
       ],
-      "identifier-field-ids": [
-        1
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     }

@@ -20,17 +20,11 @@
   "properties": {
     "comment": "This report delivers the calculated contribution factor value for each 5 minute trading interval for each constraint and FPP unit",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[]",
+    "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"VARCHAR(20)\",\"3\":\"VARCHAR(20)\",\"4\":\"NUMERIC(5)\",\"5\":\"VARCHAR(10)\",\"6\":\"NUMERIC(18,8)\",\"7\":\"NUMERIC(18,8)\",\"8\":\"NUMERIC(18,8)\",\"9\":\"NUMERIC(5)\",\"10\":\"NUMERIC(18,8)\",\"11\":\"NUMERIC(18,8)\",\"12\":\"NUMERIC(18,8)\",\"13\":\"VARCHAR(20)\",\"14\":\"VARCHAR(50)\",\"15\":\"TIMESTAMP(0)\"}",
     "phasor.reports": "[[\"FPP\",\"CONTRIBUTION_FACTOR\"]]",
     "phasor.table": "FPP_CONTRIBUTION_FACTOR",
-    "phasor.temporal.cutoff": "LASTCHANGED",
-    "phasor.temporal.entity": "[]",
-    "phasor.temporal.order": "[\"VERSIONNO\",\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.kind": "timeless",
     "phasor.time": "INTERVAL_DATETIME",
     "phasor.visibility": "PUBLIC"
   },

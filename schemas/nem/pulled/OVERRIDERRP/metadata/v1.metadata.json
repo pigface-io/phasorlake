@@ -20,20 +20,12 @@
   "properties": {
     "comment": "OVERRIDERRP shows details of override price periods.",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"REGIONID\",\"STARTDATE\",\"STARTPERIOD\"]",
+    "phasor.format": "5",
     "phasor.load": "snapshot",
     "phasor.model-types": "{\"1\":\"VARCHAR(10)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"NUMERIC(3,0)\",\"4\":\"TIMESTAMP(0)\",\"5\":\"NUMERIC(3,0)\",\"6\":\"NUMERIC(15,0)\",\"7\":\"VARCHAR(128)\",\"8\":\"VARCHAR(15)\",\"9\":\"VARCHAR(15)\",\"10\":\"TIMESTAMP(0)\"}",
     "phasor.package": "FORCE_MAJEURE",
     "phasor.reports": "[[\"FORCE_MAJEURE\",\"OVERRIDERRP\"]]",
     "phasor.table": "OVERRIDERRP",
-    "phasor.temporal.cutoff": "LASTCHANGED",
-    "phasor.temporal.entity": "[\"REGIONID\",\"STARTPERIOD\"]",
-    "phasor.temporal.order": "[\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.column": "STARTDATE",
-    "phasor.temporal.valid.kind": "from",
-    "phasor.temporal.valid.until": "ENDDATE",
     "phasor.visibility": "PUBLIC"
   },
   "refs": {
@@ -49,22 +41,22 @@
           "doc": "Region Identifier",
           "id": 1,
           "name": "REGIONID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "Starting date of override",
           "id": 2,
           "name": "STARTDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Starting period of override",
           "id": 3,
           "name": "STARTPERIOD",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(3, 0)"
         },
         {
           "doc": "Termination date of override",
@@ -116,11 +108,7 @@
           "type": "timestamptz"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     }

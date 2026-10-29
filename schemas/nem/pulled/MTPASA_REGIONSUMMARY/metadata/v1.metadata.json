@@ -20,19 +20,12 @@
   "properties": {
     "comment": "Region Results summary over aggregation periods.",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"RUN_DATETIME\",\"RUN_NO\",\"RUNTYPE\",\"DEMAND_POE_TYPE\",\"AGGREGATION_PERIOD\",\"PERIOD_ENDING\",\"REGIONID\"]",
+    "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(4)\",\"3\":\"VARCHAR(20)\",\"4\":\"VARCHAR(20)\",\"5\":\"VARCHAR(20)\",\"6\":\"TIMESTAMP(0)\",\"7\":\"VARCHAR(20)\",\"8\":\"NUMERIC(12,2)\",\"9\":\"NUMERIC(12,2)\",\"10\":\"NUMERIC(12,2)\",\"11\":\"NUMERIC(12,2)\",\"12\":\"NUMERIC(12,2)\",\"13\":\"NUMERIC(12,2)\",\"14\":\"NUMERIC(12,2)\",\"15\":\"NUMERIC(12,2)\",\"16\":\"NUMERIC(12,2)\",\"17\":\"NUMERIC(12,2)\",\"18\":\"NUMERIC(12,2)\",\"19\":\"NUMERIC(12,2)\",\"20\":\"NUMERIC(12,2)\",\"21\":\"NUMERIC(12,2)\",\"22\":\"NUMERIC(12,2)\",\"23\":\"NUMERIC(12,2)\",\"24\":\"NUMERIC(12,2)\",\"25\":\"NUMERIC(12,2)\",\"26\":\"NUMERIC(12,2)\",\"27\":\"NUMERIC(16,6)\",\"28\":\"NUMERIC(16,6)\",\"29\":\"NUMERIC(12,2)\",\"30\":\"TIMESTAMP(0)\"}",
     "phasor.package": "MTPASA",
     "phasor.reports": "[[\"MTPASA\",\"REGIONSUMMARY\"]]",
     "phasor.table": "MTPASA_REGIONSUMMARY",
-    "phasor.temporal.cutoff": "RUN_DATETIME",
-    "phasor.temporal.entity": "[\"RUNTYPE\",\"DEMAND_POE_TYPE\",\"AGGREGATION_PERIOD\",\"REGIONID\"]",
-    "phasor.temporal.order": "[\"RUN_DATETIME\",\"RUN_NO\",\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.column": "PERIOD_ENDING",
-    "phasor.temporal.valid.kind": "interval_end",
     "phasor.time": "RUN_DATETIME",
     "phasor.visibility": "PUBLIC"
   },
@@ -49,49 +42,49 @@
           "doc": "Date processing of the run begins.",
           "id": 1,
           "name": "RUN_DATETIME",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Unique run id.",
           "id": 2,
           "name": "RUN_NO",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(4, 0)"
         },
         {
           "doc": "Type of run. Always RELIABILITY",
           "id": 3,
           "name": "RUNTYPE",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "Demand POE type used. Value are POE10, POE50",
           "id": 4,
           "name": "DEMAND_POE_TYPE",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "Period data is aggregated over. Values are YEAR, MONTH",
           "id": 5,
           "name": "AGGREGATION_PERIOD",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "Datetime of day at end of period (i.e. last day of month or year reported)",
           "id": 6,
           "name": "PERIOD_ENDING",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "The unique region identifier",
           "id": 7,
           "name": "REGIONID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -256,15 +249,7 @@
           "type": "timestamptz"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3,
-        4,
-        5,
-        6,
-        7
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     }

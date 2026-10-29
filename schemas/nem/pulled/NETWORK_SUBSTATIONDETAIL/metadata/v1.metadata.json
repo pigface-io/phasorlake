@@ -20,20 +20,12 @@
   "properties": {
     "comment": "NETWORK_SUBSTATIONDETAIL sets out the attributes of sub-stations across time",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"SUBSTATIONID\",\"VALIDFROM\"]",
+    "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"VARCHAR(30)\",\"2\":\"TIMESTAMP(3)\",\"3\":\"TIMESTAMP(3)\",\"4\":\"VARCHAR(100)\",\"5\":\"VARCHAR(10)\",\"6\":\"VARCHAR(30)\",\"7\":\"TIMESTAMP(3)\"}",
     "phasor.package": "NETWORK",
     "phasor.reports": "[[\"NETWORK\",\"SUBSTATIONDETAIL\"]]",
     "phasor.table": "NETWORK_SUBSTATIONDETAIL",
-    "phasor.temporal.cutoff": "LASTCHANGED",
-    "phasor.temporal.entity": "[\"SUBSTATIONID\"]",
-    "phasor.temporal.order": "[\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.column": "VALIDFROM",
-    "phasor.temporal.valid.kind": "from",
-    "phasor.temporal.valid.until": "VALIDTO",
     "phasor.time": "LASTCHANGED",
     "phasor.visibility": "PUBLIC"
   },
@@ -50,14 +42,14 @@
           "doc": "ID uniquely identifying this substation",
           "id": 1,
           "name": "SUBSTATIONID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "The record is valid from this date (inclusive)",
           "id": 2,
           "name": "VALIDFROM",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
@@ -96,10 +88,7 @@
           "type": "timestamptz"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     }

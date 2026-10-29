@@ -20,16 +20,11 @@
   "properties": {
     "comment": "PD7DAY market summary showing calculated gas fuel forecasts",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[]",
+    "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"NUMERIC(15,5)\"}",
     "phasor.reports": "[[\"PD7DAY\",\"MARKET_SUMMARY\"]]",
     "phasor.table": "PD7DAY_MARKET_SUMMARY",
-    "phasor.temporal.entity": "[]",
-    "phasor.temporal.order": "[\"RUN_DATETIME\"]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.kind": "timeless",
     "phasor.time": "INTERVAL_DATETIME",
     "phasor.visibility": "PUBLIC"
   },

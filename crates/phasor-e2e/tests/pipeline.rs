@@ -17,9 +17,7 @@ use phasor_kit::{Catalog as _, KitRegistry, Strictness};
 use phasor_kit::{Granularity, Listings, Query, RemoteFile, Source};
 use phasor_pipeline::{Deps, Input, Plan, RunOptions, run};
 use phasor_registry::RegistryCatalog;
-use phasor_registry::file_model::{
-    Column, ColumnId, LakeType, Market, RoleOrigin, Run, Table, TableSchema, Temporal, ValidAxis,
-};
+use phasor_registry::file_model::{Column, ColumnId, LakeType, Market, Run, Table, TableSchema};
 use phasor_registry::{LoadMode, Registry};
 use phasor_writer::manifest::DiagFilter;
 use phasor_writer::{Manifest, ManifestHandle, ManifestThread};
@@ -117,14 +115,6 @@ fn text_table(
         older_names: Vec::new(),
         published: String::new(),
         load_mode: LoadMode::Append,
-        temporal: Temporal {
-            origin: RoleOrigin::Hand,
-            entity: vec![],
-            valid: ValidAxis::Timeless,
-            order: vec![],
-            cutoff: None,
-        },
-        primary_key: vec![],
         time_column: time_column.map(str::to_owned),
         columns: columns
             .iter()
@@ -147,7 +137,6 @@ fn text_table(
             .map(|(i, (_, cols))| TableSchema {
                 id: i as u16,
                 fields: cols.iter().map(|c| (id(c), false)).collect(),
-                key: Vec::new(),
             })
             .collect(),
         runs: schemas
@@ -459,7 +448,7 @@ async fn the_same_rows_are_laid_out_byte_for_byte_the_same() {
     assert_eq!(files.len(), 1, "{files:?}");
     assert_eq!(
         layout(&files[0]),
-        (vec![150_000], 1_031_190_125_928_677_621)
+        (vec![150_000], 13_485_013_892_379_961_982)
     );
 }
 
@@ -1201,7 +1190,8 @@ C,\"END OF REPORT\",9\n";
     assert_eq!(first.num_rows(), 2);
     // The table's columns, then each row's source and its three times.
     assert_eq!(first.num_columns(), 4 + 4);
-    assert!(!first.schema().field(1).is_nullable());
+    // Which columns may be null is a reader's to say: every one may.
+    assert!(first.schema().field(1).is_nullable());
     assert_eq!(second.num_rows(), 4);
     assert_eq!(second.num_columns(), 5 + 4);
     let names: Vec<String> = second
@@ -3094,10 +3084,7 @@ fn synthetic_mms(table: &Table, run: &Run) -> String {
         .iter()
         .map(|(id, required)| {
             let c = table.column_by_id(*id).expect("a schema's column");
-            (
-                c,
-                *required || table.primary_key.contains(&c.name) || !c.nullable,
-            )
+            (c, *required || !c.nullable)
         })
         .collect();
     let names: Vec<&str> = columns.iter().map(|(c, _)| c.name.as_str()).collect();

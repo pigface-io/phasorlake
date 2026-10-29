@@ -20,9 +20,8 @@
   "properties": {
     "comment": "The list of all registered organisations i.e the BB Participants of the Bulletin Board",
     "phasor.declared": "true",
-    "phasor.format": "4",
+    "phasor.format": "5",
     "phasor.headers": "{\"1\":\"CompanyId\",\"2\":\"CompanyName\",\"3\":\"OrganisationTypeName\",\"5\":\"CompanyPhone\",\"6\":\"Locale\",\"7\":\"AddressType\",\"8\":\"Address\",\"9\":\"State\",\"10\":\"Postcode\",\"11\":\"CompanyFax\",\"12\":\"LastUpdated\"}",
-    "phasor.key": "[\"COMPANYID\"]",
     "phasor.load": "snapshot",
     "phasor.market": "gas",
     "phasor.model": "[\"GAS_PARTICIPANT\",\"GAS_PARTICIPANT_DETAIL\"]",
@@ -30,11 +29,6 @@
     "phasor.offset": "+10:00",
     "phasor.reports": "[[\"GBB\",\"PARTICIPANTS\"]]",
     "phasor.table": "GBB_PARTICIPANTS",
-    "phasor.temporal.cutoff": "LASTUPDATED",
-    "phasor.temporal.entity": "[\"COMPANYID\"]",
-    "phasor.temporal.order": "[\"LASTUPDATED\"]",
-    "phasor.temporal.origin": "hand",
-    "phasor.temporal.valid.kind": "timeless",
     "phasor.time": "LASTUPDATED",
     "phasor.visibility": "PUBLIC"
   },
@@ -51,8 +45,8 @@
           "doc": "Unique company identifier",
           "id": 1,
           "name": "COMPANYID",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(3, 0)"
         },
         {
           "doc": "Name of company",
@@ -130,9 +124,7 @@
           "type": "timestamptz"
         }
       ],
-      "identifier-field-ids": [
-        1
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     }

@@ -20,20 +20,13 @@
   "properties": {
     "comment": "The report provides a summary of all trades executed in the current gas day per product. It provides information on the high/low open/close prices, total traded quantities and number of trades.",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"CURRENTDATE\",\"FROM_GAS_DATE\",\"PRODUCT_LOCATION\",\"PRODUCT_TYPE\",\"TO_GAS_DATE\"]",
+    "phasor.format": "5",
     "phasor.load": "append",
     "phasor.market": "gas",
     "phasor.model-types": "{\"1\":\"DATE\",\"2\":\"VARCHAR2(80)\",\"3\":\"VARCHAR2(80)\",\"4\":\"DATE\",\"5\":\"DATE\",\"6\":\"NUMBER(18,8)\",\"7\":\"NUMBER(18,8)\",\"8\":\"NUMBER(18,8)\",\"9\":\"NUMBER(18,8)\",\"10\":\"NUMBER(18,8)\",\"11\":\"NUMBER(18,8)\",\"12\":\"NUMBER(18,0)\",\"13\":\"DATE\"}",
     "phasor.offset": "+10:00",
     "phasor.reports": "[[\"GSH\",\"TRANSACTION_SUMMARY\"]]",
     "phasor.table": "GSH_TRANSACTION_SUMMARY",
-    "phasor.temporal.cutoff": "LASTCHANGED",
-    "phasor.temporal.entity": "[\"PRODUCT_LOCATION\",\"PRODUCT_TYPE\",\"FROM_GAS_DATE\",\"TO_GAS_DATE\"]",
-    "phasor.temporal.order": "[\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "hand",
-    "phasor.temporal.valid.column": "CURRENTDATE",
-    "phasor.temporal.valid.kind": "instant",
     "phasor.time": "CURRENTDATE",
     "phasor.visibility": "PUBLIC"
   },
@@ -50,35 +43,35 @@
           "doc": "The current gas date",
           "id": 1,
           "name": "CURRENTDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Product location for the Gas Supply Hub market",
           "id": 2,
           "name": "PRODUCT_LOCATION",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "The product delivery period for the Gas Supply Hub market",
           "id": 3,
           "name": "PRODUCT_TYPE",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "The start gas day for the order delivery period",
           "id": 4,
           "name": "FROM_GAS_DATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "The end gas day for the order delivery period",
           "id": 5,
           "name": "TO_GAS_DATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
@@ -138,13 +131,7 @@
           "type": "timestamptz"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        4,
-        2,
-        3,
-        5
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     }

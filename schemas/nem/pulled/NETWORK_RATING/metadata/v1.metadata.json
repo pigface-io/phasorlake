@@ -20,20 +20,12 @@
   "properties": {
     "comment": "NETWORK_RATING defines a list of the equipment ratings that may be used as inputs to market constraints.\nIf the rating is flagged as dynamic then in real-time the rating will be dynamically determined and the static value will be used as a fallback value should the dynamic value fail.\nNote:\nIn some rare cases equipment has ratings provided from more than one TNSP. This is identified by a different SPD Id. The value used in the NEM is normally the more restrictive of the two values.",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"SPD_ID\",\"VALIDFROM\"]",
+    "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"VARCHAR(21)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"TIMESTAMP(0)\",\"4\":\"VARCHAR(10)\",\"5\":\"VARCHAR(30)\",\"6\":\"VARCHAR(10)\",\"7\":\"VARCHAR(30)\",\"8\":\"VARCHAR(10)\",\"9\":\"NUMERIC(1,0)\",\"10\":\"TIMESTAMP(0)\"}",
     "phasor.package": "NETWORK",
     "phasor.reports": "[[\"NETWORK\",\"RATING\"]]",
     "phasor.table": "NETWORK_RATING",
-    "phasor.temporal.cutoff": "LASTCHANGED",
-    "phasor.temporal.entity": "[\"SPD_ID\"]",
-    "phasor.temporal.order": "[\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.column": "VALIDFROM",
-    "phasor.temporal.valid.kind": "from",
-    "phasor.temporal.valid.until": "VALIDTO",
     "phasor.time": "LASTCHANGED",
     "phasor.visibility": "PUBLIC"
   },
@@ -50,14 +42,14 @@
           "doc": "ID defining this data source for use in constraints",
           "id": 1,
           "name": "SPD_ID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "The date that this record is applies from (inclusive)",
           "id": 2,
           "name": "VALIDFROM",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
@@ -117,10 +109,7 @@
           "type": "timestamptz"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     }

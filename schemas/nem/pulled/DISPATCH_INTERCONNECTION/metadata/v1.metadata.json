@@ -20,19 +20,12 @@
   "properties": {
     "comment": "Inter-regional flow information common to or aggregated for regulated (i.e. not MNSP) Interconnectors spanning the From-Region and To-Region - NB only the physical run is calculated'",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"SETTLEMENTDATE\",\"RUNNO\",\"INTERVENTION\",\"FROM_REGIONID\",\"TO_REGIONID\"]",
+    "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(3,0)\",\"3\":\"NUMERIC(2,0)\",\"4\":\"VARCHAR(20)\",\"5\":\"VARCHAR(20)\",\"6\":\"NUMERIC(22,0)\",\"7\":\"NUMERIC(15,5)\",\"8\":\"NUMERIC(16,6)\",\"9\":\"NUMERIC(16,6)\",\"10\":\"NUMERIC(16,6)\",\"11\":\"NUMERIC(16,6)\",\"12\":\"TIMESTAMP(0)\"}",
     "phasor.package": "DISPATCH",
     "phasor.reports": "[[\"DISPATCH\",\"INTERCONNECTION\"]]",
     "phasor.table": "DISPATCH_INTERCONNECTION",
-    "phasor.temporal.cutoff": "LASTCHANGED",
-    "phasor.temporal.entity": "[\"INTERVENTION\",\"FROM_REGIONID\",\"TO_REGIONID\"]",
-    "phasor.temporal.order": "[\"RUNNO\",\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.column": "SETTLEMENTDATE",
-    "phasor.temporal.valid.kind": "interval_end",
     "phasor.time": "SETTLEMENTDATE",
     "phasor.visibility": "PUBLIC"
   },
@@ -49,35 +42,35 @@
           "doc": "Market date starting at 04:05",
           "id": 1,
           "name": "SETTLEMENTDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Dispatch run no; always 1",
           "id": 2,
           "name": "RUNNO",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(3, 0)"
         },
         {
           "doc": "Intervention case or not",
           "id": 3,
           "name": "INTERVENTION",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(2, 0)"
         },
         {
           "doc": "Nominated RegionID from which the energy flows",
           "id": 4,
           "name": "FROM_REGIONID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "Nominated RegionID to which the energy flows",
           "id": 5,
           "name": "TO_REGIONID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -130,13 +123,7 @@
           "type": "timestamptz"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3,
-        4,
-        5
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     }

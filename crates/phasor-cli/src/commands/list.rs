@@ -11,7 +11,7 @@ use crate::cli::ListCmd;
 use crate::context::Context;
 use crate::render;
 
-use super::common::{fail, rfc3339, role_of, table_id};
+use super::common::{fail, rfc3339, table_id};
 
 /// What the lake holds of one table, from its live outputs.
 #[derive(Default)]
@@ -113,13 +113,6 @@ async fn tables(ctx: &Context, args: &ListCmd) -> Result<i32> {
         {
             continue;
         }
-        if args
-            .kind
-            .as_deref()
-            .is_some_and(|k| k != t.temporal.valid.kind())
-        {
-            continue;
-        }
         if let Some(g) = &grep
             && !(t.name.to_ascii_lowercase().contains(g)
                 || t.description
@@ -130,21 +123,14 @@ async fn tables(ctx: &Context, args: &ListCmd) -> Result<i32> {
         }
         let off = r.market_of(id).utc_offset_secs;
         let h = held.get(t.name.as_str());
-        let kind = match t.temporal.valid.column() {
-            Some(c) => format!("{} {c}", t.temporal.valid.kind()),
-            None => t.temporal.valid.kind().to_owned(),
-        };
+        let mode = format!("{:?}", t.load_mode).to_ascii_lowercase();
         rows.push((
             t.name.clone(),
             serde_json::json!({
                 "table": t.name,
                 "market": t.market.id(),
-                "kind": t.temporal.valid.kind(),
-                "valid": t.temporal.valid.column(),
-                "entity": t.temporal.entity,
-                "order": t.temporal.order,
-                "cutoff": t.temporal.cutoff,
-                "mode": format!("{:?}", t.load_mode).to_ascii_lowercase(),
+                "time": t.time_column,
+                "mode": mode,
                 "lake_files": h.map_or(0, |h| h.files),
                 "lake_rows": h.map_or(0, |h| h.rows),
                 "lake_span": h.map(|h| h.span(off)).filter(|s| !s.is_empty()),
@@ -153,8 +139,8 @@ async fn tables(ctx: &Context, args: &ListCmd) -> Result<i32> {
             vec![
                 t.name.clone(),
                 t.market.id().to_owned(),
-                kind,
-                t.temporal.entity.join(","),
+                t.time_column.clone().unwrap_or_default(),
+                mode.clone(),
                 h.map_or_else(|| "0".to_owned(), |h| h.rows.to_string()),
                 h.map_or_else(String::new, |h| h.span(off)),
                 t.description.clone().unwrap_or_default(),
@@ -174,8 +160,8 @@ async fn tables(ctx: &Context, args: &ListCmd) -> Result<i32> {
                 &[
                     "table",
                     "market",
-                    "valid",
-                    "entity",
+                    "time",
+                    "mode",
                     "rows",
                     "span",
                     "description"
@@ -193,7 +179,13 @@ fn columns(ctx: &Context, id: TableId) -> Result<i32> {
     let t = r.table(id);
     // The data model's words for each column, as phasor-schemas publishes them.
     let docs: BTreeMap<u32, String> = t.published().docs;
-    let role = |name: &str| role_of(t, name);
+    let role = |name: &str| {
+        if t.time_column.as_deref() == Some(name) {
+            "time"
+        } else {
+            ""
+        }
+    };
     let rows: Vec<Vec<String>> = t
         .columns
         .iter()

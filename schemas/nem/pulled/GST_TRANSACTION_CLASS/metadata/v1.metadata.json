@@ -20,19 +20,12 @@
   "properties": {
     "comment": "GST_TRANSACTION_CLASS maps NEM settlement transaction types with BAS (Business Activity Statement) classifications.",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"EFFECTIVEDATE\",\"VERSIONNO\",\"TRANSACTION_TYPE\",\"BAS_CLASS\"]",
+    "phasor.format": "5",
     "phasor.load": "snapshot",
     "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(3,0)\",\"3\":\"VARCHAR(30)\",\"4\":\"VARCHAR(30)\",\"5\":\"TIMESTAMP(0)\"}",
     "phasor.package": "BILLING_CONFIG",
     "phasor.reports": "[[\"BILLING_CONFIG\",\"GST_TRANSACTION_CLASS\"]]",
     "phasor.table": "GST_TRANSACTION_CLASS",
-    "phasor.temporal.cutoff": "LASTCHANGED",
-    "phasor.temporal.entity": "[\"TRANSACTION_TYPE\",\"BAS_CLASS\"]",
-    "phasor.temporal.order": "[\"VERSIONNO\",\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.column": "EFFECTIVEDATE",
-    "phasor.temporal.valid.kind": "from",
     "phasor.visibility": "PUBLIC"
   },
   "refs": {
@@ -48,28 +41,28 @@
           "doc": "The effective date of the data set",
           "id": 1,
           "name": "EFFECTIVEDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "The version number of the data set",
           "id": 2,
           "name": "VERSIONNO",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(3, 0)"
         },
         {
           "doc": "NEM settlement transaction type",
           "id": 3,
           "name": "TRANSACTION_TYPE",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "The BAS classification that the transaction type corresponds to",
           "id": 4,
           "name": "BAS_CLASS",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -80,12 +73,7 @@
           "type": "timestamptz"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3,
-        4
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     }

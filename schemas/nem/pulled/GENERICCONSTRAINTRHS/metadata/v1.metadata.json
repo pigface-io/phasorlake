@@ -20,19 +20,12 @@
   "properties": {
     "comment": "GENERICCONSTRAINTRHS sets out details of generic constraint Right Hand Side (RHS) formulations for dispatch (DS), predispatch (PD) and Short Term PASA (ST). GENERICCONSTRAINTRHS also includes general expressions (EQ) used in the dispatch, predispatch and PASA time frames.\nGENERICCONSTRAINTRHS replaces data previously available via the \"Constraint Library” Excel spreadsheet.",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"GENCONID\",\"EFFECTIVEDATE\",\"VERSIONNO\",\"SCOPE\",\"TERMID\"]",
+    "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"VARCHAR(20)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"NUMERIC(22,0)\",\"4\":\"VARCHAR(2)\",\"5\":\"NUMERIC(4,0)\",\"6\":\"NUMERIC(3,0)\",\"7\":\"VARCHAR(21)\",\"8\":\"VARCHAR(1)\",\"9\":\"NUMERIC(16,6)\",\"10\":\"VARCHAR(10)\",\"11\":\"NUMERIC(16,6)\",\"12\":\"VARCHAR(12)\",\"13\":\"VARCHAR(12)\",\"14\":\"VARCHAR(12)\",\"15\":\"TIMESTAMP(0)\"}",
     "phasor.package": "GENERIC_CONSTRAINT",
     "phasor.reports": "[[\"GCRHS\",\"\"],[\"GCRHS\",\"NULL\"]]",
     "phasor.table": "GENERICCONSTRAINTRHS",
-    "phasor.temporal.cutoff": "LASTCHANGED",
-    "phasor.temporal.entity": "[\"GENCONID\",\"SCOPE\",\"TERMID\"]",
-    "phasor.temporal.order": "[\"VERSIONNO\",\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.column": "EFFECTIVEDATE",
-    "phasor.temporal.valid.kind": "from",
     "phasor.time": "EFFECTIVEDATE",
     "phasor.visibility": "PUBLIC"
   },
@@ -49,36 +42,36 @@
           "doc": "Generic Constraint Identifier",
           "id": 1,
           "name": "GENCONID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "Effective date of this record",
           "id": 2,
           "name": "EFFECTIVEDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Version no of this record for the effective date",
           "id": 3,
           "name": "VERSIONNO",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "double"
         },
         {
           "doc": "Scope of RHS term (DS, PD, ST or EQ)",
           "id": 4,
           "name": "SCOPE",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "The unique identifier for the a constraint RHS term",
           "id": 5,
           "name": "TERMID",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(4, 0)"
         },
         {
           "doc": "ID of super-term, if this is a sub-term",
@@ -151,13 +144,7 @@
           "type": "timestamptz"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3,
-        4,
-        5
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     }

@@ -20,7 +20,7 @@
   "properties": {
     "comment": "RESIDUE_PRICE_BID supports the Settlement Residue Auction, holding the unit and bid price details for each participant.",
     "phasor.declared": "false",
-    "phasor.format": "4",
+    "phasor.format": "5",
     "phasor.model-types": "{\"1\":\"VARCHAR(30)\",\"5\":\"NUMERIC(17,5)\",\"7\":\"VARCHAR(30)\"}",
     "phasor.table": "RESIDUE_PRICE_BID"
   },

@@ -19,20 +19,13 @@
   ],
   "properties": {
     "phasor.declared": "true",
-    "phasor.format": "4",
+    "phasor.format": "5",
     "phasor.headers": "{\"1\":\"system_wide_notice_id\",\"2\":\"critical_notice_flag\",\"3\":\"system_message\",\"4\":\"system_email_message\",\"5\":\"notice_start_date\",\"6\":\"notice_end_date\",\"7\":\"url_path\",\"8\":\"current_date\"}",
-    "phasor.key": "[\"SYSTEM_WIDE_NOTICE_ID\"]",
     "phasor.load": "snapshot",
     "phasor.market": "gas",
     "phasor.offset": "+10:00",
     "phasor.reports": "[[\"DWGM\",\"INT029A_SYSTEM_NOTICES_1\"]]",
     "phasor.table": "DWGM_INT029A_SYSTEM_NOTICES",
-    "phasor.temporal.cutoff": "CURRENT_DATE",
-    "phasor.temporal.entity": "[\"SYSTEM_WIDE_NOTICE_ID\"]",
-    "phasor.temporal.order": "[\"CURRENT_DATE\"]",
-    "phasor.temporal.origin": "hand",
-    "phasor.temporal.valid.column": "NOTICE_START_DATE",
-    "phasor.temporal.valid.kind": "instant",
     "phasor.time": "NOTICE_START_DATE",
     "phasor.visibility": "PUBLIC"
   },
@@ -48,8 +41,8 @@
         {
           "id": 1,
           "name": "SYSTEM_WIDE_NOTICE_ID",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(5, 0)"
         },
         {
           "id": 2,
@@ -94,9 +87,7 @@
           "type": "timestamptz"
         }
       ],
-      "identifier-field-ids": [
-        1
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     }

@@ -20,9 +20,8 @@
   "properties": {
     "comment": "Provides details of all facilities",
     "phasor.declared": "true",
-    "phasor.format": "4",
+    "phasor.format": "5",
     "phasor.headers": "{\"1\":\"FacilityName\",\"2\":\"FacilityShortName\",\"3\":\"FacilityId\",\"4\":\"FacilityType\",\"5\":\"FacilityTypeDescription\",\"6\":\"OperatingState\",\"7\":\"OperatingStateDate\",\"8\":\"OperatorName\",\"9\":\"OperatorId\",\"10\":\"OperatorChangeDate\",\"11\":\"LastUpdated\"}",
-    "phasor.key": "[\"FACILITYID\",\"OPERATORID\"]",
     "phasor.load": "snapshot",
     "phasor.market": "gas",
     "phasor.model": "[\"GAS_FACILITY\",\"GAS_FACILITY_DETAIL\",\"GAS_FACILITY_OPSTATE\",\"GAS_FACILITY_OWNER\"]",
@@ -30,12 +29,6 @@
     "phasor.offset": "+10:00",
     "phasor.reports": "[[\"GBB\",\"FACILITIES_FULL\"],[\"GBB\",\"FACILITIES\"]]",
     "phasor.table": "GBB_FACILITIES",
-    "phasor.temporal.cutoff": "LASTUPDATED",
-    "phasor.temporal.entity": "[\"FACILITYID\",\"OPERATORID\"]",
-    "phasor.temporal.order": "[\"LASTUPDATED\"]",
-    "phasor.temporal.origin": "hand",
-    "phasor.temporal.valid.column": "OPERATINGSTATEDATE",
-    "phasor.temporal.valid.kind": "instant",
     "phasor.time": "OPERATINGSTATEDATE",
     "phasor.visibility": "PUBLIC"
   },
@@ -66,8 +59,8 @@
           "doc": "Unique Facility Identifier",
           "id": 3,
           "name": "FACILITYID",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(6, 0)"
         },
         {
           "doc": "Describes the type of facility. Refer to the GAS_FACILITY_TYPE table",
@@ -105,7 +98,7 @@
           "id": 9,
           "name": "OPERATORID",
           "required": false,
-          "type": "long"
+          "type": "decimal(3, 0)"
         },
         {
           "id": 10,
@@ -114,9 +107,7 @@
           "type": "date"
         }
       ],
-      "identifier-field-ids": [
-        3
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     },
@@ -140,8 +131,8 @@
           "doc": "Unique Facility Identifier",
           "id": 3,
           "name": "FACILITYID",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(6, 0)"
         },
         {
           "doc": "Describes the type of facility. Refer to the GAS_FACILITY_TYPE table",
@@ -179,7 +170,7 @@
           "id": 9,
           "name": "OPERATORID",
           "required": false,
-          "type": "long"
+          "type": "decimal(3, 0)"
         },
         {
           "id": 10,
@@ -194,9 +185,7 @@
           "type": "timestamptz"
         }
       ],
-      "identifier-field-ids": [
-        3
-      ],
+      "identifier-field-ids": [],
       "schema-id": 1,
       "type": "struct"
     }

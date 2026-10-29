@@ -20,19 +20,12 @@
   "properties": {
     "comment": "GENCONDATA sets out the generic constraints contained within a generic constraint set invoked in PASA, predispatch and dispatch.\nFields enable selective application of invoked constraints in the Dispatch, Predispatch, ST PASA or MT PASA processes.",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"EFFECTIVEDATE\",\"VERSIONNO\",\"GENCONID\"]",
+    "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(3,0)\",\"3\":\"VARCHAR(20)\",\"4\":\"VARCHAR(2)\",\"5\":\"NUMERIC(16,6)\",\"6\":\"VARCHAR(256)\",\"7\":\"VARCHAR(8)\",\"8\":\"NUMERIC(16,6)\",\"9\":\"TIMESTAMP(0)\",\"10\":\"VARCHAR(15)\",\"11\":\"NUMERIC(15,5)\",\"12\":\"TIMESTAMP(0)\",\"13\":\"VARCHAR(1)\",\"14\":\"VARCHAR(1)\",\"15\":\"VARCHAR(1)\",\"16\":\"VARCHAR(1)\",\"17\":\"VARCHAR(64)\",\"18\":\"VARCHAR(128)\",\"19\":\"VARCHAR(64)\",\"20\":\"VARCHAR(256)\",\"21\":\"VARCHAR(256)\",\"22\":\"VARCHAR(256)\",\"23\":\"VARCHAR(2)\",\"24\":\"VARCHAR(1)\",\"25\":\"VARCHAR(1)\",\"26\":\"NUMERIC(1,0)\",\"27\":\"VARCHAR(1)\",\"28\":\"VARCHAR(20)\",\"29\":\"VARCHAR(40)\"}",
     "phasor.package": "GENERIC_CONSTRAINT",
     "phasor.reports": "[[\"GENCONDATA\",\"\"],[\"GENCONDATA\",\"NULL\"]]",
     "phasor.table": "GENCONDATA",
-    "phasor.temporal.cutoff": "LASTCHANGED",
-    "phasor.temporal.entity": "[\"GENCONID\"]",
-    "phasor.temporal.order": "[\"VERSIONNO\",\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.column": "EFFECTIVEDATE",
-    "phasor.temporal.valid.kind": "from",
     "phasor.time": "EFFECTIVEDATE",
     "phasor.visibility": "PUBLIC"
   },
@@ -49,21 +42,21 @@
           "doc": "Effective date of this constraint",
           "id": 1,
           "name": "EFFECTIVEDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Version with respect to the effective date",
           "id": 2,
           "name": "VERSIONNO",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(3, 0)"
         },
         {
           "doc": "Unique ID for the constraint",
           "id": 3,
           "name": "GENCONID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -221,11 +214,7 @@
           "type": "decimal(1, 0)"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     },
@@ -235,21 +224,21 @@
           "doc": "Effective date of this constraint",
           "id": 1,
           "name": "EFFECTIVEDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Version with respect to the effective date",
           "id": 2,
           "name": "VERSIONNO",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(3, 0)"
         },
         {
           "doc": "Unique ID for the constraint",
           "id": 3,
           "name": "GENCONID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -414,11 +403,7 @@
           "type": "decimal(1, 0)"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3
-      ],
+      "identifier-field-ids": [],
       "schema-id": 1,
       "type": "struct"
     },
@@ -428,21 +413,21 @@
           "doc": "Effective date of this constraint",
           "id": 1,
           "name": "EFFECTIVEDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Version with respect to the effective date",
           "id": 2,
           "name": "VERSIONNO",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(3, 0)"
         },
         {
           "doc": "Unique ID for the constraint",
           "id": 3,
           "name": "GENCONID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -607,11 +592,7 @@
           "type": "decimal(1, 0)"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3
-      ],
+      "identifier-field-ids": [],
       "schema-id": 2,
       "type": "struct"
     },
@@ -621,21 +602,21 @@
           "doc": "Effective date of this constraint",
           "id": 1,
           "name": "EFFECTIVEDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Version with respect to the effective date",
           "id": 2,
           "name": "VERSIONNO",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(3, 0)"
         },
         {
           "doc": "Unique ID for the constraint",
           "id": 3,
           "name": "GENCONID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -821,11 +802,7 @@
           "type": "string"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3
-      ],
+      "identifier-field-ids": [],
       "schema-id": 3,
       "type": "struct"
     }

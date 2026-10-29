@@ -36,7 +36,8 @@ every census block and writes each table's history.
   seen so far would re-type a column whose first months were null and turn
   more digits after the point into a new field, since Iceberg cannot widen
   a scale.
-- **Required** only for a key column, until a block holds a row without it.
+- **Never required**: every field is optional. Which columns may be null,
+  and what one row is, are a reader's decisions, not the lake's.
 - **Interned.** A schema with the same fields, order and key as an earlier
   one is that one, with its id.
 
@@ -89,7 +90,7 @@ snapshot, with its first and last source file, months and version in the
 summary. After the runs the union of the history's schemas becomes
 current: every field by id, under its newest name, which is what every
 lake file holds. The table's properties are the ones phasor-schemas
-publishes (declaration, roles, key, `with-columns`, breaks, the data
+publishes (declaration, `with-columns`, breaks, the data
 model's words) and `phasor.lake.format`; the union's fields carry the
 data model's description of each column. The store (`crates/phasor-iceberg-store`) is a single writer:
 versioned metadata files and a `version-hint.text` swapped by rename. The

@@ -7,8 +7,6 @@ use std::fmt;
 use phasor_core::YearMonth;
 use serde::{Deserialize, Serialize};
 
-use crate::file_model::temporal::Temporal;
-
 /// The market a table belongs to, as the published metadata names it.
 pub use phasor_iceberg::Market;
 
@@ -229,8 +227,6 @@ pub struct TableSchema {
     pub id: u16,
     /// Its fields in file order, each with whether every row has a value.
     pub fields: Vec<(ColumnId, bool)>,
-    /// The fields of the key.
-    pub key: Vec<ColumnId>,
 }
 
 /// Consecutive files AEMO released under one schema, version and report pair.
@@ -278,10 +274,6 @@ pub struct Table {
     pub published: String,
     /// Append or snapshot.
     pub load_mode: LoadMode,
-    /// What a fact is about, when it applies, and which revision is newest.
-    pub temporal: Temporal<String>,
-    /// Primary key column names.
-    pub primary_key: Vec<String>,
     /// The column that partitions the table by month.
     pub time_column: Option<String>,
     /// Every lake column, by id.
@@ -406,7 +398,7 @@ impl Table {
                             })
                         })
                         .collect(),
-                    identifier_field_ids: s.key.iter().map(|k| k.0).collect(),
+                    identifier_field_ids: Vec::new(),
                     last_column_id: last,
                 })
                 .collect(),
@@ -479,9 +471,7 @@ pub(crate) mod tests {
 
     /// DISPATCH_UNIT_SCADA in two schemas: three columns, then four from 2026-08.
     pub(crate) fn unit_scada() -> Table {
-        let names = |n: &[&str]| n.iter().map(|s| (*s).to_owned()).collect::<Vec<_>>();
-        let key = vec![ColumnId(1), ColumnId(2)];
-        let fields = |n: u32| (1..=n).map(|i| (ColumnId(i), i <= 2)).collect();
+        let fields = |n: u32| (1..=n).map(|i| (ColumnId(i), false)).collect();
         Table {
             market: Market::Nem,
             name: "DISPATCH_UNIT_SCADA".into(),
@@ -491,18 +481,10 @@ pub(crate) mod tests {
             older_names: Vec::new(),
             published: String::new(),
             load_mode: LoadMode::Append,
-            temporal: Temporal {
-                origin: crate::file_model::temporal::RoleOrigin::Derived,
-                entity: names(&["DUID"]),
-                valid: crate::file_model::temporal::ValidAxis::IntervalEnd("SETTLEMENTDATE".into()),
-                order: names(&["LASTCHANGED"]),
-                cutoff: Some("LASTCHANGED".into()),
-            },
-            primary_key: names(&["SETTLEMENTDATE", "DUID"]),
             time_column: Some("SETTLEMENTDATE".into()),
             columns: vec![
-                col(1, "SETTLEMENTDATE", LakeType::Timestamp, false),
-                col(2, "DUID", LakeType::String, false),
+                col(1, "SETTLEMENTDATE", LakeType::Timestamp, true),
+                col(2, "DUID", LakeType::String, true),
                 col(3, "SCADAVALUE", LakeType::Double, true),
                 col(4, "LASTCHANGED", LakeType::Timestamp, true),
             ],
@@ -510,12 +492,10 @@ pub(crate) mod tests {
                 TableSchema {
                     id: 0,
                     fields: fields(3),
-                    key: key.clone(),
                 },
                 TableSchema {
                     id: 1,
                     fields: fields(4),
-                    key,
                 },
             ],
             runs: vec![
@@ -596,12 +576,12 @@ pub(crate) mod tests {
         assert_eq!(h.schemas.len(), 2);
         assert_eq!(h.current_schema_id, 1);
         assert_eq!(h.schemas[1].fields[3].ty, IcebergType::Timestamptz);
-        assert_eq!(h.schemas[0].identifier_field_ids, [1, 2]);
+        assert!(h.schemas[0].identifier_field_ids.is_empty());
         assert_eq!(
             (h.schemas[0].last_column_id, h.runs[1].from.release.as_str()),
             (4, "2026-08")
         );
-        assert!(h.schemas[0].fields[0].required && !h.schemas[0].fields[2].required);
+        assert!(h.schemas[0].fields.iter().all(|f| !f.required));
         let pair = ["DISPATCH", "UNIT_SCADA"];
         let three = ["SETTLEMENTDATE", "DUID", "SCADAVALUE"];
         assert_eq!(h.resolve(pair, 1, &three, "2024-06"), Some(0));

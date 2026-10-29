@@ -19,18 +19,13 @@
   ],
   "properties": {
     "phasor.declared": "true",
-    "phasor.format": "4",
+    "phasor.format": "5",
     "phasor.headers": "{\"1\":\"supply_source\",\"2\":\"gas_date\",\"3\":\"ssc_id\",\"4\":\"ti\",\"5\":\"hourly_constraint\",\"6\":\"mod_datetime\",\"7\":\"current_date\"}",
-    "phasor.key": "[]",
     "phasor.load": "append",
     "phasor.market": "gas",
     "phasor.offset": "+10:00",
     "phasor.reports": "[[\"DWGM\",\"INT112C_SSC_1\"]]",
     "phasor.table": "DWGM_INT112C_SSC",
-    "phasor.temporal.entity": "[\"SSC_ID\"]",
-    "phasor.temporal.order": "[\"CURRENT_DATE\"]",
-    "phasor.temporal.origin": "hand",
-    "phasor.temporal.valid.kind": "timeless",
     "phasor.visibility": "PUBLIC"
   },
   "refs": {

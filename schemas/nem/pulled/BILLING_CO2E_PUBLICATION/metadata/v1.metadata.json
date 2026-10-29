@@ -20,18 +20,12 @@
   "properties": {
     "comment": "Carbon Dioxide Intensity Index publication table",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"CONTRACTYEAR\",\"WEEKNO\",\"SETTLEMENTDATE\",\"REGIONID\"]",
+    "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"NUMERIC(4)\",\"2\":\"NUMERIC(3)\",\"3\":\"NUMERIC(3)\",\"4\":\"TIMESTAMP(0)\",\"5\":\"VARCHAR(20)\",\"6\":\"NUMERIC(18,8)\",\"7\":\"NUMERIC(18,8)\",\"8\":\"NUMERIC(18,8)\"}",
     "phasor.package": "BILLING_RUN",
     "phasor.reports": "[[\"BILLING\",\"BILLING_CO2E_PUBLICATION\"]]",
     "phasor.table": "BILLING_CO2E_PUBLICATION",
-    "phasor.temporal.entity": "[\"CONTRACTYEAR\",\"WEEKNO\",\"REGIONID\"]",
-    "phasor.temporal.order": "[\"BILLRUNNO\"]",
-    "phasor.temporal.origin": "hand",
-    "phasor.temporal.valid.column": "SETTLEMENTDATE",
-    "phasor.temporal.valid.kind": "day",
     "phasor.time": "SETTLEMENTDATE",
     "phasor.visibility": "PUBLIC"
   },
@@ -48,15 +42,15 @@
           "doc": "Billing contract year",
           "id": 1,
           "name": "CONTRACTYEAR",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(4, 0)"
         },
         {
           "doc": "Billing week no",
           "id": 2,
           "name": "WEEKNO",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(3, 0)"
         },
         {
           "doc": "Billing run no",
@@ -69,14 +63,14 @@
           "doc": "Settlement Date (Calendar)",
           "id": 4,
           "name": "SETTLEMENTDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Region identifier",
           "id": 5,
           "name": "REGIONID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -101,12 +95,7 @@
           "type": "decimal(18, 16)"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        4,
-        5
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     }

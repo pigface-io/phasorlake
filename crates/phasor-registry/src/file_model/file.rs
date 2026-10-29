@@ -13,10 +13,9 @@ use crate::file_model::model::{
     Column, ColumnId, LakeType, LoadMode, Market, MarketDef, Run, Table, TableSchema,
     TimestampFormat,
 };
-use crate::file_model::temporal::{RoleOrigin, Temporal, ValidAxis};
 
 /// The format of `table.toml` this crate reads and writes.
-pub const SCHEMA_FORMAT: u32 = 4;
+pub const SCHEMA_FORMAT: u32 = 5;
 
 /// The format of `market.toml`.
 pub const MARKET_FORMAT: u32 = 1;
@@ -46,12 +45,9 @@ struct TableFile {
     with_columns: Vec<String>,
     load_mode: LoadMode,
     #[serde(default)]
-    primary_key: Vec<String>,
-    #[serde(default)]
     time_column: Option<String>,
     #[serde(default)]
     column: Vec<ColumnFile>,
-    temporal: TemporalFile,
     #[serde(default)]
     schema: Vec<SchemaFile>,
 }
@@ -62,76 +58,6 @@ struct FormatOnly {
     schema_format: u32,
     #[serde(default)]
     name: String,
-}
-
-/// `valid = { kind = "from", column = "EFFECTIVEDATE", until = "END_DATE" }`.
-#[derive(Deserialize)]
-#[serde(deny_unknown_fields)]
-pub(crate) struct ValidFile {
-    kind: ValidKind,
-    #[serde(default)]
-    column: Option<String>,
-    #[serde(default)]
-    until: Option<String>,
-}
-
-#[derive(Deserialize)]
-#[serde(rename_all = "snake_case")]
-enum ValidKind {
-    Timeless,
-    IntervalEnd,
-    Instant,
-    Day,
-    From,
-}
-
-impl ValidFile {
-    fn axis(self) -> Result<ValidAxis<String>, &'static str> {
-        if self.until.is_some() && !matches!(self.kind, ValidKind::From) {
-            return Err("temporal valid takes an until column only when its kind is \"from\"");
-        }
-        match (self.kind, self.column) {
-            (ValidKind::Timeless, None) => Ok(ValidAxis::Timeless),
-            (ValidKind::Timeless, Some(_)) => {
-                Err("temporal valid kind \"timeless\" takes no column")
-            }
-            (_, None) => Err("temporal valid needs a column unless its kind is \"timeless\""),
-            (ValidKind::IntervalEnd, Some(c)) => Ok(ValidAxis::IntervalEnd(c)),
-            (ValidKind::Instant, Some(c)) => Ok(ValidAxis::Instant(c)),
-            (ValidKind::Day, Some(c)) => Ok(ValidAxis::Day(c)),
-            (ValidKind::From, Some(c)) => Ok(ValidAxis::From {
-                column: c,
-                until: self.until,
-            }),
-        }
-    }
-}
-
-/// A table's roles as a file says them, here and in a pulled table.
-#[derive(Deserialize)]
-#[serde(deny_unknown_fields)]
-pub(crate) struct TemporalFile {
-    origin: RoleOrigin,
-    #[serde(default)]
-    entity: Vec<String>,
-    valid: ValidFile,
-    #[serde(default)]
-    order: Vec<String>,
-    #[serde(default)]
-    cutoff: Option<String>,
-}
-
-impl TemporalFile {
-    /// The roles, or why the valid axis is not one.
-    pub(crate) fn roles(self) -> Result<Temporal<String>, &'static str> {
-        Ok(Temporal {
-            origin: self.origin,
-            entity: self.entity,
-            valid: self.valid.axis()?,
-            order: self.order,
-            cutoff: self.cutoff,
-        })
-    }
 }
 
 #[derive(Deserialize)]
@@ -212,10 +138,14 @@ pub fn parse_table(path: &Path, text: &str, market: Market) -> Result<Table, Sch
                 format.schema_format
             )));
         }
+        4 => {
+            return Err(invalid(format!(
+                "schema_format is 4: a table's primary_key and [temporal] roles are a reader's to decide, not phasor's; delete them and write schema_format = {SCHEMA_FORMAT}"
+            )));
+        }
         found => return Err(wrong_format(path, &format.name, found, SCHEMA_FORMAT)),
     }
     let f: TableFile = toml::from_str(text).map_err(|e| parse_err(path, text, &e))?;
-    let mut temporal = f.temporal.roles().map_err(|m| invalid(m.to_owned()))?;
     let mut buf = String::new();
     let mut name = f.name;
     norm(&mut name, &mut buf);
@@ -224,8 +154,6 @@ pub fn parse_table(path: &Path, text: &str, market: Market) -> Result<Table, Sch
         norm(a, &mut buf);
         norm(b, &mut buf);
     }
-    let mut primary_key = f.primary_key;
-    primary_key.iter_mut().for_each(|k| norm(k, &mut buf));
     let mut time_column = f.time_column;
     if let Some(tc) = &mut time_column {
         norm(tc, &mut buf);
@@ -246,18 +174,6 @@ pub fn parse_table(path: &Path, text: &str, market: Market) -> Result<Table, Sch
         })
         .collect();
     columns.sort_by_key(|c| c.id);
-    for n in temporal
-        .entity
-        .iter_mut()
-        .chain(&mut temporal.order)
-        .chain(&mut temporal.cutoff)
-    {
-        norm(n, &mut buf);
-    }
-    temporal.valid = std::mem::replace(&mut temporal.valid, ValidAxis::Timeless).map(|mut n| {
-        norm(&mut n, &mut buf);
-        n
-    });
     let id_of = |n: &str| columns.iter().find(|c| c.name == n);
     let mut schemas = Vec::with_capacity(f.schema.len());
     let mut runs = Vec::new();
@@ -279,12 +195,6 @@ pub fn parse_table(path: &Path, text: &str, market: Market) -> Result<Table, Sch
             };
             fields.push((col.id, !col.nullable));
         }
-        let key = primary_key
-            .iter()
-            .filter_map(|k| id_of(k))
-            .map(|c| c.id)
-            .filter(|id| fields.iter().any(|(f, _)| f == id))
-            .collect();
         let from = s
             .from
             .unwrap_or_else(|| YearMonth::new(NEM_START.0, NEM_START.1).expect("a month"));
@@ -302,11 +212,7 @@ pub fn parse_table(path: &Path, text: &str, market: Market) -> Result<Table, Sch
                 });
             }
         }
-        schemas.push(TableSchema {
-            id: s.id,
-            fields,
-            key,
-        });
+        schemas.push(TableSchema { id: s.id, fields });
     }
     runs.sort_by_key(|r| r.from);
     let current_schema = runs
@@ -321,8 +227,6 @@ pub fn parse_table(path: &Path, text: &str, market: Market) -> Result<Table, Sch
         older_names: Vec::new(),
         published: String::new(),
         load_mode: f.load_mode,
-        temporal,
-        primary_key,
         time_column,
         columns,
         schemas,
@@ -376,7 +280,6 @@ pub fn write_table(t: &Table) -> String {
         LoadMode::Snapshot => "snapshot",
     };
     let _ = writeln!(out, "load_mode = \"{mode}\"");
-    let _ = writeln!(out, "primary_key = {}", inline(&t.primary_key));
     if let Some(tc) = &t.time_column {
         let _ = writeln!(out, "time_column = {}", q(tc));
     }
@@ -396,7 +299,6 @@ pub fn write_table(t: &Table) -> String {
         out.push_str(" },\n");
     }
     out.push_str("]\n");
-    write_temporal(&mut out, &t.temporal);
     for s in &t.schemas {
         let runs = || t.runs.iter().filter(|r| r.schema == s.id);
         let _ = write!(out, "\n[[schema]]\nid = {}\n", s.id);
@@ -415,33 +317,6 @@ pub fn write_table(t: &Table) -> String {
         out.push_str("]\n");
     }
     out
-}
-
-/// `[temporal]`: who chose the roles, then each role on one line.
-fn write_temporal(out: &mut String, r: &Temporal<String>) {
-    let origin = match r.origin {
-        RoleOrigin::Derived => "derived",
-        RoleOrigin::Hand => "hand",
-    };
-    let valid = match (r.valid.column(), r.valid.until()) {
-        (Some(c), Some(u)) => format!(
-            "{{ kind = \"{}\", column = {}, until = {} }}",
-            r.valid.kind(),
-            q(c),
-            q(u)
-        ),
-        (Some(c), None) => format!("{{ kind = \"{}\", column = {} }}", r.valid.kind(), q(c)),
-        (None, _) => format!("{{ kind = \"{}\" }}", r.valid.kind()),
-    };
-    let _ = write!(
-        out,
-        "\n[temporal]\norigin = \"{origin}\"\nentity = {}\nvalid = {valid}\norder = {}\n",
-        inline(&r.entity),
-        inline(&r.order)
-    );
-    if let Some(c) = &r.cutoff {
-        let _ = writeln!(out, "cutoff = {}", q(c));
-    }
 }
 
 /// Parses a market file's text.
@@ -532,10 +407,8 @@ mod tests {
             "{text}"
         );
         assert!(
-            text.contains(
-                "\n[temporal]\norigin = \"derived\"\nentity = [\"DUID\"]\nvalid = { kind = \"interval_end\", column = \"SETTLEMENTDATE\" }\norder = [\"LASTCHANGED\"]\ncutoff = \"LASTCHANGED\"\n\n[[schema]]"
-            ),
-            "{text}"
+            !text.contains("primary_key") && !text.contains("[temporal]"),
+            "a key and roles are a reader's: {text}"
         );
         let back = parse(&text).unwrap();
         assert_eq!(back, t);
@@ -546,49 +419,8 @@ mod tests {
         all.time_column = None;
         all.description = None;
         all.load_mode = LoadMode::Snapshot;
-        all.temporal.origin = RoleOrigin::Hand;
-        all.temporal.cutoff = None;
-        all.temporal.valid = ValidAxis::Timeless;
         let text = write_table(&all);
-        assert!(text.contains("valid = { kind = \"timeless\" }\n"), "{text}");
-        assert!(!text.contains("cutoff"), "{text}");
         assert_eq!(parse(&text).unwrap(), all);
-        all.temporal.valid = ValidAxis::From {
-            column: "settlementdate".into(),
-            until: None,
-        };
-        let back = parse(&write_table(&all)).unwrap();
-        assert_eq!(
-            back.temporal.valid,
-            ValidAxis::From {
-                column: "SETTLEMENTDATE".into(),
-                until: None
-            },
-            "normalised"
-        );
-        // An end column round-trips with its version's start; it belongs
-        // to a `from` axis only.
-        all.temporal.valid = ValidAxis::From {
-            column: "settlementdate".into(),
-            until: Some("duid".into()),
-        };
-        let text = write_table(&all);
-        assert!(
-            text.contains(
-                "valid = { kind = \"from\", column = \"settlementdate\", until = \"duid\" }"
-            ),
-            "{text}"
-        );
-        assert_eq!(
-            parse(&text).unwrap().temporal.valid,
-            ValidAxis::From {
-                column: "SETTLEMENTDATE".into(),
-                until: Some("DUID".into())
-            }
-        );
-        let wrong = text.replace("kind = \"from\"", "kind = \"instant\"");
-        let e = parse(&wrong).unwrap_err();
-        assert!(format!("{e}").contains("until"), "{e}");
         // A schema with no run has no month.
         let mut lone = t;
         lone.runs.clear();
@@ -601,11 +433,10 @@ mod tests {
         // `[[column]]` tables, a missing nullable (true), lower-case names,
         // a schema with no month and two versions.
         let text = r#"
-schema_format = 4
+schema_format = 5
 name = "region"
 report_pairs = [["dispatch", "region"]]
 load_mode = "snapshot"
-primary_key = ["regionid"]
 
 [[column]]
 id = 2
@@ -618,11 +449,6 @@ name = "regionid"
 type = "string"
 nullable = false
 
-[temporal]
-origin = "hand"
-entity = ["regionid"]
-valid = { kind = "timeless" }
-
 [[schema]]
 id = 0
 versions = [1, 2]
@@ -631,16 +457,13 @@ columns = ["REGIONID", "description"]
         let t = parse(text).unwrap();
         assert_eq!(t.name, "REGION");
         assert_eq!(t.report_pairs, [("DISPATCH".into(), "REGION".into())]);
-        assert_eq!(t.primary_key, ["REGIONID"]);
         assert_eq!(t.columns[0].name, "REGIONID", "by id");
         assert_eq!(t.columns[1].name, "DESCRIPTION");
         assert!(t.columns[1].nullable);
-        assert_eq!(t.temporal.entity, ["REGIONID"]);
         assert_eq!(
             t.schemas[0].fields,
             [(ColumnId(1), true), (ColumnId(2), false)]
         );
-        assert_eq!(t.schemas[0].key, [ColumnId(1)]);
         assert_eq!(t.runs.len(), 2);
         assert_eq!(t.runs[1].version, 2);
         assert_eq!(t.runs[0].from.to_string(), "1998-12");
@@ -649,21 +472,22 @@ columns = ["REGIONID", "description"]
     #[test]
     fn rejects_unknown_keys_old_formats_and_bad_types() {
         let text = write_table(&unit_scada());
-        let e = parse(&text.replace("origin =", "orign =")).unwrap_err();
+        let e = parse(&text.replace("time_column =", "time_colum =")).unwrap_err();
         assert!(matches!(e, SchemaFileError::Parse { .. }), "{e}");
-        assert!(e.to_string().contains("orign"), "{e}");
-        let e = parse(&text.replace("kind = \"interval_end\"", "kind = \"end\"")).unwrap_err();
-        assert!(e.to_string().contains("end"), "{e}");
-        let e = parse(&text.replace("kind = \"interval_end\"", "kind = \"timeless\"")).unwrap_err();
-        assert!(e.to_string().contains("takes no column"), "{e}");
-        let e = parse(&text.replace(", column = \"SETTLEMENTDATE\" }", " }")).unwrap_err();
-        assert!(e.to_string().contains("needs a column"), "{e}");
-        let e = parse(&text.replace("schema_format = 4", "schema_format = 3")).unwrap_err();
+        assert!(e.to_string().contains("time_colum"), "{e}");
+        let e = parse(&format!("{text}primary_key = [\"DUID\"]\n")).unwrap_err();
+        assert!(e.to_string().contains("primary_key"), "{e}");
+        let e = parse(&text.replace("schema_format = 5", "schema_format = 4")).unwrap_err();
+        assert!(
+            e.to_string().contains("a reader's to decide, not phasor's"),
+            "{e}"
+        );
+        let e = parse(&text.replace("schema_format = 5", "schema_format = 3")).unwrap_err();
         assert!(
             e.to_string().contains("[[increment]] lists are gone"),
             "{e}"
         );
-        let e = parse(&text.replace("schema_format = 4", "schema_format = 1")).unwrap_err();
+        let e = parse(&text.replace("schema_format = 5", "schema_format = 1")).unwrap_err();
         assert!(e.to_string().contains("schema_format is 1"), "{e}");
         let e = parse(&text.replace("type = \"double\"", "type = \"number\"")).unwrap_err();
         assert!(e.to_string().contains("number"), "{e}");
@@ -674,7 +498,7 @@ columns = ["REGIONID", "description"]
             e.to_string().contains("GHOST, which is not a column"),
             "{e}"
         );
-        let e = parse("schema_format = 4\nname = 3\n").unwrap_err();
+        let e = parse("schema_format = 5\nname = 3\n").unwrap_err();
         assert!(
             matches!(e, SchemaFileError::Parse { line: Some(2), .. }),
             "{e:?}"

@@ -20,18 +20,12 @@
   "properties": {
     "comment": "RESIDUE_CON_FUNDS supports the Settlement Residue Auction, by holding the fund details for each contract.",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"CONTRACTID\",\"INTERCONNECTORID\",\"FROMREGIONID\"]",
+    "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"VARCHAR(30)\",\"2\":\"VARCHAR(10)\",\"3\":\"VARCHAR(10)\",\"4\":\"NUMERIC(5,0)\",\"5\":\"NUMERIC(5,0)\",\"6\":\"NUMERIC(5,0)\",\"7\":\"NUMERIC(5,0)\",\"8\":\"NUMERIC(9,2)\",\"9\":\"NUMERIC(8,5)\",\"10\":\"NUMERIC(9,2)\",\"11\":\"TIMESTAMP(0)\"}",
     "phasor.package": "IRAUCTION",
     "phasor.reports": "[[\"IRAUCTION\",\"RESIDUE_CON_FUNDS\"]]",
     "phasor.table": "RESIDUE_CON_FUNDS",
-    "phasor.temporal.cutoff": "LASTCHANGED",
-    "phasor.temporal.entity": "[\"CONTRACTID\",\"INTERCONNECTORID\",\"FROMREGIONID\"]",
-    "phasor.temporal.order": "[\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.kind": "timeless",
     "phasor.time": "LASTCHANGED",
     "phasor.visibility": "PUBLIC"
   },
@@ -48,21 +42,21 @@
           "doc": "SRA Contract unique identifier as specified by AEMO",
           "id": 1,
           "name": "CONTRACTID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "Identifier for the Contracted Interconnector",
           "id": 2,
           "name": "INTERCONNECTORID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "Nominated source region for Interconnector",
           "id": 3,
           "name": "FROMREGIONID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -122,11 +116,7 @@
           "type": "timestamptz"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     }

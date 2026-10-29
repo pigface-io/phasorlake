@@ -10,22 +10,16 @@ import phasorlake as pl
 from .conftest import phasor_json
 
 
-def test_dispatchprice_roles_key_columns_and_schema() -> None:
+def test_dispatchprice_columns_and_schema() -> None:
     t = pl.table("dispatchprice")
     assert t["name"] == "DISPATCHPRICE"
     assert t["market"] == "nem"
     assert t["load_mode"] == "append"
-    assert "REGIONID" in t["roles"]["entity"]
-    assert t["roles"]["valid"]["column"] == "SETTLEMENTDATE"
-    assert t["roles"]["valid"]["kind"] == "interval_end"
-    assert t["roles"]["cutoff"] == "LASTCHANGED"
-    assert "LASTCHANGED" in t["roles"]["order"]
-    assert "SETTLEMENTDATE" in t["key"]
+    # A table's key and roles are a reader's: the registry says neither.
+    assert "key" not in t and "roles" not in t
     assert t["time_column"] == "SETTLEMENTDATE"
     by_name = {c["name"]: c for c in t["columns"]}
-    assert by_name["REGIONID"]["role"] == "entity"
-    assert by_name["SETTLEMENTDATE"]["role"] == "valid"
-    assert by_name["LASTCHANGED"]["role"] == "order, cutoff"
+    assert by_name["SETTLEMENTDATE"]["role"] == "time"
     assert not by_name["RRP"]["role"]
     assert by_name["RRP"]["type"] == "decimal(15,5)"
     assert by_name["RRP"]["field_id"] > 0

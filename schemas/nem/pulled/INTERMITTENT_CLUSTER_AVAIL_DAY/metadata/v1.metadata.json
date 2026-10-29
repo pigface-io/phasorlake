@@ -20,19 +20,12 @@
   "properties": {
     "comment": "Summary record for an availability submission for an intermittent generating unit cluster for a Trading Day.",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"TRADINGDATE\",\"DUID\",\"OFFERDATETIME\",\"CLUSTERID\"]",
+    "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"VARCHAR(20)\",\"3\":\"TIMESTAMP(0)\",\"4\":\"VARCHAR(20)\"}",
     "phasor.package": "DEMAND_FORECASTS",
     "phasor.reports": "[[\"DEMAND\",\"INTERMITTENT_CLUSTER_AVAIL_DAY\"]]",
     "phasor.table": "INTERMITTENT_CLUSTER_AVAIL_DAY",
-    "phasor.temporal.cutoff": "OFFERDATETIME",
-    "phasor.temporal.entity": "[\"DUID\",\"CLUSTERID\"]",
-    "phasor.temporal.order": "[\"OFFERDATETIME\"]",
-    "phasor.temporal.origin": "hand",
-    "phasor.temporal.valid.column": "TRADINGDATE",
-    "phasor.temporal.valid.kind": "day",
     "phasor.time": "TRADINGDATE",
     "phasor.visibility": "PUBLIC"
   },
@@ -49,37 +42,32 @@
           "doc": "Trading Day for which this cluster availability submission applies",
           "id": 1,
           "name": "TRADINGDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Unique Identifier of Dispatchable Unit",
           "id": 2,
           "name": "DUID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "Date and Time when this cluster availability submission was loaded",
           "id": 3,
           "name": "OFFERDATETIME",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Unique Cluster Identifier for this cluster within the DUID",
           "id": 4,
           "name": "CLUSTERID",
-          "required": true,
+          "required": false,
           "type": "string"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3,
-        4
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     },
@@ -89,37 +77,32 @@
           "doc": "Unique Identifier of Dispatchable Unit",
           "id": 2,
           "name": "DUID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "Trading Day for which this cluster availability submission applies",
           "id": 1,
           "name": "TRADINGDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Date and Time when this cluster availability submission was loaded",
           "id": 3,
           "name": "OFFERDATETIME",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Unique Cluster Identifier for this cluster within the DUID",
           "id": 4,
           "name": "CLUSTERID",
-          "required": true,
+          "required": false,
           "type": "string"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3,
-        4
-      ],
+      "identifier-field-ids": [],
       "schema-id": 1,
       "type": "struct"
     }

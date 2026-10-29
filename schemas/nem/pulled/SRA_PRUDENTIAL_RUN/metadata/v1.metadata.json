@@ -20,18 +20,12 @@
   "properties": {
     "comment": "Records the prudential run details for each prudential date",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"PRUDENTIAL_DATE\",\"PRUDENTIAL_RUNNO\"]",
+    "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(8)\"}",
     "phasor.package": "IRAUCTION",
     "phasor.reports": "[[\"IRAUCTION\",\"SRA_PRUDENTIAL_RUN\"]]",
     "phasor.table": "SRA_PRUDENTIAL_RUN",
-    "phasor.temporal.entity": "[\"PRUDENTIAL_RUNNO\"]",
-    "phasor.temporal.order": "[]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.column": "PRUDENTIAL_DATE",
-    "phasor.temporal.valid.kind": "instant",
     "phasor.time": "PRUDENTIAL_DATE",
     "phasor.visibility": "PUBLIC"
   },
@@ -48,21 +42,18 @@
           "doc": "The prudential date of the run.",
           "id": 1,
           "name": "PRUDENTIAL_DATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "The prudential run number for the run",
           "id": 2,
           "name": "PRUDENTIAL_RUNNO",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(8, 0)"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     }

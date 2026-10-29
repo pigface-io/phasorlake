@@ -20,7 +20,7 @@
   "properties": {
     "comment": "MTPASA_CASE_SET is obsolete from 2005 End of Year Release. The RUNTYPE added to the primary key of the detail tables for MTPASA allows for the different types of runs for each case.\nMTPASA_CASE_SET allows a MT PASA scenario to be linked across runs.",
     "phasor.declared": "false",
-    "phasor.format": "4",
+    "phasor.format": "5",
     "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(3,0)\",\"3\":\"NUMERIC(3,0)\",\"4\":\"NUMERIC(1,0)\",\"5\":\"TIMESTAMP(0)\"}",
     "phasor.table": "MTPASA_CASE_SET"
   },

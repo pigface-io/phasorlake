@@ -20,18 +20,12 @@
   "properties": {
     "comment": "AUCTION holds auction details. AUCTION is new in March 2003 to support SRA Inter-Temporal Linking.",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"AUCTIONID\"]",
+    "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"VARCHAR(30)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"TIMESTAMP(0)\",\"4\":\"TIMESTAMP(0)\",\"5\":\"TIMESTAMP(0)\",\"6\":\"VARCHAR(100)\",\"7\":\"TIMESTAMP(0)\",\"8\":\"VARCHAR(30)\",\"9\":\"TIMESTAMP(0)\"}",
     "phasor.package": "IRAUCTION",
     "phasor.reports": "[[\"IRAUCTION_CONFIG\",\"AUCTION\"]]",
     "phasor.table": "AUCTION",
-    "phasor.temporal.cutoff": "LASTCHANGED",
-    "phasor.temporal.entity": "[\"AUCTIONID\"]",
-    "phasor.temporal.order": "[\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.kind": "timeless",
     "phasor.time": "LASTCHANGED",
     "phasor.visibility": "PUBLIC"
   },
@@ -48,7 +42,7 @@
           "doc": "Unique id for each auction date",
           "id": 1,
           "name": "AUCTIONID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -104,9 +98,7 @@
           "type": "timestamptz"
         }
       ],
-      "identifier-field-ids": [
-        1
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     }

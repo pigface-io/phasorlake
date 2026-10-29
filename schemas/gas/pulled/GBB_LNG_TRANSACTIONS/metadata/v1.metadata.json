@@ -20,9 +20,8 @@
   "properties": {
     "comment": "This table displays LNG transaction aggregated data",
     "phasor.declared": "true",
-    "phasor.format": "4",
+    "phasor.format": "5",
     "phasor.headers": "{\"1\":\"TransactionMonth\",\"2\":\"VolWeightPrice\",\"3\":\"VolumePJ\",\"4\":\"SupplyStartDate\",\"5\":\"SupplyEndDate\"}",
-    "phasor.key": "[]",
     "phasor.load": "append",
     "phasor.market": "gas",
     "phasor.model": "[\"GAS_LNG_TRANSACTION\"]",
@@ -30,11 +29,6 @@
     "phasor.offset": "+10:00",
     "phasor.reports": "[[\"GBB\",\"LNG_TRANSACTIONS\"]]",
     "phasor.table": "GBB_LNG_TRANSACTIONS",
-    "phasor.temporal.entity": "[]",
-    "phasor.temporal.order": "[]",
-    "phasor.temporal.origin": "hand",
-    "phasor.temporal.valid.column": "SUPPLYSTARTDATE",
-    "phasor.temporal.valid.kind": "instant",
     "phasor.time": "SUPPLYSTARTDATE",
     "phasor.visibility": "PUBLIC"
   },

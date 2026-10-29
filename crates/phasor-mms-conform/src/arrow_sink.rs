@@ -998,7 +998,7 @@ mod tests {
             .downcast_ref::<StringArray>()
             .unwrap();
         assert_eq!(extra.value(0), "z");
-        // A file that lacks a key column is kept too, the key null.
+        // A file that lacks one of the table's columns is kept too, null there.
         let keyless = b"I,DISPATCH,UNIT_SCADA,1,SETTLEMENTDATE,SCADAVALUE\nD,DISPATCH,UNIT_SCADA,1,\"2024/01/01 00:05:00\",1\n";
         let (out, stats) = collect(
             &r,
@@ -1010,7 +1010,7 @@ mod tests {
         assert_eq!(stats.rows, 1);
         assert_eq!(stats.bad_rows, 0);
         assert_eq!(out.batches[0].batch.column(1).null_count(), 1);
-        assert!(out.warnings.iter().any(|w| w.code == "schema.missing_key"));
+        assert!(out.warnings.iter().all(|w| w.code != "schema.missing_key"));
     }
 
     #[test]
@@ -1198,8 +1198,8 @@ D,DISPATCH,UNIT_SCADA,1,\"2024/01/01 00:05:00\",E,2\n";
             b.schema().field(5).metadata()[RAW_OF_KEY],
             b.schema().field(2).metadata()[phasor_registry::arrow::FIELD_ID_KEY]
         );
-        // The typed columns are null where the value did not fit, and the
-        // key column allows it in this batch.
+        // The typed columns are null where the value did not fit; every
+        // column allows it.
         assert!(b.column(0).is_null(1));
         assert!(b.schema().field(0).is_nullable());
         assert!(b.column(1).is_null(3));
@@ -1207,15 +1207,8 @@ D,DISPATCH,UNIT_SCADA,1,\"2024/01/01 00:05:00\",E,2\n";
         assert_eq!(b.column(2).null_count(), 2);
         // One warning per column, with how many and the first.
         let codes: Vec<_> = out.warnings.iter().map(|w| w.code.to_string()).collect();
-        assert_eq!(
-            codes,
-            [
-                "parse.null_kept",
-                "parse.value_kept_raw",
-                "parse.value_kept_raw"
-            ]
-        );
-        let scada = &out.warnings[2];
+        assert_eq!(codes, ["parse.value_kept_raw", "parse.value_kept_raw"]);
+        let scada = &out.warnings[1];
         assert_eq!(scada.column.as_deref(), Some("SCADAVALUE"));
         assert_eq!(scada.line, Some(4));
         assert_eq!(scada.observed.as_deref(), Some("notanumber"));
@@ -1228,8 +1221,6 @@ D,DISPATCH,UNIT_SCADA,1,\"2024/01/01 00:05:00\",E,2\n";
             "{}",
             scada.message
         );
-        assert_eq!(out.warnings[0].column.as_deref(), Some("DUID"));
-        assert_eq!(out.warnings[0].line, Some(5));
     }
 
     /// A table that declares `{column}__raw` gets the text there, under the column's own id.
@@ -1252,7 +1243,7 @@ D,DISPATCH,UNIT_SCADA,1,\"2024/01/01 00:05:00\",E,2\n";
             "SCADAVALUE__raw"
         );
         assert!(out.batches[1].batch.schema().field(1).is_nullable());
-        assert!(!out.batches[2].batch.schema().field(1).is_nullable());
+        assert!(out.batches[2].batch.schema().field(1).is_nullable());
         let tail = b"I,DISPATCH,UNIT_SCADA,1,SETTLEMENTDATE,DUID,SCADAVALUE\n\
 D,DISPATCH,UNIT_SCADA,1,\"2024/01/01 00:05:00\",A,1\n";
         let (out, _) = collect(
@@ -1279,15 +1270,12 @@ D,DISPATCH,UNIT_SCADA,1,\"2024/01/01 00:05:00\",A,1\n";
         assert_eq!(d.column.as_deref(), Some("SETTLEMENTDATE"));
         assert_eq!(d.line, Some(3));
         assert_eq!(d.observed.as_deref(), Some("2024/13/01 00:05:00"));
-        // An empty key is refused too.
+        // An empty value is kept, even in strict mode: no column refuses a null.
         let empty = b"I,DISPATCH,UNIT_SCADA,1,SETTLEMENTDATE,DUID,SCADAVALUE\n\
 D,DISPATCH,UNIT_SCADA,1,\"2024/01/01 00:05:00\",,1\n";
-        let d = collect(&r, empty.as_slice(), strict, &ScanOptions::default())
-            .unwrap_err()
-            .diagnostic();
-        assert_eq!(d.code, "parse.null_not_allowed");
-        assert_eq!(d.column.as_deref(), Some("DUID"));
-        assert_eq!(d.line, Some(2));
+        let (out, stats) = collect(&r, empty.as_slice(), strict, &ScanOptions::default()).unwrap();
+        assert_eq!((stats.rows, stats.bad_rows), (1, 0));
+        assert!(out.batches[0].batch.column(1).is_null(0));
     }
 
     #[test]

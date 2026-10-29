@@ -19,19 +19,13 @@
   ],
   "properties": {
     "phasor.declared": "true",
-    "phasor.format": "4",
+    "phasor.format": "5",
     "phasor.headers": "{\"1\":\"company_id\",\"2\":\"company_name\",\"3\":\"registered_name\",\"4\":\"organization_class_name\",\"5\":\"organization_type_name\",\"6\":\"organization_status_name\",\"7\":\"line_1\",\"8\":\"line_2\",\"9\":\"line_3\",\"10\":\"province_id\",\"11\":\"city\",\"12\":\"postal_code\",\"13\":\"phone\",\"14\":\"fax\",\"15\":\"market_code\",\"16\":\"company_code\",\"17\":\"current_date\",\"18\":\"acn\",\"19\":\"abn\"}",
-    "phasor.key": "[\"COMPANY_ID\",\"PROVINCE_ID\"]",
     "phasor.load": "snapshot",
     "phasor.market": "gas",
     "phasor.offset": "+10:00",
     "phasor.reports": "[[\"DWGM\",\"INT125_DETAILS_OF_ORGANISATIONS_1\"]]",
     "phasor.table": "DWGM_INT125_DETAILS_OF_ORGANISATIONS",
-    "phasor.temporal.cutoff": "CURRENT_DATE",
-    "phasor.temporal.entity": "[\"COMPANY_ID\",\"PROVINCE_ID\"]",
-    "phasor.temporal.order": "[\"CURRENT_DATE\"]",
-    "phasor.temporal.origin": "hand",
-    "phasor.temporal.valid.kind": "timeless",
     "phasor.time": "CURRENT_DATE",
     "phasor.visibility": "PUBLIC"
   },
@@ -47,8 +41,8 @@
         {
           "id": 1,
           "name": "COMPANY_ID",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(3, 0)"
         },
         {
           "id": 2,
@@ -147,9 +141,7 @@
           "type": "timestamptz"
         }
       ],
-      "identifier-field-ids": [
-        1
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     },
@@ -158,8 +150,8 @@
         {
           "id": 1,
           "name": "COMPANY_ID",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(3, 0)"
         },
         {
           "id": 2,
@@ -270,9 +262,7 @@
           "type": "timestamptz"
         }
       ],
-      "identifier-field-ids": [
-        1
-      ],
+      "identifier-field-ids": [],
       "schema-id": 1,
       "type": "struct"
     }

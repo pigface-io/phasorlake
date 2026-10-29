@@ -20,9 +20,8 @@
   "properties": {
     "comment": "Provides the aggregate of forecast and nominations by location.",
     "phasor.declared": "true",
-    "phasor.format": "4",
+    "phasor.format": "5",
     "phasor.headers": "{\"1\":\"State\",\"2\":\"FacilityId\",\"3\":\"FacilityName\",\"4\":\"FacilityType\",\"5\":\"ReceiptLocationId\",\"6\":\"ReceiptLocationName\",\"7\":\"DeliveryLocationId\",\"8\":\"DeliveryLocationName\",\"9\":\"Description\",\"10\":\"ForecastMethod\",\"11\":\"Units\",\"12\":\"Nameplate\"}",
-    "phasor.key": "[]",
     "phasor.load": "append",
     "phasor.market": "gas",
     "phasor.model": "[\"GAS_NOMINATIONS_FORECAST_AGG\",\"GAS_NAMEPLATE_RATING\"]",
@@ -30,11 +29,6 @@
     "phasor.offset": "+10:00",
     "phasor.reports": "[[\"GBB\",\"FORECAST_UTILISATION\"]]",
     "phasor.table": "GBB_FORECAST_UTILISATION",
-    "phasor.temporal.entity": "[\"FACILITYID\",\"RECEIPTLOCATIONID\",\"DELIVERYLOCATIONID\"]",
-    "phasor.temporal.order": "[]",
-    "phasor.temporal.origin": "hand",
-    "phasor.temporal.valid.column": "FORECAST_DATE",
-    "phasor.temporal.valid.kind": "instant",
     "phasor.time": "FORECAST_DATE",
     "phasor.visibility": "PUBLIC"
   },

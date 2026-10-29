@@ -20,19 +20,12 @@
   "properties": {
     "comment": "DISPATCHLOAD set out the current SCADA MW and target MW for each dispatchable unit, including relevant Frequency Control Ancillary Services (FCAS) enabling targets for each five minutes and additional fields to handle the new Ancillary Services functionality. Fast Start Plant status is indicated by dispatch mode.",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"SETTLEMENTDATE\",\"RUNNO\",\"DUID\",\"INTERVENTION\"]",
+    "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(3,0)\",\"3\":\"VARCHAR(10)\",\"4\":\"NUMERIC(2,0)\",\"5\":\"NUMERIC(22,0)\",\"6\":\"NUMERIC(2,0)\",\"7\":\"VARCHAR(12)\",\"8\":\"NUMERIC(2,0)\",\"9\":\"NUMERIC(2,0)\",\"10\":\"NUMERIC(15,5)\",\"11\":\"NUMERIC(15,5)\",\"12\":\"NUMERIC(15,5)\",\"13\":\"NUMERIC(15,5)\",\"14\":\"NUMERIC(15,5)\",\"15\":\"NUMERIC(15,5)\",\"16\":\"NUMERIC(15,5)\",\"17\":\"NUMERIC(15,5)\",\"18\":\"NUMERIC(15,5)\",\"19\":\"NUMERIC(15,5)\",\"20\":\"NUMERIC(15,5)\",\"21\":\"NUMERIC(15,5)\",\"22\":\"NUMERIC(15,5)\",\"23\":\"NUMERIC(15,5)\",\"24\":\"NUMERIC(15,5)\",\"25\":\"NUMERIC(15,5)\",\"26\":\"NUMERIC(15,5)\",\"27\":\"NUMERIC(15,5)\",\"28\":\"NUMERIC(15,5)\",\"29\":\"NUMERIC(15,5)\",\"30\":\"TIMESTAMP(0)\",\"31\":\"NUMERIC(15,5)\",\"32\":\"NUMERIC(15,5)\",\"33\":\"NUMERIC(15,5)\",\"34\":\"NUMERIC(3,0)\",\"35\":\"NUMERIC(3,0)\",\"36\":\"NUMERIC(3,0)\",\"37\":\"NUMERIC(3,0)\",\"38\":\"NUMERIC(3,0)\",\"39\":\"NUMERIC(3,0)\",\"40\":\"NUMERIC(3,0)\",\"41\":\"NUMERIC(3,0)\",\"42\":\"NUMERIC(15,5)\",\"43\":\"NUMERIC(15,5)\",\"44\":\"NUMERIC(15,5)\",\"45\":\"NUMERIC(15,5)\",\"46\":\"NUMERIC(15,5)\",\"47\":\"NUMERIC(15,5)\",\"48\":\"NUMERIC(16,6)\",\"49\":\"NUMERIC(16,6)\",\"50\":\"NUMERIC(16,6)\",\"51\":\"NUMERIC(16,6)\",\"52\":\"NUMERIC(16,6)\",\"53\":\"NUMERIC(16,6)\",\"54\":\"NUMERIC(16,6)\",\"55\":\"NUMERIC(16,6)\",\"56\":\"NUMERIC(3,0)\",\"57\":\"NUMERIC(4,0)\",\"58\":\"NUMERIC(15,5)\",\"59\":\"NUMERIC(15,5)\",\"60\":\"NUMERIC(3,0)\",\"61\":\"NUMERIC(3,0)\",\"62\":\"NUMERIC(16,6)\",\"63\":\"NUMERIC(16,6)\",\"64\":\"NUMERIC(6,0)\",\"65\":\"NUMERIC(15,5)\",\"66\":\"NUMERIC(15,5)\",\"67\":\"NUMERIC(15,5)\",\"68\":\"NUMERIC(15,5)\",\"69\":\"NUMERIC(5,0)\"}",
     "phasor.package": "DISPATCH",
     "phasor.reports": "[[\"DISPATCH\",\"UNIT_SOLUTION\"]]",
     "phasor.table": "DISPATCHLOAD",
-    "phasor.temporal.cutoff": "LASTCHANGED",
-    "phasor.temporal.entity": "[\"DUID\",\"INTERVENTION\"]",
-    "phasor.temporal.order": "[\"RUNNO\",\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.column": "SETTLEMENTDATE",
-    "phasor.temporal.valid.kind": "interval_end",
     "phasor.time": "SETTLEMENTDATE",
     "phasor.visibility": "PUBLIC"
   },
@@ -49,21 +42,21 @@
           "doc": "Market date and time starting at 04:05",
           "id": 1,
           "name": "SETTLEMENTDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Dispatch run no; always 1",
           "id": 2,
           "name": "RUNNO",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(3, 0)"
         },
         {
           "doc": "Dispatchable unit identifier",
           "id": 3,
           "name": "DUID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -84,8 +77,8 @@
           "doc": "Intervention flag if intervention run",
           "id": 6,
           "name": "INTERVENTION",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(2, 0)"
         },
         {
           "doc": "Connection point identifier for DUID",
@@ -437,12 +430,7 @@
           "type": "decimal(3, 0)"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3,
-        6
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     },
@@ -452,21 +440,21 @@
           "doc": "Market date and time starting at 04:05",
           "id": 1,
           "name": "SETTLEMENTDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Dispatch run no; always 1",
           "id": 2,
           "name": "RUNNO",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(3, 0)"
         },
         {
           "doc": "Dispatchable unit identifier",
           "id": 3,
           "name": "DUID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -487,8 +475,8 @@
           "doc": "Intervention flag if intervention run",
           "id": 6,
           "name": "INTERVENTION",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(2, 0)"
         },
         {
           "doc": "Connection point identifier for DUID",
@@ -847,12 +835,7 @@
           "type": "decimal(4, 0)"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3,
-        6
-      ],
+      "identifier-field-ids": [],
       "schema-id": 1,
       "type": "struct"
     },
@@ -862,21 +845,21 @@
           "doc": "Market date and time starting at 04:05",
           "id": 1,
           "name": "SETTLEMENTDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Dispatch run no; always 1",
           "id": 2,
           "name": "RUNNO",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(3, 0)"
         },
         {
           "doc": "Dispatchable unit identifier",
           "id": 3,
           "name": "DUID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -897,8 +880,8 @@
           "doc": "Intervention flag if intervention run",
           "id": 6,
           "name": "INTERVENTION",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(2, 0)"
         },
         {
           "doc": "Connection point identifier for DUID",
@@ -1313,12 +1296,7 @@
           "type": "decimal(15, 5)"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3,
-        6
-      ],
+      "identifier-field-ids": [],
       "schema-id": 2,
       "type": "struct"
     },
@@ -1328,21 +1306,21 @@
           "doc": "Market date and time starting at 04:05",
           "id": 1,
           "name": "SETTLEMENTDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Dispatch run no; always 1",
           "id": 2,
           "name": "RUNNO",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(3, 0)"
         },
         {
           "doc": "Dispatchable unit identifier",
           "id": 3,
           "name": "DUID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -1363,8 +1341,8 @@
           "doc": "Intervention flag if intervention run",
           "id": 6,
           "name": "INTERVENTION",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(2, 0)"
         },
         {
           "doc": "Connection point identifier for DUID",
@@ -1800,12 +1778,7 @@
           "type": "decimal(15, 5)"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3,
-        6
-      ],
+      "identifier-field-ids": [],
       "schema-id": 3,
       "type": "struct"
     },
@@ -1815,21 +1788,21 @@
           "doc": "Market date and time starting at 04:05",
           "id": 1,
           "name": "SETTLEMENTDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Dispatch run no; always 1",
           "id": 2,
           "name": "RUNNO",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(3, 0)"
         },
         {
           "doc": "Dispatchable unit identifier",
           "id": 3,
           "name": "DUID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -1850,8 +1823,8 @@
           "doc": "Intervention flag if intervention run",
           "id": 6,
           "name": "INTERVENTION",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(2, 0)"
         },
         {
           "doc": "Connection point identifier for DUID",
@@ -2287,12 +2260,7 @@
           "type": "decimal(15, 5)"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3,
-        6
-      ],
+      "identifier-field-ids": [],
       "schema-id": 4,
       "type": "struct"
     },
@@ -2302,21 +2270,21 @@
           "doc": "Market date and time starting at 04:05",
           "id": 1,
           "name": "SETTLEMENTDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Dispatch run no; always 1",
           "id": 2,
           "name": "RUNNO",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(3, 0)"
         },
         {
           "doc": "Dispatchable unit identifier",
           "id": 3,
           "name": "DUID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -2337,8 +2305,8 @@
           "doc": "Intervention flag if intervention run",
           "id": 6,
           "name": "INTERVENTION",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(2, 0)"
         },
         {
           "doc": "Connection point identifier for DUID",
@@ -2781,12 +2749,7 @@
           "type": "long"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3,
-        6
-      ],
+      "identifier-field-ids": [],
       "schema-id": 5,
       "type": "struct"
     },
@@ -2796,21 +2759,21 @@
           "doc": "Market date and time starting at 04:05",
           "id": 1,
           "name": "SETTLEMENTDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Dispatch run no; always 1",
           "id": 2,
           "name": "RUNNO",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(3, 0)"
         },
         {
           "doc": "Dispatchable unit identifier",
           "id": 3,
           "name": "DUID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -2831,8 +2794,8 @@
           "doc": "Intervention flag if intervention run",
           "id": 6,
           "name": "INTERVENTION",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(2, 0)"
         },
         {
           "doc": "Connection point identifier for DUID",
@@ -3275,12 +3238,7 @@
           "type": "long"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3,
-        6
-      ],
+      "identifier-field-ids": [],
       "schema-id": 6,
       "type": "struct"
     }

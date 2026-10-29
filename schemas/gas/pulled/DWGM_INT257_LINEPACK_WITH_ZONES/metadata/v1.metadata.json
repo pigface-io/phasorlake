@@ -19,20 +19,13 @@
   ],
   "properties": {
     "phasor.declared": "true",
-    "phasor.format": "4",
+    "phasor.format": "5",
     "phasor.headers": "{\"1\":\"linepack_zone_id\",\"2\":\"linepack_zone_name\",\"3\":\"last_mod_date\",\"4\":\"current_date\"}",
-    "phasor.key": "[\"LINEPACK_ZONE_ID\"]",
     "phasor.load": "snapshot",
     "phasor.market": "gas",
     "phasor.offset": "+10:00",
     "phasor.reports": "[[\"DWGM\",\"INT257_LINEPACK_WITH_ZONES_1\"]]",
     "phasor.table": "DWGM_INT257_LINEPACK_WITH_ZONES",
-    "phasor.temporal.cutoff": "CURRENT_DATE",
-    "phasor.temporal.entity": "[\"LINEPACK_ZONE_ID\"]",
-    "phasor.temporal.order": "[\"CURRENT_DATE\"]",
-    "phasor.temporal.origin": "hand",
-    "phasor.temporal.valid.column": "LAST_MOD_DATE",
-    "phasor.temporal.valid.kind": "instant",
     "phasor.time": "LAST_MOD_DATE",
     "phasor.visibility": "PUBLIC"
   },
@@ -48,8 +41,8 @@
         {
           "id": 1,
           "name": "LINEPACK_ZONE_ID",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(2, 0)"
         },
         {
           "id": 2,
@@ -70,9 +63,7 @@
           "type": "timestamptz"
         }
       ],
-      "identifier-field-ids": [
-        1
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     }

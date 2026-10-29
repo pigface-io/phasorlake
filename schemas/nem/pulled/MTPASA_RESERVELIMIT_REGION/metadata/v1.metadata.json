@@ -20,19 +20,12 @@
   "properties": {
     "comment": "MT PASA input table to define the regions that are part of a single MT PASA Reserve Requirement",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"EFFECTIVEDATE\",\"VERSION_DATETIME\",\"RESERVELIMITID\",\"REGIONID\"]",
+    "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"VARCHAR(20)\",\"4\":\"VARCHAR(20)\",\"5\":\"NUMERIC(16,6)\",\"6\":\"TIMESTAMP(0)\"}",
     "phasor.package": "RESERVE_DATA",
     "phasor.reports": "[[\"MTPASA\",\"RESERVELIMIT_REGION\"]]",
     "phasor.table": "MTPASA_RESERVELIMIT_REGION",
-    "phasor.temporal.cutoff": "VERSION_DATETIME",
-    "phasor.temporal.entity": "[\"RESERVELIMITID\",\"REGIONID\"]",
-    "phasor.temporal.order": "[\"VERSION_DATETIME\",\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.column": "EFFECTIVEDATE",
-    "phasor.temporal.valid.kind": "from",
     "phasor.time": "EFFECTIVEDATE",
     "phasor.visibility": "PUBLIC"
   },
@@ -49,28 +42,28 @@
           "doc": "Trade date when the set of reserve requirements become effective",
           "id": 1,
           "name": "EFFECTIVEDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Timestamp when the set of reserve requirements become effective",
           "id": 2,
           "name": "VERSION_DATETIME",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "MT PASA Reserve requirement identifier",
           "id": 3,
           "name": "RESERVELIMITID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "Region ID - identifier of a NEM region included in this requirement",
           "id": 4,
           "name": "REGIONID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -88,12 +81,7 @@
           "type": "timestamptz"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3,
-        4
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     }

@@ -62,7 +62,7 @@ phasor writes the lake and does not read it. Every revision is kept, so
 | `fetch --documents` | AEMO's registration list, a new version kept beside the old |
 | `ingest [T --from A --to B]` | archive to lake, offline. No args: everything not yet ingested or out of date |
 | `import <zip\|csv\|dir>` | files you already have |
-| `list [T]` | tables, roles, coverage, files, manifest |
+| `list [T]` | tables, time columns, coverage, files, manifest |
 | `inspect <file>` | blocks in a file and how each resolves |
 | `errors` | diagnostics from past runs |
 | `verify [--archive]` | lake files exist; `--archive` rehashes downloads |

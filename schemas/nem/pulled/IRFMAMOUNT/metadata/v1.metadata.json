@@ -20,18 +20,12 @@
   "properties": {
     "comment": "IRFMAMOUNT sets out settlement amounts associated with Industrial Relations Forced Majeure events.",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"IRFMID\",\"VERSIONNO\",\"PERIODID\"]",
+    "phasor.format": "5",
     "phasor.load": "snapshot",
     "phasor.model-types": "{\"1\":\"VARCHAR(10)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"NUMERIC(3,0)\",\"4\":\"NUMERIC(4,0)\",\"5\":\"NUMERIC(15,5)\",\"6\":\"VARCHAR(15)\",\"7\":\"TIMESTAMP(0)\",\"8\":\"TIMESTAMP(0)\"}",
     "phasor.package": "FORCE_MAJEURE",
     "phasor.reports": "[[\"FORCE_MAJEURE\",\"IRFMAMOUNT\"]]",
     "phasor.table": "IRFMAMOUNT",
-    "phasor.temporal.cutoff": "LASTCHANGED",
-    "phasor.temporal.entity": "[\"IRFMID\",\"PERIODID\"]",
-    "phasor.temporal.order": "[\"VERSIONNO\",\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.kind": "timeless",
     "phasor.visibility": "PUBLIC"
   },
   "refs": {
@@ -47,7 +41,7 @@
           "doc": "Unique Industrial Relations Force Majeure event",
           "id": 1,
           "name": "IRFMID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -61,15 +55,15 @@
           "doc": "Version number of record of event",
           "id": 3,
           "name": "VERSIONNO",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(3, 0)"
         },
         {
           "doc": "Settlement period",
           "id": 4,
           "name": "PERIODID",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(4, 0)"
         },
         {
           "doc": "Total settlement amount in $",
@@ -100,11 +94,7 @@
           "type": "timestamptz"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        3,
-        4
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     }

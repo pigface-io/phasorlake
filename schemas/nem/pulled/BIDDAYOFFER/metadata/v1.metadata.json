@@ -20,19 +20,12 @@
   "properties": {
     "comment": "BIDDAYOFFER shows the Energy and Ancillary Service bid data for each Market Day. BIDDAYOFFER is the parent table to BIDOFFERPERIOD. BIDDAYOFFER is a child table to BIDOFFERFILETRK",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"DUID\",\"BIDTYPE\",\"SETTLEMENTDATE\",\"OFFERDATE\"]",
+    "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"VARCHAR(10)\",\"2\":\"VARCHAR(10)\",\"3\":\"TIMESTAMP(0)\",\"4\":\"TIMESTAMP(3)\",\"5\":\"NUMERIC(22,0)\",\"6\":\"VARCHAR(10)\",\"7\":\"NUMERIC(12,6)\",\"8\":\"VARCHAR(500)\",\"9\":\"NUMERIC(9,2)\",\"10\":\"NUMERIC(9,2)\",\"11\":\"NUMERIC(9,2)\",\"12\":\"NUMERIC(9,2)\",\"13\":\"NUMERIC(9,2)\",\"14\":\"NUMERIC(9,2)\",\"15\":\"NUMERIC(9,2)\",\"16\":\"NUMERIC(9,2)\",\"17\":\"NUMERIC(9,2)\",\"18\":\"NUMERIC(9,2)\",\"19\":\"NUMERIC(22,0)\",\"20\":\"NUMERIC(22,0)\",\"21\":\"NUMERIC(22,0)\",\"22\":\"NUMERIC(22,0)\",\"23\":\"NUMERIC(22,0)\",\"24\":\"VARCHAR(3)\",\"25\":\"TIMESTAMP(0)\",\"26\":\"VARCHAR(20)\",\"27\":\"VARCHAR(20)\",\"28\":\"VARCHAR(20)\",\"29\":\"VARCHAR(20)\",\"30\":\"VARCHAR(1)\",\"31\":\"VARCHAR(100)\",\"32\":\"VARCHAR(20)\",\"33\":\"NUMERIC(16,6)\"}",
     "phasor.package": "BIDS",
     "phasor.reports": "[[\"BIDS\",\"BIDDAYOFFER\"]]",
     "phasor.table": "BIDDAYOFFER",
-    "phasor.temporal.cutoff": "OFFERDATE",
-    "phasor.temporal.entity": "[\"DUID\",\"BIDTYPE\"]",
-    "phasor.temporal.order": "[\"OFFERDATE\",\"VERSIONNO\",\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "hand",
-    "phasor.temporal.valid.column": "SETTLEMENTDATE",
-    "phasor.temporal.valid.kind": "day",
     "phasor.time": "SETTLEMENTDATE",
     "phasor.visibility": "PUBLIC"
   },
@@ -49,28 +42,28 @@
           "doc": "Dispatchable unit identifier",
           "id": 1,
           "name": "DUID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "Bid Type Identifier",
           "id": 2,
           "name": "BIDTYPE",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "Market date for applying the bid",
           "id": 3,
           "name": "SETTLEMENTDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Time this bid was processed and loaded",
           "id": 4,
           "name": "OFFERDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
@@ -263,12 +256,7 @@
           "type": "string"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3,
-        4
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     },
@@ -278,28 +266,28 @@
           "doc": "Dispatchable unit identifier",
           "id": 1,
           "name": "DUID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "Bid Type Identifier",
           "id": 2,
           "name": "BIDTYPE",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "Market date for applying the bid",
           "id": 3,
           "name": "SETTLEMENTDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Time this bid was processed and loaded",
           "id": 4,
           "name": "OFFERDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
@@ -499,12 +487,7 @@
           "type": "string"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3,
-        4
-      ],
+      "identifier-field-ids": [],
       "schema-id": 1,
       "type": "struct"
     },
@@ -514,28 +497,28 @@
           "doc": "Dispatchable unit identifier",
           "id": 1,
           "name": "DUID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "Bid Type Identifier",
           "id": 2,
           "name": "BIDTYPE",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "Market date for applying the bid",
           "id": 3,
           "name": "SETTLEMENTDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Time this bid was processed and loaded",
           "id": 4,
           "name": "OFFERDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
@@ -742,12 +725,7 @@
           "type": "string"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3,
-        4
-      ],
+      "identifier-field-ids": [],
       "schema-id": 2,
       "type": "struct"
     }

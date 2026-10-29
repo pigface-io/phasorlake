@@ -20,9 +20,8 @@
   "properties": {
     "comment": "A list of shippers who have contracted primary Storage, Compression or Pipeline capacity",
     "phasor.declared": "true",
-    "phasor.format": "4",
+    "phasor.format": "5",
     "phasor.headers": "{\"1\":\"EffectiveDate\",\"2\":\"FacilityId\",\"3\":\"FacilityName\",\"4\":\"FacilityType\",\"5\":\"CompanyId\",\"6\":\"OperatorName\",\"7\":\"ShipperName\",\"8\":\"LastUpdated\"}",
-    "phasor.key": "[\"FACILITYID\",\"COMPANYID\"]",
     "phasor.load": "snapshot",
     "phasor.market": "gas",
     "phasor.model": "[\"GAS_SHIPPER_LIST\"]",
@@ -30,12 +29,6 @@
     "phasor.offset": "+10:00",
     "phasor.reports": "[[\"GBB\",\"SHIPPERS_FULL_LIST\"]]",
     "phasor.table": "GBB_SHIPPERS",
-    "phasor.temporal.cutoff": "LASTUPDATED",
-    "phasor.temporal.entity": "[\"FACILITYID\",\"COMPANYID\"]",
-    "phasor.temporal.order": "[\"LASTUPDATED\"]",
-    "phasor.temporal.origin": "hand",
-    "phasor.temporal.valid.column": "EFFECTIVEDATE",
-    "phasor.temporal.valid.kind": "instant",
     "phasor.time": "EFFECTIVEDATE",
     "phasor.visibility": "PUBLIC"
   },
@@ -59,8 +52,8 @@
           "doc": "A unique AEMO defined Facility Identifier",
           "id": 2,
           "name": "FACILITYID",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(6, 0)"
         },
         {
           "id": 3,
@@ -77,8 +70,8 @@
         {
           "id": 5,
           "name": "COMPANYID",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(3, 0)"
         },
         {
           "id": 6,
@@ -100,10 +93,7 @@
           "type": "timestamptz"
         }
       ],
-      "identifier-field-ids": [
-        2,
-        5
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     }

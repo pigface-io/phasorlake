@@ -3,8 +3,10 @@
 
 use std::collections::{BTreeMap, HashSet};
 
-use crate::file_model::model::{LakeType, LoadMode, Table};
-use crate::file_model::temporal::RESERVED_PREFIX;
+use crate::file_model::model::{LakeType, Table};
+
+/// The prefix of the columns phasor adds to every lake row; no table may declare one.
+pub const RESERVED_PREFIX: &str = "_PHASOR_";
 
 /// One thing wrong with a table or a set of tables; the message names the key.
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -55,10 +57,7 @@ pub fn validate_table(t: &Table) -> Vec<Issue> {
         ));
     }
     columns(t, &mut out);
-    keys(t, &mut out);
-    if let Err(problems) = t.temporal.check(t) {
-        out.extend(problems.into_iter().map(|m| issue(t, m)));
-    }
+    time_column(t, &mut out);
     schemas(t, &mut out);
     out
 }
@@ -94,45 +93,19 @@ fn columns(t: &Table, out: &mut Vec<Issue>) {
                 format!("column {} has id 0; ids start at 1", c.name),
             ));
         }
-        if !c.nullable && !t.primary_key.contains(&c.name) {
+        if !c.nullable {
             out.push(issue(
                 t,
                 format!(
-                    "column {} is non-nullable but not in primary_key; only key columns may refuse nulls",
+                    "column {} refuses nulls, but which columns may be null is a reader's to say; set nullable = true",
                     c.name
-                ),
-            ));
-        }
-        if !c.nullable
-            && let Some(s) = t
-                .schemas
-                .iter()
-                .find(|s| !s.fields.iter().any(|(id, _)| *id == c.id))
-        {
-            out.push(issue(
-                t,
-                format!(
-                    "column {} is non-nullable but schema {} does not carry it; set nullable = true",
-                    c.name, s.id
                 ),
             ));
         }
     }
 }
 
-fn keys(t: &Table, out: &mut Vec<Issue>) {
-    let mut seen = HashSet::new();
-    for k in &t.primary_key {
-        if !seen.insert(k) {
-            out.push(issue(t, format!("primary_key lists {k} twice")));
-        }
-        if t.column(k).is_none() {
-            out.push(issue(
-                t,
-                format!("primary_key names {k}, which is not a column"),
-            ));
-        }
-    }
+fn time_column(t: &Table, out: &mut Vec<Issue>) {
     if let Some(tc) = &t.time_column {
         match t.column(tc) {
             None => out.push(issue(t, format!("time_column {tc} is not a column"))),
@@ -148,12 +121,6 @@ fn keys(t: &Table, out: &mut Vec<Issue>) {
             _ => {}
         }
     }
-    if t.load_mode == LoadMode::Snapshot && t.primary_key.is_empty() {
-        out.push(issue(
-            t,
-            "load_mode is snapshot but primary_key is empty; snapshots are replaced by key",
-        ));
-    }
 }
 
 fn schemas(t: &Table, out: &mut Vec<Issue>) {
@@ -166,7 +133,7 @@ fn schemas(t: &Table, out: &mut Vec<Issue>) {
             out.push(issue(t, format!("schema {} has no columns", s.id)));
         }
         let mut seen = HashSet::new();
-        for id in s.fields.iter().map(|(id, _)| id).chain(&s.key) {
+        for (id, _) in &s.fields {
             if t.column_by_id(*id).is_none() {
                 out.push(issue(
                     t,
@@ -299,7 +266,7 @@ mod tests {
         assert!(has(&t, "ids start at 1") && has(&t, "empty name"));
         let mut t = unit_scada();
         t.columns[2].nullable = false;
-        assert!(has(&t, "only key columns may refuse nulls"));
+        assert!(has(&t, "SCADAVALUE refuses nulls"));
         let mut t = unit_scada();
         t.columns.clear();
         t.schemas.clear();
@@ -313,43 +280,16 @@ mod tests {
     }
 
     #[test]
-    fn temporal_roles() {
-        let mut t = unit_scada();
-        t.temporal.order.clear();
-        assert!(has(&t, "regenerate it"));
-        t.temporal.origin = crate::file_model::temporal::RoleOrigin::Hand;
-        assert!(
-            validate_table(&t).is_empty(),
-            "a hand choice is the person's"
-        );
-        t.temporal.entity.clear();
-        assert!(has(&t, "DUID has no temporal role"));
-    }
-
-    #[test]
-    fn keys_and_time() {
-        let mut t = unit_scada();
-        t.primary_key.push("DUID".into());
-        t.primary_key.push("NOPE".into());
-        assert!(has(&t, "lists DUID twice") && has(&t, "NOPE, which is not a column"));
+    fn the_time_column_and_nulls() {
         let mut t = unit_scada();
         t.time_column = Some("DUID".into());
         assert!(has(&t, "must be timestamp or date"));
         t.time_column = Some("NOPE".into());
         assert!(has(&t, "time_column NOPE is not a column"));
+        // Which columns may be null is a reader's to say: none refuses them.
         let mut t = unit_scada();
-        t.load_mode = LoadMode::Snapshot;
-        t.primary_key.clear();
-        t.columns[0].nullable = true;
-        t.columns[1].nullable = true;
-        assert!(has(&t, "snapshots are replaced by key"));
-        // A key column a schema lacks must take nulls.
-        let mut t = unit_scada();
-        t.schemas[0].fields.retain(|(id, _)| *id != ColumnId(2));
-        assert!(has(
-            &t,
-            "DUID is non-nullable but schema 0 does not carry it"
-        ));
+        t.columns[1].nullable = false;
+        assert!(has(&t, "DUID refuses nulls"));
     }
 
     #[test]

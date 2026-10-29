@@ -19,18 +19,11 @@
   ],
   "properties": {
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"INTERVAL_DATETIME\",\"AREAID\",\"TYPE\"]",
+    "phasor.format": "5",
     "phasor.load": "append",
     "phasor.package": "DEMAND_FORECASTS",
     "phasor.reports": "[[\"ROOFTOP\",\"ACTUAL\"]]",
     "phasor.table": "ROOFTOP_PV_ACTUAL_AREA",
-    "phasor.temporal.cutoff": "LASTCHANGED",
-    "phasor.temporal.entity": "[\"AREAID\",\"TYPE\"]",
-    "phasor.temporal.order": "[\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.column": "INTERVAL_DATETIME",
-    "phasor.temporal.valid.kind": "interval_end",
     "phasor.time": "INTERVAL_DATETIME",
     "phasor.visibility": "PUBLIC",
     "phasor.with-columns": "[\"AREAID\"]"
@@ -47,13 +40,13 @@
         {
           "id": 1,
           "name": "INTERVAL_DATETIME",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "id": 2,
           "name": "AREAID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -71,7 +64,7 @@
         {
           "id": 5,
           "name": "TYPE",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
@@ -81,11 +74,7 @@
           "type": "timestamptz"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        5
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     }

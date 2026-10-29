@@ -20,17 +20,11 @@
   "properties": {
     "comment": "MARKETNOTICEDATA shows market notices data provided to all participants (market) and specific participants (participant).",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"NOTICEID\"]",
+    "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"NUMERIC(10,0)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"VARCHAR(25)\",\"4\":\"VARCHAR(25)\",\"5\":\"TIMESTAMP(0)\",\"6\":\"VARCHAR(2000)\",\"7\":\"VARCHAR(255)\"}",
     "phasor.reports": "[[\"MARKET_NOTICE\",\"MARKETNOTICEDATA\"]]",
     "phasor.table": "MARKETNOTICEDATA",
-    "phasor.temporal.cutoff": "LASTCHANGED",
-    "phasor.temporal.entity": "[\"NOTICEID\"]",
-    "phasor.temporal.order": "[\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.kind": "timeless",
     "phasor.time": "EFFECTIVEDATE",
     "phasor.visibility": "PUBLIC"
   },
@@ -47,8 +41,8 @@
           "doc": "Notice Identifier",
           "id": 1,
           "name": "NOTICEID",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(10, 0)"
         },
         {
           "doc": "Effective Date of Market notice",
@@ -93,9 +87,7 @@
           "type": "string"
         }
       ],
-      "identifier-field-ids": [
-        1
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     }

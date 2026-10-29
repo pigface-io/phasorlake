@@ -20,18 +20,12 @@
   "properties": {
     "comment": "RESIDUE_TRK supports the Settlement Residue Auction, by showing the tracking records for different residue auction runs. RESIDUE_TRK joins to RESIDUE_PUBLIC_DATA and RESIDUE_CON_DATA.",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"VERSIONNO\",\"AUCTIONID\"]",
+    "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"VARCHAR(30)\",\"2\":\"NUMERIC(3,0)\",\"3\":\"TIMESTAMP(0)\",\"4\":\"TIMESTAMP(0)\",\"5\":\"VARCHAR(15)\",\"6\":\"TIMESTAMP(0)\",\"7\":\"VARCHAR(15)\",\"8\":\"TIMESTAMP(0)\",\"9\":\"VARCHAR(15)\",\"10\":\"VARCHAR(30)\"}",
     "phasor.package": "IRAUCTION",
     "phasor.reports": "[[\"IRAUCTION\",\"RESIDUE_TRK\"]]",
     "phasor.table": "RESIDUE_TRK",
-    "phasor.temporal.cutoff": "LASTCHANGED",
-    "phasor.temporal.entity": "[\"AUCTIONID\"]",
-    "phasor.temporal.order": "[\"VERSIONNO\",\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.kind": "timeless",
     "phasor.time": "LASTCHANGED",
     "phasor.visibility": "PUBLIC"
   },
@@ -55,8 +49,8 @@
           "doc": "Contract run version",
           "id": 2,
           "name": "VERSIONNO",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(3, 0)"
         },
         {
           "doc": "Date auction results determined",
@@ -111,14 +105,11 @@
           "doc": "Unique id for each auction date. (new in March 2003 to support SRA Inter-Temporal Linking)",
           "id": 10,
           "name": "AUCTIONID",
-          "required": true,
+          "required": false,
           "type": "string"
         }
       ],
-      "identifier-field-ids": [
-        2,
-        10
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     }

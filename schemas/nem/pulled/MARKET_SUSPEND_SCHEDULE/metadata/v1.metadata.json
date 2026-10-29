@@ -20,19 +20,12 @@
   "properties": {
     "comment": "Trading prices that will apply in the event of a market suspension event updated weekly.",
     "phasor.declared": "true",
-    "phasor.format": "4",
-    "phasor.key": "[\"EFFECTIVEDATE\",\"DAY_TYPE\",\"REGIONID\",\"PERIODID\"]",
+    "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"VARCHAR(20)\",\"3\":\"VARCHAR(20)\",\"4\":\"NUMERIC(3,0)\",\"5\":\"NUMERIC(15,5)\",\"6\":\"NUMERIC(15,5)\",\"7\":\"NUMERIC(15,5)\",\"8\":\"NUMERIC(15,5)\",\"9\":\"NUMERIC(15,5)\",\"10\":\"NUMERIC(15,5)\",\"11\":\"NUMERIC(15,5)\",\"12\":\"NUMERIC(15,5)\",\"13\":\"NUMERIC(15,5)\",\"14\":\"TIMESTAMP(0)\",\"15\":\"NUMERIC(15,5)\",\"16\":\"NUMERIC(15,5)\"}",
     "phasor.package": "FORCE_MAJEURE",
     "phasor.reports": "[[\"FORCE_MAJEURE\",\"MARKET_SUSPEND_SCHEDULE\"]]",
     "phasor.table": "MARKET_SUSPEND_SCHEDULE",
-    "phasor.temporal.cutoff": "LASTCHANGED",
-    "phasor.temporal.entity": "[\"DAY_TYPE\",\"REGIONID\",\"PERIODID\"]",
-    "phasor.temporal.order": "[\"LASTCHANGED\"]",
-    "phasor.temporal.origin": "derived",
-    "phasor.temporal.valid.column": "EFFECTIVEDATE",
-    "phasor.temporal.valid.kind": "from",
     "phasor.time": "EFFECTIVEDATE",
     "phasor.visibility": "PUBLIC"
   },
@@ -49,29 +42,29 @@
           "doc": "Calendar date from when this record set is effective",
           "id": 1,
           "name": "EFFECTIVEDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Distinguishes which record set to apply - at time of writing this was Business or Non-business day but may change in the future depending on outcome of consultation",
           "id": 2,
           "name": "DAY_TYPE",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "Region affected.",
           "id": 3,
           "name": "REGIONID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "48 intervals for a day, midnight base (equates to 00:30 - 00:00)",
           "id": 4,
           "name": "PERIODID",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(3, 0)"
         },
         {
           "doc": "Energy Price applied for this period for this Day Type",
@@ -158,12 +151,7 @@
           "type": "decimal(15, 5)"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3,
-        4
-      ],
+      "identifier-field-ids": [],
       "schema-id": 0,
       "type": "struct"
     },
@@ -173,29 +161,29 @@
           "doc": "Calendar date from when this record set is effective",
           "id": 1,
           "name": "EFFECTIVEDATE",
-          "required": true,
+          "required": false,
           "type": "timestamptz"
         },
         {
           "doc": "Distinguishes which record set to apply - at time of writing this was Business or Non-business day but may change in the future depending on outcome of consultation",
           "id": 2,
           "name": "DAY_TYPE",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "Region affected.",
           "id": 3,
           "name": "REGIONID",
-          "required": true,
+          "required": false,
           "type": "string"
         },
         {
           "doc": "48 intervals for a day, midnight base (equates to 00:30 - 00:00)",
           "id": 4,
           "name": "PERIODID",
-          "required": true,
-          "type": "long"
+          "required": false,
+          "type": "decimal(3, 0)"
         },
         {
           "doc": "Energy Price applied for this period for this Day Type",
@@ -282,12 +270,7 @@
           "type": "timestamptz"
         }
       ],
-      "identifier-field-ids": [
-        1,
-        2,
-        3,
-        4
-      ],
+      "identifier-field-ids": [],
       "schema-id": 1,
       "type": "struct"
     }
