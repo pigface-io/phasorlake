@@ -1,19 +1,19 @@
 //! Files that are not MMS rows (header-row CSV, WEMDE JSON), read by the
 //! census's plain decoder and resolved through the same registry and sink.
 //!
-//! A [`Dedupe::VersionDiff`] feed skips rows its [`DecodeCtx::previous`] version
-//! already had, counted in [`DecodeStats::rows_repeated`].
+//! Every row of every file is written, a row a feed restates from the
+//! file's previous version too: the lake keeps what each version held,
+//! and which rows are new is a reader's question.
 
 use std::io::Read;
 use std::sync::Arc;
 
-use phasor_core::{Category, Diagnose, Diagnostic};
+use phasor_core::{Category, Diagnostic};
 use phasor_kit::{BlockSink, DecodeCtx, DecodeStats, Decoder};
 use phasor_mms_decode::{Flow, IRow, Pos, Row, RowError, RowFailure, Sink as _};
 use phasor_plain_decode::names::block_name;
 use phasor_plain_decode::{
-    BlockName, Dedupe, Feed, Format, Header, PlainOptions, PlainRowError, PlainSink, RowSet, peek,
-    sniff,
+    BlockName, Feed, Format, Header, PlainOptions, PlainRowError, PlainSink, peek, sniff,
 };
 use phasor_registry::{Market, Registry};
 use phasor_zip::has_extension;
@@ -135,12 +135,8 @@ struct PlainBridge<'a> {
     name: BlockName,
     /// The name of the block the current header opened.
     current: String,
-    /// The previous version's rows, when the feed restates its files.
-    previous: Option<RowSet>,
     /// Blocks opened.
     blocks: u64,
-    /// Rows the previous version already had.
-    repeated: u64,
     /// Rows the sink refused.
     bad: u64,
     /// A refused row's text, rebuilt from its fields for the quarantine.
@@ -154,26 +150,23 @@ impl<'a> PlainBridge<'a> {
         ctx: &DecodeCtx<'_>,
         sink: &'a mut dyn BlockSink,
         name: BlockName,
-        previous: Option<RowSet>,
     ) -> Self {
         let arrow = Bridge::sink(registry, market, ctx, sink).with_prefix(0);
         Self {
             arrow,
             name,
             current: String::new(),
-            previous,
             blocks: 0,
-            repeated: 0,
             bad: 0,
             raw: Vec::new(),
         }
     }
 
     /// Flushes, and the counts the scan's own do not hold.
-    fn finish(self) -> (Result<(), SinkError>, u64, u64, u64) {
-        let (blocks, repeated, bad) = (self.blocks, self.repeated, self.bad);
+    fn finish(self) -> (Result<(), SinkError>, u64, u64) {
+        let (blocks, bad) = (self.blocks, self.bad);
         let (_, flushed) = self.arrow.finish();
-        (flushed, blocks, repeated, bad)
+        (flushed, blocks, bad)
     }
 }
 
@@ -197,10 +190,6 @@ impl PlainSink for PlainBridge<'_> {
     }
 
     fn row(&mut self, row: &Row<'_>, pos: Pos) -> Result<(), SinkError> {
-        if self.previous.as_ref().is_some_and(|p| p.contains(row)) {
-            self.repeated += 1;
-            return Ok(());
-        }
         match self.arrow.row(row, pos) {
             Ok(()) => Ok(()),
             Err(RowFailure::Sink(f)) => Err(*f),
@@ -241,35 +230,6 @@ impl PlainSink for PlainBridge<'_> {
     }
 }
 
-/// The rows of the file's previous version, when the feed restates its files.
-fn previous_rows(
-    feed: &Feed,
-    ctx: &DecodeCtx<'_>,
-    opts: &PlainOptions<'_>,
-) -> Result<Option<RowSet>, Box<Diagnostic>> {
-    let Some(path) = ctx.previous.filter(|_| feed.dedupe == Dedupe::VersionDiff) else {
-        return Ok(None);
-    };
-    let shown = path.display().to_string();
-    let file = std::fs::File::open(path).map_err(|e| {
-        Box::new(
-            Diagnostic::error(
-                "csv.read_failed",
-                Category::CSV,
-                format!("The previous version of the file, {shown}, could not be read: {e}"),
-            )
-            .with_file(shown.clone())
-            .caused_by(&e),
-        )
-    })?;
-    let (_, set) = RowSet::collect_csv(file, opts, feed.time_columns).map_err(|e| {
-        let mut d = e.diagnostic();
-        d.file = Some(shown);
-        Box::new(d)
-    })?;
-    Ok(Some(set))
-}
-
 impl Decoder for PlainCsvDecoder {
     fn id(&self) -> &'static str {
         "csv"
@@ -288,17 +248,15 @@ impl Decoder for PlainCsvDecoder {
     ) -> Result<DecodeStats, Box<Diagnostic>> {
         let name = name_of(self.feed, ctx, "csv.unnamed_block", Category::CSV)?;
         let opts = options(self.feed, ctx, &name.name);
-        let previous = previous_rows(self.feed, ctx, &opts)?;
-        let mut bridge = PlainBridge::new(&self.registry, self.market, ctx, sink, name, previous);
+        let mut bridge = PlainBridge::new(&self.registry, self.market, ctx, sink, name);
         let scanned = phasor_plain_decode::csv::scan(reader, &mut bridge, &opts);
-        let (flushed, blocks, repeated, bad) = bridge.finish();
+        let (flushed, blocks, bad) = bridge.finish();
         decoded(scanned, flushed, |s| DecodeStats {
             lines: s.lines,
             bytes: s.bytes,
             blocks,
-            rows: s.rows - repeated - bad,
+            rows: s.rows - bad,
             bad_rows: s.bad_rows + bad,
-            rows_repeated: repeated,
             footer_declared: None,
         })
     }
@@ -322,16 +280,15 @@ impl Decoder for WemdeDecoder {
     ) -> Result<DecodeStats, Box<Diagnostic>> {
         let name = name_of(self.feed, ctx, "json.unnamed_block", Category::JSON)?;
         let opts = options(self.feed, ctx, &name.name);
-        let mut bridge = PlainBridge::new(&self.registry, self.market, ctx, sink, name, None);
+        let mut bridge = PlainBridge::new(&self.registry, self.market, ctx, sink, name);
         let scanned = phasor_plain_decode::json::scan(reader, &mut bridge, &opts);
-        let (flushed, blocks, _, bad) = bridge.finish();
+        let (flushed, blocks, bad) = bridge.finish();
         decoded(scanned, flushed, |s| DecodeStats {
             lines: 0,
             bytes: ctx.file.size,
             blocks,
             rows: s.rows - bad,
             bad_rows: bad,
-            rows_repeated: 0,
             footer_declared: None,
         })
     }
@@ -390,6 +347,7 @@ mod tests {
     use std::io::Cursor;
 
     use arrow_array::Array as _;
+    use phasor_core::Diagnose as _;
     use phasor_kit::{Block, DecodeOptions, Flow as KitFlow, RowAt, TableRef, Transform};
     use phasor_kit::{LocalFile, RemoteFile, Strictness};
     use phasor_mms_decode::Fingerprint;
@@ -475,7 +433,6 @@ mod tests {
             last_modified: None,
             last_modified_at: None,
             fetched_at: None,
-            previous: None,
         }
     }
 
@@ -497,7 +454,6 @@ mod tests {
         entry: &str,
         bytes: &[u8],
         opts: &DecodeOptions,
-        previous: Option<&std::path::Path>,
         sink: &mut Collect,
     ) -> Result<DecodeStats, Box<Diagnostic>> {
         let file = local(url, bytes.len() as u64);
@@ -506,7 +462,6 @@ mod tests {
             entry,
             period: None,
             options: opts,
-            previous,
         };
         d.decode(&mut Cursor::new(bytes), &ctx, sink, &mut Vec::new())
     }
@@ -529,19 +484,10 @@ mod tests {
             "GasBBActualFlowStorageLast31.CSV",
             &bytes,
             &options(false, 0),
-            None,
             &mut sink,
         )
         .unwrap();
-        assert_eq!(
-            (
-                stats.blocks,
-                stats.rows,
-                stats.bad_rows,
-                stats.rows_repeated
-            ),
-            (1, 2, 0, 0)
-        );
+        assert_eq!((stats.blocks, stats.rows, stats.bad_rows), (1, 2, 0));
         assert_eq!(stats.lines, 3);
         // The registry's gas table that claims the pair, under the gas
         // market, the block named by family and name.
@@ -579,7 +525,6 @@ mod tests {
             "GasBBNoSuchThing.CSV",
             &bytes,
             &options(false, 0),
-            None,
             &mut sink,
         )
         .unwrap();
@@ -592,7 +537,6 @@ mod tests {
             "GasBBNoSuchThing.CSV",
             &bytes,
             &options(true, 0),
-            None,
             &mut strict,
         )
         .unwrap_err();
@@ -600,66 +544,32 @@ mod tests {
     }
 
     #[test]
-    fn a_later_version_adds_only_the_rows_the_previous_one_lacked() {
-        let dir = tempfile::tempdir().unwrap();
-        let v1 = dir.path().join("v1.csv");
-        let bytes = fixture("gbb_actual_flow_storage_last31.csv");
-        std::fs::write(&v1, &bytes).unwrap();
-        // Version 2: the first row again, the second row's Demand revised
-        // (GBB's LastUpdated is its revision marker, so it is compared like
-        // every other column), and a new row.
-        let text = String::from_utf8(bytes).unwrap();
+    fn a_later_version_keeps_every_row_the_ones_it_restates_too() {
+        // Version 2 of a file that restates the one before: the first row
+        // again, the second row's Demand revised, and a new row. Each is a
+        // row of version 2, and is written.
+        let text = String::from_utf8(fixture("gbb_actual_flow_storage_last31.csv")).unwrap();
         let mut lines: Vec<&str> = text.lines().collect();
         let revised = lines[2].replace("17.687", "17.700");
         let added = lines[1].replace("2026/09/20", "2026/09/21");
         lines[2] = &revised;
         lines.push(&added);
         let v2 = lines.join("\n");
-        let registry = Registry::load_embedded();
-        let d = PlainCsvDecoder::new(registry, feed("gbb").unwrap());
+        let d = PlainCsvDecoder::new(Registry::load_embedded(), feed("gbb").unwrap());
         let mut sink = Collect::default();
+        let url = format!("{GBB}#20261021T221100+1000");
         let stats = decode(
             &d,
-            GBB,
+            &url,
             "GasBBActualFlowStorageLast31.CSV",
             v2.as_bytes(),
             &options(false, 0),
-            Some(&v1),
             &mut sink,
         )
         .unwrap();
-        assert_eq!((stats.rows, stats.rows_repeated, stats.bad_rows), (2, 1, 0));
-        assert_eq!(sink.batches[0].batch.num_rows(), 2);
-        // A previous version that cannot be read, or is not a CSV, fails
-        // the entry and names the file.
-        let mut sink = Collect::default();
-        let e = decode(
-            &d,
-            GBB,
-            "x.CSV",
-            v2.as_bytes(),
-            &options(false, 0),
-            Some(&dir.path().join("none.csv")),
-            &mut sink,
-        )
-        .unwrap_err();
-        assert_eq!(e.code, "csv.read_failed");
-        assert!(e.file.as_deref().unwrap().ends_with("none.csv"));
-        let empty = dir.path().join("empty.csv");
-        std::fs::write(&empty, b"").unwrap();
-        let e = decode(
-            &d,
-            GBB,
-            "x.CSV",
-            v2.as_bytes(),
-            &options(false, 0),
-            Some(&empty),
-            &mut sink,
-        )
-        .unwrap_err();
-        assert_eq!(e.code, "csv.header_missing");
-        assert!(e.file.as_deref().unwrap().ends_with("empty.csv"));
-        // No previous version named: every row is new.
+        assert_eq!((stats.rows, stats.bad_rows), (3, 0));
+        assert_eq!(sink.batches[0].batch.num_rows(), 3);
+        // A feed whose files do not restate each other is read the same way.
         let wem = PlainCsvDecoder::new(Registry::load_embedded(), feed("datafiles").unwrap());
         let stats = decode(
             &wem,
@@ -667,11 +577,9 @@ mod tests {
             "balancing-summary-2022.csv",
             &fixture("wem_balancing_summary_2022.csv"),
             &options(false, 0),
-            None,
             &mut sink,
         )
         .unwrap();
-        assert_eq!(stats.rows_repeated, 0);
         assert!(stats.rows > 0);
         assert_eq!(sink.blocks.last().unwrap().0, "WEM_BALANCING_SUMMARY");
         assert_eq!(sink.blocks.last().unwrap().1, "wem");
@@ -691,7 +599,6 @@ mod tests {
             "int651_v1_ex_ante_market_price_rpt_1~20261001113227.csv",
             text.as_bytes(),
             &options(false, 5),
-            None,
             &mut sink,
         )
         .unwrap();
@@ -707,7 +614,6 @@ mod tests {
             "int651_v1_ex_ante_market_price_rpt_1~20261001113227.csv",
             text.as_bytes(),
             &options(false, 0),
-            None,
             &mut sink,
         )
         .unwrap_err();
@@ -720,7 +626,6 @@ mod tests {
             "int651_x~1.csv",
             b"\n\n",
             &options(false, 0),
-            None,
             &mut sink,
         )
         .unwrap_err();
@@ -732,7 +637,6 @@ mod tests {
             "int651_x.csv",
             b"a,***\n1,2\n",
             &options(false, 0),
-            None,
             &mut sink,
         )
         .unwrap_err();
@@ -745,7 +649,6 @@ mod tests {
             "notes.csv",
             b"a,b\n1,2\n",
             &options(false, 0),
-            None,
             &mut sink,
         )
         .unwrap_err();
@@ -765,14 +668,13 @@ mod tests {
             entry: "int651_x.csv",
             period: None,
             options: &opts,
-            previous: None,
         };
         let name = name_of(d.feed, &ctx, "csv.unnamed_block", Category::CSV).unwrap();
         let small = PlainOptions {
             max_record_bytes: 16,
             ..super::options(d.feed, &ctx, &name.name)
         };
-        let mut bridge = PlainBridge::new(&d.registry, d.market, &ctx, &mut c, name, None);
+        let mut bridge = PlainBridge::new(&d.registry, d.market, &ctx, &mut c, name);
         let e = phasor_plain_decode::csv::scan(Cursor::new(long.as_bytes()), &mut bridge, &small)
             .unwrap_err();
         let diag = e.diagnostic();
@@ -789,7 +691,6 @@ mod tests {
             "int651_x.csv",
             text.as_bytes(),
             &options(false, 5),
-            None,
             &mut stopping,
         )
         .unwrap_err();
@@ -808,7 +709,6 @@ mod tests {
             entry: "int651_x.csv",
             period: None,
             options: &opts,
-            previous: None,
         };
         let e = d
             .decode(&mut Broken, &ctx, &mut sink, &mut Vec::new())
@@ -831,7 +731,6 @@ mod tests {
             "ReferenceTradingPrice_20261021.json",
             &bytes,
             &options(false, 0),
-            None,
             &mut sink,
         )
         .unwrap();
@@ -863,18 +762,9 @@ mod tests {
         assert_eq!(col.value(0), "2026/10/21 08:00:00");
         // Not JSON; not a WEMDE document; a name no rule reads.
         let mut sink = Collect::default();
-        let e = decode(&d, url, "x.json", b"{", &options(false, 0), None, &mut sink).unwrap_err();
+        let e = decode(&d, url, "x.json", b"{", &options(false, 0), &mut sink).unwrap_err();
         assert_eq!(e.code, "json.syntax");
-        let e = decode(
-            &d,
-            url,
-            "x.json",
-            b"[1,2]",
-            &options(false, 0),
-            None,
-            &mut sink,
-        )
-        .unwrap_err();
+        let e = decode(&d, url, "x.json", b"[1,2]", &options(false, 0), &mut sink).unwrap_err();
         assert_eq!(e.code, "json.not_wemde");
         let e = decode(
             &d,
@@ -882,7 +772,6 @@ mod tests {
             "x.json",
             &bytes,
             &options(false, 0),
-            None,
             &mut sink,
         )
         .unwrap_err();
@@ -905,7 +794,6 @@ mod tests {
             "GasBBGSHGasTrades.CSV",
             mms,
             &options(false, 0),
-            None,
             &mut sink,
         )
         .unwrap();
@@ -921,7 +809,6 @@ mod tests {
             "GasBBActualFlowStorageLast31.CSV",
             &plain,
             &options(false, 0),
-            None,
             &mut sink,
         )
         .unwrap();
@@ -935,7 +822,6 @@ mod tests {
             "page.csv",
             b"<html><body>no</body></html>",
             &options(false, 0),
-            None,
             &mut sink,
         )
         .unwrap();
@@ -957,7 +843,6 @@ mod tests {
             entry: "x.csv",
             period: None,
             options: &opts,
-            previous: None,
         };
         let e = d
             .decode(&mut Broken, &ctx, &mut sink, &mut Vec::new())
@@ -974,7 +859,6 @@ mod tests {
             entry: e,
             period: None,
             options: &opts,
-            previous: None,
         };
         assert_eq!(
             path_of(&entry("int651_v1_x~20261001.csv")),

@@ -39,9 +39,6 @@ pub struct LocalFile {
     pub last_modified_at: Option<Stamp>,
     /// When the bytes were fetched, per their record; none for a file not from the archive.
     pub fetched_at: Option<Stamp>,
-    /// The previous version of this file, when the source keeps versions: only rows
-    /// new to this version are ingested.
-    pub previous: Option<PathBuf>,
 }
 
 impl LocalFile {
@@ -57,7 +54,6 @@ impl LocalFile {
             last_modified: p.modified().map(Stamp::http_date),
             last_modified_at: p.modified(),
             fetched_at: Some(p.fetched_at()),
-            previous: None,
             path: found.path,
         }
     }

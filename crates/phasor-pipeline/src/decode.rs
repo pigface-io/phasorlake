@@ -142,7 +142,6 @@ fn decode_entry(
         entry,
         period: d.local.remote.period,
         options: d.options,
-        previous: d.local.previous.as_deref(),
     };
     let blocks: &mut dyn BlockSink = sink;
     let result = decoder.decode(reader, &ctx, blocks, scratch);

@@ -68,7 +68,7 @@ pub enum Origin {
 /// The generation of the conversions the code itself performs.
 ///
 /// Raise it when the same plan would be written differently by a newer phasor.
-pub const PLAN_FORMAT: u32 = 8;
+pub const PLAN_FORMAT: u32 = 9;
 
 /// The identity of a plan: everything that decides what files of its shape are written as.
 ///

@@ -2889,9 +2889,9 @@ async fn a_days_snapshot_is_partitioned_by_its_day() {
     );
 }
 
-/// A restating feed's second version ingests only the rows the first lacked.
+/// A restating feed's second version is written whole, the rows it restates too.
 #[tokio::test]
-async fn a_restated_file_adds_only_its_new_rows() {
+async fn a_restated_file_keeps_every_row_of_each_version() {
     let mut e = env();
     let registry = e.registry.clone();
     e.deps.kits = Arc::new(KitRegistry::new(vec![
@@ -2974,8 +2974,9 @@ async fn a_restated_file_adds_only_its_new_rows() {
     .await;
     assert_eq!(rep.exit_code, 0, "{:?}", rep.report.summary_lines());
     assert_eq!(rep.summary.ingested, 2);
-    // Two rows from the first version, one new from the second.
-    assert_eq!(rep.summary.rows, 3, "{:?}", rep.report.summary_lines());
+    // Two rows from the first version, and all three of the second: the two
+    // it restates and the one it adds.
+    assert_eq!(rep.summary.rows, 5, "{:?}", rep.report.summary_lines());
     let files = walk(&e.home.lake());
     assert!(
         files

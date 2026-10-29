@@ -141,7 +141,6 @@ mod tests {
             last_modified: None,
             last_modified_at: None,
             fetched_at: None,
-            previous: None,
         };
         let options = DecodeOptions {
             strictness: Strictness::Permissive,
@@ -153,7 +152,6 @@ mod tests {
             entry,
             period: None,
             options: &options,
-            previous: None,
         };
         d.decode(&mut Cursor::new(bytes), &ctx, sink, &mut Vec::new())
     }

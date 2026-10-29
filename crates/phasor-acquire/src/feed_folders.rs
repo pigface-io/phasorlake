@@ -245,7 +245,6 @@ impl Source for FeedFolders {
                         x.path.clone(),
                     )
                 });
-                let mut previous: Option<PathBuf> = None;
                 for (i, a) in versions.into_iter().enumerate() {
                     let mut url = base.clone();
                     if i > 0 {
@@ -255,7 +254,6 @@ impl Source for FeedFolders {
                     let p = &a.provenance;
                     let listed_at = p.listed(p.url()).and_then(|l| l.at);
                     let remote = self.remote(url, Some(p.content.size), None, listed_at);
-                    let path = a.path.clone();
                     if self.wanted(&remote, query) {
                         out.push(LocalFile {
                             remote,
@@ -266,11 +264,9 @@ impl Source for FeedFolders {
                             last_modified: p.modified().map(Stamp::http_date),
                             last_modified_at: p.modified(),
                             fetched_at: Some(p.fetched_at()),
-                            previous: previous.clone(),
                             path: a.path,
                         });
                     }
-                    previous = Some(path);
                 }
             }
         }
@@ -671,9 +667,7 @@ mod tests {
             ]
         );
         assert_eq!(all[1].path, v1);
-        assert_eq!(all[1].previous, None);
         assert_eq!(all[2].path, v2);
-        assert_eq!(all[2].previous.as_deref(), Some(v1.as_path()));
         assert_eq!(
             all[2].remote.table.as_deref(),
             Some("GBB_ACTUAL_FLOW_STORAGE")

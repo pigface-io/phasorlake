@@ -256,7 +256,6 @@ mod tests {
             last_modified: None,
             last_modified_at: None,
             fetched_at: None,
-            previous: None,
         };
         let options = crate::decoder::DecodeOptions {
             strictness: crate::decoder::Strictness::Permissive,
@@ -268,7 +267,6 @@ mod tests {
             entry: "x.csv",
             period: None,
             options: &options,
-            previous: None,
         };
         let stats = Dec
             .decode(

@@ -169,7 +169,6 @@ fn stats(s: &ScanStats) -> DecodeStats {
         blocks: s.blocks,
         rows: s.rows,
         bad_rows: s.bad_rows,
-        rows_repeated: 0,
         footer_declared: s.footer_declared,
     }
 }

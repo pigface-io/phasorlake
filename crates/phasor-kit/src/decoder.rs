@@ -119,9 +119,6 @@ pub struct DecodeCtx<'a> {
     pub period: Option<Period>,
     /// Options.
     pub options: &'a DecodeOptions,
-    /// The file's previous version ([`LocalFile::previous`]), when known: a feed that
-    /// restates its files is read for the rows absent from it.
-    pub previous: Option<&'a std::path::Path>,
 }
 
 /// What a decoder counted.
@@ -137,8 +134,6 @@ pub struct DecodeStats {
     pub rows: u64,
     /// Rows rejected.
     pub bad_rows: u64,
-    /// Rows left out because the previous version of the file already had them.
-    pub rows_repeated: u64,
     /// The line count the file declared of itself, when it did.
     pub footer_declared: Option<u64>,
 }
