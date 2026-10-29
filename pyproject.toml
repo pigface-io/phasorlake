@@ -42,16 +42,17 @@ include = [{ path = "python/phasorlake/bin/*", format = "wheel" }]
 
 [dependency-groups]
 dev = [
-    "basedpyright>=1.31",
     "duckdb>=1.3",
     "fastavro>=1.11",
     "maturin>=1.9,<2",
+    # stubtest only (`just py-stubs`); ty checks the types.
     "mypy>=1.18",
     "pyarrow-stubs>=20",
     "pyiceberg[pyarrow]>=0.9",
     "pytest>=8.4",
     "pytest-cov>=6",
     "ruff>=0.14",
+    "ty>=0.0.94",
 ]
 
 # ── Style and lint: every rule ruff has, less the three that fight the formatter ──
@@ -82,46 +83,33 @@ convention = "google"
 [tool.ruff.lint.per-file-ignores]
 # Tests assert, compare with literal values, reach the package's internals, and need no docstrings.
 "python/tests/**" = ["S101", "PLR2004", "D1", "PLC2701"]
-# Scripts print their results and are not a package.
-"scripts/**" = ["T201", "INP001"]
+# Scripts are not a package. Nothing prints: the scripts log (`logging`).
+"scripts/**" = ["INP001"]
 
 [tool.ruff.format]
 docstring-code-format = true
 
-# ── Types: mypy strict and basedpyright strict, both ──
+# ── Types: ty, a warning an error (`just py-type`) ──
 
+# mypy only for stubtest, which holds the stubs to the built module (`just
+# py-stubs`): ty reads source and cannot.
 [tool.mypy]
 python_version = "3.10"
-files = ["python", "scripts"]
 mypy_path = "python"
-strict = true
-warn_unreachable = true
-disallow_any_explicit = true
-disallow_any_unimported = true
-enable_error_code = [
-    "ignore-without-code",
-    "redundant-expr",
-    "truthy-bool",
-    "possibly-undefined",
-    "exhaustive-match",
-]
 
-[tool.basedpyright]
+[tool.ty.environment]
+python-version = "3.10"
+
+[tool.ty.src]
 include = ["python", "scripts"]
-pythonVersion = "3.10"
-typeCheckingMode = "strict"
-reportUnnecessaryTypeIgnoreComment = "error"
-# pyarrow-stubs and fastavro leave some generics unknown (`Field[Unknown]`); what
-# reaches us through them is reported, not failed. Every other strict check fails.
-reportUnknownMemberType = "warning"
-reportUnknownArgumentType = "warning"
-reportUnknownVariableType = "warning"
 
 # ── Tests ──
 
 [tool.pytest.ini_options]
-testpaths = ["python/tests"]
-addopts = "--strict-markers --strict-config -p no:cacheprovider"
+# The package's docstrings are doctests too, run from the repository's root.
+testpaths = ["python/tests", "python/phasorlake"]
+addopts = "--strict-markers --strict-config -p no:cacheprovider --doctest-modules"
+doctest_optionflags = ["NORMALIZE_WHITESPACE"]
 filterwarnings = ["error"]
 xfail_strict = true
 

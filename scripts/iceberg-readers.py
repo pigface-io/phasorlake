@@ -13,6 +13,7 @@ Exits non-zero when a reader disagrees with what the store's test wrote.
 from __future__ import annotations
 
 import json
+import logging
 import sys
 from pathlib import Path
 from typing import NoReturn
@@ -25,6 +26,8 @@ COLUMNS = ["settlementdate", "regionid", "raise1secrrp", "rrp"]
 ROWS = 6
 NULLS = 3
 ROWS_PER_SNAPSHOT = [2, 4, 5, 6]
+
+log = logging.getLogger("iceberg-readers")
 
 
 def disagree(reader: str, what: str, got: object) -> NoReturn:
@@ -52,10 +55,12 @@ def main(table_dir: Path) -> None:
             reader = fastavro.reader(f)
             records = list(reader)
             schema = json.loads(reader.metadata["avro.schema"])
-        print(f"fastavro {path.name}: {schema['name']}, {len(records)} records")
+        log.info("fastavro %s: %s, %d records", path.name, schema["name"], len(records))
 
     t = StaticTable.from_metadata(location)
-    print("pyiceberg: format", t.metadata.format_version, "schema", t.metadata.current_schema_id)
+    log.info(
+        "pyiceberg: format %s schema %s", t.metadata.format_version, t.metadata.current_schema_id
+    )
     rows = t.scan().to_arrow().sort_by("settlementdate")
     if rows.schema.names != COLUMNS:
         disagree("pyiceberg", "columns", rows.schema.names)
@@ -69,7 +74,7 @@ def main(table_dir: Path) -> None:
     seen = [t.scan(snapshot_id=s.snapshot_id).to_arrow().num_rows for s in snapshots]
     if seen != ROWS_PER_SNAPSHOT:
         disagree("pyiceberg", "rows per snapshot", seen)
-    print("pyiceberg: rows", rows.num_rows, "per snapshot", seen)
+    log.info("pyiceberg: rows %d per snapshot %s", rows.num_rows, seen)
 
     con = duckdb.connect()
     con.execute("INSTALL iceberg; LOAD iceberg;")
@@ -78,9 +83,10 @@ def main(table_dir: Path) -> None:
     ).fetchone()
     if got is None or got[0] != ROWS or got[1] != NULLS:
         disagree("duckdb", "counts", got)
-    print("duckdb:", got)
-    print("all readers agree")
+    log.info("duckdb: %s", got)
+    log.info("all readers agree")
 
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO, format="%(message)s", stream=sys.stdout)
     main(Path(sys.argv[1]))

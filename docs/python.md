@@ -84,6 +84,29 @@ import phasorlake as pl
 assert pl.run(["--version"]) == 0
 ```
 
+## Many files at once
+
+`decode` lets go of Python's GIL while it reads, so a thread pool decodes
+files side by side, about one core each. A table comes back with its rows in
+as few chunks as their size allows: the blocks of a zip of 5-minute files
+are gathered into one, holding no more memory than their values take, and a
+large block's batches are handed over as they are, without a copy.
+
+```python
+from concurrent.futures import ThreadPoolExecutor
+from pathlib import Path
+
+import phasorlake as pl
+
+files = sorted(Path("testdata/csv").glob("DISPATCH*_head.csv"))
+with ThreadPoolExecutor() as pool:
+    decoded = list(pool.map(pl.decode, files))
+assert len(decoded) == len(files)
+```
+
+`import phasorlake` does not import pyarrow; the first `decode` or `table`
+does. The `phasor` and `phasor-mirror` scripts start as fast as Python does.
+
 ## Errors and warnings
 
 A failure raises `PhasorError`. Its `code` is the diagnostic code the command
@@ -111,14 +134,13 @@ except pl.PhasorError as e:
 - A test decodes a zip and ingests it with the bundled `phasor`, then holds
   the two to the same rows, types and field ids.
 - The stubs (`python/phasorlake/_native.pyi`) are held to the built module by
-  `mypy.stubtest`; the Python is held to `ruff` on every rule, `mypy
-  --strict` and `basedpyright` strict; the examples on this page are run by
-  the tests.
+  `mypy.stubtest`; the Python is held to `ruff` on every rule and `ty`; the
+  examples on this page and in every docstring are run by the tests.
 - A tag `vX.Y.Z` builds the binaries and the wheels together and publishes
   the wheels to PyPI.
 
-Wheels are built for macOS (Apple silicon and Intel), Linux (x86_64 and
-aarch64) and Windows (x86_64), for Python 3.10 and later. Tables cross to
+Wheels are built for macOS (Apple silicon and Intel) and Linux (x86_64 and
+aarch64), for Python 3.10 and later. Tables cross to
 Python by the Arrow C data interface, so `pyarrow`, `polars` and `nanoarrow`
 all read them; `pyarrow` is the one dependency.
 
@@ -126,4 +148,6 @@ all read them; `pyarrow` is the one dependency.
 
 `just py-dev` builds the binaries and the module into `.venv`; `just
 py-test`, `py-type`, `py-lint` and `py-fmt-check` are the hooks; `just
-py-wheel` builds the wheel into `dist/`.
+py-wheel` builds the wheel into `dist/`. `just py-zones [FILE...]` builds
+the module with zonetrace's zones and a counted heap, and prints where a
+call's time and memory go, the Python's own zones in the same tree.

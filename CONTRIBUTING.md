@@ -47,9 +47,9 @@ source file per worker, and the two worlds meet once per file.
 |---|---|---|
 | unit and integration | every crate, `cargo test` | `just test`, pre-commit |
 | coverage | `cargo llvm-cov` over the workspace | `just cover` against `coverage.json`, pre-push |
-| Python package | `ruff` on every rule, `mypy --strict`, `basedpyright` strict, `stubtest`, `pytest` at 100% | `just py-fmt-check`, `py-lint`, `py-type` pre-commit; `py-stubs`, `py-test` pre-push |
+| Python package | `ruff` on every rule, `ty`, mypy's `stubtest`, `pytest` at 100%, every public function with a docstring example and every example run as a doctest; the native module's Rust at 100% under `just cover` | `just py-fmt-check`, `py-lint`, `py-type` pre-commit; `py-stubs`, `py-test` pre-push |
 | pulled schemas | `schemas/nem/pulled/` against its manifest and the rev in `Cargo.lock` | `just schemas-check`, pre-commit |
-| benchmarks | criterion plus `phasor-bench` | `just bench-fast` pre-push, `just bench` in CI, against `bench/budgets.json` |
+| benchmarks | criterion plus `phasor-bench` | `just bench-fast` pre-push, `just bench` by hand before a release, against `bench/budgets.json`; not in CI |
 | network | `crates/phasor-nem/tests/net.rs` | `just net-test`, weekly in CI |
 
 ## Floors and budgets

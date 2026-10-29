@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import io
 import json
+import logging
 import re
 import sys
 import zipfile
@@ -24,6 +25,8 @@ from typing import TextIO
 
 ROWS = 5
 """Data rows kept of each block."""
+
+log = logging.getLogger("table-heads")
 
 LINES_SCANNED = 200_000
 """Lines read of one file before giving up on the blocks still wanted."""
@@ -219,7 +222,7 @@ def nem_heads(args: Args) -> tuple[dict[str, str], set[str]]:
                     if t not in done:
                         write(args.out, Path("nem", dvd_name(t, text)), text)
                         done[t] = n
-        print("nem", len(done), "of", len(want_tables), "after", mdir, file=sys.stderr, flush=True)
+        log.info("nem %d of %d after %s", len(done), len(want_tables), mdir)
     return done, want_tables
 
 
@@ -277,27 +280,25 @@ def gas_heads(args: Args) -> dict[str | tuple[str, str], str]:
                         continue
                     write(args.out, Path("gas", rel, name), "\r\n".join(head) + "\r\n")
                     gas_done[rel, key] = n
-        print("gas", len(gas_done), folder, file=sys.stderr, flush=True)
+        log.info("gas %d %s", len(gas_done), folder)
     return gas_done
 
 
 def main(argv: list[str]) -> None:
-    """Write the heads; print what was found as JSON."""
+    """Write the heads; log what was found as JSON."""
     args = Args.parse(argv)
     done, want_tables = nem_heads(args)
     gas_done = gas_heads(args)
-    print(
-        json.dumps(
-            {
-                "nem": len(done),
-                "nem_tables": len(want_tables),
-                "nem_missing": sorted(want_tables - set(done)),
-                "gas_files": len(gas_done),
-            },
-            default=str,
-        )
-    )
+    found = {
+        "nem": len(done),
+        "nem_tables": len(want_tables),
+        "nem_missing": sorted(want_tables - set(done)),
+        "gas_files": len(gas_done),
+    }
+    log.info("%s", json.dumps(found, default=str))
 
 
 if __name__ == "__main__":
+    # Progress as it goes, then what was found, on stderr.
+    logging.basicConfig(level=logging.INFO, format="%(message)s")
     main(sys.argv)

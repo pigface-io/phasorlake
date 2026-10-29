@@ -219,14 +219,21 @@ py-fmt-check:
 py-lint:
     uv run --locked --group dev ruff check python scripts
 
-# mypy strict and basedpyright strict
+# ty, a warning an error
 py-type:
-    uv run --locked --group dev mypy
-    uv run --locked --group dev basedpyright
+    uv run --locked --group dev ty check --error-on-warning
 
 # the stubs against the built module
 py-stubs: py-dev
     uv run python -m mypy.stubtest phasorlake._native --mypy-config-file pyproject.toml
+
+# where a Python call's time goes, in zones (zonetrace): the module built
+# with the feature zones, then the synthetic zip and the head fixtures, or
+# the files given. `just py-dev` puts the plain module back.
+py-zones *files: py-bin
+    uv sync --locked --group dev
+    uv run maturin develop --uv --release --features zones
+    uv run python scripts/py-zones.py "$@"
 
 # the Python tests, every line of the package covered
 py-test: py-dev

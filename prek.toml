@@ -45,7 +45,7 @@ id = "py-fmt"
 name = "style: ruff format"
 language = "system"
 entry = "just py-fmt-check"
-files = '\.(py|pyi)$'
+files = '(\.(py|pyi)|^pyproject\.toml)$'
 pass_filenames = false
 
 # ── Lint ─────────────────────────────────────────────────────────────────────
@@ -60,7 +60,7 @@ pass_filenames = false
 
 [[repos.hooks]]
 id = "py-type"
-name = "types: mypy strict and basedpyright strict"
+name = "types: ty"
 language = "system"
 entry = "just py-type"
 files = '^(python/|scripts/|pyproject\.toml$|uv\.lock$)'

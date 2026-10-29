@@ -22,6 +22,12 @@ def test_run_is_the_bundled_phasor() -> None:
     assert pl.run(["no-such-command"]) != 0
 
 
+def test_the_package_imports_without_pyarrow() -> None:
+    # The console scripts import the package; pyarrow would add its import to every command.
+    code = "import sys, phasorlake; sys.exit('pyarrow' in sys.modules)"
+    subprocess.run([sys.executable, "-c", code], check=True)  # ruff: ignore[subprocess-without-shell-equals-true] — this interpreter
+
+
 def test_the_console_scripts_are_on_the_path() -> None:
     for name in ("phasor", "phasor-mirror"):
         out = subprocess.run([name, "--version"], check=True, capture_output=True, text=True)  # ruff: ignore[subprocess-without-shell-equals-true] — the scripts this package installs

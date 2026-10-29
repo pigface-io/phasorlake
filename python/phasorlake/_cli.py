@@ -15,7 +15,11 @@ _BIN = Path(__file__).parent / "bin"
 
 
 def binary(name: str, bin_dir: Path | None = None) -> Path:
-    """The path of the bundled binary `name`, in `bin_dir` (the package's `bin/`).
+    """The path of the bundled binary `name`.
+
+    Args:
+        name: `phasor` or `phasor-mirror`; `.exe` is added on Windows.
+        bin_dir: Where to look; the package's `bin/` when not given.
 
     Returns:
         The binary, which exists.
@@ -23,6 +27,11 @@ def binary(name: str, bin_dir: Path | None = None) -> Path:
     Raises:
         FileNotFoundError: The binary is not in this install (a development
             install before `just py-bin`).
+
+    Examples:
+        >>> from phasorlake._cli import binary
+        >>> binary("phasor").name
+        'phasor'
     """
     path = (bin_dir or _BIN) / (f"{name}.exe" if os.name == "nt" else name)
     if not path.is_file():
@@ -34,12 +43,23 @@ def binary(name: str, bin_dir: Path | None = None) -> Path:
 def run(args: Sequence[str], *, binary_name: str = "phasor") -> int:
     """Run the bundled `phasor` (or `phasor-mirror`) with `args`.
 
+    The command writes to this process's standard output and error, and
+    reads its standard input.
+
     Args:
         args: The command line after the binary's name.
         binary_name: `phasor` or `phasor-mirror`.
 
     Returns:
         The exit code.
+
+    Raises:
+        FileNotFoundError: The binary is not in this install.
+
+    Examples:
+        >>> import phasorlake as pl
+        >>> pl.run(["--version"])
+        0
     """
     argv = [str(binary(binary_name)), *args]
     return subprocess.run(argv, check=False).returncode  # ruff: ignore[subprocess-without-shell-equals-true] — our own binary, args as given

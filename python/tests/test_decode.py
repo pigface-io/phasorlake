@@ -3,7 +3,10 @@
 from __future__ import annotations
 
 import warnings
-from typing import TYPE_CHECKING
+import zipfile
+from concurrent.futures import ThreadPoolExecutor
+from importlib import metadata
+from typing import TYPE_CHECKING, cast
 
 import pyarrow as pa
 import pyarrow.parquet as pq
@@ -15,6 +18,7 @@ from phasorlake import _native
 from .conftest import HEADS
 
 if TYPE_CHECKING:
+    from collections.abc import Iterable
     from pathlib import Path
 
 FIELD_ID = b"PARQUET:field_id"
@@ -23,11 +27,18 @@ CLAMPED = {"parse.timestamp_clamped"}
 """AEMO writes 9999-12-31 for no end; the lake keeps the latest instant nanoseconds hold."""
 
 
-def decode(path: Path, allowed: set[str] = CLAMPED, **kw: str | bool | int) -> dict[str, pa.Table]:
+def decode(
+    path: Path,
+    allowed: set[str] = CLAMPED,
+    *,
+    kit: str | None = None,
+    strict: bool = False,
+    max_bad_rows: int = 0,
+) -> dict[str, pa.Table]:
     """`pl.decode`, every warning it raises checked to be one of `allowed`."""
     with warnings.catch_warnings(record=True) as rec:
         warnings.simplefilter("always")
-        tables = pl.decode(path, **kw)  # type: ignore[arg-type]
+        tables = pl.decode(path, kit=kit, strict=strict, max_bad_rows=max_bad_rows)
     codes = {str(w.message).split(":", 1)[0] for w in rec}
     assert all(issubclass(w.category, pl.PhasorWarning) for w in rec)
     assert codes <= allowed, codes
@@ -145,5 +156,68 @@ def test_strict_refuses_a_block_the_catalog_does_not_describe(tmp_path: Path) ->
         pl.decode(odd, strict=True)
 
 
+def test_an_entry_that_cannot_be_read_is_warned_of_and_skipped(tmp_path: Path) -> None:
+    head = HEADS / "DISPATCHPRICE_v4_head.csv"
+    path = tmp_path / "mixed.zip"
+    with zipfile.ZipFile(path, "w") as z:
+        z.write(head, "A.CSV", zipfile.ZIP_DEFLATED)
+        z.write(head, "B.CSV", zipfile.ZIP_LZMA)
+    tables = decode(path, allowed={*CLAMPED, "zip.bad_entry"})
+    assert tables["DISPATCHPRICE"].num_rows == decode(head)["DISPATCHPRICE"].num_rows
+
+
+def test_entries_kept_raw_in_different_columns_share_one_table(tmp_path: Path) -> None:
+    # Each entry has a value that does not fit in a column of its own: the table
+    # has both text columns, each null in the rows of the other entry.
+    lines = (HEADS / "DISPATCHPRICE_v4_head.csv").read_text(encoding="latin-1").splitlines()
+    first_d = next(i for i, line in enumerate(lines) if line.startswith("D,"))
+    path = tmp_path / "PUBLIC_DISPATCHIS.zip"
+    with zipfile.ZipFile(path, "w") as z:
+        for name, at in (("A.CSV", 9), ("B.CSV", 10)):  # RRP, then EEP
+            fields = lines[first_d].split(",")
+            fields[at] = "not-a-number"
+            odd = [*lines[:first_d], ",".join(fields), *lines[first_d + 1 :]]
+            z.writestr(name, "\r\n".join(odd) + "\r\n")
+    price = decode(path, allowed={*CLAMPED, "parse.value_kept_raw"})["DISPATCHPRICE"]
+    rows = price.num_rows // 2
+    assert price.column("RRP__raw").to_pylist() == ["not-a-number"] + [None] * (2 * rows - 1)
+    eep = price.column("EEP__raw").to_pylist()
+    assert eep == [None] * rows + ["not-a-number"] + [None] * (rows - 1)
+    assert {c.num_chunks for c in price.columns} == {1}
+
+
 def test_the_version_is_the_crate_version() -> None:
-    assert pl.__version__ == _native.version()
+    assert pl.__version__ == _native.version() == metadata.version("phasorlake")
+
+
+def test_a_native_table_speaks_the_arrow_protocols() -> None:
+    native = _native.decode(HEADS / "DISPATCHPRICE_v4_head.csv")["DISPATCHPRICE"]
+    table = pa.table(native)
+    assert len(native) == table.num_rows
+    # pyarrow's stubs do not name the Arrow C data interface; `pyarrow.schema` takes it.
+    assert pa.schema(cast("Iterable[pa.Field[pa.DataType]]", native)) == table.schema
+
+
+def test_small_blocks_come_back_as_one_chunk(tmp_path: Path) -> None:
+    # A zip of 5-minute files is many small blocks of a table: one chunk, each row once.
+    head = HEADS / "DISPATCHPRICE_v4_head.csv"
+    path = tmp_path / "PUBLIC_DISPATCHIS.zip"
+    with zipfile.ZipFile(path, "w") as z:
+        for i in range(12):
+            z.write(head, f"PUBLIC_DISPATCHIS_{i:02}.CSV")
+    alone = decode(head)["DISPATCHPRICE"]
+    price = decode(path)["DISPATCHPRICE"]
+    assert price.num_rows == 12 * alone.num_rows
+    assert {c.num_chunks for c in price.columns} == {1}
+    assert price.slice(0, alone.num_rows).equals(alone)
+
+
+def test_threads_decode_files_side_by_side(heads_zip: Path) -> None:
+    # The GIL is released while a file is read: each thread gets the whole file.
+    alone = decode(heads_zip)
+    with ThreadPoolExecutor(4) as pool:
+        side_by_side = list(pool.map(lambda _: decode(heads_zip), range(8)))
+    for tables in side_by_side:
+        assert tables.keys() == alone.keys()
+        for name, t in tables.items():
+            assert t.equals(alone[name]), name

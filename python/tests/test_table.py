@@ -60,3 +60,10 @@ def test_an_unknown_table_is_a_phasor_error() -> None:
     assert e.value.code == "schema.unknown_table"
     assert e.value.table == "NO_SUCH_TABLE"
     assert "phasor list" in str(e.value)
+
+
+def test_standing_data_is_a_snapshot_with_no_time_column() -> None:
+    t = pl.table("DUDETAILSUMMARY")
+    assert t["load_mode"] == "snapshot"
+    assert t["time_column"] is None
+    assert all(not c["role"] for c in t["columns"])
