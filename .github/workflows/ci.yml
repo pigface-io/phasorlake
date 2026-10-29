@@ -1,7 +1,8 @@
 # CI runs what a developer's hooks run, through the same `just` recipes, plus
-# the tiers that are too slow or too environment-bound for a hook: the full
-# benchmark set on the machine class the budgets were taken on, the known
-# vulnerabilities of the dependencies, and the real nemweb once a week.
+# the tiers that are too slow or too environment-bound for a hook: the known
+# vulnerabilities of the dependencies, and the real nemweb once a week. The
+# benchmarks are not run here: their budgets are the developer's machine's,
+# held by the pre-push hook (`just bench-fast`) and `just bench`.
 name: ci
 
 on:
@@ -38,7 +39,7 @@ env:
 jobs:
   # Every git hook of both stages on every file: style, lint, tests, coverage
   # floors, the schema regeneration check, the error catalogue, the agent index,
-  # secrets, and the fast benchmark set.
+  # and secrets.
   hooks:
     runs-on: ubuntu-24.04
     timeout-minutes: 45
@@ -74,33 +75,12 @@ jobs:
           "$HOME/.local/bin/duckdb" -c "INSTALL iceberg"
           pipx install "prek==${PREK_VERSION}"
           cargo install --locked cargo-llvm-cov --version "$CARGO_LLVM_COV_VERSION"
-      # The budgets are taken on Apple silicon; the Linux runner only checks that the
-      # benchmarks still run, so the fast set is skipped here and run in the bench job.
+      # The budgets are taken on the developer's machine; a shared runner cannot hold them.
       - run: SKIP=bench-fast,budget-ratchet just check
       - run: just budget-check origin/main
         if: github.event_name == 'pull_request'
       - name: Scan the whole history for secrets
         run: just secrets
-
-  # The benchmarks, reported only: the budgets are taken on the developer's
-  # machine, which the pre-push hook holds them to; a shared runner is slower
-  # and noisier, so its numbers are uploaded for comparison, not gated.
-  bench:
-    runs-on: macos-15
-    timeout-minutes: 45
-    continue-on-error: true
-    steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
-        with:
-          persist-credentials: false
-      - uses: ./.github/actions/setup
-      - run: just bench
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
-        if: always()
-        with:
-          name: criterion
-          path: target/criterion
-          retention-days: 90
 
   # Known vulnerabilities in the Rust crates, against the lock file.
   audit:
