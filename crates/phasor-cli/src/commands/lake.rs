@@ -47,12 +47,13 @@ async fn run_plan(cli: &Cli, ctx: &Context, plan: Plan) -> Result<i32> {
     let fetcher = ctx.fetcher(Some(tx.clone()))?;
     let (manifest, thread) = ctx.manifest()?;
     let deps = ctx.deps(fetcher, manifest);
-    let cancel = common::cancel_on_interrupt();
+    let interrupts = common::Interrupts::listen();
     let json = ctx.json;
     let progress = ctx.progress;
     let verbose = cli.verbose > 0;
     let consumer = tokio::spawn(render::consume_events(rx, json, progress, verbose));
-    let report = phasor_pipeline::run(plan, deps, tx, cancel).await;
+    let report = phasor_pipeline::run(plan, deps, tx, interrupts.token()).await;
+    interrupts.finish().await;
     let _ = consumer.await;
     drop(thread);
     refresh_iceberg(ctx, report.run_id).await?;

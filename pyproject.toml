@@ -116,6 +116,8 @@ xfail_strict = true
 [tool.coverage.run]
 source = ["phasorlake"]
 branch = true
+# A test runs the package in a Python of its own (Ctrl-C to a process group).
+patch = ["subprocess"]
 
 [tool.coverage.report]
 fail_under = 100

@@ -91,6 +91,9 @@ pub struct Summary {
     pub errors: u64,
     /// Warnings raised.
     pub warnings: u64,
+    /// Whether Ctrl-C stopped the run before it read every file it listed.
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    pub interrupted: bool,
 }
 
 impl Summary {

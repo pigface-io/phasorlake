@@ -17,7 +17,7 @@ use url::Url;
 
 use crate::ingest_file::{FileReport, IngestInput, ingest_file};
 use crate::plan::{Deps, Input, Plan};
-use crate::report::{EXIT_FAILURE, EXIT_OFFLINE, RunReport, exit_code};
+use crate::report::{EXIT_FAILURE, EXIT_INTERRUPTED, EXIT_OFFLINE, RunReport, exit_code};
 
 fn emit(tx: &mpsc::Sender<Event>, e: Event) {
     let _ = tx.try_send(e);
@@ -549,6 +549,8 @@ pub async fn run(
         })
         .buffer_unordered(plan.options.jobs.max(1));
     let mut ingested = Box::pin(ingested);
+    // Whether a failure stopped the run, which cancels it as Ctrl-C does.
+    let mut stopped = false;
 
     // 4. Commit each as it finishes.
     while let Some(step) = ingested.next().await {
@@ -573,6 +575,7 @@ pub async fn run(
                 emit(&events, Event::SourceDone(Box::new(outcome.clone())));
                 report.finish_source(outcome);
                 if report.emit(d) == Flow::Stop {
+                    stopped = true;
                     cancel.cancel();
                 }
             }
@@ -631,18 +634,27 @@ pub async fn run(
                     bad_rows: 0,
                 });
                 if report.emit(d) == Flow::Stop {
+                    stopped = true;
                     cancel.cancel();
                 }
             }
             Step::Ingested(rep) => {
                 let stop = commit(&deps, run_id, *rep, &mut report, &mut summary, &events).await;
                 if stop {
+                    stopped = true;
                     cancel.cancel();
                 }
             }
         }
     }
-    let code = exit_code(&report);
+    // Cancelled, and not by a failure that stops the run: the user's Ctrl-C.
+    let interrupted = cancel.is_cancelled() && !stopped;
+    summary.interrupted = interrupted;
+    let code = if interrupted {
+        EXIT_INTERRUPTED
+    } else {
+        exit_code(&report)
+    };
     finish(
         deps, run_id, report, summary, remotes, code, started, &events,
     )

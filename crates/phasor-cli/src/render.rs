@@ -95,6 +95,11 @@ pub fn summary_text(s: &Summary, report: &Report) -> String {
         s.elapsed_ms as f64 / 1000.0,
         s.mb_per_s()
     );
+    if s.interrupted {
+        out.push_str(
+            "interrupted: the files in flight were finished; the same command again reads the rest\n",
+        );
+    }
     out
 }
 

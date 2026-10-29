@@ -16,17 +16,56 @@ pub fn fail(e: &impl Diagnose) -> anyhow::Error {
     anyhow::anyhow!("{}", e.diagnostic().render())
 }
 
-/// A token cancelled on Ctrl-C: the run stops taking files and finishes those in flight.
-pub fn cancel_on_interrupt() -> CancellationToken {
-    let cancel = CancellationToken::new();
-    let c2 = cancel.clone();
-    tokio::spawn(async move {
-        if tokio::signal::ctrl_c().await.is_ok() {
-            eprintln!("interrupted; finishing the files in flight");
-            c2.cancel();
-        }
-    });
-    cancel
+/// Ctrl-C during a run. The first cancels the run's token: it stops taking
+/// files, finishes those in flight and exits 130. A second exits 130 at
+/// once: a lake file is written under a hidden temporary name until it is
+/// whole, the next run clears those away and marks a run left running as
+/// aborted. Listening ends with the run ([`Interrupts::finish`]).
+pub struct Interrupts {
+    cancel: CancellationToken,
+    done: CancellationToken,
+    task: tokio::task::JoinHandle<()>,
+}
+
+impl Interrupts {
+    /// Listens for Ctrl-C until [`Interrupts::finish`].
+    pub fn listen() -> Self {
+        let (cancel, done) = (CancellationToken::new(), CancellationToken::new());
+        let task = tokio::spawn(on_ctrl_c(cancel.clone(), done.clone()));
+        Self { cancel, done, task }
+    }
+
+    /// The token the run stops on.
+    pub fn token(&self) -> CancellationToken {
+        self.cancel.clone()
+    }
+
+    /// The run is over: stop listening.
+    pub async fn finish(self) {
+        self.done.cancel();
+        let _ = self.task.await;
+    }
+}
+
+/// Where Ctrl-C cannot be listened for, its branch never matches and the run
+/// goes on to its end as it would without one.
+async fn on_ctrl_c(cancel: CancellationToken, done: CancellationToken) {
+    tokio::select! {
+        () = done.cancelled() => return,
+        Ok(()) = tokio::signal::ctrl_c() => {}
+    }
+    eprintln!("interrupted; finishing the files in flight (Ctrl-C again to stop at once)");
+    cancel.cancel();
+    tokio::select! {
+        () = done.cancelled() => {}
+        Ok(()) = tokio::signal::ctrl_c() => stop_at_once(),
+    }
+}
+
+/// The second Ctrl-C.
+fn stop_at_once() -> ! {
+    eprintln!("stopped; the next run takes up what this one left");
+    std::process::exit(phasor_pipeline::EXIT_INTERRUPTED)
 }
 
 /// The tables a command works on, and the one market they are of.

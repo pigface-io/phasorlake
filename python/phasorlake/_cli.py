@@ -55,6 +55,8 @@ def run(args: Sequence[str], *, binary_name: str = "phasor") -> int:
 
     Raises:
         FileNotFoundError: The binary is not in this install.
+        KeyboardInterrupt: Ctrl-C, once the command has finished the files
+            it had in flight (a second Ctrl-C stops it at once).
 
     Examples:
         >>> import phasorlake as pl
@@ -62,7 +64,14 @@ def run(args: Sequence[str], *, binary_name: str = "phasor") -> int:
         0
     """
     argv = [str(binary(binary_name)), *args]
-    return subprocess.run(argv, check=False).returncode  # ruff: ignore[subprocess-without-shell-equals-true] — our own binary, args as given
+    command = subprocess.Popen(argv)  # ruff: ignore[subprocess-without-shell-equals-true] — our own binary, args as given
+    try:
+        return command.wait()
+    except KeyboardInterrupt:
+        # The command had the same Ctrl-C: it finishes the files in flight (a
+        # second stops it), and is waited for before Python stops too.
+        command.wait()
+        raise
 
 
 def _exec(name: str) -> NoReturn:

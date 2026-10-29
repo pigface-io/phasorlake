@@ -1755,10 +1755,10 @@ fn documents_are_fetched_from_where_the_config_says() {
     );
 }
 
-/// Ctrl-C stops a run taking files and lets those in flight finish; a run that cannot plan fails.
-#[test]
+/// A fetch whose listing is in flight, sent `signals` SIGINTs a moment apart:
+/// its exit code, stdout, stderr and how long it took after the first.
 #[cfg(unix)]
-fn ctrl_c_finishes_the_files_in_flight() {
+fn interrupted_fetch(signals: usize) -> (Option<i32>, String, String, std::time::Duration) {
     use std::io::{Read, Write};
     use std::sync::atomic::{AtomicBool, Ordering};
     // A nemweb that answers, the first time slowly, that it has no such month.
@@ -1811,20 +1811,46 @@ fn ctrl_c_finishes_the_files_in_flight() {
     }
     // The listing is in flight: the handler has long been in place.
     std::thread::sleep(std::time::Duration::from_millis(200));
-    let kill = Command::new("kill")
-        .args(["-INT", &child.id().to_string()])
-        .status()
-        .unwrap();
-    assert!(kill.success());
+    let first = std::time::Instant::now();
+    for _ in 0..signals {
+        let kill = Command::new("kill")
+            .args(["-INT", &child.id().to_string()])
+            .status()
+            .unwrap();
+        assert!(kill.success());
+        std::thread::sleep(std::time::Duration::from_millis(100));
+    }
     let out = child.wait_with_output().unwrap();
-    let err = String::from_utf8_lossy(&out.stderr);
+    (
+        out.status.code(),
+        String::from_utf8_lossy(&out.stdout).into_owned(),
+        String::from_utf8_lossy(&out.stderr).into_owned(),
+        first.elapsed(),
+    )
+}
+
+/// Ctrl-C lets the files in flight finish, says so, and exits 130; a second
+/// stops at once, 130 too. A run that cannot plan fails.
+#[test]
+#[cfg(unix)]
+fn ctrl_c_finishes_the_files_in_flight_and_twice_stops_at_once() {
+    let (code, out, err, _) = interrupted_fetch(1);
     assert!(
         err.contains("interrupted; finishing the files in flight"),
         "{err}"
     );
-    // Nothing was in flight but the listing, and no month is not a failure.
-    assert_eq!(out.status.code(), Some(0), "{err}");
+    assert_eq!(code, Some(130), "{out}{err}");
+    assert!(out.contains("interrupted:"), "{out}");
+    let (code, _, err, took) = interrupted_fetch(2);
+    assert!(
+        err.contains("stopped; the next run takes up what this one left"),
+        "{err}"
+    );
+    assert_eq!(code, Some(130), "{err}");
+    // Gone before the slow listing answered.
+    assert!(took < std::time::Duration::from_millis(1200), "{took:?}");
     // A listing phasor cannot read fails the run before it starts.
+    let cli = Cli::new();
     let base = serve_text("not a listing at all".into());
     std::fs::write(
         cli.home.path().join("config.toml"),

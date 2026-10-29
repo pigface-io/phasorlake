@@ -20,14 +20,15 @@ pub async fn run(
     let (tx, rx) = tokio::sync::mpsc::channel(4096);
     let fetcher = ctx.fetcher(Some(tx.clone()))?;
     let deps = ctx.deps(fetcher, manifest);
-    let cancel = super::common::cancel_on_interrupt();
+    let interrupts = super::common::Interrupts::listen();
     let consumer = tokio::spawn(render::consume_events(
         rx,
         ctx.json,
         ctx.progress,
         cli.verbose > 0,
     ));
-    let report = phasor_pipeline::run_get(req, deps, options, tx, cancel).await;
+    let report = phasor_pipeline::run_get(req, deps, options, tx, interrupts.token()).await;
+    interrupts.finish().await;
     let _ = consumer.await;
     if let Ok(r) = &report {
         for run in &r.runs {

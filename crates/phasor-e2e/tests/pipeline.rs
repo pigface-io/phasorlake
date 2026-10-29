@@ -596,6 +596,58 @@ async fn a_file_whose_parquet_cannot_be_put_in_place_fails_and_leaves_nothing() 
     assert!(left.is_empty(), "{left:?}");
 }
 
+/// A run Ctrl-C cancels is interrupted: exit 130, so said in its summary and in
+/// the manifest. A failure that stops a run cancels it the same way, and is not.
+#[tokio::test]
+async fn a_cancelled_run_is_interrupted_and_a_stopped_one_is_not() {
+    let scada = |e: &Env, fail_fast: bool| {
+        let zip_path = e
+            .home
+            .root()
+            .join("PUBLIC_DVD_DISPATCH_UNIT_SCADA_202401010000.zip");
+        make_zip(
+            &zip_path,
+            &[(
+                "PUBLIC_DVD_DISPATCH_UNIT_SCADA_202401010000.CSV",
+                &std::fs::read(fixtures().join("DISPATCH_UNIT_SCADA_v1_head.csv")).unwrap(),
+            )],
+        );
+        Plan {
+            request: "ingest scada.zip".into(),
+            input: Input::Local(vec![zip_path]),
+            options: RunOptions {
+                fail_fast,
+                ..RunOptions::default()
+            },
+        }
+    };
+    let e = env();
+    let cancel = CancellationToken::new();
+    cancel.cancel();
+    let (tx, _rx) = tokio::sync::mpsc::channel(4096);
+    let rep = run(scada(&e, false), e.deps.clone(), tx, cancel).await;
+    assert_eq!(rep.exit_code, phasor_pipeline::EXIT_INTERRUPTED);
+    assert!(rep.summary.interrupted);
+    assert_eq!(rep.summary.ingested, 0);
+    let recorded = e.deps.manifest.latest_run().await.unwrap().unwrap();
+    assert_eq!(recorded.exit_code, Some(phasor_pipeline::EXIT_INTERRUPTED));
+    // A file that cannot be put in place, with fail-fast: the failure stops the run.
+    let first = env();
+    let (rep, _) = run_plan(&first, scada(&first, false)).await;
+    assert_eq!(rep.exit_code, 0);
+    let written = walk(&first.home.lake()).remove(0);
+    let place = Path::new(&written)
+        .strip_prefix(first.home.lake())
+        .unwrap()
+        .to_path_buf();
+    let e = env();
+    std::fs::create_dir_all(e.home.lake().join(&place).join("x")).unwrap();
+    let (rep, _) = run_plan(&e, scada(&e, true)).await;
+    assert!(!rep.summary.interrupted);
+    assert_ne!(rep.exit_code, phasor_pipeline::EXIT_INTERRUPTED);
+    assert_ne!(rep.exit_code, 0);
+}
+
 fn footer(path: &str, key: &str) -> String {
     let f = std::fs::File::open(path).unwrap();
     let b = parquet::arrow::arrow_reader::ParquetRecordBatchReaderBuilder::try_new(f).unwrap();

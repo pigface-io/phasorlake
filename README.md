@@ -134,7 +134,9 @@ one to start from. Details: `docs/iceberg.md`.
 
 Each diagnostic has a stable code and a full sentence, one JSON line on
 stderr. Exit codes: 0 all files ok, 3 some, 1 none, 4 not archived while
-offline, 5 unresolved schema with `--strict`. Codes: `docs/errors.md`.
+offline, 5 unresolved schema with `--strict`, 130 interrupted: Ctrl-C lets
+the files in flight finish and the same command again reads the rest; a
+second Ctrl-C stops at once. Codes: `docs/errors.md`.
 
 ## Python
 

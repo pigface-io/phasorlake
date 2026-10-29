@@ -29,5 +29,5 @@ pub use get::{
     source_groups,
 };
 pub use plan::{DEFAULT_BATCH_ROWS, Deps, Input, Plan, RunOptions};
-pub use report::{RunReport, exit_code};
+pub use report::{EXIT_INTERRUPTED, RunReport, exit_code};
 pub use run::{local_remote, local_remote_in, recorded_remote, run};

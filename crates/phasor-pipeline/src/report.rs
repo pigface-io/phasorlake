@@ -17,6 +17,10 @@ pub const EXIT_PARTIAL: i32 = exit::PARTIAL as i32;
 pub const EXIT_OFFLINE: i32 = exit::OFFLINE as i32;
 /// Exit code: a schema could not be resolved in strict mode.
 pub const EXIT_SCHEMA: i32 = exit::SCHEMA as i32;
+/// Exit code: Ctrl-C stopped the run, the files in flight finished. Not one
+/// of the family's codes: the shell's own for a process stopped by SIGINT
+/// (128 + 2), so a script tells an interrupted run from a finished one.
+pub const EXIT_INTERRUPTED: i32 = 130;
 
 /// What a run produced.
 #[derive(Debug)]

@@ -2,9 +2,13 @@
 
 from __future__ import annotations
 
+import http.server
 import os
+import signal
 import subprocess  # ruff: ignore[suspicious-subprocess-import] — the tests run the installed scripts
 import sys
+import threading
+import time
 from typing import TYPE_CHECKING
 
 import pytest
@@ -88,3 +92,49 @@ def test_on_windows_the_script_runs_the_exe_and_leaves_with_its_code(
     with pytest.raises(SystemExit) as e:
         _cli.phasor()
     assert e.value.code == 3
+
+
+class _SlowNemweb(http.server.BaseHTTPRequestHandler):
+    """Answers, after a while, that there is no such month."""
+
+    def do_GET(self) -> None:
+        time.sleep(1.5)
+        self.send_response(404)
+        self.send_header("Content-Length", "0")
+        self.end_headers()
+
+
+@pytest.mark.skipif(os.name == "nt", reason="a process group and SIGINT are POSIX's")
+def test_ctrl_c_lets_the_command_finish_then_stops_python(tmp_path: Path) -> None:
+    # Ctrl-C reaches Python and the command alike, as from a terminal: the
+    # command finishes what it had in flight and exits 130, then Python stops.
+    server = http.server.ThreadingHTTPServer(("127.0.0.1", 0), _SlowNemweb)
+    threading.Thread(target=server.serve_forever, daemon=True).start()
+    home = tmp_path / "home"
+    home.mkdir()
+    (home / "config.toml").write_text(
+        f'[sources.nem]\nbase_url = "http://127.0.0.1:{server.server_address[1]}"\n'
+    )
+    script = (
+        "import sys, phasorlake\n"
+        "try:\n"
+        "    phasorlake.run(sys.argv[1:])\n"
+        "except KeyboardInterrupt:\n"
+        "    sys.exit('stopped by Ctrl-C')\n"
+    )
+    args = ["--home", str(home), "--no-progress", "fetch", "DISPATCHPRICE", "--day", "2024-01-15"]
+    python = subprocess.Popen(  # ruff: ignore[subprocess-without-shell-equals-true] — this interpreter
+        [sys.executable, "-c", script, *args],
+        start_new_session=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        text=True,
+    )
+    time.sleep(1)
+    os.killpg(python.pid, signal.SIGINT)
+    out, err = python.communicate(timeout=60)
+    server.shutdown()
+    server.server_close()
+    assert "interrupted; finishing the files in flight" in err
+    assert "interrupted:" in out
+    assert err.rstrip().endswith("stopped by Ctrl-C")
