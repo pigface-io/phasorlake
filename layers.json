@@ -98,9 +98,11 @@
     "phasor-core",
     "phasor-kit",
     "phasor-mms-conform",
+    "phasor-mms-decode",
     "phasor-nem",
     "phasor-pipeline",
-    "phasor-registry"
+    "phasor-registry",
+    "phasor-zip"
   ],
   "phasor-registry": [
     "phasor-core",

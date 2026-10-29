@@ -28,7 +28,25 @@ arrow-array.workspace = true
 arrow-schema.workspace = true
 pyo3 = { version = "0.30", features = ["abi3-py310"] }
 tempfile.workspace = true
+zonetrace = { workspace = true, optional = true }
+# The heap counted, for `just py-zones`: allocations, reallocations and bytes.
+stats_alloc = { workspace = true, optional = true }
+# Named only to turn on their zones.
+phasor-mms-decode = { workspace = true, optional = true }
+phasor-zip = { workspace = true, optional = true }
 
 [features]
 # maturin builds with this: the module does not link libpython, the interpreter provides it.
 extension-module = ["pyo3/extension-module"]
+# Where a call's time goes, in zones of zonetrace, Python's own included
+# (`just py-zones`): `_native._zone` and `_native._zones`.
+zones = [
+    "dep:zonetrace",
+    "dep:stats_alloc",
+    "dep:phasor-mms-decode",
+    "dep:phasor-zip",
+    "phasor-pipeline/zones",
+    "phasor-mms-conform/zones",
+    "phasor-mms-decode/zones",
+    "phasor-zip/zones",
+]

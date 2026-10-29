@@ -2191,11 +2191,15 @@ dependencies = [
  "phasor-core",
  "phasor-kit",
  "phasor-mms-conform",
+ "phasor-mms-decode",
  "phasor-nem",
  "phasor-pipeline",
  "phasor-registry",
+ "phasor-zip",
  "pyo3",
+ "stats_alloc",
  "tempfile",
+ "zonetrace",
 ]
 
 [[package]]
@@ -3039,6 +3043,12 @@ name = "stable_deref_trait"
 version = "1.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "6ce2be8dc25455e1f91df71bfa12ad37d7af1092ae736f3a6cd0e37bc7810596"
+
+[[package]]
+name = "stats_alloc"
+version = "0.1.10"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5c0e04424e733e69714ca1bbb9204c1a57f09f5493439520f9f68c132ad25eec"
 
 [[package]]
 name = "strsim"
@@ -3985,9 +3995,9 @@ checksum = "29666d0abbfad1e3dc4dcf6144730dd3a3ab225bbbdac83319345b1b44ccfc1b"
 
 [[package]]
 name = "zonetrace"
-version = "0.1.1"
+version = "0.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b543c8600885a34fca8e929217ab38f54c7139a53d405a8381fc647c0132a162"
+checksum = "d7bc3800f1e18037a08c2988134f9b29884f7c5dd0ba9040dda80d86275d0703"
 
 [[package]]
 name = "zstd"

@@ -22,6 +22,7 @@
     "crates/phasor-cli/src": 78,
     "crates/phasor-mirror/src": 100,
     "crates/phasor-net/src": 100,
-    "crates/phasor-py/src": 90
+    "crates/phasor-py/src": 100,
+    "crates/phasor-py/src/c_data.rs": 94
   }
 }

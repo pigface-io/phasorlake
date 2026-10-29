@@ -160,7 +160,7 @@ insta = { version = "1", features = ["json"] }
 tempfile = "3"
 peak_alloc = "0.3"
 # zones timed into a call tree, for finding where time goes (feature zones)
-zonetrace = "0.1.1"
+zonetrace = "0.1.2"
 stats_alloc = "0.1"
 
 [profile.release]
