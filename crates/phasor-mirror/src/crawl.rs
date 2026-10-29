@@ -87,8 +87,17 @@ impl Mirror {
                 .or_default()
                 .push(r);
         }
-        for (path, lines) in by_file {
-            write_listing(&path, lines)?;
+        // Two folders whose names differ only in case (nemweb's
+        // `CURRENT/STPASA_DUIDAvailability/` and `ARCHIVE/STPASA_DUIDAVAILABILITY/`)
+        // are one local folder on a disk that folds case: the file written
+        // last holds both listings, or it would drop the other's links.
+        let mut written: Vec<(PathBuf, Vec<Remote>)> = Vec::new();
+        for (path, mut lines) in by_file {
+            if let Some(i) = written.iter().position(|(p, _)| same_file(p, &path)) {
+                lines.extend(written.swap_remove(i).1);
+            }
+            write_listing(&path, lines.clone())?;
+            written.push((path, lines));
         }
         Ok(())
     }
@@ -162,6 +171,16 @@ fn listings_under(dir: &Path) -> Vec<PathBuf> {
 /// The lines of the listing file at `path`; none when there is none.
 fn read_listing(path: &Path) -> Result<Vec<Remote>, MirrorError> {
     crate::ndjson::read(path)?.map_or(Ok(Vec::new()), |text| parse_record(path, &text))
+}
+
+/// Whether `a` and `b` name one file that exists: the same path, or two
+/// that a disk folding case (or a link) makes one.
+fn same_file(a: &Path, b: &Path) -> bool {
+    use std::os::unix::fs::MetadataExt as _;
+    match (std::fs::metadata(a), std::fs::metadata(b)) {
+        (Ok(x), Ok(y)) => (x.dev(), x.ino()) == (y.dev(), y.ino()),
+        _ => false,
+    }
 }
 
 /// An empty listing removes the file.
@@ -452,6 +471,29 @@ mod tests {
         std::fs::create_dir_all(dir.join("x")).unwrap();
         assert!(super::write_listing(&dir, Vec::new()).is_err());
         super::write_listing(&home.path().join("none.ndjson"), Vec::new()).unwrap();
+    }
+
+    #[test]
+    fn a_folder_listed_in_two_cases_keeps_both_listings_on_a_disk_that_folds_case() {
+        let home = tempfile::tempdir().unwrap();
+        let mirror = Mirror::new(home.path());
+        // A disk folding case makes `X_Availability/` and `X_AVAILABILITY/`
+        // one folder; a link does the same on any disk.
+        let current = "https://www.nemweb.com.au/Reports/CURRENT/X_Availability/";
+        let archive = "https://www.nemweb.com.au/Reports/ARCHIVE/X_Linked/";
+        let (c, a) = (mirror.folder_dir(current), mirror.folder_dir(archive));
+        std::fs::create_dir_all(&c).unwrap();
+        std::os::unix::fs::symlink(&c, &a).unwrap();
+        let line = |on: &str, name: &str| {
+            format!(
+                "{{\"url\":\"{on}{name}\",\"kind\":\"file\",\"size\":1,\"modified\":\"Monday, October 12, 2026 10:45 AM\",\"listed_on\":\"{on}\"}}\n"
+            )
+        };
+        mirror.set_record_text(line(current, "a.zip") + &line(archive, "m.zip"));
+        let text = mirror.record_text();
+        assert!(text.contains("CURRENT/X_Availability/a.zip"), "{text}");
+        assert!(text.contains("ARCHIVE/X_Linked/m.zip"), "{text}");
+        assert!(!super::same_file(&c, &home.path().join("none")));
     }
 
     use std::sync::Arc;
