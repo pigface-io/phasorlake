@@ -32,11 +32,18 @@ fn synthetic_zip(dir: &Path) -> std::path::PathBuf {
     let header = lines.next().expect("C row");
     let irow = lines.next().expect("I row");
     let rows: Vec<&str> = lines.filter(|l| l.starts_with("D,")).collect();
-    let mut csv = String::with_capacity(ROWS * 64);
-    csv.push_str(header);
-    csv.push_str("\r\n");
-    csv.push_str(irow);
-    csv.push_str("\r\n");
+    let path = dir.join("PUBLIC_DVD_DISPATCH_UNIT_SCADA_202401010000.zip");
+    let f = std::fs::File::create(&path).expect("zip");
+    let mut w = zip::ZipWriter::new(f);
+    w.start_file(
+        "PUBLIC_DVD_DISPATCH_UNIT_SCADA_202401010000.CSV",
+        zip::write::SimpleFileOptions::default(),
+    )
+    .expect("entry");
+    // Each row goes into the zip as it is made: the file is never whole in
+    // memory, where it would be most of the peak the ingest is measured by.
+    write!(w, "{header}\r\n{irow}\r\n").expect("write");
+    let mut line = String::new();
     for i in 0..ROWS {
         let r = rows[i % rows.len()];
         let (prefix, _) = r.rsplit_once(',').expect("a value");
@@ -53,18 +60,11 @@ fn synthetic_zip(dir: &Path) -> std::path::PathBuf {
             ),
             1,
         );
-        let _ = writeln!(csv, "{prefix},{:.6}\r", (i as f64) * 0.731);
+        line.clear();
+        let _ = writeln!(line, "{prefix},{:.6}\r", (i as f64) * 0.731);
+        w.write_all(line.as_bytes()).expect("write");
     }
-    let _ = write!(csv, "C,\"END OF REPORT\",{}\r\n", ROWS + 3);
-    let path = dir.join("PUBLIC_DVD_DISPATCH_UNIT_SCADA_202401010000.zip");
-    let f = std::fs::File::create(&path).expect("zip");
-    let mut w = zip::ZipWriter::new(f);
-    w.start_file(
-        "PUBLIC_DVD_DISPATCH_UNIT_SCADA_202401010000.CSV",
-        zip::write::SimpleFileOptions::default(),
-    )
-    .expect("entry");
-    w.write_all(csv.as_bytes()).expect("write");
+    write!(w, "C,\"END OF REPORT\",{}\r\n", ROWS + 3).expect("write");
     w.finish().expect("finish");
     path
 }

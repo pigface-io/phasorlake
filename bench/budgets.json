@@ -8,7 +8,7 @@
     "e2e/ingest_synthetic_zip": {
       "max_ms": 141.403,
       "max_peak_heap_mb": 17.83,
-      "max_rss_mb": 100.06,
+      "max_rss_mb": 35.6,
       "min_rows_per_s": 3707749.565
     },
     "fetch/download": {
