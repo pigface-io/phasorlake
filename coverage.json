@@ -21,6 +21,7 @@
     "crates/phasor-pipeline/src": 83,
     "crates/phasor-cli/src": 78,
     "crates/phasor-mirror/src": 100,
-    "crates/phasor-net/src": 100
+    "crates/phasor-net/src": 100,
+    "crates/phasor-py/src": 90
   }
 }

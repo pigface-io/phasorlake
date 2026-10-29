@@ -4,3 +4,10 @@
 *.part
 *.tmp-*
 /schemas/**/DRAFT_*.toml
+# The Python package: its venv, the binaries the build copies in, the module maturin develop puts beside the sources, wheels
+/.venv
+/python/phasorlake/bin/
+/python/phasorlake/*.so
+/python/phasorlake/*.pyd
+/dist
+/.coverage

@@ -3,6 +3,9 @@ set shell := ["zsh", "-cu"]
 # So a recipe can forward its arguments with "$@" and keep the caller's quoting.
 set positional-arguments := true
 
+# The interpreter pyo3 compiles against: the one uv manages, else the system's.
+export PYO3_PYTHON := `uv python find '>=3.10' 2>/dev/null || command -v python3`
+
 # list recipes
 default:
     @just --list
@@ -82,10 +85,23 @@ shellcheck:
 test:
     cargo test --workspace --locked
 
-# tests with line coverage, held to the floors in coverage.json
+# tests with line coverage, held to the floors in coverage.json: the Rust
+# tests, then the Python tests over the module built with the same
+# instrumentation, so phasor-py's lines count too. Everything builds into
+# target/llvm-cov-target, as cargo llvm-cov does, leaving target/debug alone.
 cover:
-    @mkdir -p coverage
-    cargo llvm-cov --workspace --locked --lcov --output-path coverage/rust.lcov
+    #!/usr/bin/env zsh
+    set -euo pipefail
+    mkdir -p coverage
+    export CARGO_TARGET_DIR=$PWD/target/llvm-cov-target
+    source <(cargo llvm-cov show-env --export-prefix 2>/dev/null)
+    cargo llvm-cov clean --workspace
+    cargo test --workspace --locked
+    just py-bin dev
+    uv sync --locked --group dev
+    uv run maturin develop --uv
+    uv run pytest -q --no-cov
+    cargo llvm-cov report --lcov --output-path coverage/rust.lcov
     cargo run -q -p xtask -- covergate coverage/rust.lcov
 
 # the real nemweb and WA host: a month listed per kit and the smallest file fetched (needs the network)
@@ -169,3 +185,49 @@ secrets:
 table-heads home:
     rm -rf testdata/heads
     python3 -I scripts/table-heads.py schemas {{ home }}/archive/www.nemweb.com.au testdata/heads
+
+# ── python ───────────────────────────────────────────────────────────────────
+
+# the phasor and phasor-mirror binaries the wheel ships, into python/phasorlake/bin/
+py-bin profile="release":
+    #!/usr/bin/env zsh
+    set -euo pipefail
+    cargo build --profile {{ profile }} --locked -p phasor-cli -p phasor-mirror
+    dir="${CARGO_TARGET_DIR:-target}/$([ {{ profile }} = dev ] && echo debug || echo {{ profile }})"
+    mkdir -p python/phasorlake/bin
+    cp "$dir/phasor" "$dir/phasor-mirror" python/phasorlake/bin/
+
+# the package into .venv, for the tests and for use: the binaries, the module, the dev tools
+py-dev: (py-bin "dev")
+    uv sync --locked --group dev
+    uv run maturin develop --uv
+
+# the wheel, into dist/
+py-wheel: py-bin
+    uv run --locked --group dev maturin build --release --out dist
+
+# rewrite the Python in place
+py-fmt:
+    uv run --locked --group dev ruff format python scripts
+    uv run --locked --group dev ruff check --fix python scripts
+
+# fail on a formatting diff, without rewriting
+py-fmt-check:
+    uv run --locked --group dev ruff format --check python scripts
+
+# every rule ruff has
+py-lint:
+    uv run --locked --group dev ruff check python scripts
+
+# mypy strict and basedpyright strict
+py-type:
+    uv run --locked --group dev mypy
+    uv run --locked --group dev basedpyright
+
+# the stubs against the built module
+py-stubs: py-dev
+    uv run python -m mypy.stubtest phasorlake._native --mypy-config-file pyproject.toml
+
+# the Python tests, every line of the package covered
+py-test: py-dev
+    uv run pytest --cov --cov-report=term-missing

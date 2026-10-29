@@ -93,6 +93,15 @@
     "phasor-writer",
     "phasor-zip"
   ],
+  "phasor-py": [
+    "phasor-cli",
+    "phasor-core",
+    "phasor-kit",
+    "phasor-mms-conform",
+    "phasor-nem",
+    "phasor-pipeline",
+    "phasor-registry"
+  ],
   "phasor-registry": [
     "phasor-core",
     "phasor-iceberg",

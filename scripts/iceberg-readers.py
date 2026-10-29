@@ -1,50 +1,86 @@
-# Reads a table the store wrote with readers that share no code with it:
-# pyiceberg (scan, and time travel to every snapshot), DuckDB's iceberg_scan,
-# and fastavro over every manifest and manifest list.
-#
-#   PHASOR_KEEP_TABLE=$dir cargo llvm-cov -p phasor-iceberg-store ...
-#   uv run --with 'pyiceberg[pyarrow]' --with duckdb --with fastavro \
-#     python scripts/iceberg-readers.py $dir/dispatchprice
-#
-# Exits non-zero when a reader disagrees with what the store's test wrote.
+r"""Reads a table the store wrote with readers that share no code with it.
+
+pyiceberg (a scan, and time travel to every snapshot), DuckDB's `iceberg_scan`,
+and fastavro over every manifest and manifest list.
+
+    PHASOR_KEEP_TABLE=$dir cargo llvm-cov -p phasor-iceberg-store ...
+    uv run --with 'pyiceberg[pyarrow]' --with duckdb --with fastavro \\
+        python scripts/iceberg-readers.py $dir/dispatchprice
+
+Exits non-zero when a reader disagrees with what the store's test wrote.
+"""
+
+from __future__ import annotations
 
 import json
 import sys
 from pathlib import Path
+from typing import NoReturn
 
 import duckdb
 import fastavro
 from pyiceberg.table import StaticTable
 
-meta_dir = Path(sys.argv[1]) / "metadata"
-version = (meta_dir / "version-hint.text").read_text().strip()
-location = str(meta_dir / f"v{version}.metadata.json")
+COLUMNS = ["settlementdate", "regionid", "raise1secrrp", "rrp"]
+ROWS = 6
+NULLS = 3
+ROWS_PER_SNAPSHOT = [2, 4, 5, 6]
 
-for path in sorted(meta_dir.glob("*.avro")):
-    with path.open("rb") as f:
-        reader = fastavro.reader(f)
-        records = list(reader)
-        schema = json.loads(reader.metadata["avro.schema"])
-    print(f"fastavro {path.name}: {schema['name']}, {len(records)} records")
 
-t = StaticTable.from_metadata(location)
-print("pyiceberg: format", t.metadata.format_version, "schema", t.metadata.current_schema_id)
-rows = t.scan().to_arrow().sort_by("settlementdate")
-names = rows.schema.names
-assert names == ["settlementdate", "regionid", "raise1secrrp", "rrp"], names
-assert rows.num_rows == 6, rows.num_rows
-assert rows.column("raise1secrrp").null_count == 3
-assert str(rows.schema.field("rrp").type) == "decimal128(18, 5)"
-snapshots = sorted(t.metadata.snapshots, key=lambda s: s.sequence_number)
-seen = [t.scan(snapshot_id=s.snapshot_id).to_arrow().num_rows for s in snapshots]
-assert seen == [2, 4, 5, 6], seen
-print("pyiceberg: rows", rows.num_rows, "per snapshot", seen)
+def disagree(reader: str, what: str, got: object) -> NoReturn:
+    """Leave: `reader` read something other than what was written.
 
-con = duckdb.connect()
-con.execute("INSTALL iceberg; LOAD iceberg;")
-got = con.execute(
-    f"SELECT count(*), count(raise1secrrp), max(rrp) FROM iceberg_scan('{location}')"
-).fetchone()
-assert got[0] == 6 and got[1] == 3, got
-print("duckdb:", got)
-print("all readers agree")
+    Raises:
+        SystemExit: Always, naming the reader and what it read.
+    """
+    msg = f"{reader}: {what}: {got!r}"
+    raise SystemExit(msg)
+
+
+def main(table_dir: Path) -> None:
+    """Read `table_dir` with the three readers.
+
+    Raises:
+        SystemExit: A reader disagrees with what the store's test wrote.
+    """
+    meta_dir = table_dir / "metadata"
+    version = (meta_dir / "version-hint.text").read_text().strip()
+    location = str(meta_dir / f"v{version}.metadata.json")
+
+    for path in sorted(meta_dir.glob("*.avro")):
+        with path.open("rb") as f:
+            reader = fastavro.reader(f)
+            records = list(reader)
+            schema = json.loads(reader.metadata["avro.schema"])
+        print(f"fastavro {path.name}: {schema['name']}, {len(records)} records")
+
+    t = StaticTable.from_metadata(location)
+    print("pyiceberg: format", t.metadata.format_version, "schema", t.metadata.current_schema_id)
+    rows = t.scan().to_arrow().sort_by("settlementdate")
+    if rows.schema.names != COLUMNS:
+        disagree("pyiceberg", "columns", rows.schema.names)
+    if rows.num_rows != ROWS:
+        disagree("pyiceberg", "rows", rows.num_rows)
+    if rows.column("raise1secrrp").null_count != NULLS:
+        disagree("pyiceberg", "nulls", rows.column("raise1secrrp").null_count)
+    if str(rows.schema.field("rrp").type) != "decimal128(18, 5)":
+        disagree("pyiceberg", "rrp type", rows.schema.field("rrp").type)
+    snapshots = sorted(t.metadata.snapshots, key=lambda s: s.sequence_number or 0)
+    seen = [t.scan(snapshot_id=s.snapshot_id).to_arrow().num_rows for s in snapshots]
+    if seen != ROWS_PER_SNAPSHOT:
+        disagree("pyiceberg", "rows per snapshot", seen)
+    print("pyiceberg: rows", rows.num_rows, "per snapshot", seen)
+
+    con = duckdb.connect()
+    con.execute("INSTALL iceberg; LOAD iceberg;")
+    got = con.execute(
+        f"SELECT count(*), count(raise1secrrp), max(rrp) FROM iceberg_scan('{location}')"  # ruff: ignore[hardcoded-sql-expression] — the path is this script's own argument
+    ).fetchone()
+    if got is None or got[0] != ROWS or got[1] != NULLS:
+        disagree("duckdb", "counts", got)
+    print("duckdb:", got)
+    print("all readers agree")
+
+
+if __name__ == "__main__":
+    main(Path(sys.argv[1]))

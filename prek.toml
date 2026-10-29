@@ -22,9 +22,9 @@ hooks = [
     { id = "check-toml" },
     { id = "check-json" },
     { id = "check-merge-conflict" },
-    # The data-model JSON fixture and the pulled tables are large;
-    # everything else is small.
-    { id = "check-added-large-files", args = ["--maxkb=200"], exclude = '^(testdata/bootstrap/datamodel/|schemas/[a-z]+/pulled/)' },
+    # The data-model JSON fixture, the pulled tables and the Python lock file
+    # are large; everything else is small.
+    { id = "check-added-large-files", args = ["--maxkb=200"], exclude = '^(testdata/bootstrap/datamodel/|schemas/[a-z]+/pulled/|uv\.lock$)' },
     # ── Secrets (first line of defence; gitleaks is below) ──
     { id = "detect-private-key" },
 ]
@@ -40,7 +40,31 @@ entry = "just fmt-check"
 files = '\.rs$'
 pass_filenames = false
 
+[[repos.hooks]]
+id = "py-fmt"
+name = "style: ruff format"
+language = "system"
+entry = "just py-fmt-check"
+files = '\.(py|pyi)$'
+pass_filenames = false
+
 # ── Lint ─────────────────────────────────────────────────────────────────────
+
+[[repos.hooks]]
+id = "py-lint"
+name = "lint: ruff, every rule"
+language = "system"
+entry = "just py-lint"
+files = '^(python/|scripts/|pyproject\.toml$)'
+pass_filenames = false
+
+[[repos.hooks]]
+id = "py-type"
+name = "types: mypy strict and basedpyright strict"
+language = "system"
+entry = "just py-type"
+files = '^(python/|scripts/|pyproject\.toml$|uv\.lock$)'
+pass_filenames = false
 
 [[repos.hooks]]
 id = "rust-lint"
@@ -146,6 +170,24 @@ language = "system"
 entry = "just budget-check"
 stages = ["pre-push"]
 files = '^(bench/budgets\.json|coverage\.json)$'
+pass_filenames = false
+
+[[repos.hooks]]
+id = "py-stubs"
+name = "types: the stubs match the built module"
+language = "system"
+entry = "just py-stubs"
+stages = ["pre-push"]
+files = '^(python/phasorlake/_native\.pyi$|crates/phasor-py/|pyproject\.toml$|uv\.lock$)'
+pass_filenames = false
+
+[[repos.hooks]]
+id = "py-test"
+name = "test: the Python package, every line covered"
+language = "system"
+entry = "just py-test"
+stages = ["pre-push"]
+files = '^(python/|crates/phasor-py/|crates/phasor-pipeline/|crates/phasor-cli/|pyproject\.toml$|uv\.lock$|testdata/csv/|docs/python\.md$)'
 pass_filenames = false
 
 # ── Shell ────────────────────────────────────────────────────────────────────

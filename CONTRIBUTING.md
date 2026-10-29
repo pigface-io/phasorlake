@@ -30,6 +30,7 @@ writer          everything written under the home: the ingest session,
                 quarantine, manifest, supersede, Iceberg, verify        -> iceberg-store, kit
 pipeline        orchestration over the ports and the writer only        -> kit, acquire, writer
 cli, mirror     the binaries
+py              the Python package's native module: decode, inspect, table -> cli, pipeline
 bench, e2e      tooling and whole-stack tests; nothing depends on them
 ```
 
@@ -46,6 +47,7 @@ source file per worker, and the two worlds meet once per file.
 |---|---|---|
 | unit and integration | every crate, `cargo test` | `just test`, pre-commit |
 | coverage | `cargo llvm-cov` over the workspace | `just cover` against `coverage.json`, pre-push |
+| Python package | `ruff` on every rule, `mypy --strict`, `basedpyright` strict, `stubtest`, `pytest` at 100% | `just py-fmt-check`, `py-lint`, `py-type` pre-commit; `py-stubs`, `py-test` pre-push |
 | pulled schemas | `schemas/nem/pulled/` against its manifest and the rev in `Cargo.lock` | `just schemas-check`, pre-commit |
 | benchmarks | criterion plus `phasor-bench` | `just bench-fast` pre-push, `just bench` in CI, against `bench/budgets.json` |
 | network | `crates/phasor-nem/tests/net.rs` | `just net-test`, weekly in CI |

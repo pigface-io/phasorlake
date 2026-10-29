@@ -1,0 +1,135 @@
+[build-system]
+requires = ["maturin>=1.9,<2"]
+build-backend = "maturin"
+
+[project]
+name = "phasorlake"
+description = "AEMO market data, from nemweb to an Iceberg lake: the phasor command, and its decoder for Python."
+readme = "docs/python.md"
+license = "Apache-2.0"
+license-files = ["LICENSE", "NOTICE"]
+requires-python = ">=3.10"
+dependencies = ["pyarrow>=16"]
+dynamic = ["version"]
+keywords = ["aemo", "nem", "wem", "energy", "parquet", "iceberg", "arrow"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Rust",
+    "Topic :: Scientific/Engineering",
+    "Typing :: Typed",
+]
+
+[project.urls]
+Repository = "https://github.com/pigface-io/phasorlake"
+Issues = "https://github.com/pigface-io/phasorlake/issues"
+
+# The real binaries, built into python/phasorlake/bin/ by `just py-bin`.
+[project.scripts]
+phasor = "phasorlake._cli:phasor"
+phasor-mirror = "phasorlake._cli:phasor_mirror"
+
+[tool.maturin]
+manifest-path = "crates/phasor-py/Cargo.toml"
+python-source = "python"
+module-name = "phasorlake._native"
+features = ["extension-module"]
+strip = true
+# The binaries are git-ignored, so they are named here to go into the wheel.
+include = [{ path = "python/phasorlake/bin/*", format = "wheel" }]
+
+[dependency-groups]
+dev = [
+    "basedpyright>=1.31",
+    "duckdb>=1.3",
+    "fastavro>=1.11",
+    "maturin>=1.9,<2",
+    "mypy>=1.18",
+    "pyarrow-stubs>=20",
+    "pyiceberg[pyarrow]>=0.9",
+    "pytest>=8.4",
+    "pytest-cov>=6",
+    "ruff>=0.14",
+]
+
+# ── Style and lint: every rule ruff has, less the three that fight the formatter ──
+
+[tool.ruff]
+target-version = "py310"
+line-length = 100
+src = ["python", "scripts"]
+
+[tool.ruff.lint]
+preview = true
+select = ["ALL"]
+ignore = [
+    "COM812", # trailing commas: the formatter places them
+    "CPY001", # a copyright notice per file: LICENSE and NOTICE hold it, as for the Rust
+    "D203",   # a blank line before a class docstring: D211 wants none
+    "D213",   # a summary on the second line: D212 wants the first
+    "DOC502", # "raises what it does not raise itself": the native module raises, the wrapper documents it
+]
+
+[tool.ruff.lint.pydoclint]
+# A one-line docstring says what comes back; a Returns section would repeat it.
+ignore-one-line-docstrings = true
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.lint.per-file-ignores]
+# Tests assert, compare with literal values, reach the package's internals, and need no docstrings.
+"python/tests/**" = ["S101", "PLR2004", "D1", "PLC2701"]
+# Scripts print their results and are not a package.
+"scripts/**" = ["T201", "INP001"]
+
+[tool.ruff.format]
+docstring-code-format = true
+
+# ── Types: mypy strict and basedpyright strict, both ──
+
+[tool.mypy]
+python_version = "3.10"
+files = ["python", "scripts"]
+mypy_path = "python"
+strict = true
+warn_unreachable = true
+disallow_any_explicit = true
+disallow_any_unimported = true
+enable_error_code = [
+    "ignore-without-code",
+    "redundant-expr",
+    "truthy-bool",
+    "possibly-undefined",
+    "exhaustive-match",
+]
+
+[tool.basedpyright]
+include = ["python", "scripts"]
+pythonVersion = "3.10"
+typeCheckingMode = "strict"
+reportUnnecessaryTypeIgnoreComment = "error"
+# pyarrow-stubs and fastavro leave some generics unknown (`Field[Unknown]`); what
+# reaches us through them is reported, not failed. Every other strict check fails.
+reportUnknownMemberType = "warning"
+reportUnknownArgumentType = "warning"
+reportUnknownVariableType = "warning"
+
+# ── Tests ──
+
+[tool.pytest.ini_options]
+testpaths = ["python/tests"]
+addopts = "--strict-markers --strict-config -p no:cacheprovider"
+filterwarnings = ["error"]
+xfail_strict = true
+
+[tool.coverage.run]
+source = ["phasorlake"]
+branch = true
+
+[tool.coverage.report]
+fail_under = 100
+show_missing = true
+exclude_also = ["if TYPE_CHECKING:"]

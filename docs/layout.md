@@ -10,7 +10,7 @@ The layers and every dependency between crates are in `CONTRIBUTING.md`
 
 - **Generic** (`phasor-core`, `phasor-net`, `phasor-kit`, `phasor-acquire`,
   `phasor-iceberg-store`, `phasor-writer`, `phasor-pipeline`, `phasor-cli`,
-  `phasor-mirror`): what every source shares. The pipeline runs over the
+  `phasor-mirror`, `phasor-py`): what every source shares. The pipeline runs over the
   ports in `phasor-kit` and names no format. `FeedFolders`
   (`crates/phasor-acquire/src/feed_folders.rs`) is a feed's folders as a
   `Source`, for any feed the shared feeds table names. The decoders, the zip

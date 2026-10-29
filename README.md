@@ -136,6 +136,13 @@ Each diagnostic has a stable code and a full sentence, one JSON line on
 stderr. Exit codes: 0 all files ok, 3 some, 1 none, 4 not archived while
 offline, 5 unresolved schema with `--strict`. Codes: `docs/errors.md`.
 
+## Python
+
+`pip install phasorlake` gives Python the `phasor` and `phasor-mirror`
+commands and the decoder: `phasorlake.decode(path)` returns every table in
+a file as a `pyarrow.Table`, exactly as `phasor ingest` writes it; `inspect`
+and `table` are `phasor inspect` and `phasor list TABLE`. See `docs/python.md`.
+
 ## Mirror
 
 `phasor-mirror` keeps a full copy of nemweb's archive folders, peeking

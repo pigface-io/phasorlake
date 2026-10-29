@@ -20,6 +20,7 @@ members = [
     "crates/phasor-cli",
     "crates/phasor-mirror",
     "crates/phasor-net",
+    "crates/phasor-py",
     "crates/phasor-iceberg-store",
     "crates/phasor-bench",
     "crates/phasor-e2e",
@@ -98,6 +99,7 @@ phasor-wem = { path = "crates/phasor-wem" }
 phasor-gas = { path = "crates/phasor-gas" }
 phasor-writer = { path = "crates/phasor-writer" }
 phasor-pipeline = { path = "crates/phasor-pipeline" }
+phasor-cli = { path = "crates/phasor-cli" }
 phasor-mirror = { path = "crates/phasor-mirror" }
 phasor-net = { path = "crates/phasor-net", default-features = false }
 

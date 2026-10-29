@@ -1,0 +1,34 @@
+[package]
+name = "phasor-py"
+description = "The phasorlake Python package's native module: decode, inspect and describe, over the same crates the phasor command uses."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+[lints]
+workspace = true
+
+[lib]
+name = "phasor_py"
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+phasor-core.workspace = true
+phasor-cli.workspace = true
+phasor-nem.workspace = true
+phasor-kit.workspace = true
+phasor-mms-conform.workspace = true
+phasor-pipeline.workspace = true
+phasor-registry.workspace = true
+arrow = { workspace = true, features = ["ffi"] }
+arrow-array.workspace = true
+arrow-schema.workspace = true
+pyo3 = { version = "0.30", features = ["abi3-py310"] }
+tempfile.workspace = true
+
+[features]
+# maturin builds with this: the module does not link libpython, the interpreter provides it.
+extension-module = ["pyo3/extension-module"]

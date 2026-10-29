@@ -1,0 +1,47 @@
+"""`table` describes a table as `phasor list TABLE --json` does."""
+
+from __future__ import annotations
+
+import pyarrow as pa
+import pytest
+
+import phasorlake as pl
+
+
+def test_dispatchprice_roles_key_columns_and_schema() -> None:
+    t = pl.table("dispatchprice")
+    assert t["name"] == "DISPATCHPRICE"
+    assert t["market"] == "nem"
+    assert t["load_mode"] == "append"
+    assert "REGIONID" in t["roles"]["entity"]
+    assert t["roles"]["valid"]["column"] == "SETTLEMENTDATE"
+    assert t["roles"]["valid"]["kind"] == "interval_end"
+    assert t["roles"]["cutoff"] == "LASTCHANGED"
+    assert "LASTCHANGED" in t["roles"]["order"]
+    assert "SETTLEMENTDATE" in t["key"]
+    assert t["time_column"] == "SETTLEMENTDATE"
+    by_name = {c["name"]: c for c in t["columns"]}
+    assert by_name["REGIONID"]["role"] == "entity"
+    assert by_name["SETTLEMENTDATE"]["role"] == "valid"
+    assert by_name["LASTCHANGED"]["role"] == "order, cutoff"
+    assert not by_name["RRP"]["role"]
+    assert by_name["RRP"]["type"] == "decimal(15,5)"
+    assert by_name["RRP"]["field_id"] > 0
+    assert isinstance(t["schema"], pa.Schema)
+    assert t["schema"].names == [c["name"] for c in t["columns"]]
+    assert t["schema"].field("SETTLEMENTDATE").type == pa.timestamp("us", "+10:00")
+    metadata = t["schema"].field("RRP").metadata
+    assert metadata is not None
+    assert metadata[b"PARQUET:field_id"] == str(by_name["RRP"]["field_id"]).encode()
+
+
+def test_a_report_pair_names_its_table() -> None:
+    assert pl.table("DISPATCH.PRICE")["name"] == "DISPATCHPRICE"
+
+
+def test_an_unknown_table_is_a_phasor_error() -> None:
+    with pytest.raises(pl.PhasorError) as e:
+        pl.table("NO_SUCH_TABLE")
+    assert e.value.code == "schema.unknown_table"
+    assert e.value.table == "NO_SUCH_TABLE"
+    assert "phasor list" in str(e.value)
