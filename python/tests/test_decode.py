@@ -214,9 +214,12 @@ def test_small_blocks_come_back_as_one_chunk(tmp_path: Path) -> None:
 
 def test_threads_decode_files_side_by_side(heads_zip: Path) -> None:
     # The GIL is released while a file is read: each thread gets the whole file.
+    # `catch_warnings` swaps process-wide state, so it is entered once, here,
+    # not in each thread (as `decode` above would).
     alone = decode(heads_zip)
-    with ThreadPoolExecutor(4) as pool:
-        side_by_side = list(pool.map(lambda _: decode(heads_zip), range(8)))
+    with warnings.catch_warnings(), ThreadPoolExecutor(4) as pool:
+        warnings.simplefilter("ignore", pl.PhasorWarning)
+        side_by_side = list(pool.map(lambda _: pl.decode(heads_zip), range(8)))
     for tables in side_by_side:
         assert tables.keys() == alone.keys()
         for name, t in tables.items():
