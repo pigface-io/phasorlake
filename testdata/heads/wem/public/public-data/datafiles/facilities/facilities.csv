@@ -1,0 +1,6 @@
+Participant Code,Participant Name,Facility Code,Facility Type,Balancing Status,Capacity Credits (MW),Maximum Capacity (MW),Registered From,Extracted At
+"ALCOA","Alcoa of Australia Limited","ALCOA_KW_IL","Non-Dispatchable Load","Non-Active",,,2008-11-01 00:00:00,"2023-09-28 06:30:00"
+"ALCOA","Alcoa of Australia Limited","ALCOA_PNJ_IL","Non-Dispatchable Load","Non-Active",,,2008-11-01 00:00:00,
+"ALCOA","Alcoa of Australia Limited","ALCOA_WGP","Scheduled Generator","Active",16,16,2008-11-01 00:00:00,
+"ALCOA","Alcoa of Australia Limited","ALCOA_WGP_IL","Non-Dispatchable Load","Non-Active",,,2008-11-01 00:00:00,
+"ALINTA","Alinta Sales Pty Ltd","ALINTA_PNJ_U1","Scheduled Generator","Active",142.45,143,2003-07-01 00:00:00,

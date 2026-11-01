@@ -183,7 +183,10 @@ impl Registry {
         Ok(Self::from_set(set))
     }
 
-    /// Lays a user's `schemas/`-style `overlay` over this registry, replacing tables by name.
+    /// Lays a user's `schemas/`-style `overlay` over this registry, replacing
+    /// tables by name, markets by market, and the folders of its
+    /// `pulled/folders.json` by feed and folder, so a source serves a user's
+    /// table from the folders the user says carry it.
     ///
     /// The result is validated as a set.
     pub fn with_overlay(&self, overlay: &Path) -> Result<Registry, SchemaFileError> {
@@ -202,10 +205,15 @@ impl Registry {
             markets.retain(|x| x.market != m.market);
             markets.push(m);
         }
+        let mut folders = self.folders.clone();
+        for f in over.folders {
+            folders.retain(|x| (&x.feed, &x.folder) != (&f.feed, &f.folder));
+            folders.push(f);
+        }
         let set = SchemaSet {
             markets,
             tables,
-            folders: self.folders.clone(),
+            folders,
         };
         let issues = set.validate();
         if let Some(first) = issues.first() {
@@ -707,6 +715,25 @@ mod tests {
             "schema_format = 1\nmarket = \"nem\"\nutc_offset_secs = 36000\ntimestamp_format = \"aemo_slash\"\n",
         )
         .unwrap();
+        // The overlay's folders carry its table: one new, one replacing
+        // the embedded folder of the same feed and folder.
+        let first = &r.folders[0];
+        let folder = |name: &str| {
+            format!(
+                "{{\"blocks\": [{{\"first-release\": \"2026-01\", \"last-release\": \"2026-01\", \"months\": 1, \"report\": [\"X\", \"Y\"], \"version\": 1}}], \"feed\": \"{}\", \"folder\": \"{name}\", \"listings\": [], \"root\": \"{}\"}}",
+                first.feed, first.root
+            )
+        };
+        std::fs::create_dir_all(dir.path().join("nem").join("pulled")).unwrap();
+        std::fs::write(
+            dir.path().join("nem").join("pulled").join("folders.json"),
+            format!(
+                "{{\"folders\": [{}, {}], \"x-format\": 5}}",
+                folder(&first.folder),
+                folder("X_Y")
+            ),
+        )
+        .unwrap();
         let o = r.with_overlay(dir.path()).unwrap();
         assert_eq!(
             o.markets.iter().filter(|m| m.market == Market::Nem).count(),
@@ -715,8 +742,10 @@ mod tests {
         let region = o.table_by_name("REGION").unwrap();
         assert_eq!(o.table(region).columns.len(), 1);
         assert_eq!(o.schema_source(region), SchemaSource::User);
-        assert!(o.table_by_pair(Market::Nem, "X", "Y").is_some());
+        let xy = o.table_by_pair(Market::Nem, "X", "Y").unwrap();
         assert_eq!(o.tables().count(), r.tables().count() + 1);
+        assert_eq!(o.folders.len(), r.folders.len() + 1);
+        assert_eq!(o.folders_of(xy).len(), 2);
         // An invalid overlay is refused.
         let mut bad = n.clone();
         bad.columns[0].id = ColumnId(0);

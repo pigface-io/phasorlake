@@ -1,0 +1,119 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 3845576662466461030,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 5,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1785513600000,
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/wem/WEMDE_REFERENCE_TRADING_PRICE",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "phasor.declared": "true",
+    "phasor.format": "5",
+    "phasor.headers": "{\"1\":\"isPublished\",\"2\":\"referenceTradingPrice\",\"3\":\"tradingDay\",\"4\":\"tradingInterval\",\"5\":\"transactionId\"}",
+    "phasor.load": "append",
+    "phasor.market": "wem",
+    "phasor.offset": "+08:00",
+    "phasor.reports": "[[\"WEMDE\",\"REFERENCE_TRADING_PRICE_REFERENCE_TRADING_PRICES\"]]",
+    "phasor.table": "WEMDE_REFERENCE_TRADING_PRICE",
+    "phasor.time": "TRADING_INTERVAL",
+    "phasor.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 3845576662466461030,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "id": 1,
+          "name": "IS_PUBLISHED",
+          "required": false,
+          "type": "boolean"
+        },
+        {
+          "id": 2,
+          "name": "REFERENCE_TRADING_PRICE",
+          "required": false,
+          "type": "decimal(5, 2)"
+        },
+        {
+          "id": 3,
+          "name": "TRADING_DAY",
+          "required": false,
+          "type": "date"
+        },
+        {
+          "id": 4,
+          "name": "TRADING_INTERVAL",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "id": 5,
+          "name": "TRANSACTION_ID",
+          "required": false,
+          "type": "string"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 3845576662466461030,
+      "timestamp-ms": 1785513600000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/wem/WEMDE_REFERENCE_TRADING_PRICE/metadata/snap-3845576662466461030-1-0551813b-68e4-89c2-9817-6833581310e2.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 3845576662466461030,
+      "summary": {
+        "operation": "append",
+        "phasor.files": "101",
+        "phasor.from.file": "ReferenceTradingPrice_20260801.zip",
+        "phasor.from.release": "2026-08",
+        "phasor.from.sha256": "84bc13979b3694924ac75228e1637137924777e34f3c61152bf489ec4faaff2d",
+        "phasor.from.time": "2026-08-01T08:00:00+08:00",
+        "phasor.kinds": "[\"wemde\"]",
+        "phasor.report-subtype": "REFERENCE_TRADING_PRICE_REFERENCE_TRADING_PRICES",
+        "phasor.report-type": "WEMDE",
+        "phasor.rows": "4848",
+        "phasor.to.file": "ReferenceTradingPrice_20261030.zip",
+        "phasor.to.release": "2026-10",
+        "phasor.to.sha256": "c310c9c2b3eb96338c2b1159c2b6f5899298e91827c0f268ef974fa79080e95b",
+        "phasor.to.time": "2026-10-31T07:30:00+08:00",
+        "phasor.total-rows": "4848",
+        "phasor.version": "1"
+      },
+      "timestamp-ms": 1785513600000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "0551813b-68e4-89c2-9817-6833581310e2"
+}

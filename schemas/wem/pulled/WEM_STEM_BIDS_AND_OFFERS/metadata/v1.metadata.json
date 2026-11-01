@@ -1,0 +1,137 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 754361861544550928,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 8,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1785513600000,
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/wem/WEM_STEM_BIDS_AND_OFFERS",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "phasor.declared": "true",
+    "phasor.format": "5",
+    "phasor.headers": "{\"1\":\"Trading Date\",\"2\":\"Interval Number\",\"3\":\"Trading Interval\",\"4\":\"Participant Code\",\"5\":\"Bid or Offer\",\"6\":\"Price ($/MWh)\",\"7\":\"Quantity (MWh)\",\"8\":\"Extracted At\"}",
+    "phasor.load": "append",
+    "phasor.market": "wem",
+    "phasor.offset": "+08:00",
+    "phasor.reports": "[[\"WEM\",\"STEM_BIDS_AND_OFFERS\"]]",
+    "phasor.table": "WEM_STEM_BIDS_AND_OFFERS",
+    "phasor.time": "TRADING_INTERVAL",
+    "phasor.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 754361861544550928,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "id": 1,
+          "name": "TRADING_DATE",
+          "required": false,
+          "type": "date"
+        },
+        {
+          "id": 2,
+          "name": "INTERVAL_NUMBER",
+          "required": false,
+          "type": "decimal(2, 0)"
+        },
+        {
+          "id": 3,
+          "name": "TRADING_INTERVAL",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "id": 4,
+          "name": "PARTICIPANT_CODE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 5,
+          "name": "BID_OR_OFFER",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 6,
+          "name": "PRICE_MWH",
+          "required": false,
+          "type": "decimal(6, 2)"
+        },
+        {
+          "id": 7,
+          "name": "QUANTITY_MWH",
+          "required": false,
+          "type": "decimal(7, 3)"
+        },
+        {
+          "id": 8,
+          "name": "EXTRACTED_AT",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 754361861544550928,
+      "timestamp-ms": 1785513600000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/wem/WEM_STEM_BIDS_AND_OFFERS/metadata/snap-754361861544550928-1-3da4d377-373a-8c80-86bb-df6a885df6a8.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 754361861544550928,
+      "summary": {
+        "operation": "append",
+        "phasor.files": "3",
+        "phasor.from.file": "stem-bids-and-offers-2026-08.csv",
+        "phasor.from.release": "2026-08",
+        "phasor.from.sha256": "03fa9e263e39f309dca18a99af75015724d11e5f3c94cf85c726a4dd152bc94f",
+        "phasor.from.time": "2026-08-01T08:00:00+08:00",
+        "phasor.kinds": "[\"datafiles\"]",
+        "phasor.report-subtype": "STEM_BIDS_AND_OFFERS",
+        "phasor.report-type": "WEM",
+        "phasor.rows": "397610",
+        "phasor.to.file": "stem-bids-and-offers-2026-10.csv",
+        "phasor.to.release": "2026-10",
+        "phasor.to.sha256": "4d7ef634ab7332ea312a00b5176f5065cd213a1129e53c3e7044d097ac7a5c20",
+        "phasor.to.time": "2026-10-26T07:30:00+08:00",
+        "phasor.total-rows": "397610",
+        "phasor.version": "1"
+      },
+      "timestamp-ms": 1785513600000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "3da4d377-373a-8c80-86bb-df6a885df6a8"
+}

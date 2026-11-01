@@ -736,16 +736,11 @@ mod tests {
         .unwrap();
         assert_eq!((stats.blocks, stats.rows, stats.bad_rows), (1, 2, 0));
         assert_eq!(stats.bytes, bytes.len() as u64);
+        // The registry's WEM table claims the block, so its rows are typed in the WEM's clock.
         let (table, market, _, how) = &sink.blocks[0];
-        assert_eq!(
-            table,
-            "WEMDE_REFERENCE_TRADING_PRICE_REFERENCE_TRADING_PRICES"
-        );
+        assert_eq!(table, "WEMDE_REFERENCE_TRADING_PRICE");
         assert_eq!(market, "wem");
-        assert_eq!(
-            how,
-            "derived:WEMDE:REFERENCE_TRADING_PRICE_REFERENCE_TRADING_PRICES"
-        );
+        assert!(how.starts_with("conforms"), "{how}");
         let batch = &sink.batches[0].batch;
         let schema = batch.schema();
         let names: Vec<&str> = schema.fields().iter().map(|f| f.name().as_str()).collect();
@@ -754,12 +749,20 @@ mod tests {
             "{names:?}"
         );
         let i = names.iter().position(|n| *n == "TRADING_INTERVAL").unwrap();
+        assert_eq!(
+            schema.field(i).data_type(),
+            &arrow_schema::DataType::Timestamp(
+                arrow_schema::TimeUnit::Microsecond,
+                Some("+08:00".into())
+            )
+        );
         let col = batch
             .column(i)
             .as_any()
-            .downcast_ref::<arrow_array::StringArray>()
+            .downcast_ref::<arrow_array::TimestampMicrosecondArray>()
             .unwrap();
-        assert_eq!(col.value(0), "2026/10/21 08:00:00");
+        // 2026-10-21 08:00 AWST is 2026-10-21 00:00 UTC.
+        assert_eq!(col.value(0), 1_792_540_800_000_000);
         // Not JSON; not a WEMDE document; a name no rule reads.
         let mut sink = Collect::default();
         let e = decode(&d, url, "x.json", b"{", &options(false, 0), &mut sink).unwrap_err();

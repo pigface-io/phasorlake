@@ -181,10 +181,15 @@ secrets-push:
 secrets:
     gitleaks git --no-banner --redact
 
-# testdata/heads: the first rows of one real file per table, read from the mirror at HOME
-table-heads home:
-    rm -rf testdata/heads
-    python3 -I scripts/table-heads.py schemas {{ home }}/archive/www.nemweb.com.au testdata/heads
+# testdata/heads: the first rows of one real file per table, read from the mirror at HOME; WA is the WA host's mirror home when it is another, ONLY (gas, wem) one market's heads alone
+table-heads home wa="" only="all":
+    #!/usr/bin/env zsh
+    set -euo pipefail
+    wa_home="{{ wa }}"
+    [[ -n $wa_home ]] || wa_home="{{ home }}"
+    if [[ "{{ only }}" == all ]]; then rm -rf testdata/heads; else rm -rf "testdata/heads/{{ only }}"; fi
+    py=$(uv python find '>=3.10' 2>/dev/null || command -v python3)
+    "$py" -I scripts/table-heads.py schemas "{{ home }}/archive/www.nemweb.com.au" testdata/heads "{{ only }}" "$wa_home/archive/data.wa.aemo.com.au"
 
 # ── python ───────────────────────────────────────────────────────────────────
 

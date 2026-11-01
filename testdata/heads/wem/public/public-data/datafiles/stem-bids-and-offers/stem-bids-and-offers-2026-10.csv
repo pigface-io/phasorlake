@@ -1,0 +1,6 @@
+Trading Date,Interval Number,Trading Interval,Participant Code,Bid or Offer,Price ($/MWh),Quantity (MWh),Extracted At
+"2026-10-01",1,2026-10-01 08:00:00,"ADERRTL","Bid",80,0.5,"2026-10-31 23:30:50"
+"2026-10-01",1,2026-10-01 08:00:00,"ADERRTL","Bid",85,0.5,
+"2026-10-01",1,2026-10-01 08:00:00,"ADERRTL","Bid",90,0.25,
+"2026-10-01",1,2026-10-01 08:00:00,"ADERRTL","Bid",100,0.25,
+"2026-10-01",1,2026-10-01 08:00:00,"ALCOA","Offer",1100,7.715,

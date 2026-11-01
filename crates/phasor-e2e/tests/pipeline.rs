@@ -3389,6 +3389,7 @@ async fn every_real_head_survives_the_lake() {
     let registry = e.registry.clone();
     e.deps.kits = Arc::new(KitRegistry::new(vec![
         phasor_gas::kit(registry.clone(), &phasor_gas::GasConfig::default()).unwrap(),
+        phasor_wem::kit(&phasor_wem::WemConfig::default(), registry.clone()).unwrap(),
         phasor_nem::kit(registry.clone(), "https://h").unwrap(),
     ]));
     let heads = Path::new(env!("CARGO_MANIFEST_DIR"))
@@ -3410,10 +3411,19 @@ async fn every_real_head_survives_the_lake() {
     files.sort();
     assert!(files.len() > 400, "{}", files.len());
     // The rows each file holds: an MMS file's D rows, a plain one's lines
-    // after its header.
+    // after its header, a WEMDE document's elements of the arrays under `data`.
     let held = |p: &Path| -> u64 {
         let text = std::fs::read_to_string(p).unwrap();
-        if text.starts_with("C,") {
+        if p.extension().is_some_and(|x| x == "json") {
+            let doc: serde_json::Value = serde_json::from_str(&text).unwrap();
+            doc["data"]
+                .as_object()
+                .unwrap()
+                .values()
+                .filter_map(|v| v.as_array())
+                .map(|a| a.len() as u64)
+                .sum()
+        } else if text.starts_with("C,") {
             text.lines().filter(|l| l.starts_with("D,")).count() as u64
         } else {
             text.lines().skip(1).filter(|l| !l.is_empty()).count() as u64

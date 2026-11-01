@@ -1,0 +1,6 @@
+Participant Code,Participant Name,Address,City,State,Postcode,Country,Phone,Fax,Contact Name,Contact Position,Registered From,Market Customer,Market Generator,AEMO,Network Operator,System Management,System Operator,Ancillary Service Provider,Extracted At
+"ASTAR","A Star Electricity","112 North Lake Road","Myaree","WA",6154,"AU","(08) 9364 0400","(08) 9364 0444","Claire Nicholas","Operations Manager",2014-03-12 00:00:00,"Y","N","N","N","N","N","N","2023-09-30 06:30:05"
+"ADERRTL","AER Retail PTY LTD","112 North Lake Road","Myaree","WA",6154,"AU","(08) 9364 0400","(08) 9364 0444","Claire Nicholas","Operations Manager",2013-03-07 00:00:00,"Y","Y","N","N","N","N","N",
+"ADER","Advanced Energy Resources","112 North Lake Road","Myaree","WA",6154,"AU","(08) 93640400","(08) 93640444","Luca Castelli","Managing Director",2010-06-01 00:00:00,"N","Y","N","N","N","N","N",
+"ALCOA","Alcoa of Australia Limited","181-205 Davy Street","Booragoon","WA",6154,"AU","(08) 9316 5717","(08) 9316 5162","Nick Eaton","Energy Manager - Australia",2003-07-01 00:00:00,"Y","Y","N","N","N","N","N",
+"ALINTA","Alinta Sales Pty Ltd","Grosvenor Place, Level 13, 225 George Street","Sydney","NSW",2000,"AU","1300 364 168","0447 411 167","Chris Pratt","GM Spot Trading",2003-07-01 00:00:00,"Y","Y","N","N","N","N","N",

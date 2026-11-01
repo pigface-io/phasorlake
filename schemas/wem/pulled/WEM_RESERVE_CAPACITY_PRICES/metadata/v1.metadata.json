@@ -1,0 +1,279 @@
+{
+  "current-schema-id": 2,
+  "current-snapshot-id": 4675147518853700022,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 7,
+  "last-partition-id": 999,
+  "last-sequence-number": 3,
+  "last-updated-ms": 1790784000002,
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/wem/WEM_RESERVE_CAPACITY_PRICES",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "phasor.declared": "true",
+    "phasor.format": "5",
+    "phasor.headers": "{\"1\":\"Capacity Year\",\"2\":\"Price Type\",\"3\":\"Price ($)\",\"4\":\"Capacity Credits (MW)\",\"5\":\"Trans Floor ($)\",\"6\":\"Trans Ceiling ($)\",\"7\":\"Extracted At\"}",
+    "phasor.load": "snapshot",
+    "phasor.market": "wem",
+    "phasor.offset": "+08:00",
+    "phasor.reports": "[[\"WEM\",\"RESERVE_CAPACITY_PRICES\"]]",
+    "phasor.table": "WEM_RESERVE_CAPACITY_PRICES",
+    "phasor.time": "EXTRACTED_AT",
+    "phasor.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 4675147518853700022,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "id": 1,
+          "name": "CAPACITY_YEAR",
+          "required": false,
+          "type": "decimal(4, 0)"
+        },
+        {
+          "id": 2,
+          "name": "PRICE_TYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 3,
+          "name": "PRICE",
+          "required": false,
+          "type": "decimal(10, 4)"
+        },
+        {
+          "id": 4,
+          "name": "CAPACITY_CREDITS_MW",
+          "required": false,
+          "type": "decimal(7, 3)"
+        },
+        {
+          "id": 5,
+          "name": "TRANS_FLOOR",
+          "required": false,
+          "type": "decimal(8, 2)"
+        },
+        {
+          "id": 6,
+          "name": "TRANS_CEILING",
+          "required": false,
+          "type": "decimal(9, 3)"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    },
+    {
+      "fields": [
+        {
+          "id": 1,
+          "name": "CAPACITY_YEAR",
+          "required": false,
+          "type": "decimal(4, 0)"
+        },
+        {
+          "id": 2,
+          "name": "PRICE_TYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 3,
+          "name": "PRICE",
+          "required": false,
+          "type": "decimal(10, 4)"
+        },
+        {
+          "id": 4,
+          "name": "CAPACITY_CREDITS_MW",
+          "required": false,
+          "type": "decimal(7, 3)"
+        },
+        {
+          "id": 5,
+          "name": "TRANS_FLOOR",
+          "required": false,
+          "type": "decimal(8, 2)"
+        },
+        {
+          "id": 6,
+          "name": "TRANS_CEILING",
+          "required": false,
+          "type": "decimal(9, 3)"
+        },
+        {
+          "id": 7,
+          "name": "EXTRACTED_AT",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 1,
+      "type": "struct"
+    },
+    {
+      "fields": [
+        {
+          "id": 1,
+          "name": "CAPACITY_YEAR",
+          "required": false,
+          "type": "decimal(4, 0)"
+        },
+        {
+          "id": 2,
+          "name": "PRICE_TYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 3,
+          "name": "PRICE",
+          "required": false,
+          "type": "decimal(10, 4)"
+        },
+        {
+          "id": 5,
+          "name": "TRANS_FLOOR",
+          "required": false,
+          "type": "decimal(8, 2)"
+        },
+        {
+          "id": 6,
+          "name": "TRANS_CEILING",
+          "required": false,
+          "type": "decimal(9, 3)"
+        },
+        {
+          "id": 7,
+          "name": "EXTRACTED_AT",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 2,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 3734354678746031913,
+      "timestamp-ms": 1696089600000
+    },
+    {
+      "snapshot-id": 8511578356374846434,
+      "timestamp-ms": 1727712000001
+    },
+    {
+      "snapshot-id": 4675147518853700022,
+      "timestamp-ms": 1790784000002
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/wem/WEM_RESERVE_CAPACITY_PRICES/metadata/snap-3734354678746031913-1-2b1cf358-b0ce-8529-868f-04fdf3536167.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 3734354678746031913,
+      "summary": {
+        "operation": "append",
+        "phasor.files": "2",
+        "phasor.from.file": "reserve-capacity-prices-2024.csv",
+        "phasor.from.release": "2023-10",
+        "phasor.from.sha256": "4b7e020aab9a2e8624fbc3a6e3f86783bf2df07560f3dc9c9fcec96af85a57ad",
+        "phasor.kinds": "[\"datafiles\"]",
+        "phasor.report-subtype": "RESERVE_CAPACITY_PRICES",
+        "phasor.report-type": "WEM",
+        "phasor.rows": "11",
+        "phasor.to.file": "reserve-capacity-prices-2025.csv",
+        "phasor.to.release": "2024-10",
+        "phasor.to.sha256": "0d8f7ba77fa12cf273f67ad26ead02cf63bc3f9ad8a777cb44114b44cac89114",
+        "phasor.total-rows": "11",
+        "phasor.version": "1"
+      },
+      "timestamp-ms": 1696089600000
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/wem/WEM_RESERVE_CAPACITY_PRICES/metadata/snap-8511578356374846434-2-2b1cf358-b0ce-8529-868f-04fdf3536167.avro",
+      "parent-snapshot-id": 3734354678746031913,
+      "schema-id": 1,
+      "sequence-number": 2,
+      "snapshot-id": 8511578356374846434,
+      "summary": {
+        "operation": "append",
+        "phasor.files": "2",
+        "phasor.from.file": "reserve-capacity-prices-2026.csv",
+        "phasor.from.release": "2024-10",
+        "phasor.from.sha256": "242358e4d8c91d195db755f13b8fa2baadaa5e9e16a146dd2657c4c998267efe",
+        "phasor.from.time": "2024-10-24T16:45:00+08:00",
+        "phasor.kinds": "[\"datafiles\"]",
+        "phasor.report-subtype": "RESERVE_CAPACITY_PRICES",
+        "phasor.report-type": "WEM",
+        "phasor.rows": "18",
+        "phasor.to.file": "reserve-capacity-prices-2027.csv",
+        "phasor.to.release": "2025-10",
+        "phasor.to.sha256": "dbbd28deacd8e90d8883dee0c02ee23f82717819bfa9a6a7add7a8f1fdfb60c4",
+        "phasor.to.time": "2025-10-21T13:00:00+08:00",
+        "phasor.total-rows": "29",
+        "phasor.version": "1"
+      },
+      "timestamp-ms": 1727712000001
+    },
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/wem/WEM_RESERVE_CAPACITY_PRICES/metadata/snap-4675147518853700022-3-2b1cf358-b0ce-8529-868f-04fdf3536167.avro",
+      "parent-snapshot-id": 8511578356374846434,
+      "schema-id": 2,
+      "sequence-number": 3,
+      "snapshot-id": 4675147518853700022,
+      "summary": {
+        "operation": "append",
+        "phasor.files": "1",
+        "phasor.from.file": "reserve-capacity-prices-2028.csv",
+        "phasor.from.release": "2026-10",
+        "phasor.from.sha256": "a80e363358ac41a39ea257f51849fd6fe0be7385a0bfa90e3f4b6ab89ade9cea",
+        "phasor.from.time": "2026-10-20T15:30:00+08:00",
+        "phasor.kinds": "[\"datafiles\"]",
+        "phasor.report-subtype": "RESERVE_CAPACITY_PRICES",
+        "phasor.report-type": "WEM",
+        "phasor.rows": "12",
+        "phasor.to.file": "reserve-capacity-prices-2028.csv",
+        "phasor.to.release": "2026-10",
+        "phasor.to.sha256": "a80e363358ac41a39ea257f51849fd6fe0be7385a0bfa90e3f4b6ab89ade9cea",
+        "phasor.to.time": "2026-10-20T15:30:00+08:00",
+        "phasor.total-rows": "41",
+        "phasor.version": "1"
+      },
+      "timestamp-ms": 1790784000002
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "2b1cf358-b0ce-8529-868f-04fdf3536167"
+}

@@ -1,0 +1,169 @@
+{
+  "folders": [
+    {
+      "blocks": [
+        {
+          "first-release": "2022-08",
+          "last-release": "2026-06",
+          "months": 6,
+          "report": [
+            "WEM",
+            "DISTRIBUTED_PV"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "datafiles",
+      "folder": "distributed-pv",
+      "listings": [],
+      "root": "public/public-data/datafiles"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2026-06",
+          "last-release": "2026-06",
+          "months": 1,
+          "report": [
+            "WEM",
+            "ESTIMATED_DPV_CSV"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "datafiles",
+      "folder": "estimated-dpv-csv",
+      "listings": [],
+      "root": "public/public-data/datafiles"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2023-09",
+          "last-release": "2023-09",
+          "months": 1,
+          "report": [
+            "WEM",
+            "FACILITIES"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "datafiles",
+      "folder": "facilities",
+      "listings": [],
+      "root": "public/public-data/datafiles"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2026-06",
+          "last-release": "2026-06",
+          "months": 1,
+          "report": [
+            "WEM",
+            "MARKET_CLEARING_PRICES_CSV"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "datafiles",
+      "folder": "market-clearing-prices-csv",
+      "listings": [],
+      "root": "public/public-data/datafiles"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2023-09",
+          "last-release": "2023-09",
+          "months": 1,
+          "report": [
+            "WEM",
+            "PARTICIPANTS"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "datafiles",
+      "folder": "participants",
+      "listings": [],
+      "root": "public/public-data/datafiles"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2023-10",
+          "last-release": "2026-10",
+          "months": 5,
+          "report": [
+            "WEM",
+            "RESERVE_CAPACITY_PRICES"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "datafiles",
+      "folder": "reserve-capacity-prices",
+      "listings": [],
+      "root": "public/public-data/datafiles"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 3,
+          "report": [
+            "WEM",
+            "STEM_BIDS_AND_OFFERS"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "datafiles",
+      "folder": "stem-bids-and-offers",
+      "listings": [],
+      "root": "public/public-data/datafiles"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2024-12",
+          "last-release": "2026-11",
+          "months": 4,
+          "report": [
+            "WEM",
+            "STEM_SUMMARY"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "datafiles",
+      "folder": "stem-summary",
+      "listings": [],
+      "root": "public/public-data/datafiles"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2026-08",
+          "last-release": "2026-10",
+          "months": 3,
+          "report": [
+            "WEMDE",
+            "REFERENCE_TRADING_PRICE_REFERENCE_TRADING_PRICES"
+          ],
+          "version": 1
+        }
+      ],
+      "feed": "wemde",
+      "folder": "referenceTradingPrice",
+      "listings": [
+        "PREVIOUS"
+      ],
+      "root": "public/market-data/wemde"
+    }
+  ],
+  "x-format": 5
+}

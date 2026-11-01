@@ -1,0 +1,119 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 5425531249307422452,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 5,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1659283200000,
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/wem/WEM_DISTRIBUTED_PV",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "phasor.declared": "true",
+    "phasor.format": "5",
+    "phasor.headers": "{\"1\":\"Trading Date\",\"2\":\"Interval Number\",\"3\":\"Trading Interval\",\"4\":\"Estimated DPV Generation (MW)\",\"5\":\"Extracted At\"}",
+    "phasor.load": "append",
+    "phasor.market": "wem",
+    "phasor.offset": "+08:00",
+    "phasor.reports": "[[\"WEM\",\"DISTRIBUTED_PV\"]]",
+    "phasor.table": "WEM_DISTRIBUTED_PV",
+    "phasor.time": "TRADING_INTERVAL",
+    "phasor.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 5425531249307422452,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "id": 1,
+          "name": "TRADING_DATE",
+          "required": false,
+          "type": "date"
+        },
+        {
+          "id": 2,
+          "name": "INTERVAL_NUMBER",
+          "required": false,
+          "type": "decimal(2, 0)"
+        },
+        {
+          "id": 3,
+          "name": "TRADING_INTERVAL",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "id": 4,
+          "name": "ESTIMATED_DPV_GENERATION_MW",
+          "required": false,
+          "type": "decimal(14, 10)"
+        },
+        {
+          "id": 5,
+          "name": "EXTRACTED_AT",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 5425531249307422452,
+      "timestamp-ms": 1659283200000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/wem/WEM_DISTRIBUTED_PV/metadata/snap-5425531249307422452-1-bd4f2f83-6048-816d-a5ed-54247fcb02a4.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 5425531249307422452,
+      "summary": {
+        "operation": "append",
+        "phasor.files": "7",
+        "phasor.from.file": "distributed-pv-2020.csv",
+        "phasor.from.release": "2022-08",
+        "phasor.from.sha256": "3d675cdd310049fd389443e3d24ba2156fc86fadd04d8eb1ba36c2078f8c6460",
+        "phasor.from.time": "2020-11-04T06:00:00+08:00",
+        "phasor.kinds": "[\"datafiles\"]",
+        "phasor.report-subtype": "DISTRIBUTED_PV",
+        "phasor.report-type": "WEM",
+        "phasor.rows": "98836",
+        "phasor.to.file": "distributed-pv-2026.csv",
+        "phasor.to.release": "2026-06",
+        "phasor.to.sha256": "227751990a223968d4bb73200993a4f57399d7f74b49f37de2347f24adb90b31",
+        "phasor.to.time": "2026-06-25T07:30:00+08:00",
+        "phasor.total-rows": "98836",
+        "phasor.version": "1"
+      },
+      "timestamp-ms": 1659283200000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "bd4f2f83-6048-816d-a5ed-54247fcb02a4"
+}

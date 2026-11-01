@@ -2,12 +2,15 @@
 
 Reads the mirror's archive only. For each NEM table, its file in the newest
 MMSDM month that has one; for each gas folder the census saw, its newest
-file of each report. An MMS file keeps its C row, the table's I row, five D
-rows and a footer; a plain CSV its header and five rows. Writes under OUT,
-the gas files at their paths below the host, so each feed reads its own.
+file of each report; for each WEM folder the census saw, its newest file. An
+MMS file keeps its C row, the table's I row, five D rows and a footer; a
+plain CSV its header and five rows; a WEMDE document its scalars and the
+first five elements of each array. Writes under OUT, the gas and WEM files
+at their paths below their hosts, so each feed reads its own.
 
-usage: python3 -I scripts/table-heads.py SCHEMAS ARCHIVE_HOST OUT [gas]
-       (gas: the gas feeds only)
+usage: python3 -I scripts/table-heads.py SCHEMAS ARCHIVE_HOST OUT [gas|wem|all] [WA_HOST]
+       (gas, wem: that market's feeds only; WA_HOST: the WA host's directory
+       in the mirror archive, `{ARCHIVE_HOST}/../data.wa.aemo.com.au` unless given)
        (`just table-heads {home}` writes testdata/heads)
 """
 
@@ -51,13 +54,14 @@ class Args:
     host: Path
     out: Path
     only: str | None
+    wa: Path
 
     @classmethod
     def parse(cls, argv: list[str]) -> Args:
         """The arguments.
 
         Returns:
-            The three paths and the optional `gas`.
+            The three paths, the optional market and the WA host's directory.
 
         Raises:
             SystemExit: Too few arguments; the usage is the message.
@@ -65,7 +69,10 @@ class Args:
         if len(argv) < 4:  # ruff: ignore[magic-value-comparison] — the three paths
             raise SystemExit(__doc__)
         schemas, host, out = (Path(a) for a in argv[1:4])
-        return cls(schemas, host, out, argv[4] if len(argv) > 4 else None)  # ruff: ignore[magic-value-comparison] — the optional fourth
+        only = argv[4] if len(argv) > 4 else None  # ruff: ignore[magic-value-comparison] — the optional fourth
+        only = None if only == "all" else only
+        wa = Path(argv[5]) if len(argv) > 5 else host.parent / "data.wa.aemo.com.au"  # ruff: ignore[magic-value-comparison] — the optional fifth
+        return cls(schemas, host, out, only, wa)
 
 
 def pairs(schemas: Path, market: str) -> dict[Pair, str]:
@@ -205,9 +212,9 @@ def nem_heads(args: Args) -> tuple[dict[str, str], set[str]]:
     for y in sorted(mmsdm.iterdir(), reverse=True):
         if y.name.isdigit():
             months.extend(sorted(y.iterdir(), reverse=True))
-    want_tables = set(nem.values())
+    want_tables = set() if args.only in {"gas", "wem"} else set(nem.values())
     done: dict[str, str] = {}
-    for mdir in [] if args.only == "gas" else months[:MONTHS_SEARCHED]:
+    for mdir in months[: 0 if not want_tables else MONTHS_SEARCHED]:
         if want_tables <= set(done):
             break
         for sub in ("DATA", "P5MIN_ALL_DATA", "PREDISP_ALL_DATA"):
@@ -284,16 +291,68 @@ def gas_heads(args: Args) -> dict[str | tuple[str, str], str]:
     return gas_done
 
 
+def wemde_head(path: Path) -> tuple[str, str] | None:
+    """A WEMDE zip's document cut to the first rows of each array under `data`.
+
+    Returns:
+        The document's name and text; `None` for a zip with no document.
+    """
+    try:
+        z = zipfile.ZipFile(path)
+    except (zipfile.BadZipFile, OSError):
+        return None
+    members = [m for m in z.namelist() if m.lower().endswith(".json")]
+    if not members:
+        return None
+    doc = json.loads(z.read(members[0]))
+    # A day published again comes as an array of documents: the first is one.
+    if isinstance(doc, list):
+        doc = doc[0]
+    data = doc.get("data", {})
+    for key, value in list(data.items()):
+        if isinstance(value, list):
+            data[key] = value[:ROWS]
+    return members[0].rsplit("/", 1)[-1], json.dumps(doc, separators=(",", ":"))
+
+
+def wem_heads(args: Args) -> dict[tuple[str, str], str]:
+    """Each WEM folder the census saw: its newest file, a CSV's head or a WEMDE document's."""
+    wem_done: dict[tuple[str, str], str] = {}
+    folders = json.loads((args.schemas / "wem/pulled/folders.json").read_text())["folders"]
+    for fo in folders:
+        root, folder, feed = str(fo["root"]), str(fo["folder"]), str(fo["feed"])
+        d = args.wa / root / folder
+        files = data_files(d)
+        if not files:
+            continue
+        newest = files[-1]
+        if feed == "wemde":
+            head = wemde_head(d / newest)
+            if head is not None:
+                write(args.out, Path("wem", root, folder, head[0]), head[1])
+                wem_done[root, folder] = newest
+        else:
+            for name, lines in plain_texts(d, newest):
+                if len(lines) < 2:  # ruff: ignore[magic-value-comparison] — a header and a row
+                    continue
+                write(args.out, Path("wem", root, folder, name), "\r\n".join(lines) + "\r\n")
+                wem_done[root, folder] = newest
+        log.info("wem %d %s", len(wem_done), folder)
+    return wem_done
+
+
 def main(argv: list[str]) -> None:
     """Write the heads; log what was found as JSON."""
     args = Args.parse(argv)
     done, want_tables = nem_heads(args)
-    gas_done = gas_heads(args)
+    gas_done = {} if args.only == "wem" else gas_heads(args)
+    wem_done = {} if args.only == "gas" else wem_heads(args)
     found = {
         "nem": len(done),
         "nem_tables": len(want_tables),
         "nem_missing": sorted(want_tables - set(done)),
         "gas_files": len(gas_done),
+        "wem_files": len(wem_done),
     }
     log.info("%s", json.dumps(found, default=str))
 

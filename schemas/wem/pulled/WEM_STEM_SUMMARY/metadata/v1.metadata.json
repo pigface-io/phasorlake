@@ -1,0 +1,143 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 2555395902411619917,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 9,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1732982400000,
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/wem/WEM_STEM_SUMMARY",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "phasor.declared": "true",
+    "phasor.format": "5",
+    "phasor.headers": "{\"1\":\"Trading Date\",\"2\":\"Interval Number\",\"3\":\"Trading Interval\",\"4\":\"Trading Suspended\",\"5\":\"Offer Quantity (MWh)\",\"6\":\"Bid Quantity (MWh)\",\"7\":\"Clearing Quantity (MWh)\",\"8\":\"Clearing Price ($/MWh)\",\"9\":\"Extracted At\"}",
+    "phasor.load": "append",
+    "phasor.market": "wem",
+    "phasor.offset": "+08:00",
+    "phasor.reports": "[[\"WEM\",\"STEM_SUMMARY\"]]",
+    "phasor.table": "WEM_STEM_SUMMARY",
+    "phasor.time": "TRADING_INTERVAL",
+    "phasor.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 2555395902411619917,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "id": 1,
+          "name": "TRADING_DATE",
+          "required": false,
+          "type": "date"
+        },
+        {
+          "id": 2,
+          "name": "INTERVAL_NUMBER",
+          "required": false,
+          "type": "decimal(2, 0)"
+        },
+        {
+          "id": 3,
+          "name": "TRADING_INTERVAL",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "id": 4,
+          "name": "TRADING_SUSPENDED",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 5,
+          "name": "OFFER_QUANTITY_MWH",
+          "required": false,
+          "type": "decimal(7, 3)"
+        },
+        {
+          "id": 6,
+          "name": "BID_QUANTITY_MWH",
+          "required": false,
+          "type": "decimal(7, 3)"
+        },
+        {
+          "id": 7,
+          "name": "CLEARING_QUANTITY_MWH",
+          "required": false,
+          "type": "decimal(6, 3)"
+        },
+        {
+          "id": 8,
+          "name": "CLEARING_PRICE_MWH",
+          "required": false,
+          "type": "decimal(6, 2)"
+        },
+        {
+          "id": 9,
+          "name": "EXTRACTED_AT",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 2555395902411619917,
+      "timestamp-ms": 1732982400000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/wem/WEM_STEM_SUMMARY/metadata/snap-2555395902411619917-1-2bc89fbd-4517-8b21-947d-56915e6ea594.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 2555395902411619917,
+      "summary": {
+        "operation": "append",
+        "phasor.files": "4",
+        "phasor.from.file": "stem-summary-2024.csv",
+        "phasor.from.release": "2024-12",
+        "phasor.from.sha256": "d32b6cac7546b3de1ef140f80ca64840d418b54ad0a5c6337c4feeafa46b9f3f",
+        "phasor.from.time": "2024-01-01T08:00:00+08:00",
+        "phasor.kinds": "[\"datafiles\"]",
+        "phasor.report-subtype": "STEM_SUMMARY",
+        "phasor.report-type": "WEM",
+        "phasor.rows": "49776",
+        "phasor.to.file": "stem-summary-2026.csv@20261101T113022Z",
+        "phasor.to.release": "2026-11",
+        "phasor.to.sha256": "ec57e56d172f866023c4570af0426ed9c94a15e492c8150169e120e2687365ad",
+        "phasor.to.time": "2026-11-03T07:30:00+08:00",
+        "phasor.total-rows": "49776",
+        "phasor.version": "1"
+      },
+      "timestamp-ms": 1732982400000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "2bc89fbd-4517-8b21-947d-56915e6ea594"
+}

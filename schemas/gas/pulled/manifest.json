@@ -5051,9 +5051,109 @@
       ],
       "schemas": 523,
       "tables": 321
+    },
+    "wem": {
+      "baseline": {
+        "reason": "",
+        "version": 1
+      },
+      "listed": [
+        {
+          "breaks": 0,
+          "declared": true,
+          "first_release": "2026-08",
+          "last_release": "2026-10",
+          "name": "WEMDE_REFERENCE_TRADING_PRICE",
+          "package": null,
+          "runs": 1,
+          "schemas": 1
+        },
+        {
+          "breaks": 0,
+          "declared": true,
+          "first_release": "2022-08",
+          "last_release": "2026-06",
+          "name": "WEM_DISTRIBUTED_PV",
+          "package": null,
+          "runs": 1,
+          "schemas": 1
+        },
+        {
+          "breaks": 0,
+          "declared": true,
+          "first_release": "2026-06",
+          "last_release": "2026-06",
+          "name": "WEM_DISTRIBUTED_PV_5MIN",
+          "package": null,
+          "runs": 1,
+          "schemas": 1
+        },
+        {
+          "breaks": 0,
+          "declared": true,
+          "first_release": "2023-09",
+          "last_release": "2023-09",
+          "name": "WEM_FACILITIES",
+          "package": null,
+          "runs": 1,
+          "schemas": 1
+        },
+        {
+          "breaks": 0,
+          "declared": true,
+          "first_release": "2026-06",
+          "last_release": "2026-06",
+          "name": "WEM_MARKET_CLEARING_PRICES",
+          "package": null,
+          "runs": 1,
+          "schemas": 1
+        },
+        {
+          "breaks": 0,
+          "declared": true,
+          "first_release": "2023-09",
+          "last_release": "2023-09",
+          "name": "WEM_PARTICIPANTS",
+          "package": null,
+          "runs": 1,
+          "schemas": 1
+        },
+        {
+          "breaks": 0,
+          "declared": true,
+          "first_release": "2023-10",
+          "last_release": "2026-10",
+          "name": "WEM_RESERVE_CAPACITY_PRICES",
+          "package": null,
+          "runs": 3,
+          "schemas": 3
+        },
+        {
+          "breaks": 0,
+          "declared": true,
+          "first_release": "2026-08",
+          "last_release": "2026-10",
+          "name": "WEM_STEM_BIDS_AND_OFFERS",
+          "package": null,
+          "runs": 1,
+          "schemas": 1
+        },
+        {
+          "breaks": 0,
+          "declared": true,
+          "first_release": "2024-12",
+          "last_release": "2026-11",
+          "name": "WEM_STEM_SUMMARY",
+          "package": null,
+          "runs": 1,
+          "schemas": 1
+        }
+      ],
+      "schemas": 11,
+      "tables": 9
     }
   },
-  "schemas": 716,
+  "schemas": 727,
   "sha256": {
     "gas/DWGM_INT029A_SYSTEM_NOTICES/metadata/snap-3248816567870203441-1-b81e8e26-7793-8fe9-abcf-7b2e78fd80ed.avro": "382efa05d14b431f815b68db718223164670217a10f46ff17db3adfac8df0ef7",
     "gas/DWGM_INT029A_SYSTEM_NOTICES/metadata/v1.metadata.json": "cde45f01bb5258605ce9aef18678e4436a7be985755707dc35bb09ac55fb75b8",
@@ -9978,7 +10078,49 @@
     "nem/YESTBID_BIDPEROFFER/metadata/version-hint.text": "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b",
     "nem/YESTBID_BIDPEROFFER/schema-0.json": "9699d614f04ec65f1d36c402dd1470a281bc8fb451baebf5adc9320138bba3dd",
     "nem/folders.json": "fab7bea145fb774ae8b733414664a0eee4869dacdf90b627423ddda8f4a0cf48",
-    "nem/headers.json": "d69a83146d144a6f6a6d20b7491e1d68c9315eb5b421dd3edffb863cb9b18801"
+    "nem/headers.json": "d69a83146d144a6f6a6d20b7491e1d68c9315eb5b421dd3edffb863cb9b18801",
+    "wem/WEMDE_REFERENCE_TRADING_PRICE/metadata/snap-3845576662466461030-1-0551813b-68e4-89c2-9817-6833581310e2.avro": "143fe378ab37e302ac23df05c39f53e04a3ec174ffb9bf761f177821ce048299",
+    "wem/WEMDE_REFERENCE_TRADING_PRICE/metadata/v1.metadata.json": "8083475a4a72892b17d769c8b40e69bd3a79c5b1d5d17834b370a9e372695821",
+    "wem/WEMDE_REFERENCE_TRADING_PRICE/metadata/version-hint.text": "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b",
+    "wem/WEMDE_REFERENCE_TRADING_PRICE/schema-0.json": "06cb9b9cc8591c1157d87e5ac17c7a6fbb516725c865e5fe43c1c7c8cd683640",
+    "wem/WEM_DISTRIBUTED_PV/metadata/snap-5425531249307422452-1-bd4f2f83-6048-816d-a5ed-54247fcb02a4.avro": "58fb3b4b864780163cfbd283c61d3ff5021b9da264f889773d7f95beb7f9e515",
+    "wem/WEM_DISTRIBUTED_PV/metadata/v1.metadata.json": "26841ef5649af028b6939511cdd39bb242fd5d3ef1ab18b5a11a970ddc2085c8",
+    "wem/WEM_DISTRIBUTED_PV/metadata/version-hint.text": "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b",
+    "wem/WEM_DISTRIBUTED_PV/schema-0.json": "08840c0317572ad68fe56a9771aeac25cbe217d107a00cffc19a7ab70787da76",
+    "wem/WEM_DISTRIBUTED_PV_5MIN/metadata/snap-2965512795737184957-1-ae5a27d0-07f0-843d-9dab-bdd5a7d3de99.avro": "dc7454bc3ecc054ab90a8ec60fc1944c6434f7eedba195b2d48e06f95baf982a",
+    "wem/WEM_DISTRIBUTED_PV_5MIN/metadata/v1.metadata.json": "972a0069959f8b289332823e0b9f6c562c7eed3ac7765b284e6e6c1806565766",
+    "wem/WEM_DISTRIBUTED_PV_5MIN/metadata/version-hint.text": "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b",
+    "wem/WEM_DISTRIBUTED_PV_5MIN/schema-0.json": "56b41ff6c73702550ca6a5e2b1a34d05530c1f0dddda024680db80e4fad5e9cd",
+    "wem/WEM_FACILITIES/metadata/snap-8087054694536497258-1-f13e9edc-fa9e-863b-87d7-85fa18aa5911.avro": "c55db2b1563a74a8012893131dca0985026d13f8466a1ebcff34eea6c2d8bb0f",
+    "wem/WEM_FACILITIES/metadata/v1.metadata.json": "7df388b0185068b43adfede2d007a31ea06931817f41565a7e693e1925d96395",
+    "wem/WEM_FACILITIES/metadata/version-hint.text": "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b",
+    "wem/WEM_FACILITIES/schema-0.json": "39488f8f6488dedbadb51fb5c70dfefab0f4dfb7ad298c30f587512698324229",
+    "wem/WEM_MARKET_CLEARING_PRICES/metadata/snap-5555389207641177204-1-ce315581-02ee-8c1d-b978-975bb75f66fa.avro": "c454406a65a1a07d364ff1bea63472ebca836b6343ed39712b18c065c2e3552c",
+    "wem/WEM_MARKET_CLEARING_PRICES/metadata/v1.metadata.json": "1760463ddb52551deedd03093f9c3b70d8e628bf500881e87f580aef8cd6e09c",
+    "wem/WEM_MARKET_CLEARING_PRICES/metadata/version-hint.text": "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b",
+    "wem/WEM_MARKET_CLEARING_PRICES/schema-0.json": "612a31e59d9487dab0af6e1339efd14a1f5332059394973a59cd75f54a7fff87",
+    "wem/WEM_PARTICIPANTS/metadata/snap-5339829569015536522-1-2139b81d-1148-82fb-a712-f66d2132b3e4.avro": "7c79f24e41e2af80020d1fbb5a51888107022f434c86fc948f51e81a16ee385e",
+    "wem/WEM_PARTICIPANTS/metadata/v1.metadata.json": "cf020892a28ba6b9fb8aac546095377f139fc056c661c510b9d19481820c03ab",
+    "wem/WEM_PARTICIPANTS/metadata/version-hint.text": "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b",
+    "wem/WEM_PARTICIPANTS/schema-0.json": "9e58525480c143b67db8aa1912eb0bf86f7696bcfa66403ab6de4c2c7cc853e4",
+    "wem/WEM_RESERVE_CAPACITY_PRICES/metadata/snap-3734354678746031913-1-2b1cf358-b0ce-8529-868f-04fdf3536167.avro": "bf441357ce3a7684adae62caf93c6ca520ad87b5c53e6cfc1c997d44d5c31f52",
+    "wem/WEM_RESERVE_CAPACITY_PRICES/metadata/snap-4675147518853700022-3-2b1cf358-b0ce-8529-868f-04fdf3536167.avro": "cef20610382ce84d87a65f94bff9cf455106f08b0445f5d6ae2726c9ea606979",
+    "wem/WEM_RESERVE_CAPACITY_PRICES/metadata/snap-8511578356374846434-2-2b1cf358-b0ce-8529-868f-04fdf3536167.avro": "76bfd8c04aabf3522e884dc61bfdd7334309fa9ba6c9536aedc5822037c64152",
+    "wem/WEM_RESERVE_CAPACITY_PRICES/metadata/v1.metadata.json": "e583c35e2de85c0657d8b00b7d6778b37e4dbcdd17850ee8a2b29c7230f50d13",
+    "wem/WEM_RESERVE_CAPACITY_PRICES/metadata/version-hint.text": "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b",
+    "wem/WEM_RESERVE_CAPACITY_PRICES/schema-0.json": "7b3f1e96a0d5cca03da32934216e8ff97ec6a5dc239913a6377dc40c4ca6fc3f",
+    "wem/WEM_RESERVE_CAPACITY_PRICES/schema-1.json": "5c35af88bf131b847440ef416ee7796b327d67e2921d8f04ea2a3c6d70a91d75",
+    "wem/WEM_RESERVE_CAPACITY_PRICES/schema-2.json": "a45d20daf64c8bb7f28e5ae2f0f301a0787fbbeda429ca213d8d7c45d0288611",
+    "wem/WEM_STEM_BIDS_AND_OFFERS/metadata/snap-754361861544550928-1-3da4d377-373a-8c80-86bb-df6a885df6a8.avro": "e83b18d8a91f9ae2c506620729de1c1aa857ca2fbe1cea66e7e70c7251d4918b",
+    "wem/WEM_STEM_BIDS_AND_OFFERS/metadata/v1.metadata.json": "d9b14f3db6a692b53487ed157b5c8ad1f4be365d6bcf56bb46ebe742f3e0a32b",
+    "wem/WEM_STEM_BIDS_AND_OFFERS/metadata/version-hint.text": "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b",
+    "wem/WEM_STEM_BIDS_AND_OFFERS/schema-0.json": "d8dc306aa4d57801e39a7bfa0a1d1c537d8569ead0d86ec1893b5054988fcb6b",
+    "wem/WEM_STEM_SUMMARY/metadata/snap-2555395902411619917-1-2bc89fbd-4517-8b21-947d-56915e6ea594.avro": "34eb5aab40e678768c42178ea9b7eb4a2d377e0f95771c1755abcbee36760969",
+    "wem/WEM_STEM_SUMMARY/metadata/v1.metadata.json": "b1e00ab657b017e56fdd9195c18b604776d6395b70fae131b263198f023818d5",
+    "wem/WEM_STEM_SUMMARY/metadata/version-hint.text": "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b",
+    "wem/WEM_STEM_SUMMARY/schema-0.json": "61e8cc6eb2a48eae6addc74922d672529053d216384ed8acd3f8b2c9cb6722f2",
+    "wem/folders.json": "611390a6c9942265546d3834109913d609c5f454cf1e0b1b6cd30362e5bc49ef",
+    "wem/headers.json": "252ddcb44b57520da95db9c532bed78ef5b9450cfa9f8bc5a05bce74e8c36d95"
   },
-  "tables": 503
+  "tables": 512
 }

@@ -1,0 +1,143 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 5555389207641177204,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 9,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1780243200000,
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/wem/WEM_MARKET_CLEARING_PRICES",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "phasor.declared": "true",
+    "phasor.format": "5",
+    "phasor.headers": "{\"1\":\"Dispatch Interval\",\"2\":\"Energy Clearing Price\",\"3\":\"Contingency Raise Clearing Price\",\"4\":\"Contingency Lower Clearing Price\",\"5\":\"Regulation Raise Clearing Price\",\"6\":\"Regulation Lower Clearing Price\",\"7\":\"RoCoF Clearing Price\",\"8\":\"Failure Reason\",\"9\":\"Extracted At\"}",
+    "phasor.load": "append",
+    "phasor.market": "wem",
+    "phasor.offset": "+08:00",
+    "phasor.reports": "[[\"WEM\",\"MARKET_CLEARING_PRICES_CSV\"]]",
+    "phasor.table": "WEM_MARKET_CLEARING_PRICES",
+    "phasor.time": "DISPATCH_INTERVAL",
+    "phasor.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 5555389207641177204,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "id": 1,
+          "name": "DISPATCH_INTERVAL",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "id": 2,
+          "name": "ENERGY_CLEARING_PRICE",
+          "required": false,
+          "type": "decimal(6, 2)"
+        },
+        {
+          "id": 3,
+          "name": "CONTINGENCY_RAISE_CLEARING_PRICE",
+          "required": false,
+          "type": "decimal(6, 2)"
+        },
+        {
+          "id": 4,
+          "name": "CONTINGENCY_LOWER_CLEARING_PRICE",
+          "required": false,
+          "type": "decimal(6, 2)"
+        },
+        {
+          "id": 5,
+          "name": "REGULATION_RAISE_CLEARING_PRICE",
+          "required": false,
+          "type": "decimal(6, 2)"
+        },
+        {
+          "id": 6,
+          "name": "REGULATION_LOWER_CLEARING_PRICE",
+          "required": false,
+          "type": "decimal(6, 2)"
+        },
+        {
+          "id": 7,
+          "name": "ROCOF_CLEARING_PRICE",
+          "required": false,
+          "type": "decimal(2, 2)"
+        },
+        {
+          "id": 8,
+          "name": "FAILURE_REASON",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 9,
+          "name": "EXTRACTED_AT",
+          "required": false,
+          "type": "timestamptz"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 5555389207641177204,
+      "timestamp-ms": 1780243200000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/wem/WEM_MARKET_CLEARING_PRICES/metadata/snap-5555389207641177204-1-ce315581-02ee-8c1d-b978-975bb75f66fa.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 5555389207641177204,
+      "summary": {
+        "operation": "append",
+        "phasor.files": "3",
+        "phasor.from.file": "MarketClearingPrices-2024.csv",
+        "phasor.from.release": "2026-06",
+        "phasor.from.sha256": "956ee53d9bc4c0db07fcdf207c48bdd00c843d34154effdc0bf3e590432749a1",
+        "phasor.from.time": "2024-01-01T08:00:00+08:00",
+        "phasor.kinds": "[\"datafiles\"]",
+        "phasor.report-subtype": "MARKET_CLEARING_PRICES_CSV",
+        "phasor.report-type": "WEM",
+        "phasor.rows": "298066",
+        "phasor.to.file": "MarketClearingPrices-2026.csv",
+        "phasor.to.release": "2026-06",
+        "phasor.to.sha256": "3d99658ce86fed4212e66e65971e5593a894d38b3fdece0d948427abc009e339",
+        "phasor.to.time": "2026-11-01T07:55:00+08:00",
+        "phasor.total-rows": "298066",
+        "phasor.version": "1"
+      },
+      "timestamp-ms": 1780243200000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "ce315581-02ee-8c1d-b978-975bb75f66fa"
+}
