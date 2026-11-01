@@ -12,8 +12,9 @@ pub const DEFAULT_BASE_URL: &str = "https://www.nemweb.com.au";
 pub struct NemConfig {
     /// Where nemweb is; a mirror or a test server otherwise.
     pub base_url: String,
-    /// The documents `fetch --documents` keeps a version of each of
-    /// ([`crate::DOCUMENTS`] unless set): AEMO's, a mirror's, or more of one's own.
+    /// Where the earlier config named the documents `fetch --documents`
+    /// keeps; `[documents]` names them now, and this list stands in for it
+    /// when set.
     pub documents: Vec<String>,
 }
 
@@ -21,7 +22,7 @@ impl Default for NemConfig {
     fn default() -> Self {
         Self {
             base_url: DEFAULT_BASE_URL.to_owned(),
-            documents: crate::DOCUMENTS.iter().map(|&d| d.to_owned()).collect(),
+            documents: Vec::new(),
         }
     }
 }
@@ -64,8 +65,8 @@ mod tests {
             NemConfig::from_sources(&c.sources).unwrap(),
             NemConfig::default()
         );
-        // The documents are AEMO's unless named.
-        assert_eq!(NemConfig::default().documents, crate::DOCUMENTS);
+        // The documents are `[documents]`'s unless the earlier key names them.
+        assert!(NemConfig::default().documents.is_empty());
         let c = Config::parse("[sources.nem]\ndocuments = [\"http://m/a.xlsx\"]\n").unwrap();
         let nem = NemConfig::from_sources(&c.sources).unwrap();
         assert_eq!(nem.documents, ["http://m/a.xlsx"]);

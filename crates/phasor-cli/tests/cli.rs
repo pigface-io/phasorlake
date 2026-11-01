@@ -1743,7 +1743,7 @@ fn documents_are_fetched_from_where_the_config_says() {
     let base = serve_text("a registration list".into());
     std::fs::write(
         cli.home.path().join("config.toml"),
-        format!("[sources.nem]\ndocuments = [\"{base}/list.xlsx\"]\n"),
+        format!("[documents]\nurls = [\"{base}/list.xlsx\"]\n"),
     )
     .unwrap();
     let out = cli.ok(&["fetch", "--documents"]);
@@ -1752,6 +1752,18 @@ fn documents_are_fetched_from_where_the_config_says() {
     assert!(
         json.contains("\"type\":\"document\"") && json.contains("\"new\":false"),
         "{json}"
+    );
+    // The earlier key, under the NEM's table, still names them.
+    let earlier = Cli::new();
+    std::fs::write(
+        earlier.home.path().join("config.toml"),
+        format!("[sources.nem]\ndocuments = [\"{base}/earlier.xlsx\"]\n"),
+    )
+    .unwrap();
+    let out = earlier.ok(&["fetch", "--documents"]);
+    assert!(
+        out.starts_with("new version: ") && out.contains("earlier.xlsx"),
+        "{out}"
     );
 }
 

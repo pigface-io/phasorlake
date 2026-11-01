@@ -42,9 +42,9 @@ Entries name where it starts.
 
 ## Documents
 
-- `README.md`: what it is, quick start, layout, types.
+- `README.md`: quick start, layout, types.
 - `CONTRIBUTING.md`: commands, layering, tests, budgets.
 - `docs/errors.md`: diagnostic codes.
-- `docs/layout.md`: crate groups; adding a source.
-- `docs/iceberg.md`: the Iceberg V3 contract: types, field ids, updates.
+- `docs/layout.md`: crate groups; adding a source. `docs/der.md`: DER data: held, decided.
+- `docs/iceberg.md`: the Iceberg V3 contract.
 - `docs/semantics.md`: the lake: axes, a reader's roles, window, revisions, provenance columns. `docs/reading.md`: reads as SQL, each example run by `crates/phasor-e2e/tests/reading.rs`.

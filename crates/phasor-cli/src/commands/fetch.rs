@@ -10,15 +10,22 @@ use crate::render;
 use super::common;
 
 /// `phasor fetch --documents`: every document fetched again, a new version kept.
+/// The documents are `[documents]`'s, unless the earlier `[sources.nem]`
+/// key names them.
 async fn documents(ctx: &Context) -> Result<i32> {
     let nem = phasor_nem::NemConfig::from_sources(&ctx.config.sources)
         .map_err(|e| anyhow::anyhow!("{e} (in the config file)"))?;
+    let urls = if nem.documents.is_empty() {
+        &ctx.config.documents.urls
+    } else {
+        &nem.documents
+    };
     let fetcher = ctx.fetcher(None)?;
     let mut code = 0;
-    for url in &nem.documents {
+    for url in urls {
         let remote = phasor_kit::RemoteFile {
             url: url::Url::parse(url)?,
-            source: "aemo-documents",
+            source: "documents",
             table: None,
             period: None,
             size: None,

@@ -13,12 +13,6 @@ use crate::sources::reports::ReportFolders;
 /// The kit's id, as a command names it.
 pub const KIT_ID: &str = "nem";
 
-/// Documents AEMO republishes in place that readers join against (the NEM
-/// Registration and Exemption List); each distinct version is kept.
-pub const DOCUMENTS: &[&str] = &[
-    "https://www.aemo.com.au/-/media/files/electricity/nem/Participant_Information/NEM-Registration-and-Exemption-List.xlsx",
-];
-
 /// The tables the kit was built with: the schema tree compiled into the binary.
 pub fn registry() -> Arc<Registry> {
     Registry::load_embedded()

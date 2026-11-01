@@ -28,6 +28,39 @@ pub struct Config {
     pub lake: Lake,
     /// Per-source settings.
     pub sources: Sources,
+    /// The documents `fetch --documents` keeps every version of: `[documents]`.
+    pub documents: Documents,
+}
+
+/// The documents fetched unless `[documents]` names others: AEMO's NEM
+/// Registration and Exemption List, and the Clean Energy Regulator's
+/// small-scale installations by postcode, one file a device type.
+pub const DEFAULT_DOCUMENTS: &[&str] = &[
+    "https://www.aemo.com.au/-/media/files/electricity/nem/Participant_Information/NEM-Registration-and-Exemption-List.xlsx",
+    "https://cer.gov.au/document/sgu-solar-installations-2011-to-present-and-totals",
+    "https://cer.gov.au/document/sgu-battery-installations-2011-to-present-and-totals",
+    "https://cer.gov.au/document/sgu-wind-installations-2011-to-present-and-totals",
+    "https://cer.gov.au/document/sgu-hydro-installations-2011-to-present-and-totals",
+    "https://cer.gov.au/document/swh-solar-installations-2011-to-present-and-totals",
+    "https://cer.gov.au/document/swh-air-source-heat-pump-installations-2011-to-present-and-totals",
+];
+
+/// Documents a publisher rewrites in place at one URL, which readers join
+/// against: `fetch --documents` fetches each again and keeps every
+/// distinct version beside the last. `[documents]` of the config file.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields, default)]
+pub struct Documents {
+    /// Their URLs; [`DEFAULT_DOCUMENTS`] unless set.
+    pub urls: Vec<String>,
+}
+
+impl Default for Documents {
+    fn default() -> Self {
+        Self {
+            urls: DEFAULT_DOCUMENTS.iter().map(|&d| d.to_owned()).collect(),
+        }
+    }
 }
 
 /// How a Parquet file is compressed.
@@ -214,6 +247,7 @@ impl Default for Config {
             user_agent_suffix: String::new(),
             lake: Lake::default(),
             sources: Sources::default(),
+            documents: Documents::default(),
         }
     }
 }
@@ -351,6 +385,24 @@ mod tests {
         assert!(e.to_string().starts_with("sources.fake:"), "{e}");
         // Anything under [sources] that is not a kit's table is a parse error.
         assert!(Config::parse("[sources]\nfake = 1\n").is_err());
+    }
+
+    #[test]
+    fn the_documents_are_the_defaults_unless_named() {
+        let c = Config::parse("").unwrap();
+        assert_eq!(c.documents.urls, DEFAULT_DOCUMENTS);
+        assert!(c.documents.urls[0].ends_with("NEM-Registration-and-Exemption-List.xlsx"));
+        assert_eq!(
+            c.documents
+                .urls
+                .iter()
+                .filter(|u| u.starts_with("https://cer.gov.au/document/"))
+                .count(),
+            6
+        );
+        let c = Config::parse("[documents]\nurls = [\"http://m/a.xlsx\"]\n").unwrap();
+        assert_eq!(c.documents.urls, ["http://m/a.xlsx"]);
+        assert!(Config::parse("[documents]\nurl = [\"http://m/a.xlsx\"]\n").is_err());
     }
 
     #[test]

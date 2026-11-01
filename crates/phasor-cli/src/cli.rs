@@ -264,9 +264,10 @@ pub struct FetchCmd {
     /// Download into the archive only; read nothing into the lake.
     #[arg(long)]
     pub no_ingest: bool,
-    /// Fetch AEMO's documents instead (the NEM Registration and Exemption
-    /// List), each time: a version whose bytes are new is kept beside the
-    /// earlier ones. No table or window.
+    /// Fetch the documents instead (AEMO's NEM Registration and Exemption
+    /// List and the Clean Energy Regulator's installations by postcode, or
+    /// what `[documents]` names), each time: a version whose bytes are new
+    /// is kept beside the earlier ones. No table or window.
     #[arg(long, conflicts_with_all = ["tables", "from", "at", "day", "no_ingest"])]
     pub documents: bool,
     /// Ingest flags.
