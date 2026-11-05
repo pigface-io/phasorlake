@@ -37,7 +37,7 @@ def decode(
 
     Args:
         path: A CSV, a WEMDE JSON document, or a zip of them.
-        kit: The kit that reads the file (`nem`, `wem`, `gas`) when its name
+        kit: The kit that reads the file (`nem`, `wem`, `gas`, `nz`) when its name
             alone does not say which.
         strict: Refuse a block the catalog does not describe exactly, or a
             value that does not fit its type, instead of keeping it as text.

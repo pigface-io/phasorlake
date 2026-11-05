@@ -57,6 +57,26 @@ pub fn serves_feed(registry: Arc<Registry>, feed: &'static str) -> Serves {
     })
 }
 
+/// Whether the census saw a table in a folder of `feed` whose files are
+/// published at `cadence` (`day`, `month`): what one of two sources over a
+/// feed serves.
+pub fn serves_cadence(
+    registry: Arc<Registry>,
+    feed: &'static str,
+    cadence: &'static str,
+) -> Serves {
+    Arc::new(move |table: &str| {
+        registry
+            .table_by_name(&table.to_ascii_uppercase())
+            .is_some_and(|id| {
+                registry
+                    .folders_of(id)
+                    .iter()
+                    .any(|f| f.feed == feed && f.cadence.as_deref() == Some(cadence))
+            })
+    })
+}
+
 /// The registry's tables of one market as a [`Catalog`].
 pub struct RegistryCatalog {
     registry: Arc<Registry>,
@@ -196,7 +216,9 @@ mod tests {
             version: 1,
         };
         assert!(of(&none).is_none());
-        let serves = serves_feed(registry, "gbb");
+        let serves = serves_feed(registry.clone(), "gbb");
         assert!(!serves("NO_SUCH_TABLE"));
+        let daily = serves_cadence(registry, "emi", "day");
+        assert!(!daily("NO_SUCH_TABLE") && !daily("DISPATCH_UNIT_SCADA"));
     }
 }

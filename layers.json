@@ -27,6 +27,7 @@
     "phasor-kit",
     "phasor-mms-conform",
     "phasor-nem",
+    "phasor-nz",
     "phasor-pipeline",
     "phasor-registry",
     "phasor-wem",
@@ -79,6 +80,14 @@
     "phasor-kit",
     "phasor-mms-conform",
     "phasor-mms-decode",
+    "phasor-registry"
+  ],
+  "phasor-nz": [
+    "phasor-acquire",
+    "phasor-core",
+    "phasor-kit",
+    "phasor-mms-conform",
+    "phasor-plain-decode",
     "phasor-registry"
   ],
   "phasor-net": [

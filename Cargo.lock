@@ -1872,6 +1872,7 @@ dependencies = [
  "phasor-kit",
  "phasor-mms-conform",
  "phasor-nem",
+ "phasor-nz",
  "phasor-pipeline",
  "phasor-registry",
  "phasor-wem",
@@ -1941,6 +1942,7 @@ dependencies = [
  "phasor-mms-conform",
  "phasor-mms-decode",
  "phasor-nem",
+ "phasor-nz",
  "phasor-pipeline",
  "phasor-provenance",
  "phasor-registry",
@@ -2126,6 +2128,22 @@ dependencies = [
  "tempfile",
  "thiserror",
  "tokio",
+]
+
+[[package]]
+name = "phasor-nz"
+version = "0.1.0"
+dependencies = [
+ "phasor-acquire",
+ "phasor-core",
+ "phasor-kit",
+ "phasor-mms-conform",
+ "phasor-plain-decode",
+ "phasor-registry",
+ "serde",
+ "tempfile",
+ "tokio",
+ "url",
 ]
 
 [[package]]

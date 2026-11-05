@@ -56,10 +56,11 @@ impl Env {
     }
 }
 
-/// The WEM kit, then the NEM kit over `registry` last, as the binary assembles them.
+/// The WEM and NZ kits, then the NEM kit over `registry` last, as the binary assembles them.
 fn kits_for(registry: &Arc<Registry>) -> Arc<KitRegistry> {
     Arc::new(KitRegistry::new(vec![
         phasor_wem::kit(&phasor_wem::WemConfig::default(), Registry::load_embedded()).unwrap(),
+        phasor_nz::kit(&phasor_nz::NzConfig::default(), Registry::load_embedded()).unwrap(),
         phasor_nem::kit(registry.clone(), "https://h").unwrap(),
     ]))
 }

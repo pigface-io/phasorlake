@@ -10,7 +10,7 @@ use std::process::{Command, Stdio};
 use anyhow::{Context, Result, bail};
 
 /// The markets phasor-schemas may publish, each a directory of its own.
-pub const MARKETS: [&str; 3] = ["nem", "wem", "gas"];
+pub const MARKETS: [&str; 4] = ["nem", "wem", "gas", "nz"];
 
 /// Where a market's copy lives, under the repository root.
 fn pulled_rel(market: &str) -> String {

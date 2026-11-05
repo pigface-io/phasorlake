@@ -10,6 +10,6 @@ pub mod transport;
 
 pub use archive::{Address, Archive, Content, Held, Provenance, Served, Via, sha256_file};
 pub use error::FetchError;
-pub use feed_folders::FeedFolders;
+pub use feed_folders::{Claim, FeedFolders};
 pub use fetcher::{Fetcher, FetcherConfig, Picked, RangeRead};
 pub use transport::{HttpResponse, OfflineTransport, ReqwestTransport, Span, Transport};

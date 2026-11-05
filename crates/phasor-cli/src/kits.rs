@@ -7,7 +7,7 @@ use phasor_core::config::Config;
 use phasor_kit::KitRegistry;
 use phasor_registry::Registry;
 
-/// Every kit over its settings. Kits that know a file by its path (gas, WEM) come
+/// Every kit over its settings. Kits that know a file by its path (gas, WEM, NZ) come
 /// first; the NEM, last, also reads a file no source claims.
 pub fn assemble(config: &Config, registry: Arc<Registry>) -> Result<Arc<KitRegistry>> {
     let settings =
@@ -19,7 +19,9 @@ pub fn assemble(config: &Config, registry: Arc<Registry>) -> Result<Arc<KitRegis
     let gas = phasor_gas::kit(registry.clone(), &gas).map_err(built)?;
     let wem = phasor_wem::WemConfig::from_sources(&config.sources).map_err(settings)?;
     let wem = phasor_wem::kit(&wem, registry.clone()).map_err(built)?;
+    let nz = phasor_nz::NzConfig::from_sources(&config.sources).map_err(settings)?;
+    let nz = phasor_nz::kit(&nz, registry.clone()).map_err(built)?;
     let nem = phasor_nem::NemConfig::from_sources(&config.sources).map_err(settings)?;
     let nem = phasor_nem::kit(registry, &nem.base_url).map_err(built)?;
-    Ok(Arc::new(KitRegistry::new(vec![gas, wem, nem])))
+    Ok(Arc::new(KitRegistry::new(vec![gas, wem, nz, nem])))
 }

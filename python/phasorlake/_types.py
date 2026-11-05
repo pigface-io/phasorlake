@@ -58,7 +58,7 @@ class _TableBase(TypedDict):
     name: str
     """The table's name (`DISPATCHPRICE`)."""
     market: str
-    """`nem`, `wem` or `gas`."""
+    """`nem`, `wem`, `gas` or `nz`."""
     description: str | None
     """AEMO's description of it, where the data model has one."""
     load_mode: Literal["append", "snapshot"]

@@ -19,7 +19,7 @@ The layers and every dependency between crates are in `CONTRIBUTING.md`
   block resolution, and the MMS, plain CSV, WEMDE and sniffing decoders into
   typed Arrow batches. A format another market also uses is shared, which is
   why these are not named for the NEM.
-- **Markets** (`phasor-nem`, `phasor-wem`, `phasor-gas`): a market's sources,
+- **Markets** (`phasor-nem`, `phasor-wem`, `phasor-gas`, `phasor-nz`): a market's sources,
   its settings under `[sources.<kit>]`, its command line, and `kit()`.
   `crates/phasor-cli/src/kits.rs` lists the kits a binary reads with: those
   whose sources know a file by its path first, the NEM last, since it reads a

@@ -164,7 +164,7 @@ fn ingest_ls_errors_verify_round_trip() {
     let (code, _, err) = cli.code(&["import", gbb.to_str().unwrap(), "--kit", "mars"]);
     assert_eq!(code, 1);
     assert!(
-        err.contains("No kit named mars") && err.contains("gas, wem, nem"),
+        err.contains("No kit named mars") && err.contains("gas, wem, nz, nem"),
         "{err}"
     );
     // `ingest` reads a gas table from the feed that publishes it.

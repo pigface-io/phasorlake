@@ -19,6 +19,7 @@ phasor-kit.workspace = true
 phasor-mms-conform.workspace = true
 phasor-mms-decode.workspace = true
 phasor-nem.workspace = true
+phasor-nz.workspace = true
 phasor-pipeline.workspace = true
 phasor-provenance.workspace = true
 phasor-registry.workspace = true

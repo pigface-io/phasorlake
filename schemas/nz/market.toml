@@ -1,0 +1,10 @@
+# New Zealand's wholesale electricity market. Its files report New Zealand
+# local time, which observes daylight saving (NZST UTC+12, NZDT UTC+13); the
+# lake shows every timestamp at UTC+12 and carries each one's instant as a
+# `{COLUMN}_UTC_US` sibling, microseconds since 1970 UTC. The trading day is
+# the calendar day: trading period 1 starts at local midnight.
+schema_format = 1
+market = "nz"
+utc_offset_secs = 43200
+timestamp_format = "iso8601"
+trading_day_start_secs = 0

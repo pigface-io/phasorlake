@@ -24,7 +24,8 @@ acquire         the adapters: Fetcher (implements Listings), FeedFolders,
                 nemweb's listing pages                                  -> kit, net
 registry        every market's tables, block resolution, the catalog    -> kit, core
 mms-conform     the MMS and plain decoders into typed Arrow batches      -> registry, kit
-nem, wem, gas   a market's kit: its sources, decoders and catalog       -> acquire, mms-conform
+nem, wem, gas, nz
+                a market's kit: its sources, decoders and catalog       -> acquire, mms-conform
 iceberg-store   Iceberg tables on disk                                  -> core
 writer          everything written under the home: the ingest session,
                 quarantine, manifest, supersede, Iceberg, verify        -> iceberg-store, kit

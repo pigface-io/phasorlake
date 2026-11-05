@@ -22,6 +22,10 @@ pub struct Folder {
     /// The listings AEMO showed its files under (`ARCHIVE`, `CURRENT`); none if listed once.
     #[serde(default)]
     pub listings: Vec<String>,
+    /// How often its files are published, when their names all say one
+    /// (`day`, `month`): what a source of one cadence serves.
+    #[serde(default)]
+    pub cadence: Option<String>,
     /// The blocks its files carried.
     pub blocks: Vec<FolderBlock>,
 }
@@ -120,7 +124,7 @@ mod tests {
                  "blocks": [{"report": ["DISPATCH", "UNIT_SCADA"], "version": 1,
                              "first-release": "2024-01", "last-release": "2026-10", "months": 34}]},
                 {"feed": "reports", "root": "Reports", "folder": "ARCHIVE/Old", "blocks": []},
-                {"feed": "datafiles", "root": "public/public-data/datafiles", "folder": "x", "blocks": []}
+                {"feed": "datafiles", "root": "public/public-data/datafiles", "folder": "x", "cadence": "day", "blocks": []}
             ]}"#,
         )
         .unwrap();
@@ -156,6 +160,8 @@ mod tests {
             sides(2),
             [(String::new(), "public/public-data/datafiles/x".to_owned())]
         );
+        assert_eq!(f[2].cadence.as_deref(), Some("day"));
+        assert!(f[0].cadence.is_none());
         assert!(f[0].carries("DISPATCH", "UNIT_SCADA"));
         assert!(!f[0].carries("DISPATCH", "PRICE"));
         assert_eq!(f[0].blocks[0].months, 34);

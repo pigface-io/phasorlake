@@ -414,7 +414,7 @@ fn align(
 /// Every table in the file at `path`, as `phasor ingest` would write it.
 ///
 /// A zip is read entry by entry, nested zips included. `kit` names the kit that
-/// reads the file (`nem`, `wem`, `gas`) when its name alone does not say; `strict`
+/// reads the file (`nem`, `wem`, `gas`, `nz`) when its name alone does not say; `strict`
 /// refuses a block the catalog does not describe exactly; `max_bad_rows` is how
 /// many malformed rows an entry may drop before it fails. The GIL is released
 /// while the file is read. Warnings are raised as

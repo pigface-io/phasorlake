@@ -1,0 +1,27 @@
+[package]
+name = "phasor-nz"
+description = "New Zealand's wholesale electricity market kit: the Electricity Authority's EMI datasets, listed as blobs a day or a month at a time, read by the plain CSV decoder with the registry's catalog."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+phasor-core.workspace = true
+phasor-acquire.workspace = true
+phasor-kit.workspace = true
+phasor-mms-conform.workspace = true
+phasor-registry.workspace = true
+phasor-plain-decode.workspace = true
+serde.workspace = true
+url.workspace = true
+
+[dev-dependencies]
+phasor-acquire = { workspace = true, features = ["test-support"] }
+tempfile.workspace = true
+tokio = { workspace = true, features = ["rt-multi-thread", "macros"] }

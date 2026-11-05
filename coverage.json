@@ -17,6 +17,7 @@
     "crates/phasor-nem/src": 96,
     "crates/phasor-wem/src": 96,
     "crates/phasor-gas/src": 100,
+    "crates/phasor-nz/src": 100,
     "crates/phasor-writer/src": 94,
     "crates/phasor-pipeline/src": 83,
     "crates/phasor-cli/src": 100,

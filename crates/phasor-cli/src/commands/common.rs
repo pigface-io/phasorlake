@@ -107,7 +107,7 @@ pub fn select(ctx: &Context, args: &TablesArg) -> Result<Selection> {
     }
     let market = match (&args.market, ids.first()) {
         (Some(m), _) => Market::parse(&m.to_ascii_lowercase()).ok_or_else(|| {
-            anyhow::anyhow!("No market named {m}; the markets are nem, wem and gas.")
+            anyhow::anyhow!("No market named {m}; the markets are nem, wem, gas and nz.")
         })?,
         (None, Some(id)) => r.table(*id).market,
         (None, None) => bail!("Name a table, or --market for every table of a market."),

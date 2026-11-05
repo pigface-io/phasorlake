@@ -22,6 +22,7 @@ phasor-iceberg.workspace = true
 phasor-nem.workspace = true
 phasor-wem.workspace = true
 phasor-gas.workspace = true
+phasor-nz.workspace = true
 phasor-kit.workspace = true
 phasor-zip.workspace = true
 phasor-registry.workspace = true
