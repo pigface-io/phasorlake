@@ -4,12 +4,13 @@ use std::path::PathBuf;
 
 use clap::{Parser, Subcommand};
 
-/// A copy of every file under nemweb's archive folders, and its catalog.
+/// A copy of every file under the folders of the hosts the config names
+/// (nemweb, AEMO's WA site, New Zealand's EMI store), and its catalog.
 #[derive(Parser, Debug)]
 #[command(name = "phasor-mirror", version, about, max_term_width = 100)]
 pub struct Cli {
-    /// Home directory (default `~/.phasor-mirror`): the archive, and the
-    /// mirror's records under `state/`, its config in `config.toml`.
+    /// Home directory (no default): the archive, and the mirror's records
+    /// under `state/`, its config in `config.toml`.
     #[arg(long, global = true, env = "PHASOR_MIRROR_HOME")]
     pub home: Option<PathBuf>,
     /// Machine-readable output: NDJSON, one event or record per line.
@@ -40,9 +41,21 @@ pub struct Cli {
 /// The commands.
 #[derive(Subcommand, Debug)]
 pub enum Command {
+    /// Write the home's config.toml: the defaults, and nemweb as its host
+    /// with `--nemweb`. Refuses to overwrite one unless `--force`.
+    Init {
+        /// nemweb's three roots, in AEST, the gas folders every 15 minutes
+        /// and the rest of Reports/CURRENT/ hourly.
+        #[arg(long)]
+        nemweb: bool,
+        /// Overwrite a config.toml that exists.
+        #[arg(long)]
+        force: bool,
+    },
     /// Read every listing page under the roots into the crawl record.
     Crawl {
-        /// Roots to crawl instead of nemweb's Data_Archive/, Reports/ARCHIVE/ and Reports/CURRENT/.
+        /// Roots to crawl instead of the configured hosts' roots; a root on
+        /// a host the config does not name is read as an IIS site in AEST.
         #[arg(long = "root")]
         roots: Vec<String>,
         /// Move the current crawl aside and read every page again.
@@ -62,7 +75,7 @@ pub enum Command {
     /// a folder of the same name and download, together; when nemweb refuses (HTTP 403/429) or the network fails,
     /// wait and start again.
     Run {
-        /// Roots to crawl instead of nemweb's Data_Archive/, Reports/ARCHIVE/ and Reports/CURRENT/.
+        /// Roots to read instead of the configured hosts' roots.
         #[arg(long = "root")]
         roots: Vec<String>,
         /// Move the current crawl aside and read every page again.
@@ -88,7 +101,7 @@ pub enum Command {
     /// Reports/CURRENT/ hourly, every other folder daily (config `watch_*`).
     /// Needs a finished crawl.
     Watch {
-        /// Roots to crawl instead of nemweb's Data_Archive/, Reports/ARCHIVE/ and Reports/CURRENT/.
+        /// Roots to read instead of the configured hosts' roots.
         #[arg(long = "root")]
         roots: Vec<String>,
         /// Stop after this many rounds of reads.

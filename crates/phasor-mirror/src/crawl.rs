@@ -104,6 +104,36 @@ impl Mirror {
         Ok(())
     }
 
+    /// The crawl must be finished (`crawl.json` written), or the error says so.
+    pub fn crawl_done(&self) -> Result<(), MirrorError> {
+        if self.done_path().exists() {
+            Ok(())
+        } else {
+            Err(MirrorError::CrawlIncomplete {
+                path: self.done_path().display().to_string(),
+            })
+        }
+    }
+
+    /// The roots the finished crawl read, as `crawl.json` records them; none
+    /// for a crawl not finished, or one recorded before roots were kept.
+    pub fn done_roots(&self) -> Result<Vec<Url>, MirrorError> {
+        let path = self.done_path();
+        let text = match std::fs::read_to_string(&path) {
+            Ok(t) => t,
+            Err(e) if e.kind() == std::io::ErrorKind::NotFound => return Ok(Vec::new()),
+            Err(e) => return Err(MirrorError::io(&path)(e)),
+        };
+        let doc: serde_json::Value = serde_json::from_str(&text).unwrap_or_default();
+        Ok(doc["roots"]
+            .as_array()
+            .into_iter()
+            .flatten()
+            .filter_map(|v| v.as_str())
+            .filter_map(|s| Url::parse(s).ok())
+            .collect())
+    }
+
     /// Forgets every listing and page a crawl read; the folders' events stay.
     pub fn forget_crawl(&self) -> Result<(), MirrorError> {
         let done = self.done_path();
@@ -252,7 +282,7 @@ impl Remote {
 pub struct CrawlSummary {
     /// Pages read in all.
     pub pages: usize,
-    /// Of those, pages asked of nemweb in this run.
+    /// Of those, pages fetched over the network in this run (the rest from kept copies).
     pub pages_fetched: usize,
     /// Folders.
     pub dirs: usize,
@@ -344,7 +374,11 @@ pub async fn crawl(
     }
     let found = summarise(record.values());
     mirror.write_record(record.into_values())?;
-    let done = serde_json::json!({ "completed_at": Stamp::now(), "pages": summary.pages });
+    let done = serde_json::json!({
+        "completed_at": Stamp::now(),
+        "pages": summary.pages,
+        "roots": roots.iter().map(Url::as_str).collect::<Vec<_>>(),
+    });
     write_atomic(&mirror.done_path(), done.to_string().as_bytes())?;
     Ok(CrawlSummary {
         pages: summary.pages,
@@ -1110,5 +1144,45 @@ mod tests {
             .unwrap_err();
         assert_eq!(e.diagnostic().code, "mirror.io");
         assert_eq!(t.request_count(), 0);
+    }
+
+    #[test]
+    fn the_finished_crawl_records_its_roots() {
+        let home = tempfile::tempdir().unwrap();
+        let mirror = Mirror::new(home.path().join("mirror"));
+        // No crawl yet: no roots, and the crawl is not done.
+        assert!(mirror.done_roots().unwrap().is_empty());
+        assert!(matches!(
+            mirror.crawl_done().unwrap_err(),
+            MirrorError::CrawlIncomplete { .. }
+        ));
+        std::fs::create_dir_all(mirror.dir()).unwrap();
+        // A record from before roots were kept, and one that is not JSON.
+        std::fs::write(mirror.done_path(), r#"{"completed_at":"x","pages":1}"#).unwrap();
+        assert!(mirror.done_roots().unwrap().is_empty());
+        mirror.crawl_done().unwrap();
+        std::fs::write(mirror.done_path(), "not json").unwrap();
+        assert!(mirror.done_roots().unwrap().is_empty());
+        std::fs::write(
+            mirror.done_path(),
+            r#"{"roots":["https://h/A/","not a url"]}"#,
+        )
+        .unwrap();
+        assert_eq!(
+            mirror
+                .done_roots()
+                .unwrap()
+                .iter()
+                .map(Url::as_str)
+                .collect::<Vec<_>>(),
+            ["https://h/A/"]
+        );
+        // A record that cannot be read is the error.
+        std::fs::remove_file(mirror.done_path()).unwrap();
+        std::fs::create_dir(mirror.done_path()).unwrap();
+        assert_eq!(
+            mirror.done_roots().unwrap_err().diagnostic().code,
+            "mirror.io"
+        );
     }
 }

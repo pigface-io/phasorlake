@@ -9,11 +9,13 @@ use std::path::PathBuf;
 use std::sync::Arc;
 
 use anyhow::{Context as _, Result};
-use phasor_mirror::config::{Config, Home};
+use phasor_mirror::config::{Config, Home, HostConfig};
+use phasor_mirror::hosts::Host;
 use phasor_mirror::net::{
     Archive, FetchError, Fetcher, FetcherConfig, Fetchers, HostFetcher, OfflineTransport,
     ReqwestTransport, Transport, per_host,
 };
+use phasor_mirror::{HostLocks, robots};
 use std::cell::RefCell;
 
 use phasor_mirror::{Diagnose, Mirror, MirrorError, PeekCount, Status, Url};
@@ -38,8 +40,7 @@ pub struct Context {
 impl Context {
     /// The home and config of the flags; no network.
     pub fn new(cli: &Cli) -> Result<Self> {
-        let user_home = std::env::var_os("HOME").map(PathBuf::from);
-        let home = Home::resolve(cli.home.as_deref(), user_home.as_deref())
+        let home = Home::resolve(cli.home.as_deref())
             .context("No home directory: pass --home or set PHASOR_MIRROR_HOME.")?;
         let mut config = Config::load(&home.config_file())
             .map_err(|e| anyhow::anyhow!("{}", e.diagnostic().render()))?;
@@ -77,34 +78,95 @@ impl Context {
         Archive::new(self.home.archive())
     }
 
-    /// A fetcher per host, over the network or offline.
-    pub fn fetchers(&self) -> Result<Fetchers, MirrorError> {
-        let hosts = self.config.hosts()?;
+    /// The hosts read: the config's, and one made up for each of `roots` that
+    /// no configured host serves (an IIS site in AEST at the default pace).
+    /// Every command resolves its roots first ([`roots`]), which refuses when
+    /// there is neither a host nor a root, so the result is never empty.
+    pub fn hosts_for(&self, roots: &[Url]) -> Result<Vec<Host>, MirrorError> {
+        let mut hosts = self.config.hosts()?;
+        for r in roots {
+            if !hosts.iter().any(|h| h.serves(r.as_str())) {
+                hosts.push(Host::ad_hoc(r, self.config.request_interval_ms));
+            }
+        }
+        Ok(hosts)
+    }
+
+    /// A fetcher per host, over the network or offline, for the config's
+    /// hosts and the hosts of `roots`. Online, each host's `robots.txt` is
+    /// read first: a root it disallows is an error, and its crawl delay
+    /// slows the host's pace where it is the longer.
+    pub async fn fetchers(&self, roots: &[Url]) -> Result<Fetchers, MirrorError> {
+        let mut hosts = self.hosts_for(roots)?;
+        if !self.transport.is_offline() {
+            for h in &mut hosts {
+                robots::apply(self.transport.as_ref(), h).await?;
+            }
+        }
         Ok(per_host(&hosts, &self.archive(), |h| {
-            self.fetcher_parts(h.request_interval)
+            self.fetcher_parts(
+                h.request_interval,
+                h.attempts.unwrap_or(self.config.attempts),
+            )
         }))
     }
 
     /// The fetchers with each host that refused given a new fetcher.
     pub fn renewed(&self, fetchers: Fetchers) -> Fetchers {
         fetchers.renewed(|h: &HostFetcher| {
-            let (transport, cfg) = self.fetcher_parts(h.fetcher.min_interval());
+            let (transport, cfg) =
+                self.fetcher_parts(h.fetcher.min_interval(), h.fetcher.attempts());
             Fetcher::new(transport, self.archive(), cfg)
         })
     }
 
     /// The transport and the knobs of one fetcher, paced at `interval`.
-    fn fetcher_parts(&self, interval: Duration) -> (Arc<dyn Transport>, FetcherConfig) {
+    fn fetcher_parts(
+        &self,
+        interval: Duration,
+        attempts: u32,
+    ) -> (Arc<dyn Transport>, FetcherConfig) {
         let transport = self.transport.clone();
         let backoff = Duration::from_millis(self.config.backoff_ms);
         let cfg = FetcherConfig {
-            attempts: self.config.attempts,
+            attempts,
             backoff,
             max_backoff: backoff * 60,
             min_interval: interval,
         };
         (transport, cfg)
     }
+
+    /// Whether this process never touches the network.
+    pub fn offline(&self) -> bool {
+        self.transport.is_offline()
+    }
+}
+
+/// Where the locks that keep two processes off one host live: the flag's
+/// directory, else the user's cache directory. A host is read by one
+/// process at a time on this machine, whatever home each runs from.
+fn host_lock_dir() -> Option<PathBuf> {
+    std::env::var_os("PHASOR_MIRROR_LOCK_DIR")
+        .map(PathBuf::from)
+        .or_else(|| {
+            directories::BaseDirs::new().map(|b| b.cache_dir().join("phasor-mirror").join("locks"))
+        })
+}
+
+/// The locks of the hosts a network command reads; none offline.
+fn host_locks(
+    ctx: &Context,
+    mirror: &Mirror,
+    roots: &[String],
+) -> Result<Option<HostLocks>, MirrorError> {
+    if ctx.offline() {
+        return Ok(None);
+    }
+    let roots = self::roots(ctx, mirror, roots)?;
+    let hosts = ctx.hosts_for(&roots)?;
+    let dir = host_lock_dir().ok_or(MirrorError::NoLockDir)?;
+    HostLocks::take(&dir, hosts.iter().map(|h| h.base_url.as_str())).map(Some)
 }
 
 /// Runs the command; the exit code.
@@ -113,16 +175,21 @@ pub async fn run_command(cli: &Cli) -> Result<i32> {
     let cmd = &cli.command;
     let mirror = ctx.home.records().keeping(ctx.config.keep_from);
     let result = match cmd {
+        Command::Init { nemweb, force } => init(ctx, *nemweb, *force),
         Command::Crawl { roots, fresh } => {
             let pass = async {
-                let fetcher = ctx.fetchers()?;
+                let _hosts = host_locks(ctx, &mirror, roots)?;
+                let fetcher = ctx.fetchers(&self::roots(ctx, &mirror, roots)?).await?;
                 crawl(ctx, &fetcher, &mirror, roots, *fresh).await
             };
             locked(&mirror, pass).await
         }
         Command::Download { only } => {
             let pass = async {
-                let fetcher = ctx.fetchers()?;
+                mirror.crawl_done()?;
+                let roots = self::roots(ctx, &mirror, &[])?;
+                let _hosts = host_locks(ctx, &mirror, &[])?;
+                let fetcher = ctx.fetchers(&roots).await?;
                 download(ctx, &fetcher, &mirror, only, None, false, None)
                     .await
                     .map(|(code, _)| code)
@@ -131,7 +198,10 @@ pub async fn run_command(cli: &Cli) -> Result<i32> {
         }
         Command::Peek => {
             let pass = async {
-                let fetcher = ctx.fetchers()?;
+                mirror.crawl_done()?;
+                let roots = self::roots(ctx, &mirror, &[])?;
+                let _hosts = host_locks(ctx, &mirror, &[])?;
+                let fetcher = ctx.fetchers(&roots).await?;
                 peek(ctx, &fetcher, &mirror, false, None)
                     .await
                     .map(|(code, _)| code)
@@ -153,7 +223,11 @@ pub async fn run_command(cli: &Cli) -> Result<i32> {
                 wait,
                 delete_duplicates: *delete_duplicates,
             };
-            locked(&mirror, run(ctx, &mirror, &plan)).await
+            let pass = async {
+                let _hosts = host_locks(ctx, &mirror, roots)?;
+                run(ctx, &mirror, &plan).await
+            };
+            locked(&mirror, pass).await
         }
         Command::Watch {
             roots,
@@ -169,7 +243,11 @@ pub async fn run_command(cli: &Cli) -> Result<i32> {
                 wait: Duration::from_secs(wait_minutes * 60),
                 delete_duplicates: *delete_duplicates,
             };
-            locked(&mirror, watch(ctx, &mirror, &plan)).await
+            let pass = async {
+                let _hosts = host_locks(ctx, &mirror, roots)?;
+                watch(ctx, &mirror, &plan).await
+            };
+            locked(&mirror, pass).await
         }
         Command::Versions { prune: true } => locked(&mirror, versions(ctx, &mirror, true)).await,
         Command::Versions { prune: false } => versions(ctx, &mirror, false).await,
@@ -220,18 +298,69 @@ fn report(ctx: &Context, d: &phasor_mirror::Diagnostic) {
     }
 }
 
-/// The roots given, else every host's.
-fn roots(ctx: &Context, given: &[String]) -> Result<Vec<Url>, MirrorError> {
+/// The roots given, else every configured host's; none at all is an error.
+fn roots(ctx: &Context, mirror: &Mirror, given: &[String]) -> Result<Vec<Url>, MirrorError> {
     if given.is_empty() {
-        Ok(ctx
+        let mut roots: Vec<Url> = ctx
             .config
             .hosts()?
             .into_iter()
             .flat_map(|h| h.roots)
-            .collect())
+            .collect();
+        if roots.is_empty() {
+            // A home crawled with --root alone: the roots its crawl recorded.
+            roots = mirror.done_roots()?;
+        }
+        if roots.is_empty() {
+            return Err(MirrorError::NoHosts);
+        }
+        Ok(roots)
     } else {
         given.iter().map(|r| phasor_mirror::root(r)).collect()
     }
+}
+
+/// Writes a config file for a new home: nemweb's host when asked, else a
+/// file of the defaults with no host, to be filled in.
+fn init(ctx: &Context, nemweb: bool, force: bool) -> Result<i32, MirrorError> {
+    let path = ctx.home.config_file();
+    if path.exists() && !force {
+        return Err(MirrorError::ConfigExists {
+            path: path.display().to_string(),
+        });
+    }
+    let config = Config {
+        hosts: if nemweb {
+            vec![HostConfig::nemweb()]
+        } else {
+            Vec::new()
+        },
+        ..Config::default()
+    };
+    let text = format!(
+        "# phasor-mirror config, written by `phasor-mirror init`. Every host read is a\n# [[hosts]] entry: its roots, clock, pace and [[hosts.schedule]] rules.\n\n{}",
+        config.to_toml()
+    );
+    let io = |p: &std::path::Path| {
+        let path = p.display().to_string();
+        move |source| MirrorError::Io { path, source }
+    };
+    std::fs::create_dir_all(ctx.home.root()).map_err(io(ctx.home.root()))?;
+    std::fs::write(&path, text).map_err(io(&path))?;
+    if ctx.json {
+        render::json_line(&serde_json::json!({
+            "event": "init_done",
+            "path": path.display().to_string(),
+            "hosts": config.hosts.len(),
+        }));
+    } else {
+        println!(
+            "{} written with {} host(s)",
+            path.display(),
+            config.hosts.len()
+        );
+    }
+    Ok(0)
 }
 
 /// What `run` was asked to do.
@@ -250,7 +379,7 @@ async fn run(ctx: &Context, mirror: &Mirror, plan: &RunPlan<'_>) -> Result<i32, 
         (plan.given, plan.refusals, plan.wait, plan.delete_duplicates);
     let mut fresh = plan.fresh;
     let mut refused = 0;
-    let mut fetchers = Some(ctx.fetchers()?);
+    let mut fetchers = Some(ctx.fetchers(&self::roots(ctx, mirror, given)?).await?);
     loop {
         let (tx, rx) = tokio::sync::mpsc::channel(4096);
         let fetcher = fetchers
@@ -309,7 +438,7 @@ async fn run(ctx: &Context, mirror: &Mirror, plan: &RunPlan<'_>) -> Result<i32, 
             }));
         } else {
             eprintln!(
-                "nemweb refused a request or the network failed ({refused} of {refusals} in a row); waiting {} minutes",
+                "a host refused a request or the network failed ({refused} of {refusals} in a row); waiting {} minutes",
                 wait.as_secs() / 60
             );
         }
@@ -333,7 +462,7 @@ struct WatchPlan<'a> {
 /// Reads each folder's listing again when its turn comes and downloads what
 /// is new, until `rounds` rounds; a failure waits `wait`, at most `refusals` in a row.
 async fn watch(ctx: &Context, mirror: &Mirror, plan: &WatchPlan<'_>) -> Result<i32, MirrorError> {
-    let roots = roots(ctx, plan.given)?;
+    let roots = roots(ctx, mirror, plan.given)?;
     if !mirror.done_path().exists() {
         return Err(MirrorError::CrawlIncomplete {
             path: mirror.done_path().display().to_string(),
@@ -352,7 +481,7 @@ async fn watch(ctx: &Context, mirror: &Mirror, plan: &WatchPlan<'_>) -> Result<i
     // crawl record and, when anything changed, writes it again.
     let mut not_before = std::time::Instant::now();
     let archive = ctx.archive();
-    let mut fetcher = ctx.fetchers()?;
+    let mut fetcher = ctx.fetchers(&roots).await?;
     let (mut rounds, mut refused) = (0, 0);
     while plan.rounds.is_none_or(|n| rounds < n) {
         let now = std::time::Instant::now();
@@ -529,7 +658,7 @@ async fn crawl(
     given: &[String],
     fresh: bool,
 ) -> Result<i32, MirrorError> {
-    let roots = roots(ctx, given)?;
+    let roots = roots(ctx, mirror, given)?;
     let json = ctx.json;
     let progress = ctx.progress;
     let summary = phasor_mirror::crawl(fetcher, mirror, &roots, fresh, |p| {
@@ -550,7 +679,7 @@ async fn crawl(
             println!("The crawl is complete already; pass --fresh to read every page again.");
         }
         println!(
-            "{} folders, {} files ({:.1} GB), {} links out of the roots; {} pages read, {} of them from nemweb",
+            "{} folders, {} files ({:.1} GB), {} links out of the roots; {} pages read, {} of them fetched now",
             summary.dirs,
             summary.files,
             summary.bytes as f64 / 1e9,
@@ -666,7 +795,7 @@ async fn download(
 }
 
 fn map(ctx: &Context, mirror: &Mirror, given: &[String], jobs: usize) -> Result<i32, MirrorError> {
-    let roots = roots(ctx, given)?;
+    let roots = roots(ctx, mirror, given)?;
     let offsets = phasor_mirror::Offsets::of(&ctx.config.hosts()?);
     let s = phasor_mirror::map(mirror, &ctx.archive(), &roots, jobs, &offsets)?;
     if ctx.json {
@@ -925,7 +1054,7 @@ impl Tracker {
         given: &[String],
         events: tokio::sync::mpsc::Receiver<phasor_mirror::net::Event>,
     ) -> Result<Self, MirrorError> {
-        let roots = roots(ctx, given)?;
+        let roots = roots(ctx, mirror, given)?;
         let mut status = phasor_mirror::status(mirror, &ctx.archive(), &roots)?;
         // Listings that still hold: older ones are peeked again this pass.
         let peeked_before = phasor_mirror::peek::current(mirror)?.len();
@@ -1010,7 +1139,15 @@ fn status(
             s.running = true;
             s
         }
-        None => phasor_mirror::status(mirror, &ctx.archive(), &roots(ctx, given)?)?,
+        None => {
+            // A home with no host and no crawl yet has a status: an empty one.
+            let roots = match roots(ctx, mirror, given) {
+                Ok(r) => r,
+                Err(MirrorError::NoHosts) => Vec::new(),
+                Err(e) => return Err(e),
+            };
+            phasor_mirror::status(mirror, &ctx.archive(), &roots)?
+        }
     };
     if ctx.json {
         render::json_line(&s);

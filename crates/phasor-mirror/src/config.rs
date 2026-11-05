@@ -24,7 +24,9 @@ use crate::keep::Month;
 use crate::net::Archive;
 use crate::watch::Cadence;
 
-/// Where the mirror keeps things: `--home` or `PHASOR_MIRROR_HOME`, else `~/.phasor-mirror`.
+/// Where the mirror keeps things: `--home` or `PHASOR_MIRROR_HOME`. There is
+/// no default: an archive is too large and too long-lived to land where a
+/// forgotten flag puts it.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Home {
     root: PathBuf,
@@ -36,12 +38,9 @@ impl Home {
         Self { root: root.into() }
     }
 
-    /// The explicit flag, else `~/.phasor-mirror` under the user's home.
-    pub fn resolve(flag: Option<&Path>, user_home: Option<&Path>) -> Option<Self> {
-        match flag {
-            Some(p) => Some(Self::at(p)),
-            None => user_home.map(|h| Self::at(h.join(".phasor-mirror"))),
-        }
+    /// The explicit flag or variable; `None` when neither names a home.
+    pub fn resolve(flag: Option<&Path>) -> Option<Self> {
+        flag.map(Self::at)
     }
 
     /// The root.
@@ -149,21 +148,22 @@ impl Mirror {
     }
 }
 
-/// Settings a user may persist. Every field has a default.
+/// Settings a user may persist. Every field has a default; every host is
+/// named (`[[hosts]]`, [`HostConfig`]), nemweb included: a home with no host
+/// reads nothing.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields, default)]
 pub struct Config {
-    /// Downloads at a time.
+    /// Downloads at a time over every host; a host may allow itself fewer.
     pub downloads: usize,
-    /// Minimum gap between two requests, in milliseconds.
+    /// Minimum gap between two requests to one host, in milliseconds, for a
+    /// host that sets none of its own.
     pub request_interval_ms: u64,
-    /// The site the roots are on.
-    pub base_url: String,
     /// Appended to the `User-Agent` header, e.g. a contact address.
     pub user_agent_suffix: String,
     /// Threads that read zips for the map; 0 means half the cores.
     pub jobs: usize,
-    /// Tries per request before it fails.
+    /// Tries per request before it fails, for a host that sets none of its own.
     pub attempts: u32,
     /// Wait before the second try, in milliseconds; doubles each try, up to 60 times this.
     pub backoff_ms: u64,
@@ -171,24 +171,35 @@ pub struct Config {
     pub read_timeout_secs: u64,
     /// Seconds between the counts a run writes for `status`.
     pub progress_every_secs: u64,
-    /// Folders a watch reads most often, as paths under `base_url`.
-    pub watch_fast: Vec<String>,
-    /// Seconds between a watch's reads of `watch_fast`.
-    pub watch_fast_secs: u64,
-    /// Folders a watch reads next most often, as paths under `base_url`.
-    pub watch_current: Vec<String>,
-    /// Seconds between a watch's reads of `watch_current`.
-    pub watch_current_secs: u64,
-    /// Seconds between a watch's reads of every other folder.
+    /// Seconds between a watch's reads of a folder no rule names.
     pub watch_secs: u64,
     /// The fewest seconds between two reads of a folder found changed.
     pub watch_least_secs: u64,
-    /// Further hosts, each with its own roots and clock, read after nemweb.
+    /// The hosts read, each with its own roots, clock, pace and schedule.
     pub hosts: Vec<HostConfig>,
     /// Keep nothing whose data is for a month before this (`"2020-01"`);
     /// every month when absent.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub keep_from: Option<Month>,
+}
+
+/// The keys an older config file had at the top level, now said per host.
+const RETIRED_KEYS: [&str; 5] = [
+    "base_url",
+    "watch_fast",
+    "watch_fast_secs",
+    "watch_current",
+    "watch_current_secs",
+];
+
+/// How often a watch reads the folders under one path of a host.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(deny_unknown_fields)]
+pub struct Rule {
+    /// The folder, as a path under the host's `base_url`; every folder below it too.
+    pub under: String,
+    /// Seconds between reads of those folders.
+    pub every_secs: u64,
 }
 
 /// How a host lists a folder.
@@ -204,25 +215,37 @@ pub enum ListingKind {
     AzureBlob,
 }
 
-/// A further host: `[[hosts]]` in the config file.
+/// One host: `[[hosts]]` in the config file. nemweb is one like any other
+/// (`phasor-mirror init` writes it).
 ///
 /// ```toml
 /// [[hosts]]
-/// base_url = "https://data.wa.aemo.com.au"
-/// listing_offset_secs = 28800
-/// roots = ["public/public-data/datafiles/", "public/public-data/manifests/"]
-/// watch_current = ["public/public-data/datafiles/"]
+/// id = "nemweb"
+/// base_url = "https://www.nemweb.com.au"
+/// listing_offset_secs = 36000
+/// roots = ["Data_Archive/", "Reports/ARCHIVE/", "Reports/CURRENT/"]
+/// request_interval_ms = 300
+/// downloads = 2
+/// [[hosts.schedule]]
+/// under = "Reports/CURRENT/STTM/"
+/// every_secs = 900
+/// [[hosts.schedule]]
+/// under = "Reports/CURRENT/"
+/// every_secs = 3600
 ///
 /// [[hosts]]
 /// base_url = "https://emidatasets.blob.core.windows.net"
 /// listing = "azure-blob"
 /// listing_offset_secs = 0
 /// roots = ["publicdata/Datasets/Wholesale/DispatchAndPricing/"]
-/// watch_current = ["publicdata/Datasets/Wholesale/DispatchAndPricing/"]
+/// every_secs = 3600
 /// ```
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct HostConfig {
+    /// A short name for logs and locks; the site's host name when absent.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub id: Option<String>,
     /// The site.
     pub base_url: String,
     /// How it lists a folder: an IIS page unless said otherwise.
@@ -233,14 +256,73 @@ pub struct HostConfig {
     /// Its own minimum gap between requests, in milliseconds; the top-level one when absent.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub request_interval_ms: Option<u64>,
+    /// Its own downloads at a time, under the top-level count; that count when absent.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub downloads: Option<usize>,
+    /// Its own tries per request; the top-level count when absent.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub attempts: Option<u32>,
     /// The folders mirrored, as paths under `base_url`.
     pub roots: Vec<String>,
-    /// Folders a watch reads most often, as paths under `base_url`.
-    #[serde(default)]
+    /// Seconds between a watch's reads of this host's folders that no rule
+    /// names; the top-level `watch_secs` when absent.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub every_secs: Option<u64>,
+    /// How often a watch reads the folders under each path; the longest
+    /// matching path wins.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub schedule: Vec<Rule>,
+    /// Folders a watch reads every 15 minutes (an older spelling of a rule).
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub watch_fast: Vec<String>,
-    /// Folders a watch reads next most often, as paths under `base_url`.
-    #[serde(default)]
+    /// Folders a watch reads every hour (an older spelling of a rule).
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub watch_current: Vec<String>,
+}
+
+impl HostConfig {
+    /// nemweb as the mirror has always read it: the three roots in AEST, the
+    /// gas folders every 15 minutes, the rest of `Reports/CURRENT/` hourly.
+    pub fn nemweb() -> Self {
+        let fast = ["VicGas", "STTM", "GBB", "ECGS", "GSH"]
+            .iter()
+            .map(|f| Rule {
+                under: format!("Reports/CURRENT/{f}/"),
+                every_secs: 15 * 60,
+            });
+        Self {
+            id: Some("nemweb".to_owned()),
+            base_url: "https://www.nemweb.com.au".to_owned(),
+            listing: ListingKind::Iis,
+            listing_offset_secs: crate::stamp::AEST,
+            request_interval_ms: None,
+            downloads: None,
+            attempts: None,
+            roots: ["Data_Archive/", "Reports/ARCHIVE/", "Reports/CURRENT/"]
+                .iter()
+                .map(|r| (*r).to_owned())
+                .collect(),
+            every_secs: None,
+            schedule: fast
+                .chain(std::iter::once(Rule {
+                    under: "Reports/CURRENT/".to_owned(),
+                    every_secs: 60 * 60,
+                }))
+                .collect(),
+            watch_fast: Vec::new(),
+            watch_current: Vec::new(),
+        }
+    }
+
+    /// The host's name: `id`, else the site's host name (`www.nemweb.com.au`).
+    pub fn name(&self) -> String {
+        self.id.clone().unwrap_or_else(|| {
+            Url::parse(&self.base_url)
+                .ok()
+                .and_then(|u| u.host_str().map(str::to_owned))
+                .unwrap_or_else(|| self.base_url.clone())
+        })
+    }
 }
 
 impl Default for Config {
@@ -248,20 +330,12 @@ impl Default for Config {
         Self {
             downloads: 2,
             request_interval_ms: 600,
-            base_url: "https://www.nemweb.com.au".to_owned(),
             user_agent_suffix: String::new(),
             jobs: 0,
             attempts: 5,
             backoff_ms: 500,
             read_timeout_secs: 120,
             progress_every_secs: 5,
-            watch_fast: ["VicGas", "STTM", "GBB", "ECGS", "GSH"]
-                .iter()
-                .map(|f| format!("Reports/CURRENT/{f}/"))
-                .collect(),
-            watch_fast_secs: 15 * 60,
-            watch_current: vec!["Reports/CURRENT/".to_owned()],
-            watch_current_secs: 60 * 60,
             watch_secs: 24 * 60 * 60,
             watch_least_secs: 5 * 60,
             hosts: Vec::new(),
@@ -283,35 +357,56 @@ impl Config {
                 });
             }
         };
-        toml::from_str(&text).map_err(|e| ConfigError::Parse {
+        Self::parse(&text).map_err(|message| ConfigError::Parse {
             path: path.display().to_string(),
-            message: e.message().to_owned(),
+            message,
         })
     }
 
-    /// Every host read: nemweb, from the top-level keys, then each of
-    /// `hosts`; a root that is not a folder URL refuses.
-    pub fn hosts(&self) -> Result<Vec<Host>, MirrorError> {
-        let mut hosts = vec![Host::nemweb(
-            &self.base_url,
-            self.request_interval_ms,
-            &self.watch_fast,
-            &self.watch_current,
-        )?];
-        for h in &self.hosts {
-            hosts.push(Host::from_config(h, self.request_interval_ms)?);
-        }
-        Ok(hosts)
+    /// The config in `text`; the message of a key that moved says where it went.
+    pub fn parse(text: &str) -> Result<Self, String> {
+        toml::from_str(text).map_err(|e| {
+            let message = e.message().to_owned();
+            match RETIRED_KEYS
+                .iter()
+                .find(|k| message.contains(&format!("`{k}`")))
+            {
+                Some(key) => format!(
+                    "{message}. The key `{key}` moved into a host: nemweb is a [[hosts]] entry like any other (`phasor-mirror init` writes it), and a watch's cadence is its [[hosts.schedule]] rules."
+                ),
+                None => message,
+            }
+        })
     }
 
-    /// How often a watch reads each folder, over every host.
+    /// The config as a file's text.
+    pub fn to_toml(&self) -> String {
+        toml::to_string_pretty(self).expect("a Config always serialises")
+    }
+
+    /// Every host read, in the config's order; a root that is not a folder URL
+    /// refuses. No host is read that the config does not name.
+    pub fn hosts(&self) -> Result<Vec<Host>, MirrorError> {
+        self.hosts
+            .iter()
+            .map(|h| Host::from_config(h, self.request_interval_ms))
+            .collect()
+    }
+
+    /// How often a watch reads each folder, over every host: each host's rules
+    /// by URL prefix (the longest wins), its `every_secs` for the rest of its
+    /// roots, and `watch_secs` for any folder no host names.
     pub fn cadence(&self) -> Result<Cadence, MirrorError> {
         let hosts = self.hosts()?;
+        let mut rules: Vec<(String, Duration)> = Vec::new();
+        for h in &hosts {
+            rules.extend(h.rules.iter().cloned());
+            if let Some(every) = h.every {
+                rules.extend(h.roots.iter().map(|r| (r.as_str().to_owned(), every)));
+            }
+        }
         Ok(Cadence {
-            fast: hosts.iter().flat_map(|h| h.watch_fast.clone()).collect(),
-            fast_every: Duration::from_secs(self.watch_fast_secs),
-            current: hosts.iter().flat_map(|h| h.watch_current.clone()).collect(),
-            current_every: Duration::from_secs(self.watch_current_secs),
+            rules,
             every: Duration::from_secs(self.watch_secs),
             least: Duration::from_secs(self.watch_least_secs),
         })
@@ -399,10 +494,9 @@ mod tests {
 
     #[test]
     fn home_layout_and_config() {
-        let h = Home::resolve(None, Some(Path::new("/u"))).unwrap();
-        assert_eq!(h.root(), Path::new("/u/.phasor-mirror"));
-        assert!(Home::resolve(None, None).is_none());
-        let h = Home::resolve(Some(Path::new("/m")), None).unwrap();
+        assert!(Home::resolve(None).is_none(), "no default home");
+        let h = Home::resolve(Some(Path::new("/m"))).unwrap();
+        assert_eq!(h.root(), Path::new("/m"));
         assert_eq!(h.archive(), Path::new("/m/archive"));
         assert_eq!(h.config_file(), Path::new("/m/config.toml"));
 
@@ -422,21 +516,54 @@ mod tests {
         assert!(d.message.contains("requests"), "{}", d.message);
         let d = Config::load(dir.path()).unwrap_err().diagnostic();
         assert_eq!(d.code, "config.read");
+        // A key that moved into the hosts says so.
+        std::fs::write(&p, "watch_fast = [\"Reports/CURRENT/STTM/\"]\n").unwrap();
+        let d = Config::load(&p).unwrap_err().diagnostic();
+        assert!(
+            d.message.contains("`watch_fast` moved into a host"),
+            "{}",
+            d.message
+        );
+        // The defaults name no host, and a config round-trips through TOML.
+        assert!(Config::default().hosts().unwrap().is_empty());
+        let c = Config {
+            hosts: vec![HostConfig::nemweb()],
+            ..Config::default()
+        };
+        let text = c.to_toml();
+        assert_eq!(Config::parse(&text).unwrap(), c);
+        assert!(text.contains("[[hosts.schedule]]"), "{text}");
     }
 
     #[test]
-    fn hosts_are_nemweb_then_the_configured_ones() {
+    fn hosts_are_the_configured_ones_in_order() {
         let dir = tempfile::tempdir().unwrap();
         let p = dir.path().join("config.toml");
         std::fs::write(
             &p,
             r#"
 request_interval_ms = 400
+watch_secs = 100
+watch_least_secs = 10
+
+[[hosts]]
+id = "nemweb"
+base_url = "https://www.nemweb.com.au"
+listing_offset_secs = 36000
+roots = ["Reports/CURRENT/"]
+attempts = 2
+[[hosts.schedule]]
+under = "Reports/CURRENT/STTM/"
+every_secs = 900
+[[hosts.schedule]]
+under = "Reports/CURRENT/"
+every_secs = 3600
 
 [[hosts]]
 base_url = "https://data.wa.aemo.com.au/"
 listing_offset_secs = 28800
 roots = ["public/public-data/datafiles/"]
+downloads = 1
 watch_current = ["public/market-data/wemde/"]
 
 [[hosts]]
@@ -444,13 +571,17 @@ base_url = "https://emidatasets.blob.core.windows.net"
 listing = "azure-blob"
 listing_offset_secs = 0
 roots = ["publicdata/Datasets/Wholesale/DispatchAndPricing/"]
+every_secs = 1800
 "#,
         )
         .unwrap();
         let c = Config::load(&p).unwrap();
         let hosts = c.hosts().unwrap();
         assert_eq!(hosts.len(), 3);
+        assert_eq!(hosts[0].id, "nemweb");
         assert_eq!(hosts[0].base_url, "https://www.nemweb.com.au");
+        assert_eq!(hosts[0].attempts, Some(2));
+        assert_eq!(hosts[1].id, "data.wa.aemo.com.au");
         assert_eq!(hosts[1].base_url, "https://data.wa.aemo.com.au");
         assert_eq!(hosts[1].offset_secs, 28_800);
         assert_eq!(
@@ -459,16 +590,34 @@ roots = ["publicdata/Datasets/Wholesale/DispatchAndPricing/"]
             "an IIS page unless said"
         );
         assert_eq!(hosts[1].request_interval, Duration::from_millis(400));
+        assert_eq!(hosts[1].downloads, Some(1));
         assert_eq!(hosts[2].listing, ListingKind::AzureBlob);
         assert_eq!(hosts[2].offset_secs, 0);
         let cadence = c.cadence().unwrap();
-        assert_eq!(cadence.fast.len(), 5);
         assert_eq!(
-            cadence.current,
+            cadence.rules,
             [
-                "https://www.nemweb.com.au/Reports/CURRENT/",
-                "https://data.wa.aemo.com.au/public/market-data/wemde/"
+                (
+                    "https://www.nemweb.com.au/Reports/CURRENT/STTM/".to_owned(),
+                    Duration::from_secs(900)
+                ),
+                (
+                    "https://www.nemweb.com.au/Reports/CURRENT/".to_owned(),
+                    Duration::from_secs(3600)
+                ),
+                (
+                    "https://data.wa.aemo.com.au/public/market-data/wemde/".to_owned(),
+                    Duration::from_secs(3600)
+                ),
+                (
+                    "https://emidatasets.blob.core.windows.net/publicdata/Datasets/Wholesale/DispatchAndPricing/".to_owned(),
+                    Duration::from_secs(1800)
+                ),
             ]
+        );
+        assert_eq!(
+            (cadence.every, cadence.least),
+            (Duration::from_secs(100), Duration::from_secs(10))
         );
         // A listing kind that is not one is a config error.
         std::fs::write(
@@ -491,36 +640,5 @@ roots = ["publicdata/Datasets/Wholesale/DispatchAndPricing/"]
         let c = Config::load(&p).unwrap();
         assert!(matches!(c.hosts().unwrap_err(), MirrorError::Root { .. }));
         assert!(c.cadence().is_err());
-        assert_eq!(Config::default().hosts().unwrap().len(), 1);
-        let bad_base = Config {
-            base_url: "nemweb".to_owned(),
-            ..Config::default()
-        };
-        assert!(matches!(
-            bad_base.hosts().unwrap_err(),
-            MirrorError::Root { .. }
-        ));
-    }
-
-    #[test]
-    fn a_watch_cadence_is_under_the_base_url() {
-        let c = Config {
-            base_url: "https://h/".to_owned(),
-            watch_fast: vec!["/R/C/G/".to_owned()],
-            ..Config::default()
-        }
-        .cadence()
-        .unwrap();
-        assert_eq!(c.fast, ["https://h/R/C/G/"]);
-        assert_eq!(c.current, ["https://h/Reports/CURRENT/"]);
-        assert_eq!(
-            (c.fast_every, c.current_every, c.every, c.least),
-            (
-                Duration::from_secs(900),
-                Duration::from_secs(3600),
-                Duration::from_secs(86_400),
-                Duration::from_secs(300)
-            )
-        );
     }
 }

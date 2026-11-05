@@ -91,9 +91,9 @@ what the data means, this knows what exists.
 
 ```sh
 cargo build --release -p phasor-mirror           # target/release/phasor-mirror
-export PHASOR_MIRROR_HOME=/path/to/mirror       # default ~/.phasor-mirror
-echo 'request_interval_ms = 750' > $PHASOR_MIRROR_HOME/config.toml
+export PHASOR_MIRROR_HOME=/path/to/mirror       # no default: a home is always named
 m=target/release/phasor-mirror
+$m init --nemweb                                 # config.toml with nemweb as its host
 nohup caffeinate -ims $m run --json > mirror.log 2>&1 &
 $m status
 $m compare --delete
@@ -104,15 +104,57 @@ nohup caffeinate -ims $m watch --json --delete-duplicates >> mirror.log 2>&1 &
 `run` can be stopped and started again at any time: the crawl carries on from
 the pages it kept, and archived files are never downloaded again.
 
-## Other hosts
+## Hosts
+
+Every site the mirror reads is a `[[hosts]]` table in `config.toml`, nemweb
+included: nothing is read that the config does not name. A host has its
+roots, its clock (`listing_offset_secs`, the offset of the times its
+listings and zips carry), how it lists a folder (`listing`: `iis`, the
+default, or `azure-blob`), and may set its own pace (`request_interval_ms`),
+pool (`downloads`, under the top-level count), tries (`attempts`) and
+watch cadence: `every_secs` for its folders, and `[[hosts.schedule]]` rules
+giving the folders under a path their own interval, the longest matching
+path winning (`watch_fast` and `watch_current` on a host still read as
+rules of 15 minutes and an hour). The crawl, download and watch cover every
+host, each through its own paced fetcher and refusal breaker, so a refusal
+by one host stops only that host, and every `_at` instant is read in its
+host's clock.
+
+Before a host is read, its `robots.txt` is fetched once (no pacing, no
+breaker): a root it disallows `phasor-mirror` is an error, and a
+`Crawl-delay` longer than the host's pace becomes its pace. A host that
+serves none, or answers with anything but 200 (nemweb's sits behind a
+challenge page), has no rules. On one machine a host is read by one
+process at a time, whatever home each runs from, through a lock under the
+user's cache directory (`PHASOR_MIRROR_LOCK_DIR` to move it): two readers of
+one site draw its refusal together.
+
+A `--root` on a host the config does not name is read as an IIS site in
+AEST at the default pace, and the roots a crawl read are kept in
+`crawl.json`, so a home built with `--root` alone still knows them offline.
+
+Older configs named nemweb by top-level keys (`base_url`, `watch_fast`,
+`watch_current`, `watch_fast_secs`, `watch_current_secs`); such a key is now
+an error that says where it went. `phasor-mirror init --nemweb` writes
+nemweb's host as it was always read:
+
+```toml
+[[hosts]]
+id = "nemweb"
+base_url = "https://www.nemweb.com.au"
+listing_offset_secs = 36000
+roots = ["Data_Archive/", "Reports/ARCHIVE/", "Reports/CURRENT/"]
+[[hosts.schedule]]
+under = "Reports/CURRENT/STTM/"                  # and VicGas, GBB, ECGS, GSH
+every_secs = 900
+[[hosts.schedule]]
+under = "Reports/CURRENT/"
+every_secs = 3600
+```
 
 AEMO publishes the Wholesale Electricity Market (WA) on
 `data.wa.aemo.com.au`, an IIS site like nemweb whose listed and packed times
-are AWST (UTC+8). A `[[hosts]]` table in `config.toml` adds a host with its
-own roots, clock and pace; the crawl, download and watch cover every host,
-each through its own paced fetcher, so a refusal by one host stops only
-that host, and every `_at` instant is read in its host's clock. Without any
-`[[hosts]]` an existing config parses as before.
+are AWST (UTC+8):
 
 ```toml
 [[hosts]]

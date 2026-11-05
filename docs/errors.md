@@ -8,10 +8,12 @@ Every error and warning phasor reports carries one of these codes. Codes are sta
 |---|---|
 | `config.archive_missing` | `crates/phasor-core/src/config.rs` |
 | `config.bad_path` | `crates/phasor-pipeline/src/run.rs` |
+| `config.exists` | `crates/phasor-mirror/src/error.rs` |
 | `config.invalid` | `crates/phasor-core/src/config.rs` |
 | `config.keep_from_missing` | `crates/phasor-mirror/src/error.rs` |
 | `config.mirror_root` | `crates/phasor-mirror/src/error.rs` |
 | `config.no_decoder` | `crates/phasor-py/src/lib.rs` |
+| `config.no_hosts` | `crates/phasor-mirror/src/error.rs` |
 | `config.parse` | `crates/phasor-mirror/src/config.rs` |
 | `config.read` | `crates/phasor-mirror/src/config.rs` |
 

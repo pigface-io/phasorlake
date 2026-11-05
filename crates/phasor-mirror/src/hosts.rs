@@ -1,19 +1,21 @@
-//! The hosts the mirror reads: nemweb, and any other site the config names,
-//! each with its own roots, clock and pace. Every listed or packed time is
-//! read in its host's clock, from [`Offsets`].
+//! The hosts the mirror reads, each named by the config with its own roots,
+//! clock, pace, pool and schedule. Every listed or packed time is read in its
+//! host's clock, from [`Offsets`].
 
 use std::time::Duration;
 
 use url::Url;
 
-use crate::config::ListingKind;
-use crate::crawl::{default_roots, root};
+use crate::config::{HostConfig, ListingKind};
+use crate::crawl::root;
 use crate::error::MirrorError;
 use crate::stamp::AEST;
 
 /// One host, resolved from the config.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Host {
+    /// Its name, for logs and locks: `nemweb`, or the site's host name.
+    pub id: String,
     /// `https://www.nemweb.com.au`, no trailing slash.
     pub base_url: String,
     /// How it lists a folder.
@@ -22,55 +24,80 @@ pub struct Host {
     pub offset_secs: i32,
     /// Minimum gap between two requests to this host.
     pub request_interval: Duration,
+    /// Its own downloads at a time, when it allows itself fewer than the whole.
+    pub downloads: Option<usize>,
+    /// Its own tries per request, when it has them.
+    pub attempts: Option<u32>,
     /// The folders mirrored, under `base_url`.
     pub roots: Vec<Url>,
-    /// Folders a watch reads most often, as absolute URL prefixes.
-    pub watch_fast: Vec<String>,
-    /// Folders a watch reads next most often, as absolute URL prefixes.
-    pub watch_current: Vec<String>,
+    /// How often a watch reads the folders under each absolute URL prefix.
+    pub rules: Vec<(String, Duration)>,
+    /// How often a watch reads this host's other folders, when it says.
+    pub every: Option<Duration>,
 }
 
 impl Host {
-    /// nemweb, from the config's top-level keys, in AEST.
-    pub fn nemweb(
-        base_url: &str,
-        request_interval_ms: u64,
-        watch_fast: &[String],
-        watch_current: &[String],
-    ) -> Result<Self, MirrorError> {
-        let base = base_url.trim_end_matches('/').to_owned();
-        Ok(Self {
-            roots: default_roots(&base)?,
-            watch_fast: under(&base, watch_fast),
-            watch_current: under(&base, watch_current),
-            base_url: base,
-            listing: ListingKind::Iis,
-            offset_secs: AEST,
-            request_interval: Duration::from_millis(request_interval_ms),
-        })
-    }
-
-    /// A further host from its `[[hosts]]` table.
-    pub fn from_config(
-        c: &crate::config::HostConfig,
-        request_interval_ms: u64,
-    ) -> Result<Self, MirrorError> {
+    /// A host from its `[[hosts]]` table, paced at `request_interval_ms`
+    /// unless it says otherwise. `watch_fast` and `watch_current` are rules
+    /// of 15 minutes and an hour.
+    pub fn from_config(c: &HostConfig, request_interval_ms: u64) -> Result<Self, MirrorError> {
         let base = c.base_url.trim_end_matches('/').to_owned();
         let roots = under(&base, &c.roots)
             .iter()
             .map(|r| root(r))
             .collect::<Result<Vec<Url>, MirrorError>>()?;
+        let mut rules: Vec<(String, Duration)> = c
+            .schedule
+            .iter()
+            .map(|r| {
+                (
+                    under(&base, std::slice::from_ref(&r.under)).remove(0),
+                    Duration::from_secs(r.every_secs),
+                )
+            })
+            .collect();
+        rules.extend(
+            under(&base, &c.watch_fast)
+                .into_iter()
+                .map(|p| (p, Duration::from_secs(15 * 60))),
+        );
+        rules.extend(
+            under(&base, &c.watch_current)
+                .into_iter()
+                .map(|p| (p, Duration::from_secs(60 * 60))),
+        );
         Ok(Self {
+            id: c.name(),
             roots,
-            watch_fast: under(&base, &c.watch_fast),
-            watch_current: under(&base, &c.watch_current),
+            rules,
+            every: c.every_secs.map(Duration::from_secs),
             base_url: base,
             listing: c.listing,
             offset_secs: c.listing_offset_secs,
             request_interval: Duration::from_millis(
                 c.request_interval_ms.unwrap_or(request_interval_ms),
             ),
+            downloads: c.downloads,
+            attempts: c.attempts,
         })
+    }
+
+    /// A host made up for a root no configured host serves: an IIS site in
+    /// AEST, paced at `request_interval_ms`, named by the root's host, with
+    /// the root alone.
+    pub fn ad_hoc(root: &Url, request_interval_ms: u64) -> Self {
+        Self {
+            id: root.host_str().unwrap_or("host").to_owned(),
+            base_url: root.origin().ascii_serialization(),
+            listing: ListingKind::Iis,
+            offset_secs: AEST,
+            request_interval: Duration::from_millis(request_interval_ms),
+            downloads: None,
+            attempts: None,
+            roots: vec![root.clone()],
+            rules: Vec::new(),
+            every: None,
+        }
     }
 
     /// Whether `url` is on this host.
@@ -132,50 +159,82 @@ impl Offsets {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::config::Rule;
 
     #[test]
     fn nemweb_and_a_further_host_resolve_from_the_config() {
-        let nem = Host::nemweb(
-            "https://www.nemweb.com.au/",
-            1000,
-            &["Reports/CURRENT/GBB/".to_owned()],
-            &["/Reports/CURRENT/".to_owned()],
-        )
-        .unwrap();
+        let nem = Host::from_config(&HostConfig::nemweb(), 1000).unwrap();
+        assert_eq!(nem.id, "nemweb");
         assert_eq!(nem.base_url, "https://www.nemweb.com.au");
         assert_eq!(nem.offset_secs, AEST);
         assert_eq!(nem.request_interval, Duration::from_millis(1000));
         assert_eq!(nem.roots.len(), 3);
+        assert_eq!(nem.rules.len(), 6);
         assert_eq!(
-            nem.watch_fast,
-            ["https://www.nemweb.com.au/Reports/CURRENT/GBB/"]
+            nem.rules[0],
+            (
+                "https://www.nemweb.com.au/Reports/CURRENT/VicGas/".to_owned(),
+                Duration::from_secs(900)
+            )
         );
         assert_eq!(
-            nem.watch_current,
-            ["https://www.nemweb.com.au/Reports/CURRENT/"]
+            nem.rules[5],
+            (
+                "https://www.nemweb.com.au/Reports/CURRENT/".to_owned(),
+                Duration::from_secs(3600)
+            )
         );
+        assert_eq!((nem.every, nem.downloads, nem.attempts), (None, None, None));
         assert!(nem.serves("https://www.nemweb.com.au/Reports/"));
         assert!(nem.serves("https://www.nemweb.com.au"));
         assert!(!nem.serves("https://www.nemweb.com.au.evil/x"));
         assert!(!nem.serves("https://data.wa.aemo.com.au/public/"));
 
-        let wa = crate::config::HostConfig {
+        let wa = HostConfig {
+            id: None,
             base_url: "https://data.wa.aemo.com.au".to_owned(),
             listing: ListingKind::Iis,
             listing_offset_secs: 8 * 3600,
             request_interval_ms: None,
+            downloads: Some(1),
+            attempts: Some(3),
             roots: vec![
                 "public/public-data/datafiles/".to_owned(),
                 "/public/market-data/wemde/facilityScada/previous/".to_owned(),
             ],
-            watch_fast: vec![],
-            watch_current: vec!["public/market-data/wemde/".to_owned()],
+            every_secs: Some(7200),
+            schedule: vec![Rule {
+                under: "public/market-data/wemde/".to_owned(),
+                every_secs: 600,
+            }],
+            watch_fast: vec!["public/fast/".to_owned()],
+            watch_current: vec!["public/market-data/".to_owned()],
         };
         let h = Host::from_config(&wa, 750).unwrap();
+        assert_eq!(h.id, "data.wa.aemo.com.au", "named by its host name");
         assert_eq!(h.offset_secs, 28_800);
         assert_eq!(h.listing, ListingKind::Iis);
         assert_eq!(h.request_interval, Duration::from_millis(750));
-        let blobs = crate::config::HostConfig {
+        assert_eq!((h.downloads, h.attempts), (Some(1), Some(3)));
+        assert_eq!(h.every, Some(Duration::from_secs(7200)));
+        assert_eq!(
+            h.rules,
+            [
+                (
+                    "https://data.wa.aemo.com.au/public/market-data/wemde/".to_owned(),
+                    Duration::from_secs(600)
+                ),
+                (
+                    "https://data.wa.aemo.com.au/public/fast/".to_owned(),
+                    Duration::from_secs(900)
+                ),
+                (
+                    "https://data.wa.aemo.com.au/public/market-data/".to_owned(),
+                    Duration::from_secs(3600)
+                ),
+            ]
+        );
+        let blobs = HostConfig {
             listing: ListingKind::AzureBlob,
             ..wa.clone()
         };
@@ -190,11 +249,7 @@ mod tests {
                 "https://data.wa.aemo.com.au/public/market-data/wemde/facilityScada/previous/"
             ]
         );
-        assert_eq!(
-            h.watch_current,
-            ["https://data.wa.aemo.com.au/public/market-data/wemde/"]
-        );
-        let own_pace = crate::config::HostConfig {
+        let own_pace = HostConfig {
             request_interval_ms: Some(2000),
             ..wa.clone()
         };
@@ -203,7 +258,7 @@ mod tests {
             Duration::from_millis(2000)
         );
         // A root that is not a folder path refuses, naming it.
-        let bad = crate::config::HostConfig {
+        let bad = HostConfig {
             roots: vec!["public/file.csv".to_owned()],
             ..wa
         };
@@ -211,21 +266,36 @@ mod tests {
             Host::from_config(&bad, 750).unwrap_err(),
             MirrorError::Root { url } if url == "https://data.wa.aemo.com.au/public/file.csv"
         ));
-        assert!(Host::nemweb("not a url", 1, &[], &[]).is_err());
+        let bad_base = HostConfig {
+            base_url: "nemweb".to_owned(),
+            ..HostConfig::nemweb()
+        };
+        assert!(Host::from_config(&bad_base, 1).is_err());
+        // A host made up for a root: the root's origin, the root alone.
+        let h = Host::ad_hoc(&Url::parse("https://h:8080/A/B/").unwrap(), 5);
+        assert_eq!(h.base_url, "https://h:8080");
+        assert_eq!(h.id, "h");
+        assert_eq!(h.roots[0].as_str(), "https://h:8080/A/B/");
+        assert_eq!(h.offset_secs, AEST);
+        assert_eq!(h.request_interval, Duration::from_millis(5));
+        assert!(h.serves("https://h:8080/A/B/c.csv"));
     }
 
     #[test]
     fn an_offset_is_the_first_host_that_serves_the_url_else_aest() {
         let hosts = vec![
-            Host::nemweb("https://www.nemweb.com.au", 1, &[], &[]).unwrap(),
+            Host::from_config(&HostConfig::nemweb(), 1).unwrap(),
             Host {
+                id: "wa".to_owned(),
                 base_url: "https://data.wa.aemo.com.au".to_owned(),
                 listing: ListingKind::Iis,
                 offset_secs: 28_800,
                 request_interval: Duration::from_secs(1),
+                downloads: None,
+                attempts: None,
                 roots: vec![],
-                watch_fast: vec![],
-                watch_current: vec![],
+                rules: vec![],
+                every: None,
             },
         ];
         let o = Offsets::of(&hosts);

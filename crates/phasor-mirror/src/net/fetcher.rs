@@ -91,6 +91,11 @@ impl Fetcher {
         self.requests.config().min_interval
     }
 
+    /// Tries per request before one fails.
+    pub fn attempts(&self) -> u32 {
+        self.requests.config().attempts
+    }
+
     /// Requests that succeeded so far: a run that got somewhere.
     pub fn succeeded(&self) -> u64 {
         self.requests.succeeded()

@@ -88,6 +88,44 @@ pub enum MirrorError {
         /// The root as given.
         url: String,
     },
+    /// Nothing to read: the config names no host and no root was given.
+    #[error(
+        "No host to read: name one in config.toml ([[hosts]]; `phasor-mirror init --nemweb` writes nemweb's) or pass --root."
+    )]
+    NoHosts,
+    /// Another process on this machine is reading the host.
+    #[error(
+        "The host {host} is being read by another phasor-mirror on this machine (lock {path}: {cause}); two readers of one site draw its refusal together, so wait for it or stop it."
+    )]
+    HostBusy {
+        /// The host, as its lock names it.
+        host: String,
+        /// The lock file.
+        path: String,
+        /// Why the lock could not be taken.
+        cause: String,
+    },
+    /// The host's robots.txt disallows this client under a root.
+    #[error(
+        "The robots.txt of {host} disallows this client under {root}; the root is not read. Take it out of the config, or ask the host."
+    )]
+    RobotsDisallow {
+        /// The host's name.
+        host: String,
+        /// The root.
+        root: String,
+    },
+    /// No directory for the host locks.
+    #[error(
+        "No directory for the host locks: set PHASOR_MIRROR_LOCK_DIR, or run as a user with a cache directory."
+    )]
+    NoLockDir,
+    /// `init` would overwrite a config file.
+    #[error("{path} exists; pass --force to write over it.")]
+    ConfigExists {
+        /// The file.
+        path: String,
+    },
 }
 
 impl From<phasor_provenance::archive::Error> for MirrorError {
@@ -157,6 +195,17 @@ impl Diagnose for MirrorError {
             Self::Root { url } => {
                 Diagnostic::error("config.mirror_root", Category::CONFIG, msg).with_url(url.clone())
             }
+            Self::NoHosts => Diagnostic::error("config.no_hosts", Category::CONFIG, msg),
+            Self::HostBusy { path, .. } => {
+                Diagnostic::error("mirror.host_busy", MIRROR, msg).with_file(path.clone())
+            }
+            Self::RobotsDisallow { root, .. } => {
+                Diagnostic::error("mirror.robots_disallow", MIRROR, msg).with_url(root.clone())
+            }
+            Self::NoLockDir => Diagnostic::error("mirror.no_lock_dir", MIRROR, msg),
+            Self::ConfigExists { path } => {
+                Diagnostic::error("config.exists", Category::CONFIG, msg).with_file(path.clone())
+            }
         }
     }
 }
@@ -188,6 +237,20 @@ mod tests {
                 },
                 "mirror.summary_stale",
             ),
+            (
+                MirrorError::HostBusy {
+                    host: "www.nemweb.com.au".into(),
+                    path: "/c/locks/www.nemweb.com.au".into(),
+                    cause: "held".into(),
+                },
+                "mirror.host_busy",
+            ),
+            (
+                MirrorError::ConfigExists {
+                    path: "/m/config.toml".into(),
+                },
+                "config.exists",
+            ),
         ];
         let dir = tempfile::tempdir().unwrap();
         std::fs::create_dir(dir.path().join("f.provenance.json")).unwrap();
@@ -198,6 +261,20 @@ mod tests {
             let d = e.diagnostic();
             assert_eq!(d.code, code);
             assert!(d.file.is_some(), "{code}");
+            assert!(e.to_string().ends_with('.'), "{e}");
+        }
+        // The errors with no file say their code and end their sentence too.
+        let robots = MirrorError::RobotsDisallow {
+            host: "nemweb".into(),
+            root: "https://h/Data/".into(),
+        };
+        assert_eq!(robots.diagnostic().code, "mirror.robots_disallow");
+        assert_eq!(robots.diagnostic().url.as_deref(), Some("https://h/Data/"));
+        for (e, code) in [
+            (MirrorError::NoHosts, "config.no_hosts"),
+            (MirrorError::NoLockDir, "mirror.no_lock_dir"),
+        ] {
+            assert_eq!(e.diagnostic().code, code);
             assert!(e.to_string().ends_with('.'), "{e}");
         }
     }

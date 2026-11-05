@@ -22,6 +22,7 @@ impl Cli {
             .arg("--no-progress")
             .args(args)
             .env_remove("PHASOR_MIRROR_HOME")
+            .env("PHASOR_MIRROR_LOCK_DIR", self.home.path().join("locks"))
             .output()
             .expect("the binary runs")
     }
@@ -70,7 +71,7 @@ fn the_mirror_crawls_kept_pages_and_reports_its_status() {
 
     let out = cli.ok(&["--offline", "crawl", "--root", root]);
     assert!(
-        out.contains("1 folders, 1 files (0.0 GB), 1 links out of the roots; 2 pages read, 0 of them from nemweb"),
+        out.contains("1 folders, 1 files (0.0 GB), 1 links out of the roots; 2 pages read, 0 of them fetched now"),
         "{out}"
     );
     let out = cli.ok(&["--offline", "--json", "crawl", "--root", root]);
@@ -632,7 +633,7 @@ fn a_watch_keeps_each_version_and_what_is_new() {
     // Every folder read in every round, so each round's answers are known.
     let every = |secs: u64, least: u64| {
         format!(
-            "{FAST}base_url = \"{base}\"\nwatch_fast = [\"W/G/\"]\nwatch_current = [\"W/\"]\nwatch_fast_secs = {secs}\nwatch_current_secs = {secs}\nwatch_secs = {secs}\nwatch_least_secs = {least}\n"
+            "{FAST}watch_secs = {secs}\nwatch_least_secs = {least}\n[[hosts]]\nbase_url = \"{base}\"\nlisting_offset_secs = 36000\nroots = [\"W/\"]\n[[hosts.schedule]]\nunder = \"W/G/\"\nevery_secs = {secs}\n[[hosts.schedule]]\nunder = \"W/\"\nevery_secs = {secs}\n"
         )
     };
     cli.config(&every(0, 0));
@@ -757,7 +758,7 @@ fn a_watch_keeps_each_version_and_what_is_new() {
     ] {
         let cli = Cli::new();
         cli.config(&format!(
-            "{FAST}base_url = \"{base}\"\nwatch_secs = 0\nwatch_least_secs = 0\n"
+            "{FAST}watch_secs = 0\nwatch_least_secs = 0\n[[hosts]]\nbase_url = \"{base}\"\nlisting_offset_secs = 36000\nroots = []\n"
         ));
         let root = srv.url(r);
         cli.ok(&["crawl", "--root", &root]);
@@ -839,4 +840,153 @@ fn prune_deletes_what_is_before_the_month_kept_from() {
     // Only what is kept is listed for download: the pruned file never is.
     let (_, out, _) = cli.code(&["--offline", "download"]);
     assert!(out.starts_with("1 files:"), "{out}");
+}
+
+/// `init` writes the config, nemweb as its host when asked, and never over
+/// one that exists without `--force`; a home with no host reads nothing.
+#[test]
+fn init_writes_the_config_and_a_home_names_every_host_it_reads() {
+    let cli = Cli::new();
+    let (code, _, err) = cli.code(&["--offline", "crawl"]);
+    assert_eq!(code, 1);
+    assert!(err.contains("config.no_hosts"), "{err}");
+    let out = cli.ok(&["init"]);
+    assert!(out.ends_with("written with 0 host(s)\n"), "{out}");
+    let (code, _, err) = cli.code(&["init", "--nemweb"]);
+    assert_eq!(code, 1);
+    assert!(err.contains("config.exists"), "{err}");
+    let out = cli.ok(&["--json", "init", "--nemweb", "--force"]);
+    assert!(
+        out.contains("\"event\":\"init_done\"") && out.contains("\"hosts\":1"),
+        "{out}"
+    );
+    let text = std::fs::read_to_string(cli.home.path().join("config.toml")).unwrap();
+    assert!(
+        text.contains("id = \"nemweb\"") && text.contains("[[hosts.schedule]]"),
+        "{text}"
+    );
+    // The written config reads back, and a retired key says where it went.
+    assert!(cli.ok(&["status"]).starts_with("mirror not running"));
+    cli.config("watch_fast = [\"Reports/CURRENT/STTM/\"]\n");
+    let (code, _, err) = cli.code(&["status"]);
+    assert_eq!(code, 2);
+    assert!(err.contains("`watch_fast` moved into a host"), "{err}");
+}
+
+/// A host is read by one process on the machine at a time, and its
+/// robots.txt is honoured: a disallowed root refuses, a crawl delay paces.
+#[test]
+fn a_host_is_locked_while_read_and_its_robots_are_honoured() {
+    let srv = Server::start();
+    srv.route("/A/", Reply::Ok(page(&[("/A/a.csv", Some(3))])));
+    srv.route("/A/a.csv", Reply::Ok(b"a,b".to_vec()));
+    srv.route(
+        "/robots.txt",
+        Reply::Ok(b"User-agent: *\nDisallow: /B/\nCrawl-delay: 0\n".to_vec()),
+    );
+    let locks = tempfile::tempdir().unwrap();
+    let cli = Cli::new();
+    cli.config(FAST);
+    let root = srv.url("/A/");
+    let run = |args: &[&str]| {
+        Command::new(env!("CARGO_BIN_EXE_phasor-mirror"))
+            .arg("--home")
+            .arg(cli.home.path())
+            .arg("--no-progress")
+            .args(args)
+            .env("PHASOR_MIRROR_LOCK_DIR", locks.path())
+            .output()
+            .unwrap()
+    };
+    // Another process holds the host: refused, naming it.
+    let base = srv.url("");
+    let held = phasor_mirror::HostLocks::take(locks.path(), [base.as_str()]).unwrap();
+    let out = run(&["crawl", "--root", &root]);
+    assert_eq!(out.status.code(), Some(1));
+    let err = String::from_utf8_lossy(&out.stderr);
+    assert!(err.contains("mirror.host_busy"), "{err}");
+    drop(held);
+    let out = run(&["crawl", "--root", &root]);
+    assert!(
+        out.status.success(),
+        "{}",
+        String::from_utf8_lossy(&out.stderr)
+    );
+    // A root the robots disallow is not read.
+    let out = run(&["crawl", "--fresh", "--root", &srv.url("/B/")]);
+    assert_eq!(out.status.code(), Some(1));
+    let err = String::from_utf8_lossy(&out.stderr);
+    assert!(err.contains("mirror.robots_disallow"), "{err}");
+    // Offline, no lock is taken and no robots read: the kept pages serve.
+    let out = run(&["--offline", "crawl", "--root", &root]);
+    assert!(
+        out.status.success(),
+        "{}",
+        String::from_utf8_lossy(&out.stderr)
+    );
+}
+
+/// `init` says when it cannot write, and `status` says when a configured
+/// root is not a folder.
+#[cfg(unix)]
+#[test]
+fn init_and_status_report_a_home_that_cannot_be_written_or_read() {
+    use std::os::unix::fs::PermissionsExt as _;
+    let cli = Cli::new();
+    std::fs::set_permissions(cli.home.path(), std::fs::Permissions::from_mode(0o555)).unwrap();
+    let (code, _, err) = cli.code(&["init"]);
+    std::fs::set_permissions(cli.home.path(), std::fs::Permissions::from_mode(0o755)).unwrap();
+    assert_eq!(code, 1, "{err}");
+    assert!(err.contains("mirror.io"), "{err}");
+    cli.config(
+        "[[hosts]]\nbase_url = \"https://h\"\nlisting_offset_secs = 0\nroots = [\"a.csv\"]\n",
+    );
+    let (code, _, err) = cli.code(&["status"]);
+    assert_eq!(code, 1);
+    assert!(err.contains("config.mirror_root"), "{err}");
+}
+
+/// Without `PHASOR_MIRROR_LOCK_DIR` the host locks live under the user's
+/// cache directory.
+#[test]
+fn the_host_locks_fall_back_to_the_cache_directory() {
+    let srv = Server::start();
+    srv.route("/A/", Reply::Ok(page(&[])));
+    let cli = Cli::new();
+    cli.config(FAST);
+    let fake_home = tempfile::tempdir().unwrap();
+    let out = Command::new(env!("CARGO_BIN_EXE_phasor-mirror"))
+        .arg("--home")
+        .arg(cli.home.path())
+        .arg("--no-progress")
+        .args(["crawl", "--root", &srv.url("/A/")])
+        .env_remove("PHASOR_MIRROR_HOME")
+        .env_remove("PHASOR_MIRROR_LOCK_DIR")
+        .env("HOME", fake_home.path())
+        .env("XDG_CACHE_HOME", fake_home.path().join("cache"))
+        .output()
+        .unwrap();
+    assert!(
+        out.status.success(),
+        "{}",
+        String::from_utf8_lossy(&out.stderr)
+    );
+    // A lock file named for the server's host and port, somewhere under the
+    // fake home's cache directory.
+    let mut found = false;
+    let mut stack = vec![fake_home.path().to_path_buf()];
+    while let Some(d) = stack.pop() {
+        for e in std::fs::read_dir(&d).into_iter().flatten().flatten() {
+            let p = e.path();
+            if p.is_dir() {
+                stack.push(p);
+            } else if p
+                .file_name()
+                .is_some_and(|n| n.to_string_lossy().starts_with("127.0.0.1_"))
+            {
+                found = true;
+            }
+        }
+    }
+    assert!(found, "no lock file under {}", fake_home.path().display());
 }

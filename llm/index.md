@@ -39,7 +39,7 @@ Entries name where it starts.
 - **Command**: `fetch` (downloads and ingests; `--no-ingest`), `import`, `ingest`, `list`, `inspect`, `errors`, `verify`, `schema`, `wem`; shared flag structs and `--help` examples (a test holds them) in `crates/phasor-cli/src/cli.rs`; `crates/phasor-cli/src/commands/`.
 - **Gates**: `just cover`, `just bench`, `just bench-fast`, `just budget-check`, `just llm-check`, `just errors-check`, `just schemas-check`. `crates/xtask/src/`, `crates/phasor-bench/src/main.rs`, `bench/budgets.json`, `coverage.json`.
 - **Python** (`crates/phasor-py/src/lib.rs`, `python/phasorlake/`): `decode` (over `decode_file`), `inspect`, `table`, binaries as scripts. ruff, ty, stubtest, doctests (`just py-test`).
-- **Mirror** (`crates/phasor-mirror/src/`): nemweb's archive folders and any `[[hosts]]` configured (`crates/phasor-mirror/src/hosts.rs`: roots, clock, pace; a fetcher per host, `crates/phasor-mirror/src/net/fetchers.rs`), its records and catalog.
+- **Mirror** (`crates/phasor-mirror/src/`): every `[[hosts]]` named, nemweb too (`crates/phasor-mirror/src/hosts.rs`: roots, clock, pace, rules; a fetcher per host, `crates/phasor-mirror/src/net/fetchers.rs`), robots.txt, its records and catalog.
 
 ## Documents
 

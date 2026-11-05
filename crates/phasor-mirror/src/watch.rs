@@ -17,31 +17,24 @@ use crate::stamp::Stamp;
 /// How often a watch reads each folder.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Cadence {
-    /// The folders read most often, by URL prefix.
-    pub fast: Vec<String>,
-    /// How often they are read.
-    pub fast_every: Duration,
-    /// The folders read next most often, by URL prefix, apart from `fast`.
-    pub current: Vec<String>,
-    /// How often they are read.
-    pub current_every: Duration,
-    /// How often every other folder is read.
+    /// How often the folders under each URL prefix are read; the longest
+    /// prefix that matches a folder is its rule.
+    pub rules: Vec<(String, Duration)>,
+    /// How often every folder no rule names is read.
     pub every: Duration,
     /// The shortest interval a folder found changed comes down to.
     pub least: Duration,
 }
 
 impl Cadence {
-    /// A folder's own interval, and whether its first read is spread over it.
+    /// A folder's own interval, and whether its first read is spread over it
+    /// (only the folders no rule names are spread).
     fn base(&self, folder: &str) -> (Duration, bool) {
-        let under = |prefixes: &[String]| prefixes.iter().any(|p| folder.starts_with(p.as_str()));
-        if under(&self.fast) {
-            (self.fast_every, false)
-        } else if under(&self.current) {
-            (self.current_every, false)
-        } else {
-            (self.every, true)
-        }
+        self.rules
+            .iter()
+            .filter(|(p, _)| folder.starts_with(p.as_str()))
+            .max_by_key(|(p, _)| p.len())
+            .map_or((self.every, true), |(_, every)| (*every, false))
     }
 }
 
@@ -272,10 +265,11 @@ mod tests {
 
     fn cadence() -> Cadence {
         Cadence {
-            fast: vec!["https://h/R/C/G/".to_owned()],
-            fast_every: Duration::from_secs(900),
-            current: vec!["https://h/R/C/".to_owned()],
-            current_every: Duration::from_secs(3600),
+            // The longer prefix wins: G/ under C/ is the fast one.
+            rules: vec![
+                ("https://h/R/C/".to_owned(), Duration::from_secs(3600)),
+                ("https://h/R/C/G/".to_owned(), Duration::from_secs(900)),
+            ],
             every: Duration::from_secs(86_400),
             least: Duration::from_secs(300),
         }

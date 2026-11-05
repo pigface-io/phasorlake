@@ -39,17 +39,45 @@ impl HostFetcher {
 /// The fetchers of every host, the first the default for a URL no host serves.
 pub struct Fetchers {
     hosts: Vec<HostFetcher>,
+    /// Each host's own cap on files downloading at once, when it has one;
+    /// one entry per host, in order.
+    limits: Vec<Option<Arc<tokio::sync::Semaphore>>>,
 }
 
 impl Fetchers {
-    /// Fetchers for `hosts`, at least one.
+    /// Fetchers for `hosts`, at least one, none capped below the whole.
     ///
     /// # Panics
     ///
     /// With no host: there is no fetcher to default to.
     pub fn new(hosts: Vec<HostFetcher>) -> Self {
         assert!(!hosts.is_empty(), "at least one host");
-        Self { hosts }
+        let limits = vec![None; hosts.len()];
+        Self { hosts, limits }
+    }
+
+    /// The same fetchers, each host downloading at most its `downloads` files
+    /// at once where it says (one entry per host, in order).
+    #[must_use]
+    pub fn with_limits(mut self, downloads: &[Option<usize>]) -> Self {
+        self.limits = self
+            .hosts
+            .iter()
+            .enumerate()
+            .map(|(i, _)| {
+                downloads
+                    .get(i)
+                    .copied()
+                    .flatten()
+                    .map(|n| Arc::new(tokio::sync::Semaphore::new(n.max(1))))
+            })
+            .collect();
+        self
+    }
+
+    /// The index of the host that serves `url`, else 0.
+    fn index_of(&self, url: &str) -> usize {
+        self.hosts.iter().position(|h| h.serves(url)).unwrap_or(0)
     }
 
     /// One fetcher for every URL, in AEST, listing IIS pages.
@@ -174,16 +202,20 @@ impl Fetchers {
         self.for_url(url).fetcher.fetch_range(url, range).await
     }
 
-    /// A file into the archive, through the host's fetcher.
+    /// A file into the archive, through the host's fetcher, within the host's
+    /// own cap on files at once.
     pub async fn fetch(&self, remote: &RemoteFile) -> Result<LocalFile, FetchError> {
-        self.for_url(remote.url.as_str())
-            .fetcher
-            .fetch(remote)
-            .await
+        let i = self.index_of(remote.url.as_str());
+        let _permit = match &self.limits[i] {
+            Some(s) => Some(s.acquire().await.expect("a semaphore never closed")),
+            None => None,
+        };
+        self.hosts[i].fetcher.fetch(remote).await
     }
 }
 
-/// A fetcher per host over one transport and one archive.
+/// A fetcher per host over one transport and one archive, each host capped
+/// at its own `downloads` where it has one.
 pub fn per_host(
     hosts: &[crate::hosts::Host],
     archive: &Archive,
@@ -194,6 +226,7 @@ pub fn per_host(
         super::fetcher::FetcherConfig,
     ),
 ) -> Fetchers {
+    let limits: Vec<Option<usize>> = hosts.iter().map(|h| h.downloads).collect();
     Fetchers::new(
         hosts
             .iter()
@@ -208,6 +241,7 @@ pub fn per_host(
             })
             .collect(),
     )
+    .with_limits(&limits)
 }
 
 #[cfg(test)]
@@ -385,15 +419,26 @@ mod tests {
             b"<pre></pre>"
         );
         let hosts = vec![
-            crate::hosts::Host::nemweb("https://n", 7, &[], &[]).unwrap(),
+            crate::hosts::Host::from_config(
+                &crate::config::HostConfig {
+                    base_url: "https://n".to_owned(),
+                    request_interval_ms: Some(7),
+                    ..crate::config::HostConfig::nemweb()
+                },
+                1,
+            )
+            .unwrap(),
             crate::hosts::Host {
+                id: "w".to_owned(),
                 base_url: "https://w".to_owned(),
                 listing: ListingKind::AzureBlob,
                 offset_secs: 28_800,
                 request_interval: Duration::from_millis(9),
+                downloads: Some(1),
+                attempts: None,
                 roots: vec![],
-                watch_fast: vec![],
-                watch_current: vec![],
+                rules: vec![],
+                every: None,
             },
         ];
         let mut intervals = Vec::new();
@@ -415,6 +460,30 @@ mod tests {
         assert_eq!(f.for_url("https://q/").base_url, "https://n");
         assert_eq!(f.listing_of("https://w/z"), ListingKind::AzureBlob);
         assert_eq!(f.listing_of("https://n/z"), ListingKind::Iis);
+    }
+
+    #[tokio::test]
+    async fn a_capped_host_downloads_within_its_cap() {
+        let dir = tempfile::tempdir().unwrap();
+        let archive = Archive::new(dir.path());
+        let t = Arc::new(StaticTransport::default());
+        t.add("https://w/f.csv", Canned::ok(b"abc"));
+        t.add("https://n/g.csv", Canned::ok(b"de"));
+        let f = Fetchers::new(vec![
+            host("https://n", AEST, &t, &archive),
+            host("https://w", 0, &t, &archive),
+        ])
+        .with_limits(&[None, Some(1)]);
+        let remote = |url: &str, size: u64| RemoteFile {
+            url: url::Url::parse(url).unwrap(),
+            size: Some(size),
+            modified: None,
+            modified_at: None,
+        };
+        let capped = f.fetch(&remote("https://w/f.csv", 3)).await.unwrap();
+        let free = f.fetch(&remote("https://n/g.csv", 2)).await.unwrap();
+        assert_eq!((capped.size, free.size), (3, 2));
+        assert_eq!(t.request_count(), 2);
     }
 
     #[test]
