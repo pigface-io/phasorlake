@@ -1,0 +1,27 @@
+[package]
+name = "phasor-ftp"
+description = "FTP behind phasor-net's Transport: a folder listed as lines, a file fetched whole with its modification time, one paced connection a host, for the hosts (the Bureau of Meteorology's) that publish by FTP alone."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+publish.workspace = true
+
+[lints]
+workspace = true
+
+[dependencies]
+phasor-net.workspace = true
+async-trait.workspace = true
+bytes.workspace = true
+futures.workspace = true
+httpdate.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+suppaftp.workspace = true
+tokio = { workspace = true, features = ["rt", "sync"] }
+url.workspace = true
+
+[dev-dependencies]
+tokio = { workspace = true, features = ["rt-multi-thread", "macros"] }

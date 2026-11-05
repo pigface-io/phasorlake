@@ -10,6 +10,7 @@ use crate::net::Fetchers;
 use serde::{Deserialize, Serialize};
 use url::Url;
 
+#[cfg(test)]
 use crate::config::ListingKind;
 pub use crate::config::Mirror;
 use crate::error::MirrorError;
@@ -25,11 +26,11 @@ pub fn default_roots(base: &str) -> Result<Vec<Url>, MirrorError> {
         .collect()
 }
 
-/// A root as given: an http(s) URL of a folder.
+/// A root as given: an http(s) or ftp URL of a folder.
 pub fn root(s: &str) -> Result<Url, MirrorError> {
     Url::parse(s)
         .ok()
-        .filter(|u| matches!(u.scheme(), "http" | "https") && u.path().ends_with('/'))
+        .filter(|u| matches!(u.scheme(), "http" | "https" | "ftp") && u.path().ends_with('/'))
         .filter(|u| u.query().is_none() && u.fragment().is_none())
         .ok_or_else(|| MirrorError::Root { url: s.to_owned() })
 }
@@ -351,9 +352,7 @@ pub async fn crawl(
             .ok()
             .and_then(|t| t.duration_since(std::time::UNIX_EPOCH).ok())
             .map(|d| Stamp::from_unix(i64::try_from(d.as_secs()).unwrap_or(0)));
-        let offset = fetcher.offset_of(folder.as_str());
-        let listing = fetcher.listing_of(folder.as_str());
-        let links = read_page(&folder, &html, roots, crawled_at, offset, listing)?;
+        let links = fetcher.read_page(&folder, &html, roots, crawled_at)?;
         let count = links.len();
         for remote in links {
             if remote.kind == RemoteKind::Dir && seen.insert(remote.url.clone()) {
@@ -387,9 +386,10 @@ pub async fn crawl(
 }
 
 /// Every link of `folder`'s listing page as a record (`offset` seconds east
-/// of UTC): an IIS page's, or a blob store's pages' (its folder markers,
-/// zero-length blobs named for the folder, are not files).
-pub(crate) fn read_page(
+/// of UTC), read as `listing` reads a page: the tests' shorthand for
+/// [`ListingKind::read_page`].
+#[cfg(test)]
+fn read_page(
     folder: &Url,
     html: &[u8],
     roots: &[Url],
@@ -728,6 +728,7 @@ mod tests {
             offset_secs: 0,
             listing: ListingKind::AzureBlob,
             documents: vec![],
+            only: vec![],
             fetcher: crate::net::Fetcher::new(
                 Arc::new(t.clone()),
                 archive,
@@ -785,6 +786,7 @@ mod tests {
             offset_secs: 0,
             listing: ListingKind::AzureBlob,
             documents: vec![],
+            only: vec![],
             fetcher: crate::net::Fetcher::new(
                 Arc::new(bad),
                 Archive::new(home.path().join("archive2")),
@@ -848,6 +850,7 @@ mod tests {
             offset_secs: offset,
             listing: ListingKind::Iis,
             documents: vec![],
+            only: vec![],
             fetcher: crate::net::Fetcher::new(Arc::new(t.clone()), archive.clone(), fast.clone()),
         };
         let f = Fetchers::new(vec![
@@ -1027,7 +1030,12 @@ mod tests {
         assert_eq!(r[1].as_str(), "https://www.nemweb.com.au/Reports/ARCHIVE/");
         assert_eq!(r[2].as_str(), "https://www.nemweb.com.au/Reports/CURRENT/");
         assert_eq!(r.len(), 3);
-        for bad in ["https://h/A", "ftp://h/A/", "https://h/A/?q", "not a url"] {
+        assert_eq!(
+            root("ftp://h/A/").unwrap().as_str(),
+            "ftp://h/A/",
+            "an FTP folder is a root"
+        );
+        for bad in ["https://h/A", "file:///h/A/", "https://h/A/?q", "not a url"] {
             let e = root(bad).unwrap_err();
             assert_eq!(e.diagnostic().code, "config.mirror_root");
         }

@@ -32,6 +32,8 @@ impl ListingKind {
                 host.fetcher.fetch_listing(&catalog).await
             }
             Self::Documents => documents::fetch(host, folder).await,
+            // The FTP transport answers a folder URL with its entries as lines.
+            Self::Ftp => host.fetcher.fetch_listing(folder).await,
         }
     }
 
@@ -58,6 +60,7 @@ impl ListingKind {
             Self::AzureBlob => azure::read(folder, bytes, roots),
             Self::Thredds => thredds::read(folder, bytes),
             Self::Documents => documents::read(folder, bytes),
+            Self::Ftp => ftp::read(folder, bytes, roots),
         };
         let mut links = links.map_err(bad)?;
         for r in &mut links {
@@ -346,6 +349,56 @@ mod documents {
     }
 }
 
+/// An FTP server: the transport lists a folder as one JSON line an entry
+/// ([`phasor_ftp::listing::Entry`]); a folder under the roots is a folder,
+/// a file is a file with the size and UTC time the server gave.
+mod ftp {
+    use super::{Remote, RemoteKind, Unparsed, remote};
+    use crate::stamp::Stamp;
+    use phasor_ftp::listing::Entry;
+    use url::Url;
+
+    /// The entries a folder's page holds.
+    pub fn read(folder: &Url, page: &[u8], roots: &[Url]) -> Result<Vec<Remote>, Unparsed> {
+        let entries = Entry::read(page).ok_or_else(|| Unparsed {
+            reason: "a line that is not an FTP entry",
+            text: String::from_utf8_lossy(page).chars().take(80).collect(),
+        })?;
+        let mut out = Vec::new();
+        for e in entries {
+            let mut url = folder.join(&e.name).map_err(|_| Unparsed {
+                reason: "an entry that is not a URL",
+                text: e.name.clone(),
+            })?;
+            if e.dir {
+                if !url.path().ends_with('/') {
+                    let path = format!("{}/", url.path());
+                    url.set_path(&path);
+                }
+                let kind = if roots.iter().any(|r| url.as_str().starts_with(r.as_str())) {
+                    RemoteKind::Dir
+                } else {
+                    RemoteKind::External
+                };
+                out.push(remote(folder, &url, kind));
+            } else {
+                out.push(Remote {
+                    size: e.size,
+                    modified: e.modified.clone().unwrap_or_default(),
+                    modified_at: e.modified.as_deref().and_then(Stamp::from_http_date),
+                    ..remote(folder, &url, RemoteKind::File)
+                });
+            }
+        }
+        Ok(out)
+    }
+}
+
+/// Whether a file's name matches an `only` pattern (`*` any run of
+/// characters, `?` any one, the rest itself): the FTP crate's, which the
+/// FTP transport applies too.
+pub use phasor_ftp::listing::glob;
+
 #[cfg(test)]
 mod tests {
     use std::sync::Arc;
@@ -369,6 +422,7 @@ mod tests {
             offset_secs: 0,
             listing: kind,
             documents: docs.iter().map(|d| (*d).to_owned()).collect(),
+            only: Vec::new(),
             fetcher: Fetcher::new(
                 Arc::new(t.clone()),
                 Archive::new(dir.keep()),
@@ -576,5 +630,91 @@ mod tests {
                 .size
                 .is_none()
         );
+    }
+
+    fn entry_named(name: &str) -> phasor_ftp::listing::Entry {
+        phasor_ftp::listing::Entry {
+            name: name.to_owned(),
+            dir: false,
+            size: None,
+            modified: None,
+        }
+    }
+
+    #[test]
+    fn an_ftp_folders_page_is_its_entries_and_a_glob_names_files() {
+        use phasor_ftp::listing::Entry;
+        let folder = Url::parse("ftp://f/anon/gen/fwo/").unwrap();
+        let roots = [folder.clone()];
+        let page = Entry::page(&[
+            Entry {
+                name: "IDN11060.xml".into(),
+                dir: false,
+                size: Some(12),
+                modified: Some("Tue, 13 Feb 2024 08:27:00 GMT".into()),
+            },
+            Entry {
+                name: "sub".into(),
+                dir: true,
+                size: None,
+                modified: None,
+            },
+            Entry {
+                name: "../up".into(),
+                dir: true,
+                size: None,
+                modified: None,
+            },
+        ]);
+        let links = ListingKind::Ftp
+            .read_page(&folder, &page, &roots, Some(Stamp::now()), 0)
+            .unwrap();
+        assert_eq!(links.len(), 3);
+        assert_eq!(links[0].url, "ftp://f/anon/gen/fwo/IDN11060.xml");
+        assert_eq!((links[0].kind, links[0].size), (RemoteKind::File, Some(12)));
+        assert_eq!(
+            links[0].modified_at.unwrap().rfc3339(),
+            "2024-02-13T08:27:00Z"
+        );
+        assert_eq!(links[1].url, "ftp://f/anon/gen/fwo/sub/");
+        assert_eq!(links[1].kind, RemoteKind::Dir);
+        assert_eq!(
+            links[2].kind,
+            RemoteKind::External,
+            "a folder above the root"
+        );
+        assert!(links.iter().all(|r| r.crawled_at.is_some()));
+        assert!(
+            ListingKind::Ftp
+                .read_page(&folder, b"not json\n", &roots, None, 0)
+                .is_err()
+        );
+        // An entry whose name is no URL under the folder.
+        let odd = Entry::page(&[entry_named("http://[bad")]);
+        assert!(
+            ListingKind::Ftp
+                .read_page(&folder, &odd, &roots, None, 0)
+                .is_err()
+        );
+        // The FTP transport serves a folder URL as its page: the kind asks for the folder itself.
+        let t = Arc::new(StaticTransport::default());
+        t.add("ftp://f/anon/gen/fwo/", Canned::ok(&page));
+        let h = host(&t, "ftp://f", ListingKind::Ftp, &[]);
+        let fut = ListingKind::Ftp.fetch_folder(&h, "ftp://f/anon/gen/fwo/");
+        let got = tokio::runtime::Builder::new_current_thread()
+            .enable_all()
+            .build()
+            .unwrap()
+            .block_on(fut)
+            .unwrap();
+        assert_eq!(got, page);
+        // Globs: `*` any run, `?` one character, the rest itself.
+        assert!(glob("IDN11060*", "IDN11060.xml"));
+        assert!(glob("IDN11060*", "IDN11060.amoc.xml"));
+        assert!(glob("ID?60920.xml", "IDN60920.xml"));
+        assert!(glob("*.csv", "a.csv") && glob("*", "") && glob("a*c", "abbc"));
+        assert!(!glob("ID?60920.xml", "IDNN60920.xml"));
+        assert!(!glob("IDN11060*", "IDV10753.xml"));
+        assert!(!glob("a?", "a") && !glob("", "a") && !glob("abc", "abd"));
     }
 }

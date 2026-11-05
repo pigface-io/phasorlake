@@ -21,6 +21,7 @@ members = [
     "crates/phasor-cli",
     "crates/phasor-mirror",
     "crates/phasor-net",
+    "crates/phasor-ftp",
     "crates/phasor-py",
     "crates/phasor-iceberg-store",
     "crates/phasor-bench",
@@ -33,6 +34,7 @@ default-members = [
     "crates/phasor-registry",
     "crates/phasor-mms-conform",
     "crates/phasor-net",
+    "crates/phasor-ftp",
     "crates/phasor-acquire",
     "crates/phasor-kit",
     "crates/phasor-nem",
@@ -105,6 +107,7 @@ phasor-pipeline = { path = "crates/phasor-pipeline" }
 phasor-cli = { path = "crates/phasor-cli" }
 phasor-mirror = { path = "crates/phasor-mirror" }
 phasor-net = { path = "crates/phasor-net", default-features = false }
+phasor-ftp = { path = "crates/phasor-ftp" }
 
 # hot path
 memchr = "2.8"
@@ -145,6 +148,8 @@ httpdate = "1"
 sha2 = "0.11"
 # robots.txt rules and crawl delays, read once per host per run
 texting_robots = "0.2"
+# the FTP client behind phasor-ftp, plain FTP only (anonymous public servers)
+suppaftp = { version = "6", default-features = false }
 # storage
 rusqlite = { version = "0.40", features = ["bundled"] }
 # errors, logging, cli

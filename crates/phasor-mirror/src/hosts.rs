@@ -32,6 +32,8 @@ pub struct Host {
     pub roots: Vec<Url>,
     /// For a host of documents, the files watched, under `base_url`.
     pub documents: Vec<Url>,
+    /// Patterns of the file names its folders' listings keep; every file when empty.
+    pub only: Vec<String>,
     /// How often a watch reads the folders under each absolute URL prefix.
     pub rules: Vec<(String, Duration)>,
     /// How often a watch reads this host's other folders, when it says.
@@ -88,6 +90,7 @@ impl Host {
             id: c.name(),
             roots,
             documents,
+            only: c.only.clone(),
             rules,
             every: c.every_secs.map(Duration::from_secs),
             base_url: base,
@@ -105,16 +108,23 @@ impl Host {
     /// AEST, paced at `request_interval_ms`, named by the root's host, with
     /// the root alone.
     pub fn ad_hoc(root: &Url, request_interval_ms: u64) -> Self {
+        // The scheme says how the host lists and in whose clock: an FTP
+        // server in UTC, any web site as an IIS site in AEST.
+        let (listing, offset_secs) = match root.scheme() {
+            "ftp" => (ListingKind::Ftp, 0),
+            _ => (ListingKind::Iis, AEST),
+        };
         Self {
             id: root.host_str().unwrap_or("host").to_owned(),
             base_url: root.origin().ascii_serialization(),
-            listing: ListingKind::Iis,
-            offset_secs: AEST,
+            listing,
+            offset_secs,
             request_interval: Duration::from_millis(request_interval_ms),
             downloads: None,
             attempts: None,
             roots: vec![root.clone()],
             documents: Vec::new(),
+            only: Vec::new(),
             rules: Vec::new(),
             every: None,
         }
@@ -219,6 +229,7 @@ mod tests {
             downloads: Some(1),
             attempts: Some(3),
             documents: Vec::new(),
+            only: Vec::new(),
             roots: vec![
                 "public/public-data/datafiles/".to_owned(),
                 "/public/market-data/wemde/facilityScada/previous/".to_owned(),
@@ -316,6 +327,7 @@ mod tests {
                 attempts: None,
                 roots: vec![],
                 documents: vec![],
+                only: vec![],
                 rules: vec![],
                 every: None,
             },

@@ -8,7 +8,7 @@ use std::time::{Duration, Instant};
 use serde::Serialize;
 use url::Url;
 
-use crate::crawl::{Mirror, Remote, RemoteKind, read_page, root, write_atomic};
+use crate::crawl::{Mirror, Remote, RemoteKind, root, write_atomic};
 use crate::error::MirrorError;
 use crate::journal::{Change, Event};
 use crate::net::{Archive, FetchError, Fetchers};
@@ -198,9 +198,7 @@ pub async fn refresh(
             }
         };
         write_atomic(&mirror.page_path(&url), &html)?;
-        let offset = fetcher.offset_of(&folder);
-        let listing = fetcher.listing_of(&folder);
-        let now = read_page(&url, &html, roots, Some(Stamp::now()), offset, listing)?;
+        let now = fetcher.read_page(&url, &html, roots, Some(Stamp::now()))?;
         let listed_before: BTreeMap<String, Listed> = record
             .values()
             .filter(|r| r.listed_on == folder)

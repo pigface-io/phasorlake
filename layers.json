@@ -59,8 +59,12 @@
     "phasor-plain-decode",
     "phasor-zip"
   ],
+  "phasor-ftp": [
+    "phasor-net"
+  ],
   "phasor-mirror": [
     "phasor-core",
+    "phasor-ftp",
     "phasor-net",
     "phasor-plain-decode",
     "phasor-provenance",

@@ -24,6 +24,8 @@ pub struct HostFetcher {
     pub listing: ListingKind,
     /// For a host of documents, the files it watches, as absolute URLs.
     pub documents: Vec<String>,
+    /// Patterns of the file names its listings keep; every file when empty.
+    pub only: Vec<String>,
     /// Its fetcher.
     pub fetcher: Fetcher,
 }
@@ -89,6 +91,7 @@ impl Fetchers {
             offset_secs: AEST,
             listing: ListingKind::Iis,
             documents: Vec::new(),
+            only: Vec::new(),
             fetcher,
         }])
     }
@@ -121,6 +124,31 @@ impl Fetchers {
     pub async fn fetch_folder(&self, folder: &str) -> Result<Vec<u8>, FetchError> {
         let host = self.for_url(folder);
         host.listing.fetch_folder(host, folder).await
+    }
+
+    /// Every link of `folder`'s listing `bytes` as a record, read as its
+    /// host's kind reads a page, in the host's clock; a file whose name
+    /// matches none of the host's `only` patterns is left out.
+    pub fn read_page(
+        &self,
+        folder: &url::Url,
+        bytes: &[u8],
+        roots: &[url::Url],
+        crawled_at: Option<crate::stamp::Stamp>,
+    ) -> Result<Vec<crate::crawl::Remote>, crate::error::MirrorError> {
+        let host = self.for_url(folder.as_str());
+        let mut links =
+            host.listing
+                .read_page(folder, bytes, roots, crawled_at, host.offset_secs)?;
+        if !host.only.is_empty() {
+            links.retain(|r| {
+                r.kind != crate::crawl::RemoteKind::File || {
+                    let name = r.url.rsplit('/').next().unwrap_or(&r.url);
+                    host.only.iter().any(|p| crate::listers::glob(p, name))
+                }
+            });
+        }
+        Ok(links)
     }
 
     /// The same, as a value a thread may carry.
@@ -225,6 +253,7 @@ pub fn per_host(
                     offset_secs: h.offset_secs,
                     listing: h.listing,
                     documents: h.documents.iter().map(ToString::to_string).collect(),
+                    only: h.only.clone(),
                     fetcher: Fetcher::new(transport, archive.clone(), config),
                 }
             })
@@ -258,6 +287,7 @@ mod tests {
             offset_secs: offset,
             listing: ListingKind::Iis,
             documents: Vec::new(),
+            only: Vec::new(),
             fetcher: Fetcher::new(Arc::new(t.clone()), archive.clone(), fast()),
         }
     }
@@ -428,6 +458,7 @@ mod tests {
                 attempts: None,
                 roots: vec![],
                 documents: vec![],
+                only: vec![],
                 rules: vec![],
                 every: None,
             },
@@ -475,6 +506,55 @@ mod tests {
         let free = f.fetch(&remote("https://n/g.csv", 2)).await.unwrap();
         assert_eq!((capped.size, free.size), (3, 2));
         assert_eq!(t.request_count(), 2);
+    }
+
+    #[test]
+    fn a_hosts_only_patterns_keep_the_files_named_and_every_folder() {
+        let dir = tempfile::tempdir().unwrap();
+        let archive = Archive::new(dir.path());
+        let t = Arc::new(StaticTransport::default());
+        // An FTP folder of four entries: two files the patterns name, one
+        // they do not, and a folder, which patterns never touch.
+        use phasor_ftp::listing::Entry;
+        let entry = |name: &str, dir: bool| Entry {
+            name: name.to_owned(),
+            dir,
+            size: if dir { None } else { Some(12) },
+            modified: None,
+        };
+        let page = Entry::page(&[
+            entry("IDN11060.xml", false),
+            entry("IDV10753.xml", false),
+            entry("sub", true),
+            entry("IDN60920.xml", false),
+        ]);
+        let mut h = host("ftp://h", 0, &t, &archive);
+        h.listing = ListingKind::Ftp;
+        h.only = vec!["IDN11060*".to_owned(), "ID?60920.xml".to_owned()];
+        let f = Fetchers::new(vec![h]);
+        let folder = url::Url::parse("ftp://h/fwo/").unwrap();
+        let links = f
+            .read_page(&folder, &page, std::slice::from_ref(&folder), None)
+            .unwrap();
+        let urls: Vec<&str> = links.iter().map(|r| r.url.as_str()).collect();
+        assert_eq!(
+            urls,
+            [
+                "ftp://h/fwo/IDN11060.xml",
+                "ftp://h/fwo/sub/",
+                "ftp://h/fwo/IDN60920.xml"
+            ]
+        );
+        // Without patterns every file stays.
+        let mut h = host("ftp://h", 0, &t, &archive);
+        h.listing = ListingKind::Ftp;
+        let f = Fetchers::new(vec![h]);
+        assert_eq!(
+            f.read_page(&folder, &page, std::slice::from_ref(&folder), None)
+                .unwrap()
+                .len(),
+            4
+        );
     }
 
     #[test]

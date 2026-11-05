@@ -1,0 +1,477 @@
+//! FTP behind [`phasor_net::Transport`]: a `ftp://host/path/` folder answers
+//! as a page of lines ([`listing::Entry`], one a file or folder), a
+//! `ftp://host/path/file` as the file's bytes with its modification time
+//! and size as headers, so the mirror's pacing, retries, breaker,
+//! versions and provenance apply to an FTP host as to any other. One
+//! connection a host, opened when first needed and again after it drops;
+//! the blocking client runs on tokio's blocking pool.
+
+pub mod listing;
+pub mod live;
+pub mod session;
+
+use std::collections::HashMap;
+use std::sync::{Arc, Mutex};
+use std::time::Duration;
+
+use async_trait::async_trait;
+use bytes::Bytes;
+use futures::StreamExt as _;
+use phasor_net::transport::HttpResponse;
+use phasor_net::{FetchError, Transport};
+
+use crate::listing::Entry;
+use crate::session::{Open, Session, SessionError};
+
+/// A transport for `ftp://` URLs.
+pub struct FtpTransport {
+    open: Arc<Open>,
+    sessions: Arc<Mutex<HashMap<String, Box<dyn Session>>>>,
+    /// By host (`host` or `host:port`), the patterns of the file names kept
+    /// of its folders: on a server without `MLSD`, only those names are
+    /// asked their time and size, the rest listed by name alone.
+    kept: Arc<HashMap<String, Vec<String>>>,
+}
+
+impl FtpTransport {
+    /// A transport over live connections, each read waiting at most `timeout`.
+    pub fn new(timeout: Duration) -> Self {
+        Self::with_open(Box::new(move |host| {
+            live::Live::connect(host, timeout).map(|s| Box::new(s) as Box<dyn Session>)
+        }))
+    }
+
+    /// A transport whose sessions `open` makes: a fake in tests.
+    pub fn with_open(open: Open) -> Self {
+        Self {
+            open: Arc::new(open),
+            sessions: Arc::new(Mutex::new(HashMap::new())),
+            kept: Arc::new(HashMap::new()),
+        }
+    }
+
+    /// The same transport knowing, by host, which file names a folder's
+    /// listing keeps ([`listing::glob`] patterns); a server without `MLSD`
+    /// is asked each kept file's time and size, no other's.
+    #[must_use]
+    pub fn with_names_kept(mut self, kept: HashMap<String, Vec<String>>) -> Self {
+        self.kept = Arc::new(kept);
+        self
+    }
+
+    /// Runs `work` on the host's session, opening one when there is none;
+    /// a session that fails on the connection is dropped, so the next
+    /// request opens a new one.
+    fn with_session<T: Send + 'static>(
+        &self,
+        host: &str,
+        work: impl FnOnce(&mut dyn Session) -> Result<T, SessionError> + Send + 'static,
+    ) -> impl std::future::Future<Output = Result<T, SessionError>> + Send {
+        let (open, sessions, host) = (self.open.clone(), self.sessions.clone(), host.to_owned());
+        async move {
+            tokio::task::spawn_blocking(move || {
+                let mut guard = sessions
+                    .lock()
+                    .expect("the session table is never poisoned");
+                let session = match guard.remove(&host) {
+                    Some(s) => s,
+                    None => open(&host)?,
+                };
+                let mut session = session;
+                let result = work(session.as_mut());
+                if !matches!(result, Err(SessionError::Connection(_))) {
+                    guard.insert(host, session);
+                }
+                result
+            })
+            .await
+            .unwrap_or_else(|e| {
+                Err(SessionError::Connection(format!(
+                    "the FTP task failed: {e}"
+                )))
+            })
+        }
+    }
+}
+
+/// The host (with its port when given) and the absolute path of an `ftp://` URL.
+fn split(url: &str) -> Result<(String, String), FetchError> {
+    let parsed = url::Url::parse(url).map_err(FetchError::parse(url, "ftp URL"))?;
+    if parsed.scheme() != "ftp" {
+        return Err(FetchError::parse(url, "ftp URL")("not an ftp:// URL"));
+    }
+    let host = parsed
+        .host_str()
+        .ok_or_else(|| FetchError::parse(url, "ftp URL")("no host"))?;
+    let host = match parsed.port() {
+        Some(p) => format!("{host}:{p}"),
+        None => host.to_owned(),
+    };
+    Ok((host, parsed.path().to_owned()))
+}
+
+/// A session's failure as the fetch error a request reports.
+fn fetch_error(url: &str, e: SessionError) -> FetchError {
+    match e {
+        SessionError::Connection(message) => FetchError::Connect {
+            url: url.to_owned(),
+            message,
+        },
+        SessionError::NotFound => FetchError::HttpStatus {
+            url: url.to_owned(),
+            status: 404,
+            body_head: Vec::new(),
+        },
+        SessionError::Refused(message) => FetchError::HttpStatus {
+            url: url.to_owned(),
+            status: 550,
+            body_head: message.into_bytes(),
+        },
+    }
+}
+
+/// A 200 with `body` and the headers given.
+fn response(body: Vec<u8>, size: Option<u64>, modified: Option<String>) -> HttpResponse {
+    HttpResponse {
+        status: 200,
+        content_length: size.or(Some(body.len() as u64)),
+        total_size: None,
+        etag: None,
+        last_modified: modified,
+        body: futures::stream::iter([Ok(Bytes::from(body))]).boxed(),
+    }
+}
+
+/// The entries of `path`, a folder: `MLSD` when the server serves it, else
+/// the names (`NLST`), each file among `kept` (every file when `kept` is
+/// empty) asked its time and size one by one, the rest listed by name.
+fn entries(
+    session: &mut dyn Session,
+    path: &str,
+    kept: &[String],
+) -> Result<Vec<Entry>, SessionError> {
+    match session.list(path) {
+        Ok(lines) => Ok(lines.iter().filter_map(|l| Entry::from_mlsd(l)).collect()),
+        Err(SessionError::Connection(e)) => Err(SessionError::Connection(e)),
+        Err(_) => {
+            let names = session.names(path)?;
+            let mut out = Vec::new();
+            for name in names {
+                let name = name.rsplit('/').next().unwrap_or(&name).to_owned();
+                if name.is_empty() || name == "." || name == ".." {
+                    continue;
+                }
+                if !kept.is_empty() && !kept.iter().any(|p| listing::glob(p, &name)) {
+                    out.push(Entry {
+                        name,
+                        dir: false,
+                        size: None,
+                        modified: None,
+                    });
+                    continue;
+                }
+                let full = format!("{path}{name}");
+                // A folder has no size: the name alone, as a folder.
+                match session.size(&full) {
+                    Ok(size) => out.push(Entry {
+                        name,
+                        dir: false,
+                        size: Some(size),
+                        modified: session
+                            .modified(&full)
+                            .ok()
+                            .and_then(|m| listing::http_date(&m)),
+                    }),
+                    Err(SessionError::Connection(e)) => return Err(SessionError::Connection(e)),
+                    Err(_) => out.push(Entry {
+                        name,
+                        dir: true,
+                        size: None,
+                        modified: None,
+                    }),
+                }
+            }
+            Ok(out)
+        }
+    }
+}
+
+#[async_trait]
+impl Transport for FtpTransport {
+    async fn get(&self, url: &str) -> Result<HttpResponse, FetchError> {
+        let (host, path) = split(url)?;
+        if path.ends_with('/') {
+            let kept: Vec<String> = self.kept.get(&host).cloned().unwrap_or_default();
+            let entries = self
+                .with_session(&host, move |s| entries(s, &path, &kept))
+                .await
+                .map_err(|e| fetch_error(url, e))?;
+            return Ok(response(Entry::page(&entries), None, None));
+        }
+        let got = self
+            .with_session(&host, move |s| {
+                let modified = s.modified(&path).ok();
+                let body = s.fetch(&path)?;
+                Ok((body, modified))
+            })
+            .await
+            .map_err(|e| fetch_error(url, e))?;
+        let (body, modified) = got;
+        Ok(response(
+            body,
+            None,
+            modified.and_then(|m| listing::http_date(&m)),
+        ))
+    }
+
+    async fn head(&self, url: &str) -> Result<HttpResponse, FetchError> {
+        let (host, path) = split(url)?;
+        if path.ends_with('/') {
+            return Err(FetchError::parse(url, "ftp URL")("a folder has no headers"));
+        }
+        let got = self
+            .with_session(&host, move |s| {
+                let size = s.size(&path)?;
+                let modified = s.modified(&path).ok();
+                Ok((size, modified))
+            })
+            .await
+            .map_err(|e| fetch_error(url, e))?;
+        let (size, modified) = got;
+        Ok(response(
+            Vec::new(),
+            Some(size),
+            modified.and_then(|m| listing::http_date(&m)),
+        ))
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use std::sync::atomic::{AtomicUsize, Ordering};
+
+    use super::*;
+
+    /// A server of one folder `/d/` with a file and a sub-folder, that may
+    /// refuse `MLSD`, lose its connection on the first fetch, or be down.
+    struct Fake {
+        mlsd: bool,
+        drop_once: Arc<AtomicUsize>,
+    }
+
+    impl Session for Fake {
+        fn list(&mut self, path: &str) -> Result<Vec<String>, SessionError> {
+            if !self.mlsd {
+                return Err(SessionError::Refused("500 Unknown command".into()));
+            }
+            match path {
+                "/d/" => Ok(vec![
+                    "type=cdir; .".into(),
+                    "type=file;size=3;modify=20240213082700; a.xml".into(),
+                    "type=dir;modify=20240101000000; sub".into(),
+                ]),
+                _ => Err(SessionError::NotFound),
+            }
+        }
+        fn names(&mut self, path: &str) -> Result<Vec<String>, SessionError> {
+            match path {
+                "/d/" => Ok(vec!["/d/a.xml".into(), "sub".into(), ".".into()]),
+                _ => Err(SessionError::NotFound),
+            }
+        }
+        fn modified(&mut self, path: &str) -> Result<String, SessionError> {
+            match path {
+                "/d/a.xml" => Ok("20240213082700".into()),
+                _ => Err(SessionError::NotFound),
+            }
+        }
+        fn size(&mut self, path: &str) -> Result<u64, SessionError> {
+            match path {
+                "/d/a.xml" => Ok(3),
+                _ => Err(SessionError::Refused("550 not a file".into())),
+            }
+        }
+        fn fetch(&mut self, path: &str) -> Result<Vec<u8>, SessionError> {
+            if self.drop_once.fetch_add(1, Ordering::SeqCst) == 0 {
+                return Err(SessionError::Connection("reset".into()));
+            }
+            match path {
+                "/d/a.xml" => Ok(b"abc".to_vec()),
+                _ => Err(SessionError::NotFound),
+            }
+        }
+    }
+
+    fn transport(mlsd: bool, opens: Arc<AtomicUsize>, drop_once: Arc<AtomicUsize>) -> FtpTransport {
+        FtpTransport::with_open(Box::new(move |host| {
+            opens.fetch_add(1, Ordering::SeqCst);
+            if host == "down.example" {
+                return Err(SessionError::Connection("refused".into()));
+            }
+            Ok(Box::new(Fake {
+                mlsd,
+                drop_once: drop_once.clone(),
+            }) as Box<dyn Session>)
+        }))
+    }
+
+    async fn body(resp: HttpResponse) -> Vec<u8> {
+        resp.body.map(|c| c.unwrap().to_vec()).concat().await
+    }
+
+    #[tokio::test]
+    async fn a_folder_is_its_entries_and_a_file_its_bytes_over_one_session() {
+        let opens = Arc::new(AtomicUsize::new(0));
+        let dropped = Arc::new(AtomicUsize::new(1)); // never drops
+        let t = transport(true, opens.clone(), dropped);
+        let r = t.get("ftp://h.example/d/").await.unwrap();
+        assert_eq!(r.status, 200);
+        let page = body(r).await;
+        let entries = Entry::read(&page).unwrap();
+        assert_eq!(entries.len(), 2, "cdir is not an entry");
+        assert_eq!(entries[0].name, "a.xml");
+        assert_eq!(entries[0].size, Some(3));
+        assert!(entries[1].dir);
+        let r = t.get("ftp://h.example/d/a.xml").await.unwrap();
+        assert_eq!(r.content_length, Some(3));
+        assert_eq!(
+            r.last_modified.as_deref(),
+            Some("Tue, 13 Feb 2024 08:27:00 GMT")
+        );
+        assert_eq!(body(r).await, b"abc");
+        let r = t.head("ftp://h.example:2121/d/a.xml").await.unwrap();
+        assert_eq!((r.status, r.content_length), (200, Some(3)));
+        assert!(body(r).await.is_empty());
+        // One session for the host, another for the host with a port.
+        assert_eq!(opens.load(Ordering::SeqCst), 2);
+        // Missing paths are 404s; a refusal says its status; folders have no headers.
+        assert!(matches!(
+            t.get("ftp://h.example/d/none.xml").await.err().unwrap(),
+            FetchError::HttpStatus { status: 404, .. }
+        ));
+        assert!(matches!(
+            t.get("ftp://h.example/other/").await.err().unwrap(),
+            FetchError::HttpStatus { status: 404, .. }
+        ));
+        assert!(matches!(
+            t.head("ftp://h.example/d/").await.err().unwrap(),
+            FetchError::Parse { .. }
+        ));
+        assert!(matches!(
+            t.head("ftp://h.example/d/none.xml").await.err().unwrap(),
+            FetchError::HttpStatus { status: 550, .. }
+        ));
+        // Not an ftp URL, no host, a host that is down.
+        assert!(t.get("https://h/d/").await.is_err());
+        assert!(t.get("ftp:///d/").await.is_err());
+        assert!(t.get("not a url").await.is_err());
+        assert!(matches!(
+            t.get("ftp://down.example/d/").await.err().unwrap(),
+            FetchError::Connect { .. }
+        ));
+    }
+
+    #[tokio::test]
+    async fn without_mlsd_the_names_are_asked_one_by_one_and_a_dropped_session_reopens() {
+        let opens = Arc::new(AtomicUsize::new(0));
+        let dropped = Arc::new(AtomicUsize::new(0)); // drops on the first fetch
+        let t = transport(false, opens.clone(), dropped);
+        let page = body(t.get("ftp://h.example/d/").await.unwrap()).await;
+        let entries = Entry::read(&page).unwrap();
+        assert_eq!(entries.len(), 2);
+        assert_eq!(
+            (entries[0].name.as_str(), entries[0].size, entries[0].dir),
+            ("a.xml", Some(3), false)
+        );
+        assert!(entries[1].dir && entries[1].size.is_none());
+        // With the host's names kept, only those are asked their time and
+        // size; the rest are listed by name alone, files until proved folders.
+        let kept = transport(
+            false,
+            Arc::new(AtomicUsize::new(0)),
+            Arc::new(AtomicUsize::new(1)),
+        )
+        .with_names_kept(HashMap::from([(
+            "h.example".to_owned(),
+            vec!["a.*".to_owned()],
+        )]));
+        let page = body(kept.get("ftp://h.example/d/").await.unwrap()).await;
+        let entries = Entry::read(&page).unwrap();
+        assert_eq!(entries[0].size, Some(3), "a.xml is kept, so it is asked");
+        assert_eq!(
+            (entries[1].name.as_str(), entries[1].dir, entries[1].size),
+            ("sub", false, None),
+            "sub is not kept, so it is not asked"
+        );
+        // The first fetch loses the connection: a Connect error, then the
+        // next request opens a new session and succeeds.
+        assert!(matches!(
+            t.get("ftp://h.example/d/a.xml").await.err().unwrap(),
+            FetchError::Connect { .. }
+        ));
+        assert_eq!(
+            body(t.get("ftp://h.example/d/a.xml").await.unwrap()).await,
+            b"abc"
+        );
+        assert_eq!(opens.load(Ordering::SeqCst), 2);
+        assert!(!t.is_offline());
+    }
+
+    /// A server whose listing, or whose per-file answers, lose the connection.
+    struct Broken {
+        list_drops: bool,
+    }
+
+    impl Session for Broken {
+        fn list(&mut self, _path: &str) -> Result<Vec<String>, SessionError> {
+            if self.list_drops {
+                Err(SessionError::Connection("reset".into()))
+            } else {
+                Err(SessionError::Refused("500".into()))
+            }
+        }
+        fn names(&mut self, _path: &str) -> Result<Vec<String>, SessionError> {
+            Ok(vec!["x".into()])
+        }
+        fn modified(&mut self, _path: &str) -> Result<String, SessionError> {
+            Err(SessionError::NotFound)
+        }
+        fn size(&mut self, _path: &str) -> Result<u64, SessionError> {
+            Err(SessionError::Connection("reset".into()))
+        }
+        fn fetch(&mut self, _path: &str) -> Result<Vec<u8>, SessionError> {
+            Err(SessionError::NotFound)
+        }
+    }
+
+    #[tokio::test]
+    async fn a_lost_connection_ends_the_listing_and_a_task_that_panics_is_an_error() {
+        let mut dropped = Broken { list_drops: true };
+        assert_eq!(
+            entries(&mut dropped, "/d/", &[]),
+            Err(SessionError::Connection("reset".into()))
+        );
+        let mut per_file = Broken { list_drops: false };
+        assert_eq!(
+            entries(&mut per_file, "/d/", &[]),
+            Err(SessionError::Connection("reset".into()))
+        );
+        assert_eq!(per_file.modified("/x"), Err(SessionError::NotFound));
+        assert_eq!(per_file.fetch("/x"), Err(SessionError::NotFound));
+        // Work that panics on the blocking pool is the connection's failure, not the process's.
+        let t = FtpTransport::with_open(Box::new(|_| {
+            Ok(Box::new(Broken { list_drops: false }) as Box<dyn Session>)
+        }));
+        let r: Result<(), SessionError> = t.with_session("h.example", |_| panic!("boom")).await;
+        assert!(
+            matches!(r, Err(SessionError::Connection(ref m)) if m.contains("FTP task failed")),
+            "{r:?}"
+        );
+        // A live transport against a port nothing listens on: the connection fails, fast.
+        let live = FtpTransport::new(Duration::from_secs(2));
+        assert!(matches!(
+            live.get("ftp://127.0.0.1:9/x/").await.err().unwrap(),
+            FetchError::Connect { .. }
+        ));
+    }
+}

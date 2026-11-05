@@ -152,6 +152,27 @@ Four kinds of host are read (`listing`), each in `src/listers.rs`:
   a site rewrites in place, each asked for by HEAD; a folder is the
   documents it holds, `roots` may be left out. A rewrite is a new version
   beside the old (`{name}@{stamp}`), as everywhere in the archive.
+- `ftp`: an FTP server (`base_url = "ftp://…"`, the public anonymous
+  login, one connection a host), a folder listed by `MLSD` (else the names,
+  each asked for its time and size), a file fetched whole with its `MDTM`
+  time; times are UTC. The Bureau of Meteorology publishes its forecasts
+  and observations this way, rewriting each product in place: a host's
+  `only` patterns (`*` any run, `?` one character) name the files a
+  folder's listing keeps, so a folder of thousands yields the few asked
+  for, each rewrite a new version.
+
+```toml
+[[hosts]]
+id = "bom"
+base_url = "ftp://ftp.bom.gov.au"
+listing = "ftp"
+listing_offset_secs = 0
+request_interval_ms = 3000
+downloads = 1
+roots = ["anon/gen/fwo/"]
+only = ["IDN11060*", "IDV10753*", "IDQ11295*", "IDS10044*", "IDT16710*", "IDW14199*", "ID?60920.xml"]
+every_secs = 600
+```
 
 ```toml
 [[hosts]]

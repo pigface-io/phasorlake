@@ -11,6 +11,7 @@ use std::sync::Arc;
 use anyhow::{Context as _, Result};
 use phasor_mirror::config::{Config, Home, HostConfig};
 use phasor_mirror::hosts::Host;
+use phasor_mirror::net::scheme::SchemeTransport;
 use phasor_mirror::net::{
     Archive, FetchError, Fetcher, FetcherConfig, Fetchers, HostFetcher, OfflineTransport,
     ReqwestTransport, Transport, per_host,
@@ -58,11 +59,28 @@ impl Context {
                 env!("CARGO_PKG_REPOSITORY"),
                 config.user_agent_suffix
             );
-            Arc::new(ReqwestTransport::new(
-                &ua,
-                Duration::from_secs(30),
-                Duration::from_secs(config.read_timeout_secs),
-            )?)
+            let timeout = Duration::from_secs(config.read_timeout_secs);
+            let http = ReqwestTransport::new(&ua, Duration::from_secs(30), timeout)?;
+            // An FTP host's `only` patterns reach its transport too: a server
+            // without MLSD is asked each file's time and size one by one, and
+            // a folder of thousands would take minutes without them.
+            let kept = config
+                .hosts
+                .iter()
+                .filter(|h| h.listing == phasor_mirror::config::ListingKind::Ftp)
+                .filter_map(|h| {
+                    let u = Url::parse(&h.base_url).ok()?;
+                    let host = match u.port() {
+                        Some(p) => format!("{}:{p}", u.host_str()?),
+                        None => u.host_str()?.to_owned(),
+                    };
+                    Some((host, h.only.clone()))
+                })
+                .collect();
+            Arc::new(SchemeTransport::new(
+                Arc::new(http),
+                Arc::new(phasor_ftp::FtpTransport::new(timeout).with_names_kept(kept)),
+            ))
         };
         Ok(Self {
             home,

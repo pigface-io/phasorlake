@@ -226,6 +226,11 @@ pub enum ListingKind {
     /// is the files it holds. Times are HTTP dates, so `listing_offset_secs`
     /// is 0; `roots` may be left out, they are the files' folders.
     Documents,
+    /// An FTP server (`base_url = "ftp://…"`), listed by `MLSD` (else the
+    /// names, each asked for its time and size); times are UTC, so
+    /// `listing_offset_secs` is 0. `only` names the files a folder's listing
+    /// keeps, for folders of thousands (the Bureau's `anon/gen/fwo/`).
+    Ftp,
 }
 
 /// One host: `[[hosts]]` in the config file. nemweb is one like any other
@@ -282,6 +287,11 @@ pub struct HostConfig {
     /// as paths under `base_url`, each kept by version as it is rewritten.
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub documents: Vec<String>,
+    /// Patterns of the file names a folder's listing keeps (`*` any run,
+    /// `?` one character); a file matching none is neither recorded nor
+    /// downloaded. Every file when absent. Folders are always kept.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub only: Vec<String>,
     /// Seconds between a watch's reads of this host's folders that no rule
     /// names; the top-level `watch_secs` when absent.
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -321,6 +331,7 @@ impl HostConfig {
                 .map(|r| (*r).to_owned())
                 .collect(),
             documents: Vec::new(),
+            only: Vec::new(),
             every_secs: None,
             schedule: fast
                 .chain(std::iter::once(Rule {
@@ -646,7 +657,7 @@ every_secs = 1800
         // A listing kind that is not one is a config error.
         std::fs::write(
             &p,
-            "[[hosts]]\nbase_url = \"https://h\"\nlisting = \"ftp\"\nlisting_offset_secs = 0\nroots = []\n",
+            "[[hosts]]\nbase_url = \"https://h\"\nlisting = \"gopher\"\nlisting_offset_secs = 0\nroots = []\n",
         )
         .unwrap();
         assert!(Config::load(&p).is_err());
@@ -697,6 +708,26 @@ every_secs = 86400
         assert_eq!(hosts[1].listing, ListingKind::Documents);
         assert_eq!(hosts[1].id, "aemo.com.au");
         assert_eq!(hosts[1].documents.len(), 3);
+        // An FTP host: its roots are ftp URLs, its `only` patterns kept.
+        let bom = Config::parse(
+            r#"
+[[hosts]]
+id = "bom"
+base_url = "ftp://ftp.bom.gov.au"
+listing = "ftp"
+listing_offset_secs = 0
+request_interval_ms = 3000
+roots = ["anon/gen/fwo/"]
+only = ["IDN11060*", "ID?60920.xml"]
+every_secs = 600
+"#,
+        )
+        .unwrap();
+        let h = &bom.hosts().unwrap()[0];
+        assert_eq!(h.listing, ListingKind::Ftp);
+        assert_eq!(h.roots[0].as_str(), "ftp://ftp.bom.gov.au/anon/gen/fwo/");
+        assert_eq!(h.only, ["IDN11060*", "ID?60920.xml"]);
+        assert_eq!(Config::parse(&bom.to_toml()).unwrap(), bom);
         assert_eq!(
             hosts[1].documents[0].as_str(),
             "https://aemo.com.au/-/media/files/gas/sttm/data/sttm-price-and-withdrawals.xlsx"

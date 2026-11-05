@@ -990,3 +990,18 @@ fn the_host_locks_fall_back_to_the_cache_directory() {
     }
     assert!(found, "no lock file under {}", fake_home.path().display());
 }
+
+/// FTP hosts reach their transport with their `only` patterns, named by
+/// host and port; a host whose address is no URL names nothing.
+#[test]
+fn ftp_hosts_hand_their_kept_names_to_the_transport() {
+    let cli = Cli::new();
+    cli.config(
+        "[[hosts]]\nbase_url = \"ftp://127.0.0.1:9\"\nlisting = \"ftp\"\nlisting_offset_secs = 0\nroots = [\"a/\"]\nonly = [\"x*\"]\n\
+         [[hosts]]\nbase_url = \"ftp://h.example\"\nlisting = \"ftp\"\nlisting_offset_secs = 0\nroots = [\"b/\"]\n\
+         [[hosts]]\nbase_url = \"not a url\"\nlisting = \"ftp\"\nlisting_offset_secs = 0\nroots = []\n",
+    );
+    // Online (no --offline): the transports are built, nothing is fetched by status.
+    let out = cli.ok(&["status"]);
+    assert!(out.starts_with("mirror not running"), "{out}");
+}

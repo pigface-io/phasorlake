@@ -106,7 +106,7 @@ cover:
 
 # the real nemweb and WA host: a month listed per kit and the smallest file fetched (needs the network)
 net-test:
-    PHASOR_NET_TESTS=1 cargo test --locked -p phasor-nem -p phasor-gas -p phasor-wem --test net -- --nocapture
+    PHASOR_NET_TESTS=1 cargo test --locked -p phasor-nem -p phasor-gas -p phasor-wem -p phasor-ftp --test net -- --nocapture
 
 # ── benchmarks ───────────────────────────────────────────────────────────────
 

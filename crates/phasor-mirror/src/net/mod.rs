@@ -6,6 +6,7 @@ pub mod error;
 pub mod event;
 pub mod fetcher;
 pub mod fetchers;
+pub mod scheme;
 pub mod source;
 pub mod transport;
 

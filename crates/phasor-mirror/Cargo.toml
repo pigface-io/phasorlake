@@ -18,6 +18,7 @@ path = "src/main.rs"
 [dependencies]
 phasor-core.workspace = true
 phasor-net = { workspace = true, features = ["http", "fetch"] }
+phasor-ftp.workspace = true
 phasor-plain-decode.workspace = true
 phasor-zip.workspace = true
 phasor-provenance.workspace = true
