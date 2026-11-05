@@ -106,7 +106,7 @@ mod tests {
         assert!(daily.serves("NZ_FINAL_ENERGY_PRICES"));
         assert!(monthly.serves("nz_final_reserve_prices"));
         assert!(!daily.serves("DISPATCH_UNIT_SCADA") && !monthly.serves("NO_SUCH_TABLE"));
-        assert_eq!(k.catalog.tables().len(), 2);
+        assert_eq!(k.catalog.tables().len(), 6);
         let prices = k.catalog.table("NZ_FINAL_ENERGY_PRICES").unwrap();
         assert_eq!(prices.utc_offset_secs, 43_200);
         assert!(prices.time_column.is_some());

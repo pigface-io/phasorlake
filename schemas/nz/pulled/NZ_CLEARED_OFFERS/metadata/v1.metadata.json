@@ -1,0 +1,180 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 8725642051822445146,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 15,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1648728000000,
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nz/NZ_CLEARED_OFFERS",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "phasor.declared": "true",
+    "phasor.derived": "[{\"column\":\"INTERVALDATETIME_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"INTERVALDATETIME\"]},{\"column\":\"RUNDATETIME_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"RUNDATETIME\"]},{\"column\":\"INTERVAL_START_UTC_US\",\"rule\":\"nz_trading_period_start\",\"from\":[\"TRADINGDATE\",\"TRADINGPERIODNUMBER\"]}]",
+    "phasor.format": "5",
+    "phasor.headers": "{\"1\":\"TradingDate\",\"2\":\"TradingPeriodNumber\",\"3\":\"IntervalDateTime\",\"4\":\"RunDateTime\",\"5\":\"CaseTypeCode\",\"6\":\"CaseID\",\"7\":\"ProductClass\",\"8\":\"PointOfConnectionCode\",\"9\":\"UnitCode\",\"10\":\"PlantName\",\"11\":\"Island\",\"12\":\"ParticipantCode\",\"13\":\"ClearedGenerationMegawatts\",\"14\":\"ClearedFIRMegawatts\",\"15\":\"ClearedSIRMegawatts\"}",
+    "phasor.load": "append",
+    "phasor.market": "nz",
+    "phasor.offset": "+12:00",
+    "phasor.reports": "[[\"EMI\",\"CLEARED_OFFERS\"]]",
+    "phasor.table": "NZ_CLEARED_OFFERS",
+    "phasor.time": "TRADINGDATE",
+    "phasor.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 8725642051822445146,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "id": 1,
+          "name": "TRADINGDATE",
+          "required": false,
+          "type": "date"
+        },
+        {
+          "id": 2,
+          "name": "TRADINGPERIODNUMBER",
+          "required": false,
+          "type": "long"
+        },
+        {
+          "id": 3,
+          "name": "INTERVALDATETIME",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "id": 4,
+          "name": "RUNDATETIME",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "id": 5,
+          "name": "CASETYPECODE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 6,
+          "name": "CASEID",
+          "required": false,
+          "type": "long"
+        },
+        {
+          "id": 7,
+          "name": "PRODUCTCLASS",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 8,
+          "name": "POINTOFCONNECTIONCODE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 9,
+          "name": "UNITCODE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 10,
+          "name": "PLANTNAME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 11,
+          "name": "ISLAND",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 12,
+          "name": "PARTICIPANTCODE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 13,
+          "name": "CLEAREDGENERATIONMEGAWATTS",
+          "required": false,
+          "type": "decimal(6, 3)"
+        },
+        {
+          "id": 14,
+          "name": "CLEAREDFIRMEGAWATTS",
+          "required": false,
+          "type": "decimal(6, 3)"
+        },
+        {
+          "id": 15,
+          "name": "CLEAREDSIRMEGAWATTS",
+          "required": false,
+          "type": "decimal(6, 3)"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 8725642051822445146,
+      "timestamp-ms": 1648728000000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nz/NZ_CLEARED_OFFERS/metadata/snap-8725642051822445146-1-9b2f74f7-e58a-8551-92a9-6a3174ac49d9.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 8725642051822445146,
+      "summary": {
+        "operation": "append",
+        "phasor.files": "1680",
+        "phasor.from.file": "20220401_ClearedOffers.csv",
+        "phasor.from.release": "2022-04",
+        "phasor.from.sha256": "355b9e5713534479567829cf33b80b6f0bb7d4907c99a414313ab8b36c2c99b2",
+        "phasor.from.time": "2022-04-01T00:00:00+12:00",
+        "phasor.kinds": "[\"emi\"]",
+        "phasor.report-subtype": "CLEARED_OFFERS",
+        "phasor.report-type": "EMI",
+        "phasor.rows": "35331252",
+        "phasor.to.file": "20261105_ClearedOffers.csv",
+        "phasor.to.release": "2026-11",
+        "phasor.to.sha256": "995a00782db4858a1ea008312b0b34a045900ae39dc8cda054582c196f287350",
+        "phasor.to.time": "2026-11-05T00:00:00+12:00",
+        "phasor.total-rows": "35331252",
+        "phasor.version": "1"
+      },
+      "timestamp-ms": 1648728000000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "9b2f74f7-e58a-8551-92a9-6a3174ac49d9"
+}

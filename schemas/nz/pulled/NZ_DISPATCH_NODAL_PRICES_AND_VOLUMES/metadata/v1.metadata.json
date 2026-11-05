@@ -1,0 +1,192 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 967983788227995556,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 17,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1598875200000,
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nz/NZ_DISPATCH_NODAL_PRICES_AND_VOLUMES",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "phasor.declared": "true",
+    "phasor.derived": "[{\"column\":\"INTERVALDATETIME_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"INTERVALDATETIME\"]},{\"column\":\"RUNDATETIME_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"RUNDATETIME\"]},{\"column\":\"INTERVAL_START_UTC_US\",\"rule\":\"nz_trading_period_start\",\"from\":[\"TRADINGDATE\",\"TRADINGPERIODNUMBER\"]}]",
+    "phasor.format": "5",
+    "phasor.headers": "{\"1\":\"TradingDate\",\"2\":\"TradingPeriodNumber\",\"3\":\"IntervalDateTime\",\"4\":\"RunDateTime\",\"5\":\"CaseTypeCode\",\"6\":\"CaseID\",\"7\":\"PointOfConnectionCode\",\"8\":\"UnitCode\",\"9\":\"PlantName\",\"10\":\"Island\",\"11\":\"LoadMegawatts\",\"12\":\"InitialMegawatts\",\"13\":\"GenerationMegawatts\",\"14\":\"LocationFactor\",\"15\":\"DollarsPerMegawattHour\",\"16\":\"IsDeadFlag\",\"17\":\"IsDisconnectedFlag\"}",
+    "phasor.load": "append",
+    "phasor.market": "nz",
+    "phasor.offset": "+12:00",
+    "phasor.reports": "[[\"EMI\",\"DISPATCH_NODAL_PRICES_AND_VOLUMES\"]]",
+    "phasor.table": "NZ_DISPATCH_NODAL_PRICES_AND_VOLUMES",
+    "phasor.time": "TRADINGDATE",
+    "phasor.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 967983788227995556,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "id": 1,
+          "name": "TRADINGDATE",
+          "required": false,
+          "type": "date"
+        },
+        {
+          "id": 2,
+          "name": "TRADINGPERIODNUMBER",
+          "required": false,
+          "type": "long"
+        },
+        {
+          "id": 3,
+          "name": "INTERVALDATETIME",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "id": 4,
+          "name": "RUNDATETIME",
+          "required": false,
+          "type": "timestamptz"
+        },
+        {
+          "id": 5,
+          "name": "CASETYPECODE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 6,
+          "name": "CASEID",
+          "required": false,
+          "type": "long"
+        },
+        {
+          "id": 7,
+          "name": "POINTOFCONNECTIONCODE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 8,
+          "name": "UNITCODE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 9,
+          "name": "PLANTNAME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 10,
+          "name": "ISLAND",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 11,
+          "name": "LOADMEGAWATTS",
+          "required": false,
+          "type": "decimal(6, 3)"
+        },
+        {
+          "id": 12,
+          "name": "INITIALMEGAWATTS",
+          "required": false,
+          "type": "decimal(6, 3)"
+        },
+        {
+          "id": 13,
+          "name": "GENERATIONMEGAWATTS",
+          "required": false,
+          "type": "decimal(6, 3)"
+        },
+        {
+          "id": 14,
+          "name": "LOCATIONFACTOR",
+          "required": false,
+          "type": "decimal(10, 4)"
+        },
+        {
+          "id": 15,
+          "name": "DOLLARSPERMEGAWATTHOUR",
+          "required": false,
+          "type": "decimal(10, 4)"
+        },
+        {
+          "id": 16,
+          "name": "ISDEADFLAG",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 17,
+          "name": "ISDISCONNECTEDFLAG",
+          "required": false,
+          "type": "string"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 967983788227995556,
+      "timestamp-ms": 1598875200000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nz/NZ_DISPATCH_NODAL_PRICES_AND_VOLUMES/metadata/snap-967983788227995556-1-2a036e8d-514d-8660-9755-0ae0bfe9c812.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 967983788227995556,
+      "summary": {
+        "operation": "append",
+        "phasor.files": "2248",
+        "phasor.from.file": "20200910_DispatchNodalPricesAndVolumes.csv",
+        "phasor.from.release": "2020-09",
+        "phasor.from.sha256": "db59bccf7e865d91f7d9041936a90325532ac16651a79011bdbd9fdd58486f46",
+        "phasor.from.time": "2020-09-10T00:00:00+12:00",
+        "phasor.kinds": "[\"emi\"]",
+        "phasor.report-subtype": "DISPATCH_NODAL_PRICES_AND_VOLUMES",
+        "phasor.report-type": "EMI",
+        "phasor.rows": "148208517",
+        "phasor.to.file": "20261105_DispatchNodalPricesAndVolumes.csv",
+        "phasor.to.release": "2026-11",
+        "phasor.to.sha256": "fa4bb044ecb1d9f0e4b6513c9fc018bd4b9e76caded4820c48ed272bc4816bf8",
+        "phasor.to.time": "2026-11-05T00:00:00+12:00",
+        "phasor.total-rows": "148208517",
+        "phasor.version": "1"
+      },
+      "timestamp-ms": 1598875200000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "2a036e8d-514d-8660-9755-0ae0bfe9c812"
+}

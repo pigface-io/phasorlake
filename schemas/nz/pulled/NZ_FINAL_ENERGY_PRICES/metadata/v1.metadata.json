@@ -85,7 +85,7 @@
       "snapshot-id": 8302410763910962495,
       "summary": {
         "operation": "append",
-        "phasor.files": "729",
+        "phasor.files": "731",
         "phasor.from.file": "199610_FinalEnergyPrices.csv",
         "phasor.from.release": "1996-10",
         "phasor.from.sha256": "a1e069a0fc55dd45d9dba2c55b4dc3db2b9f3c8b28bff864dd40d54895887781",
@@ -93,12 +93,12 @@
         "phasor.kinds": "[\"emi\"]",
         "phasor.report-subtype": "FINAL_ENERGY_PRICES",
         "phasor.report-type": "EMI",
-        "phasor.rows": "133053003",
-        "phasor.to.file": "20261104_FinalEnergyPrices_I.csv",
+        "phasor.rows": "133076619",
+        "phasor.to.file": "20261105_FinalEnergyPrices_I.csv",
         "phasor.to.release": "2026-11",
-        "phasor.to.sha256": "145b38e7098f162036b3578ca9332ebf19cc8235ce4ef0eefb77f924d6df0c12",
-        "phasor.to.time": "2026-11-04T00:00:00+12:00",
-        "phasor.total-rows": "133053003",
+        "phasor.to.sha256": "4dd73243189f0cfc42e72f57d4f4e3f22de1d50f4861bc7d38a910aa2251e1fd",
+        "phasor.to.time": "2026-11-05T00:00:00+12:00",
+        "phasor.total-rows": "133076619",
         "phasor.version": "1"
       },
       "timestamp-ms": 844084800000

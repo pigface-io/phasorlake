@@ -91,7 +91,7 @@
       "snapshot-id": 4721500351614751457,
       "summary": {
         "operation": "append",
-        "phasor.files": "729",
+        "phasor.files": "731",
         "phasor.from.file": "199610_FinalReservePrices.csv",
         "phasor.from.release": "1996-10",
         "phasor.from.sha256": "9b0e7edfca13898654a5cb39716f56c30f3f0cf58790045b72a8e30943eb8547",
@@ -99,12 +99,12 @@
         "phasor.kinds": "[\"emi\"]",
         "phasor.report-subtype": "FINAL_RESERVE_PRICES",
         "phasor.report-type": "EMI",
-        "phasor.rows": "1090076",
-        "phasor.to.file": "20261104_FinalReservePrices_I.csv",
+        "phasor.rows": "1090268",
+        "phasor.to.file": "20261105_FinalReservePrices_I.csv",
         "phasor.to.release": "2026-11",
-        "phasor.to.sha256": "b3dd713e58f84bb70d8254922d30e324f7add6ce55c48a201f52c675d5686951",
-        "phasor.to.time": "2026-11-04T00:00:00+12:00",
-        "phasor.total-rows": "1090076",
+        "phasor.to.sha256": "7f9019ae196b8197faf64df6cf542991a491f007a12055fa276a7a610cc0af56",
+        "phasor.to.time": "2026-11-05T00:00:00+12:00",
+        "phasor.total-rows": "1090268",
         "phasor.version": "1"
       },
       "timestamp-ms": 844084800000

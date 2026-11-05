@@ -3,6 +3,291 @@
     {
       "blocks": [
         {
+          "first-release": "2022-04",
+          "last-release": "2022-12",
+          "months": 9,
+          "report": [
+            "EMI",
+            "CLEARED_OFFERS"
+          ],
+          "version": 1
+        }
+      ],
+      "cadence": "day",
+      "feed": "emi",
+      "folder": "ClearedOffers/2022",
+      "listings": [],
+      "root": "publicdata/Datasets/Wholesale/DispatchAndPricing"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2023-01",
+          "last-release": "2023-12",
+          "months": 12,
+          "report": [
+            "EMI",
+            "CLEARED_OFFERS"
+          ],
+          "version": 1
+        }
+      ],
+      "cadence": "day",
+      "feed": "emi",
+      "folder": "ClearedOffers/2023",
+      "listings": [],
+      "root": "publicdata/Datasets/Wholesale/DispatchAndPricing"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2024-01",
+          "last-release": "2024-12",
+          "months": 12,
+          "report": [
+            "EMI",
+            "CLEARED_OFFERS"
+          ],
+          "version": 1
+        }
+      ],
+      "cadence": "day",
+      "feed": "emi",
+      "folder": "ClearedOffers/2024",
+      "listings": [],
+      "root": "publicdata/Datasets/Wholesale/DispatchAndPricing"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2025-01",
+          "last-release": "2025-12",
+          "months": 12,
+          "report": [
+            "EMI",
+            "CLEARED_OFFERS"
+          ],
+          "version": 1
+        }
+      ],
+      "cadence": "day",
+      "feed": "emi",
+      "folder": "ClearedOffers/2025",
+      "listings": [],
+      "root": "publicdata/Datasets/Wholesale/DispatchAndPricing"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2026-01",
+          "last-release": "2026-11",
+          "months": 11,
+          "report": [
+            "EMI",
+            "CLEARED_OFFERS"
+          ],
+          "version": 1
+        }
+      ],
+      "cadence": "day",
+      "feed": "emi",
+      "folder": "ClearedOffers/2026",
+      "listings": [],
+      "root": "publicdata/Datasets/Wholesale/DispatchAndPricing"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2022-11",
+          "last-release": "2022-12",
+          "months": 2,
+          "report": [
+            "EMI",
+            "DISPATCH_ENERGY_PRICES"
+          ],
+          "version": 1
+        }
+      ],
+      "cadence": "day",
+      "feed": "emi",
+      "folder": "DispatchEnergyPrices/2022",
+      "listings": [],
+      "root": "publicdata/Datasets/Wholesale/DispatchAndPricing"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2023-01",
+          "last-release": "2023-12",
+          "months": 12,
+          "report": [
+            "EMI",
+            "DISPATCH_ENERGY_PRICES"
+          ],
+          "version": 1
+        }
+      ],
+      "cadence": "day",
+      "feed": "emi",
+      "folder": "DispatchEnergyPrices/2023",
+      "listings": [],
+      "root": "publicdata/Datasets/Wholesale/DispatchAndPricing"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2024-01",
+          "last-release": "2024-12",
+          "months": 12,
+          "report": [
+            "EMI",
+            "DISPATCH_ENERGY_PRICES"
+          ],
+          "version": 1
+        }
+      ],
+      "cadence": "day",
+      "feed": "emi",
+      "folder": "DispatchEnergyPrices/2024",
+      "listings": [],
+      "root": "publicdata/Datasets/Wholesale/DispatchAndPricing"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2025-01",
+          "last-release": "2025-12",
+          "months": 12,
+          "report": [
+            "EMI",
+            "DISPATCH_ENERGY_PRICES"
+          ],
+          "version": 1
+        }
+      ],
+      "cadence": "day",
+      "feed": "emi",
+      "folder": "DispatchEnergyPrices/2025",
+      "listings": [],
+      "root": "publicdata/Datasets/Wholesale/DispatchAndPricing"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2026-01",
+          "last-release": "2026-11",
+          "months": 11,
+          "report": [
+            "EMI",
+            "DISPATCH_ENERGY_PRICES"
+          ],
+          "version": 1
+        }
+      ],
+      "cadence": "day",
+      "feed": "emi",
+      "folder": "DispatchEnergyPrices/2026",
+      "listings": [],
+      "root": "publicdata/Datasets/Wholesale/DispatchAndPricing"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2022-11",
+          "last-release": "2022-12",
+          "months": 2,
+          "report": [
+            "EMI",
+            "DISPATCH_RESERVE_PRICES"
+          ],
+          "version": 1
+        }
+      ],
+      "cadence": "day",
+      "feed": "emi",
+      "folder": "DispatchReservePrices/2022",
+      "listings": [],
+      "root": "publicdata/Datasets/Wholesale/DispatchAndPricing"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2023-01",
+          "last-release": "2023-12",
+          "months": 12,
+          "report": [
+            "EMI",
+            "DISPATCH_RESERVE_PRICES"
+          ],
+          "version": 1
+        }
+      ],
+      "cadence": "day",
+      "feed": "emi",
+      "folder": "DispatchReservePrices/2023",
+      "listings": [],
+      "root": "publicdata/Datasets/Wholesale/DispatchAndPricing"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2024-01",
+          "last-release": "2024-12",
+          "months": 12,
+          "report": [
+            "EMI",
+            "DISPATCH_RESERVE_PRICES"
+          ],
+          "version": 1
+        }
+      ],
+      "cadence": "day",
+      "feed": "emi",
+      "folder": "DispatchReservePrices/2024",
+      "listings": [],
+      "root": "publicdata/Datasets/Wholesale/DispatchAndPricing"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2025-01",
+          "last-release": "2025-12",
+          "months": 12,
+          "report": [
+            "EMI",
+            "DISPATCH_RESERVE_PRICES"
+          ],
+          "version": 1
+        }
+      ],
+      "cadence": "day",
+      "feed": "emi",
+      "folder": "DispatchReservePrices/2025",
+      "listings": [],
+      "root": "publicdata/Datasets/Wholesale/DispatchAndPricing"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2026-01",
+          "last-release": "2026-11",
+          "months": 11,
+          "report": [
+            "EMI",
+            "DISPATCH_RESERVE_PRICES"
+          ],
+          "version": 1
+        }
+      ],
+      "cadence": "day",
+      "feed": "emi",
+      "folder": "DispatchReservePrices/2026",
+      "listings": [],
+      "root": "publicdata/Datasets/Wholesale/DispatchAndPricing"
+    },
+    {
+      "blocks": [
+        {
           "first-release": "2025-11",
           "last-release": "2026-11",
           "months": 13,
@@ -73,6 +358,139 @@
       "cadence": "month",
       "feed": "emi",
       "folder": "FinalReservePrices/ByMonth",
+      "listings": [],
+      "root": "publicdata/Datasets/Wholesale/DispatchAndPricing"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2020-09",
+          "last-release": "2020-12",
+          "months": 4,
+          "report": [
+            "EMI",
+            "DISPATCH_NODAL_PRICES_AND_VOLUMES"
+          ],
+          "version": 1
+        }
+      ],
+      "cadence": "day",
+      "feed": "emi",
+      "folder": "NodalPricesAndVolumes/2020",
+      "listings": [],
+      "root": "publicdata/Datasets/Wholesale/DispatchAndPricing"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2021-01",
+          "last-release": "2021-12",
+          "months": 12,
+          "report": [
+            "EMI",
+            "DISPATCH_NODAL_PRICES_AND_VOLUMES"
+          ],
+          "version": 1
+        }
+      ],
+      "cadence": "day",
+      "feed": "emi",
+      "folder": "NodalPricesAndVolumes/2021",
+      "listings": [],
+      "root": "publicdata/Datasets/Wholesale/DispatchAndPricing"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2022-01",
+          "last-release": "2022-12",
+          "months": 12,
+          "report": [
+            "EMI",
+            "DISPATCH_NODAL_PRICES_AND_VOLUMES"
+          ],
+          "version": 1
+        }
+      ],
+      "cadence": "day",
+      "feed": "emi",
+      "folder": "NodalPricesAndVolumes/2022",
+      "listings": [],
+      "root": "publicdata/Datasets/Wholesale/DispatchAndPricing"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2023-01",
+          "last-release": "2023-12",
+          "months": 12,
+          "report": [
+            "EMI",
+            "DISPATCH_NODAL_PRICES_AND_VOLUMES"
+          ],
+          "version": 1
+        }
+      ],
+      "cadence": "day",
+      "feed": "emi",
+      "folder": "NodalPricesAndVolumes/2023",
+      "listings": [],
+      "root": "publicdata/Datasets/Wholesale/DispatchAndPricing"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2024-01",
+          "last-release": "2024-12",
+          "months": 12,
+          "report": [
+            "EMI",
+            "DISPATCH_NODAL_PRICES_AND_VOLUMES"
+          ],
+          "version": 1
+        }
+      ],
+      "cadence": "day",
+      "feed": "emi",
+      "folder": "NodalPricesAndVolumes/2024",
+      "listings": [],
+      "root": "publicdata/Datasets/Wholesale/DispatchAndPricing"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2025-01",
+          "last-release": "2025-12",
+          "months": 12,
+          "report": [
+            "EMI",
+            "DISPATCH_NODAL_PRICES_AND_VOLUMES"
+          ],
+          "version": 1
+        }
+      ],
+      "cadence": "day",
+      "feed": "emi",
+      "folder": "NodalPricesAndVolumes/2025",
+      "listings": [],
+      "root": "publicdata/Datasets/Wholesale/DispatchAndPricing"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2026-01",
+          "last-release": "2026-11",
+          "months": 11,
+          "report": [
+            "EMI",
+            "DISPATCH_NODAL_PRICES_AND_VOLUMES"
+          ],
+          "version": 1
+        }
+      ],
+      "cadence": "day",
+      "feed": "emi",
+      "folder": "NodalPricesAndVolumes/2026",
       "listings": [],
       "root": "publicdata/Datasets/Wholesale/DispatchAndPricing"
     }
