@@ -8,7 +8,7 @@ use arrow_schema::{DataType, Field, Schema, SchemaRef};
 use serde::Serialize;
 
 use crate::arrow::FIELD_ID_KEY;
-use crate::file_model::{LakeType, LoadMode, Market, MarketDef, Table};
+use crate::file_model::{DeriveRule, LakeType, LoadMode, Market, MarketDef, Table};
 
 /// How a field is parsed into its lake column.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize)]
@@ -65,10 +65,27 @@ pub enum Origin {
     FileExtra,
 }
 
+/// A column the lake computes from a row's fields, beside the table's own:
+/// an instant as microseconds since 1970 UTC.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize)]
+pub struct DerivedStep {
+    /// Index of the output field it feeds.
+    pub target: u16,
+    /// How it is computed.
+    pub rule: DeriveRule,
+    /// The file fields it reads (0-based positions among the file's data
+    /// columns), in the rule's order.
+    pub sources: Vec<u16>,
+    /// The market's offset east of UTC, seconds: the clock a timestamp
+    /// field is written in.
+    pub offset_secs: i32,
+}
+
 /// The generation of the conversions the code itself performs.
 ///
 /// Raise it when the same plan would be written differently by a newer phasor.
-pub const PLAN_FORMAT: u32 = 10;
+/// 11: the columns a lake derives from a row (`phasor.derived`).
+pub const PLAN_FORMAT: u32 = 11;
 
 /// The identity of a plan: everything that decides what files of its shape are written as.
 ///
@@ -113,6 +130,7 @@ struct PlanIdentity<'a> {
     schema: u16,
     time: Option<&'a str>,
     routes: Vec<RouteIdentity<'a>>,
+    derived: &'a [DerivedStep],
 }
 
 impl PlanHash {
@@ -126,6 +144,7 @@ impl PlanHash {
             load_mode: plan.load_mode,
             schema: plan.schema,
             time: plan.time_column.map(name),
+            derived: &plan.derived,
             routes: plan
                 .routes
                 .iter()
@@ -206,6 +225,9 @@ pub struct ConformancePlan {
     pub routes: Vec<ColumnRoute>,
     /// Output field indexes no file column feeds; they are written null.
     pub missing: Vec<u16>,
+    /// The columns computed from each row, each from fields this shape has;
+    /// a derived column whose source the shape lacks is `missing`.
+    pub derived: Vec<DerivedStep>,
     /// The output schema, as Arrow builds batches with it.
     #[serde(skip)]
     pub arrow: SchemaRef,
@@ -274,6 +296,32 @@ impl ConformancePlan {
                 }
             }
         }
+        // The derived columns follow the table's own in the lake schema:
+        // each is fed where the shape has every field it reads.
+        let own = t.columns.len();
+        let mut derived = Vec::with_capacity(t.derived.len());
+        for (i, d) in t.derived.iter().enumerate() {
+            let sources: Option<Vec<u16>> = d
+                .from
+                .iter()
+                .map(|n| {
+                    routes
+                        .iter()
+                        .find(|r| r.target_name.as_deref() == Some(n.as_str()))
+                        .map(|r| r.source_index)
+                })
+                .collect();
+            if let Some(sources) = sources {
+                let target = own + i;
+                supplied[target] = true;
+                derived.push(DerivedStep {
+                    target: target as u16,
+                    rule: d.rule,
+                    sources,
+                    offset_secs: market.utc_offset_secs,
+                });
+            }
+        }
         let relaxed = supplied
             .iter()
             .enumerate()
@@ -329,6 +377,7 @@ impl ConformancePlan {
                 .collect(),
             routes,
             missing,
+            derived,
             arrow,
             hash: PlanHash(0),
         };
@@ -497,5 +546,134 @@ mod tests {
         for (ty, cast) in casts {
             assert_eq!(Cast::for_type(ty, market), cast);
         }
+    }
+
+    /// New Zealand's final prices: a date, a period, a publish time and the
+    /// price, with the two columns the lake derives.
+    fn nz_prices() -> Table {
+        use crate::file_model::{DeriveRule, Derived, Run};
+        let col = |id, name: &str, ty| Column {
+            id: ColumnId(id),
+            name: name.into(),
+            ty,
+            nullable: true,
+            note: None,
+        };
+        Table {
+            market: Market::Nz,
+            name: "NZ_FINAL_ENERGY_PRICES".into(),
+            description: None,
+            report_pairs: vec![("EMI".into(), "FINAL_ENERGY_PRICES".into())],
+            with_columns: Vec::new(),
+            older_names: Vec::new(),
+            published: String::new(),
+            load_mode: LoadMode::Append,
+            time_column: Some("TRADING_DATE".into()),
+            columns: vec![
+                col(1, "TRADING_DATE", LakeType::Date),
+                col(2, "TRADING_PERIOD", LakeType::Long),
+                col(3, "PUBLISH_DATE_TIME", LakeType::Timestamp),
+                col(4, "PRICE", LakeType::Double),
+            ],
+            schemas: vec![crate::file_model::TableSchema {
+                id: 0,
+                fields: (1..=4).map(|i| (ColumnId(i), false)).collect(),
+            }],
+            runs: vec![Run {
+                schema: 0,
+                report: ("EMI".into(), "FINAL_ENERGY_PRICES".into()),
+                version: 1,
+                kinds: vec!["csv".into()],
+                from: "2026-01".parse().unwrap(),
+                to: "2026-11".parse().unwrap(),
+                files: 1,
+                rows: 1,
+            }],
+            current_schema: 0,
+            derived: vec![
+                Derived {
+                    column: "PUBLISH_DATE_TIME_UTC_US".into(),
+                    rule: DeriveRule::UtcUs,
+                    from: vec!["PUBLISH_DATE_TIME".into()],
+                },
+                Derived {
+                    column: "INTERVAL_START_UTC_US".into(),
+                    rule: DeriveRule::NzTradingPeriodStart,
+                    from: vec!["TRADING_DATE".into(), "TRADING_PERIOD".into()],
+                },
+            ],
+        }
+    }
+
+    #[test]
+    fn the_derived_columns_follow_the_tables_own_and_are_fed_where_their_sources_are() {
+        use crate::arrow::{DERIVED_FIELD_ID_BASE, DERIVED_KEY};
+        use crate::file_model::DeriveRule;
+        let r = with(nz_prices());
+        let irow = |columns: &'static [&'static str]| phasor_mms_decode::IRow {
+            report_type: "EMI",
+            report_subtype: "FINAL_ENERGY_PRICES",
+            version: 1,
+            columns,
+        };
+        const ALL: [&str; 4] = [
+            "TRADING_DATE",
+            "TRADING_PERIOD",
+            "PUBLISH_DATE_TIME",
+            "PRICE",
+        ];
+        let nz = ResolveOptions {
+            market: Market::Nz,
+            ..Default::default()
+        };
+        let p = r.resolve(&irow(&ALL), nz).unwrap().plan;
+        assert_eq!(p.lake_width(), 6, "four columns and two derived");
+        assert_eq!(p.column_name(4), "PUBLISH_DATE_TIME_UTC_US");
+        assert_eq!(p.column_name(5), "INTERVAL_START_UTC_US");
+        assert_eq!(p.fields[4].data_type, "Int64");
+        assert_eq!(
+            p.fields[4].field_id,
+            Some(DERIVED_FIELD_ID_BASE),
+            "the first derived column takes the band's first id"
+        );
+        assert_eq!(p.fields[5].field_id, Some(DERIVED_FIELD_ID_BASE + 1));
+        assert!(p.fields[5].nullable);
+        assert!(
+            p.arrow.field(5).metadata()[DERIVED_KEY].contains("nz_trading_period_start"),
+            "{:?}",
+            p.arrow.field(5).metadata()
+        );
+        assert_eq!(p.derived.len(), 2);
+        assert_eq!(
+            (
+                p.derived[0].target,
+                p.derived[0].rule,
+                p.derived[0].sources.as_slice()
+            ),
+            (4, DeriveRule::UtcUs, &[2][..])
+        );
+        assert_eq!(
+            (
+                p.derived[1].target,
+                p.derived[1].sources.as_slice(),
+                p.derived[1].offset_secs
+            ),
+            (5, &[0, 1][..], 43_200)
+        );
+        assert!(
+            p.missing.is_empty(),
+            "a derived column with its sources is not missing"
+        );
+        let json = serde_json::to_value(&*p).unwrap();
+        assert_eq!(json["derived"][0]["rule"], "utc_us");
+        // A shape without the publish time: its sibling is missing, written
+        // null; the period's start is still derived.
+        const SOME: [&str; 3] = ["TRADING_DATE", "TRADING_PERIOD", "PRICE"];
+        let q = r.resolve(&irow(&SOME), nz).unwrap().plan;
+        assert_eq!(q.derived.len(), 1);
+        assert_eq!(q.derived[0].target, 5);
+        assert_eq!(q.derived[0].sources, [0, 1]);
+        assert_eq!(q.missing, [2, 4]);
+        assert_ne!(p.hash, q.hash);
     }
 }

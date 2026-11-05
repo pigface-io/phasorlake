@@ -232,6 +232,7 @@ pub fn parse_table(path: &Path, text: &str, market: Market) -> Result<Table, Sch
         schemas,
         runs,
         current_schema,
+        derived: Vec::new(),
     })
 }
 

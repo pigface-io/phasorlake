@@ -146,6 +146,7 @@ pub fn parse_doc(
         schemas,
         runs,
         current_schema: schema_id(h.current_schema_id)?,
+        derived: decl.derived.clone(),
     }))
 }
 
@@ -186,6 +187,7 @@ pub(crate) mod tests {
                 time_column: t.time_column.clone(),
                 load_mode: "append".into(),
                 visibility: "PUBLIC".into(),
+                derived: t.derived.clone(),
             }),
             description: t.description.clone(),
             docs: Default::default(),
@@ -235,6 +237,15 @@ pub(crate) mod tests {
         d["properties"]["phasor.time"] = json!("NOWHERE");
         let t = parse(&d).unwrap().unwrap();
         assert_eq!(t.time_column, None);
+        // The columns the lake derives, as the metadata names them.
+        let mut d = scada_doc();
+        d["properties"]["phasor.derived"] = json!(
+            r#"[{"column":"SETTLEMENTDATE_UTC_US","rule":"utc_us","from":["SETTLEMENTDATE"]}]"#
+        );
+        let t = parse(&d).unwrap().unwrap();
+        assert_eq!(t.derived.len(), 1);
+        assert_eq!(t.derived[0].column, "SETTLEMENTDATE_UTC_US");
+        assert_eq!(t.derived[0].rule, crate::file_model::DeriveRule::UtcUs);
     }
 
     #[test]

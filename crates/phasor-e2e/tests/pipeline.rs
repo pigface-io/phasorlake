@@ -154,6 +154,7 @@ fn text_table(
             })
             .collect(),
         current_schema: schemas.len().saturating_sub(1) as u16,
+        derived: Vec::new(),
     }
 }
 

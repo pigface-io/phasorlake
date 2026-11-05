@@ -534,6 +534,13 @@ impl<B: BatchSink> Sink for ArrowSink<'_, B> {
                 .with_version(block.resolved.version);
                 return Err(RowFailure::fatal(SinkError::Refused(Box::new(d))));
             }
+            // The derived columns, from the fields as read.
+            for d in &block.resolved.plan.derived {
+                let v = crate::derive::compute(d, |i| {
+                    row.get(self.prefix + usize::from(i)).unwrap_or(b"")
+                });
+                self.parsed[d.target as usize] = v.map_or(Parsed::Null, Parsed::I64);
+            }
             // Pass 2: append.
             zone!(APPEND);
             for (b, v) in block.builders.iter_mut().zip(&self.parsed) {
@@ -562,6 +569,16 @@ impl<B: BatchSink> Sink for ArrowSink<'_, B> {
             }
             for &m in &block.missing_required {
                 block.nulls_kept[m as usize].note(String::new, pos.line);
+            }
+            for d in &block.resolved.plan.derived {
+                let v = crate::derive::compute(d, |i| {
+                    row.get(self.prefix + usize::from(i)).unwrap_or(b"")
+                });
+                let b = &mut block.builders[d.target as usize];
+                match v {
+                    Some(v) => b.append(Parsed::I64(v), |_| b""),
+                    None => b.append_null(),
+                }
             }
         }
         if !self.misfits.is_empty() || !block.raws.is_empty() {
@@ -1276,6 +1293,152 @@ D,DISPATCH,UNIT_SCADA,1,\"2024/01/01 00:05:00\",,1\n";
         let (out, stats) = collect(&r, empty.as_slice(), strict, &ScanOptions::default()).unwrap();
         assert_eq!((stats.rows, stats.bad_rows), (1, 0));
         assert!(out.batches[0].batch.column(1).is_null(0));
+    }
+
+    /// New Zealand's final prices as a registry table: a date, a period, a
+    /// publish time and the price, with the two columns the lake derives.
+    fn nz_registry() -> Registry {
+        use phasor_registry::file_model::ColumnId;
+        use phasor_registry::file_model::blob::SchemaSet;
+        use phasor_registry::{
+            Column, DeriveRule, Derived, LakeType, LoadMode, Market, Run, Table, TableSchema,
+        };
+        let col = |id, name: &str, ty| Column {
+            id: ColumnId(id),
+            name: name.into(),
+            ty,
+            nullable: true,
+            note: None,
+        };
+        let t = Table {
+            market: Market::Nz,
+            name: "NZ_FINAL_ENERGY_PRICES".into(),
+            description: None,
+            report_pairs: vec![("EMI".into(), "FINAL_ENERGY_PRICES".into())],
+            with_columns: Vec::new(),
+            older_names: Vec::new(),
+            published: String::new(),
+            load_mode: LoadMode::Append,
+            time_column: Some("TRADING_DATE".into()),
+            columns: vec![
+                col(1, "TRADING_DATE", LakeType::Date),
+                col(2, "TRADING_PERIOD", LakeType::Long),
+                col(3, "PUBLISH_DATE_TIME", LakeType::Timestamp),
+                col(4, "PRICE", LakeType::Double),
+            ],
+            schemas: vec![TableSchema {
+                id: 0,
+                fields: (1..=4).map(|i| (ColumnId(i), false)).collect(),
+            }],
+            runs: vec![Run {
+                schema: 0,
+                report: ("EMI".into(), "FINAL_ENERGY_PRICES".into()),
+                version: 1,
+                kinds: vec!["csv".into()],
+                from: "2026-01".parse().unwrap(),
+                to: "2026-11".parse().unwrap(),
+                files: 1,
+                rows: 1,
+            }],
+            current_schema: 0,
+            derived: vec![
+                Derived {
+                    column: "PUBLISH_DATE_TIME_UTC_US".into(),
+                    rule: DeriveRule::UtcUs,
+                    from: vec!["PUBLISH_DATE_TIME".into()],
+                },
+                Derived {
+                    column: "INTERVAL_START_UTC_US".into(),
+                    rule: DeriveRule::NzTradingPeriodStart,
+                    from: vec!["TRADING_DATE".into(), "TRADING_PERIOD".into()],
+                },
+            ],
+        };
+        Registry::from_set(SchemaSet {
+            tables: vec![t],
+            ..Default::default()
+        })
+    }
+
+    #[test]
+    fn the_derived_columns_are_computed_from_each_row_in_both_modes() {
+        use arrow_array::Int64Array;
+        use phasor_core::nztime::trading_period_start_us;
+        let r = nz_registry();
+        let text =
+            b"I,EMI,FINAL_ENERGY_PRICES,1,TRADING_DATE,TRADING_PERIOD,PUBLISH_DATE_TIME,PRICE\n\
+D,EMI,FINAL_ENERGY_PRICES,1,2026/01/05,1,2026/01/04 22:59:22,0.02\n\
+D,EMI,FINAL_ENERGY_PRICES,1,2026/04/05,50,,1.5\n\
+D,EMI,FINAL_ENERGY_PRICES,1,2026/04/05,51,soon,1.5\n";
+        let publish_us = crate::mmstime::parse_nanos(b"2026/01/04 22:59:22", 43_200)
+            .unwrap()
+            .0
+            / 1_000;
+        let ints = |b: &arrow_array::RecordBatch, i: usize| {
+            b.column(i)
+                .as_any()
+                .downcast_ref::<Int64Array>()
+                .unwrap()
+                .clone()
+        };
+        // Every row kept: the third's time does not read, so its sibling is
+        // null, as is the period the day does not have.
+        let nz = ResolveOptions {
+            market: phasor_registry::Market::Nz,
+            ..Default::default()
+        };
+        let (out, stats) = collect(&r, &text[..], nz, &ScanOptions::default()).unwrap();
+        assert_eq!(stats.rows, 3);
+        assert_eq!(out.blocks, vec![(String::new(), 0, "conforms")]);
+        let b = &out.batches[0].batch;
+        assert_eq!(
+            b.num_columns(),
+            7,
+            "four columns, two derived, and the misfit's text"
+        );
+        assert_eq!(b.schema().field(4).name(), "PUBLISH_DATE_TIME_UTC_US");
+        assert_eq!(b.schema().field(6).name(), "PUBLISH_DATE_TIME__raw");
+        let publish = ints(b, 4);
+        assert_eq!(publish.value(0), publish_us);
+        assert!(publish.is_null(1) && publish.is_null(2));
+        let start = ints(b, 5);
+        assert_eq!(
+            start.value(0),
+            trading_period_start_us(2026, 1, 5, 1).unwrap()
+        );
+        assert_eq!(
+            start.value(1),
+            trading_period_start_us(2026, 4, 5, 50).unwrap()
+        );
+        assert!(start.is_null(2));
+        // Strict mode computes the same from the rows it accepts.
+        let two: Vec<u8> = text
+            .split(|&b| b == b'\n')
+            .take(3)
+            .flat_map(|l| [l, b"\n"].concat())
+            .collect();
+        let strict = ResolveOptions {
+            mode: Mode::Strict,
+            ..nz
+        };
+        let (out, _) = collect(&r, two.as_slice(), strict, &ScanOptions::default()).unwrap();
+        let b = &out.batches[0].batch;
+        assert_eq!(ints(b, 4).value(0), publish_us);
+        assert!(ints(b, 4).is_null(1));
+        assert_eq!(
+            ints(b, 5).value(1),
+            trading_period_start_us(2026, 4, 5, 50).unwrap()
+        );
+        // A shape without the publish time: its sibling is null throughout.
+        let short = b"I,EMI,FINAL_ENERGY_PRICES,1,TRADING_DATE,TRADING_PERIOD,PRICE\n\
+D,EMI,FINAL_ENERGY_PRICES,1,2026/01/05,2,0.02\n";
+        let (out, _) = collect(&r, &short[..], nz, &ScanOptions::default()).unwrap();
+        let b = &out.batches[0].batch;
+        assert!(ints(b, 4).is_null(0));
+        assert_eq!(
+            ints(b, 5).value(0),
+            trading_period_start_us(2026, 1, 5, 2).unwrap()
+        );
     }
 
     #[test]

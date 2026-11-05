@@ -9,6 +9,9 @@ use serde::{Deserialize, Serialize};
 
 /// The market a table belongs to, as the published metadata names it.
 pub use phasor_iceberg::Market;
+/// A column the lake computes from each row, as the published metadata
+/// names it (`phasor.derived`).
+pub use phasor_iceberg::{DeriveRule, Derived};
 
 /// Per-market constants, from `schemas/{market}/market.toml`.
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
@@ -284,6 +287,10 @@ pub struct Table {
     pub runs: Vec<Run>,
     /// The published `current-schema-id`, the last run's.
     pub current_schema: u16,
+    /// The columns the lake computes from each row, after the table's own:
+    /// each an instant as microseconds since 1970 UTC (`phasor.derived`).
+    #[serde(default)]
+    pub derived: Vec<Derived>,
 }
 
 impl Table {
@@ -503,6 +510,7 @@ pub(crate) mod tests {
                 run(1, 1, "2026-08", "2026-09"),
             ],
             current_schema: 1,
+            derived: Vec::new(),
         }
     }
 

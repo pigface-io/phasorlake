@@ -136,14 +136,18 @@ struct Derived {
 /// How many tables one run may derive; a file that asks for more is not an MMS file.
 const DERIVED_SLOTS: usize = 4096;
 
-/// The definition of a market no file defines.
+/// The definition of a market no file defines: the NEM's and gas's trading
+/// day begins at 04:00, the WEM's at 08:00, New Zealand's at midnight.
 fn default_market(market: Market) -> MarketDef {
-    let wem = market == Market::Wem;
     MarketDef {
         market,
         utc_offset_secs: market.offset_secs(),
         timestamp_format: crate::file_model::TimestampFormat::AemoSlash,
-        trading_day_start_secs: if wem { 28_800 } else { 14_400 },
+        trading_day_start_secs: match market {
+            Market::Wem => 28_800,
+            Market::Nz => 0,
+            Market::Nem | Market::Gas => 14_400,
+        },
     }
 }
 
@@ -627,6 +631,7 @@ fn derived_table(market: Market, irow: &IRow<'_>) -> Table {
                 .map(|i| (ColumnId(i), false))
                 .collect(),
         }],
+        derived: Vec::new(),
         runs: Vec::new(),
     }
 }

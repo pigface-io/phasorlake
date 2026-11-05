@@ -12,11 +12,14 @@ pub mod resolve;
 pub use phasor_mms_decode::shape;
 
 pub use crate::file_model::{
-    Column, Folder, FolderBlock, LakeType, LoadMode, Market, Run, Side, Table, TableSchema,
+    Column, DeriveRule, Derived, Folder, FolderBlock, LakeType, LoadMode, Market, Run, Side, Table,
+    TableSchema,
 };
 pub use catalog::RegistryCatalog;
 pub use error::ResolveError;
 pub use phasor_mms_decode::shape::{CanonicalShape, SHAPE_FORMAT, ShapeId};
-pub use plan::{Cast, ColumnRoute, ConformancePlan, Origin, PLAN_FORMAT, PlanField, PlanHash};
+pub use plan::{
+    Cast, ColumnRoute, ConformancePlan, DerivedStep, Origin, PLAN_FORMAT, PlanField, PlanHash,
+};
 pub use registry::{Registry, SchemaSource, TableId};
 pub use resolve::{Mode, ResolveOptions, Resolved, Status};

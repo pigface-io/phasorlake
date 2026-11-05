@@ -17,6 +17,7 @@ pub mod zones;
 
 pub mod arrow_sink;
 pub mod builders;
+pub mod derive;
 pub mod error;
 pub mod inspect;
 pub mod kit;

@@ -38,9 +38,44 @@ pub fn field(c: &Column, market: &MarketDef) -> Field {
     Field::new(&c.name, c.ty.arrow(market), c.nullable).with_metadata(md)
 }
 
-/// The lake schema of a table: every column it ever had, each with its `PARQUET:field_id`.
+/// The first field id of the columns the lake derives from each row: the
+/// `i`-th derived column of a table (in `phasor.derived` order) is field
+/// `DERIVED_FIELD_ID_BASE + i`, a band of its own below the provenance
+/// columns' (2 147 483 000 on), so no table's own field is ever one.
+pub const DERIVED_FIELD_ID_BASE: u32 = 2_147_482_000;
+
+/// The metadata key of a derived field: its rule and source columns, as JSON.
+pub const DERIVED_KEY: &str = "phasor:derived";
+
+/// The Arrow field for a derived column: a nullable `Int64` of microseconds
+/// since 1970 UTC, its id in the derived band, its rule in the metadata.
+pub fn derived_field(i: usize, d: &crate::file_model::Derived) -> Field {
+    let id = DERIVED_FIELD_ID_BASE + u32::try_from(i).expect("fewer derived columns than that");
+    let md: HashMap<String, String> = [
+        (FIELD_ID_KEY.to_owned(), id.to_string()),
+        (
+            DERIVED_KEY.to_owned(),
+            serde_json::to_string(d).expect("a derived column serialises"),
+        ),
+    ]
+    .into();
+    Field::new(&d.column, DataType::Int64, true).with_metadata(md)
+}
+
+/// The lake schema of a table: every column it ever had, each with its
+/// `PARQUET:field_id`, then every column the lake derives from a row.
 pub fn lake_schema(t: &Table, market: &MarketDef) -> SchemaRef {
-    let fields: Vec<Field> = t.columns.iter().map(|c| field(c, market)).collect();
+    let fields: Vec<Field> = t
+        .columns
+        .iter()
+        .map(|c| field(c, market))
+        .chain(
+            t.derived
+                .iter()
+                .enumerate()
+                .map(|(i, d)| derived_field(i, d)),
+        )
+        .collect();
     let md: HashMap<String, String> = [
         ("phasor:table".to_owned(), t.name.clone()),
         ("phasor:market".to_owned(), t.market.to_string()),

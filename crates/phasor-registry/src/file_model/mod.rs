@@ -13,6 +13,6 @@ pub mod validate;
 pub use error::SchemaFileError;
 pub use folders::{FOLDERS_FILE, Folder, FolderBlock, Side};
 pub use model::{
-    Column, ColumnId, LakeType, LoadMode, Market, MarketDef, Run, Table, TableSchema,
-    TimestampFormat,
+    Column, ColumnId, DeriveRule, Derived, LakeType, LoadMode, Market, MarketDef, Run, Table,
+    TableSchema, TimestampFormat,
 };

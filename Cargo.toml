@@ -174,3 +174,15 @@ panic = "unwind"
 
 [profile.bench]
 inherits = "release"
+
+# Until the phasorlake-schemas `nz` branch is published and the revs above
+# move to it, build against the local checkout of that branch.
+[patch."https://github.com/pigface-io/phasorlake-schemas.git"]
+phasor-iceberg = { path = "../phasorlake-schemas-nz/crates/phasor-iceberg" }
+phasor-diag = { path = "../phasorlake-schemas-nz/crates/phasor-diag" }
+phasor-decode = { path = "../phasorlake-schemas-nz/crates/phasor-decode" }
+phasor-mms-decode = { path = "../phasorlake-schemas-nz/crates/phasor-mms-decode" }
+phasor-plain-decode = { path = "../phasorlake-schemas-nz/crates/phasor-plain-decode" }
+phasor-gates = { path = "../phasorlake-schemas-nz/crates/phasor-gates" }
+phasor-zip = { path = "../phasorlake-schemas-nz/crates/phasor-zip" }
+phasor-provenance = { path = "../phasorlake-schemas-nz/crates/phasor-provenance" }
