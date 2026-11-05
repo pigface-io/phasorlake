@@ -19,3 +19,13 @@ are copied verbatim from that report.
 (https://aemo.com.au/privacy-and-legal-notices/copyright-permissions), which
 allow use of published information provided AEMO is attributed. Nothing here
 is a complete dataset; fetch the real thing with `phasor fetch`.
+
+## New Zealand
+
+The `emi_*` files under `listings/` are listing pages of the Electricity
+Authority of New Zealand's EMI blob store
+(`emidatasets.blob.core.windows.net/publicdata`), copied verbatim, and the
+`nz_*` heads are the first rows of its datasets. Data from
+www.emi.ea.govt.nz, provided by the Electricity Authority (New Zealand),
+under Creative Commons Attribution 4.0 International
+(https://creativecommons.org/licenses/by/4.0/).

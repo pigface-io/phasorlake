@@ -1,8 +1,11 @@
 //! Moving AEMO's files over HTTP into the archive, for the lake and the mirror.
 //! [`transport`] moves bytes, [`fetch`] paces and retries requests, [`archive`]
 //! keeps each URL's bytes beside their provenance record; every failure is a [`FetchError`].
+//! [`bloblist`] reads a blob store's folder listing, the one kind of listing
+//! that is not an IIS page.
 
 pub mod archive;
+pub mod bloblist;
 pub mod error;
 #[cfg(feature = "fetch")]
 pub mod fetch;

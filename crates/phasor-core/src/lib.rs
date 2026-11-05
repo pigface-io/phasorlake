@@ -8,6 +8,7 @@ pub mod config;
 pub mod diag;
 pub mod event;
 pub mod num;
+pub mod nztime;
 pub mod paths;
 pub mod period;
 pub mod report;

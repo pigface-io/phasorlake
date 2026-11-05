@@ -1,11 +1,15 @@
 //! The calendar in whole days and seconds, and the fixed market offsets: the NEM
-//! on UTC+10 all year, the WEM on UTC+8. The lake stores instants as UTC
-//! nanoseconds. No calendar library: these run on the hot path.
+//! on UTC+10 all year, the WEM on UTC+8, New Zealand's tables displayed at
+//! UTC+12 (its daylight saving is [`crate::nztime`]'s). The lake stores
+//! instants as UTC nanoseconds. No calendar library: these run on the hot path.
 
 /// Seconds east of UTC for the National Electricity Market (AEST, fixed).
 pub const NEM_OFFSET_SECS: i32 = 10 * 3600;
 /// Seconds east of UTC for the Wholesale Electricity Market (AWST, fixed).
 pub const WEM_OFFSET_SECS: i32 = 8 * 3600;
+/// Seconds east of UTC New Zealand's tables are displayed in (NZST): the
+/// instants are exact, read through daylight time by [`crate::nztime`].
+pub const NZ_OFFSET_SECS: i32 = 12 * 3600;
 
 /// Nanoseconds in one second.
 pub const NANOS_PER_SECOND: i64 = 1_000_000_000;
