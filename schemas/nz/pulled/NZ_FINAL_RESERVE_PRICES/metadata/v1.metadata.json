@@ -1,0 +1,120 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 4721500351614751457,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 5,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 844084800000,
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nz/NZ_FINAL_RESERVE_PRICES",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "phasor.declared": "true",
+    "phasor.derived": "[{\"column\":\"INTERVAL_START_UTC_US\",\"rule\":\"nz_trading_period_start\",\"from\":[\"TRADINGDATE\",\"TRADINGPERIOD\"]}]",
+    "phasor.format": "5",
+    "phasor.headers": "{\"1\":\"TradingDate\",\"2\":\"TradingPeriod\",\"3\":\"Island\",\"4\":\"FIRDollarsPerMegawattHour\",\"5\":\"SIRDollarsPerMegawattHour\"}",
+    "phasor.load": "append",
+    "phasor.market": "nz",
+    "phasor.offset": "+12:00",
+    "phasor.reports": "[[\"EMI\",\"FINAL_RESERVE_PRICES\"]]",
+    "phasor.table": "NZ_FINAL_RESERVE_PRICES",
+    "phasor.time": "TRADINGDATE",
+    "phasor.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 4721500351614751457,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "id": 1,
+          "name": "TRADINGDATE",
+          "required": false,
+          "type": "date"
+        },
+        {
+          "id": 2,
+          "name": "TRADINGPERIOD",
+          "required": false,
+          "type": "long"
+        },
+        {
+          "id": 3,
+          "name": "ISLAND",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 4,
+          "name": "FIRDOLLARSPERMEGAWATTHOUR",
+          "required": false,
+          "type": "decimal(7, 3)"
+        },
+        {
+          "id": 5,
+          "name": "SIRDOLLARSPERMEGAWATTHOUR",
+          "required": false,
+          "type": "decimal(8, 3)"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 4721500351614751457,
+      "timestamp-ms": 844084800000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nz/NZ_FINAL_RESERVE_PRICES/metadata/snap-4721500351614751457-1-aad86c4a-164c-8d3b-bd0c-455f55719e2d.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 4721500351614751457,
+      "summary": {
+        "operation": "append",
+        "phasor.files": "729",
+        "phasor.from.file": "199610_FinalReservePrices.csv",
+        "phasor.from.release": "1996-10",
+        "phasor.from.sha256": "9b0e7edfca13898654a5cb39716f56c30f3f0cf58790045b72a8e30943eb8547",
+        "phasor.from.time": "1996-10-01T00:00:00+12:00",
+        "phasor.kinds": "[\"emi\"]",
+        "phasor.report-subtype": "FINAL_RESERVE_PRICES",
+        "phasor.report-type": "EMI",
+        "phasor.rows": "1090076",
+        "phasor.to.file": "20261104_FinalReservePrices_I.csv",
+        "phasor.to.release": "2026-11",
+        "phasor.to.sha256": "b3dd713e58f84bb70d8254922d30e324f7add6ce55c48a201f52c675d5686951",
+        "phasor.to.time": "2026-11-04T00:00:00+12:00",
+        "phasor.total-rows": "1090076",
+        "phasor.version": "1"
+      },
+      "timestamp-ms": 844084800000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "aad86c4a-164c-8d3b-bd0c-455f55719e2d"
+}

@@ -5052,6 +5052,36 @@
       "schemas": 523,
       "tables": 321
     },
+    "nz": {
+      "baseline": {
+        "reason": "",
+        "version": 1
+      },
+      "listed": [
+        {
+          "breaks": 0,
+          "declared": true,
+          "first_release": "1996-10",
+          "last_release": "2026-11",
+          "name": "NZ_FINAL_ENERGY_PRICES",
+          "package": null,
+          "runs": 1,
+          "schemas": 1
+        },
+        {
+          "breaks": 0,
+          "declared": true,
+          "first_release": "1996-10",
+          "last_release": "2026-11",
+          "name": "NZ_FINAL_RESERVE_PRICES",
+          "package": null,
+          "runs": 1,
+          "schemas": 1
+        }
+      ],
+      "schemas": 2,
+      "tables": 2
+    },
     "wem": {
       "baseline": {
         "reason": "",
@@ -5153,7 +5183,7 @@
       "tables": 9
     }
   },
-  "schemas": 727,
+  "schemas": 729,
   "sha256": {
     "gas/DWGM_INT029A_SYSTEM_NOTICES/metadata/snap-3248816567870203441-1-b81e8e26-7793-8fe9-abcf-7b2e78fd80ed.avro": "382efa05d14b431f815b68db718223164670217a10f46ff17db3adfac8df0ef7",
     "gas/DWGM_INT029A_SYSTEM_NOTICES/metadata/v1.metadata.json": "cde45f01bb5258605ce9aef18678e4436a7be985755707dc35bb09ac55fb75b8",
@@ -10079,6 +10109,16 @@
     "nem/YESTBID_BIDPEROFFER/schema-0.json": "9699d614f04ec65f1d36c402dd1470a281bc8fb451baebf5adc9320138bba3dd",
     "nem/folders.json": "fab7bea145fb774ae8b733414664a0eee4869dacdf90b627423ddda8f4a0cf48",
     "nem/headers.json": "d69a83146d144a6f6a6d20b7491e1d68c9315eb5b421dd3edffb863cb9b18801",
+    "nz/NZ_FINAL_ENERGY_PRICES/metadata/snap-8302410763910962495-1-a0515e5f-7ca9-86fe-889b-015371268613.avro": "831589308fc2bb2abcdfaf5582faf6118cbb1133330d99924c07f078e76bd569",
+    "nz/NZ_FINAL_ENERGY_PRICES/metadata/v1.metadata.json": "a4f1dc168c57f7438dbd9bacb562fdf0c43b64dd766bb8f28822bf535ab9d332",
+    "nz/NZ_FINAL_ENERGY_PRICES/metadata/version-hint.text": "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b",
+    "nz/NZ_FINAL_ENERGY_PRICES/schema-0.json": "28ce25383420506e797b28647ca43325ffe89c032b82a7c76e9dff914fc46bed",
+    "nz/NZ_FINAL_RESERVE_PRICES/metadata/snap-4721500351614751457-1-aad86c4a-164c-8d3b-bd0c-455f55719e2d.avro": "218745cfe2189b16f695df9b1ba91ae29909db8c67781f3be97c3eec5c2248ad",
+    "nz/NZ_FINAL_RESERVE_PRICES/metadata/v1.metadata.json": "50885836375cf4439d55f1c87260a0ec5fab85c1c8303361cb4be88b11371718",
+    "nz/NZ_FINAL_RESERVE_PRICES/metadata/version-hint.text": "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b",
+    "nz/NZ_FINAL_RESERVE_PRICES/schema-0.json": "b6628d179a4a7c4447ad18783ad3f931a2c9ad6adffa1c1e210299018e0d04d7",
+    "nz/folders.json": "55be2445f4c362fa096f7fe279775f3a958519bfafa2cae765c7f81368716dd2",
+    "nz/headers.json": "1fbc806f80df08b228d3ba9681499f4e9974ccbe11c0e3256d33e2dcbfea2576",
     "wem/WEMDE_REFERENCE_TRADING_PRICE/metadata/snap-3845576662466461030-1-0551813b-68e4-89c2-9817-6833581310e2.avro": "143fe378ab37e302ac23df05c39f53e04a3ec174ffb9bf761f177821ce048299",
     "wem/WEMDE_REFERENCE_TRADING_PRICE/metadata/v1.metadata.json": "8083475a4a72892b17d769c8b40e69bd3a79c5b1d5d17834b370a9e372695821",
     "wem/WEMDE_REFERENCE_TRADING_PRICE/metadata/version-hint.text": "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b",
@@ -10122,5 +10162,5 @@
     "wem/folders.json": "611390a6c9942265546d3834109913d609c5f454cf1e0b1b6cd30362e5bc49ef",
     "wem/headers.json": "252ddcb44b57520da95db9c532bed78ef5b9450cfa9f8bc5a05bce74e8c36d95"
   },
-  "tables": 512
+  "tables": 514
 }

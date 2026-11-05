@@ -1,0 +1,81 @@
+{
+  "folders": [
+    {
+      "blocks": [
+        {
+          "first-release": "2025-11",
+          "last-release": "2026-11",
+          "months": 13,
+          "report": [
+            "EMI",
+            "FINAL_ENERGY_PRICES"
+          ],
+          "version": 1
+        }
+      ],
+      "cadence": "day",
+      "feed": "emi",
+      "folder": "FinalEnergyPrices",
+      "listings": [],
+      "root": "publicdata/Datasets/Wholesale/DispatchAndPricing"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "1996-10",
+          "last-release": "2026-10",
+          "months": 361,
+          "report": [
+            "EMI",
+            "FINAL_ENERGY_PRICES"
+          ],
+          "version": 1
+        }
+      ],
+      "cadence": "month",
+      "feed": "emi",
+      "folder": "FinalEnergyPrices/ByMonth",
+      "listings": [],
+      "root": "publicdata/Datasets/Wholesale/DispatchAndPricing"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2025-11",
+          "last-release": "2026-11",
+          "months": 13,
+          "report": [
+            "EMI",
+            "FINAL_RESERVE_PRICES"
+          ],
+          "version": 1
+        }
+      ],
+      "cadence": "day",
+      "feed": "emi",
+      "folder": "FinalReservePrices",
+      "listings": [],
+      "root": "publicdata/Datasets/Wholesale/DispatchAndPricing"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "1996-10",
+          "last-release": "2026-10",
+          "months": 361,
+          "report": [
+            "EMI",
+            "FINAL_RESERVE_PRICES"
+          ],
+          "version": 1
+        }
+      ],
+      "cadence": "month",
+      "feed": "emi",
+      "folder": "FinalReservePrices/ByMonth",
+      "listings": [],
+      "root": "publicdata/Datasets/Wholesale/DispatchAndPricing"
+    }
+  ],
+  "x-format": 5
+}
