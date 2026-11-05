@@ -29,3 +29,9 @@ pub type TableOf =
 
 /// Whether a table is one a source publishes.
 pub type Serves = std::sync::Arc<dyn Fn(&str) -> bool + Send + Sync>;
+
+/// The folders of a host that carry a table's files, as paths under the host
+/// (`publicdata/Datasets/Wholesale/DispatchAndPricing/FinalEnergyPrices`):
+/// where a source looks for the table instead of walking the whole feed.
+/// Empty when the catalog does not know.
+pub type FoldersOf = std::sync::Arc<dyn Fn(&str) -> Vec<String> + Send + Sync>;

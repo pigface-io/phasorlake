@@ -9,8 +9,8 @@ use std::sync::Arc;
 
 use async_trait::async_trait;
 use phasor_kit::{
-    Entry, Granularity, Listings, LocalFile, Pick, Picks, Query, RemoteFile, Serves, Source,
-    TableOf,
+    Entry, FoldersOf, Granularity, Listings, LocalFile, Pick, Picks, Query, RemoteFile, Serves,
+    Source, TableOf,
 };
 use phasor_net::bloblist;
 use url::Url;
@@ -38,6 +38,9 @@ pub struct FeedFolders {
     serves: Serves,
     granularity: Granularity,
     claim: Option<Claim>,
+    /// The folders that carry each table, when the catalog knows: a query
+    /// naming tables walks those folders alone, not every root.
+    folders_of: Option<FoldersOf>,
     /// Whether a listed file is asked for by its listed time: the time is
     /// the URL's fragment, so a file written again is fetched again and kept
     /// beside the earlier one.
@@ -75,6 +78,7 @@ impl FeedFolders {
             serves: Arc::new(|_| true),
             granularity: Granularity::Month,
             claim: None,
+            folders_of: None,
             versioned: false,
         })
     }
@@ -98,6 +102,15 @@ impl FeedFolders {
     #[must_use]
     pub fn with_claim(mut self, claim: Claim) -> Self {
         self.claim = Some(claim);
+        self
+    }
+
+    /// The same source, walking only the folders `folders_of` says carry the
+    /// tables a query names, when it names any it knows; a feed of many
+    /// folders is listed in a few requests, not hundreds.
+    #[must_use]
+    pub fn with_folders_of(mut self, folders_of: FoldersOf) -> Self {
+        self.folders_of = Some(folders_of);
         self
     }
 
@@ -125,6 +138,37 @@ impl FeedFolders {
                 self.base
                     .join(&rel)
                     .map_err(FetchError::parse(&rel, "feed root"))
+            })
+            .collect()
+    }
+
+    /// Where a query's walk starts: the folders of every table it names, when
+    /// the catalog knows each; else the feed's roots.
+    fn starts(&self, query: &Query) -> Result<Vec<Url>, FetchError> {
+        let Some(folders_of) = self
+            .folders_of
+            .as_ref()
+            .filter(|_| !query.tables.is_empty())
+        else {
+            return self.roots();
+        };
+        let mut paths: Vec<String> = Vec::new();
+        for table in &query.tables {
+            let found = folders_of(&table.to_ascii_uppercase());
+            if found.is_empty() {
+                return self.roots();
+            }
+            paths.extend(found);
+        }
+        paths.sort();
+        paths.dedup();
+        paths
+            .iter()
+            .map(|p| {
+                let rel = format!("{}/", p.trim_matches('/'));
+                self.base
+                    .join(&rel)
+                    .map_err(FetchError::parse(&rel, "table folder"))
             })
             .collect()
     }
@@ -299,7 +343,7 @@ impl Source for FeedFolders {
         fetcher: &dyn Listings,
     ) -> Result<Vec<RemoteFile>, FetchError> {
         let mut out = Vec::new();
-        let mut queue: Vec<Url> = self.roots()?;
+        let mut queue: Vec<Url> = self.starts(query)?;
         let mut seen: BTreeSet<String> = BTreeSet::new();
         while let Some(folder) = queue.pop() {
             if !seen.insert(folder.to_string()) {
@@ -1106,6 +1150,53 @@ mod tests {
             .unwrap();
         assert_eq!(jan.len(), 1);
         assert_eq!(jan[0].period.unwrap().to_string(), "2026-01-05");
+        // A source that knows each table's folders walks those alone: the
+        // prices folder and what is under it, not the six roots; a table it
+        // does not know sends it back to the roots.
+        let narrowed = FeedFolders::new("nz-emi-daily", "https://h", emi, nz_tables())
+            .unwrap()
+            .with_granularity(phasor_kit::Granularity::Day)
+            .with_claim(Arc::new(|u: &Url| {
+                name_cadence(u.path()) == Some(Cadence::Day)
+            }))
+            .with_folders_of(Arc::new({
+                let fep = fep.clone();
+                move |table: &str| match table {
+                    "NZ_FINAL_ENERGY_PRICES" => vec![format!("publicdata/{fep}")],
+                    _ => Vec::new(),
+                }
+            }));
+        let before = t.request_count();
+        let got = narrowed
+            .list(
+                &query(&["nz_final_energy_prices"], months("2026-10", "2026-11")),
+                &f,
+            )
+            .await
+            .unwrap();
+        assert_eq!(got.len(), 2);
+        assert!(
+            got.iter()
+                .all(|r| r.table.as_deref() == Some("NZ_FINAL_ENERGY_PRICES"))
+        );
+        assert_eq!(
+            t.request_count() - before,
+            3,
+            "the folder's two pages and ByMonth"
+        );
+        let before = t.request_count();
+        let got = narrowed
+            .list(
+                &query(
+                    &["NZ_FINAL_ENERGY_PRICES", "NZ_DISPATCH_ENERGY_PRICES"],
+                    months("2026-10", "2026-11"),
+                ),
+                &f,
+            )
+            .await
+            .unwrap();
+        assert_eq!(got.len(), 2);
+        assert_eq!(t.request_count() - before, 11, "back to every root");
         // The monthly source: the month's file alone, by its month, with no
         // fragment.
         let got = monthly

@@ -39,10 +39,12 @@ pub fn kit(config: &NzConfig, registry: Arc<Registry>) -> Result<SourceKit, Fetc
         .with_granularity(Granularity::Day)
         .with_claim(claims(Cadence::Day))
         .with_versioned_listing()
+        .with_folders_of(catalog::folders_of(registry.clone(), emi.id))
         .with_tables_served(catalog::serves_cadence(registry.clone(), emi.id, "day"));
     let monthly = FeedFolders::new(MONTHLY_SOURCE_ID, &config.base_url, emi, table_of)?
         .with_claim(claims(Cadence::Month))
         .with_versioned_listing()
+        .with_folders_of(catalog::folders_of(registry.clone(), emi.id))
         .with_tables_served(catalog::serves_cadence(registry.clone(), emi.id, "month"));
     let sources: Vec<Arc<dyn Source>> = vec![Arc::new(daily), Arc::new(monthly)];
     Ok(SourceKit {

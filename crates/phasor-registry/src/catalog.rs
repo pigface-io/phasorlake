@@ -1,12 +1,13 @@
 //! The registry as a kit sees it: every market's tables as a
 //! [`Catalog`], each as a block names it ([`table_ref`]), and the lookups a
-//! feed's source makes of the registry ([`table_of`], [`serves_feed`]).
+//! feed's source makes of the registry ([`table_of`], [`serves_feed`],
+//! [`serves_cadence`], [`folders_of`]).
 
 use std::path::Path;
 use std::sync::Arc;
 
 use phasor_core::{Diagnose, Diagnostic};
-use phasor_kit::{Catalog, LoadMode, Serves, TableOf, TableRef, Transform};
+use phasor_kit::{Catalog, FoldersOf, LoadMode, Serves, TableOf, TableRef, Transform};
 use phasor_mms_decode::IRow;
 use phasor_plain_decode::BlockName;
 
@@ -74,6 +75,24 @@ pub fn serves_cadence(
                     .iter()
                     .any(|f| f.feed == feed && f.cadence.as_deref() == Some(cadence))
             })
+    })
+}
+
+/// The folders of `feed` the census saw a table's blocks in, as paths under
+/// the host (folders.json): where a source looks for the table.
+pub fn folders_of(registry: Arc<Registry>, feed: &'static str) -> FoldersOf {
+    Arc::new(move |table: &str| {
+        registry
+            .table_by_name(&table.to_ascii_uppercase())
+            .map(|id| {
+                registry
+                    .folders_of(id)
+                    .iter()
+                    .filter(|f| f.feed == feed)
+                    .map(|f| f.path())
+                    .collect()
+            })
+            .unwrap_or_default()
     })
 }
 
@@ -218,7 +237,21 @@ mod tests {
         assert!(of(&none).is_none());
         let serves = serves_feed(registry.clone(), "gbb");
         assert!(!serves("NO_SUCH_TABLE"));
-        let daily = serves_cadence(registry, "emi", "day");
+        let daily = serves_cadence(registry.clone(), "emi", "day");
         assert!(!daily("NO_SUCH_TABLE") && !daily("DISPATCH_UNIT_SCADA"));
+        assert!(daily("nz_final_energy_prices"));
+        let folders = folders_of(registry, "emi");
+        assert_eq!(
+            folders("NZ_FINAL_RESERVE_PRICES"),
+            [
+                "publicdata/Datasets/Wholesale/DispatchAndPricing/FinalReservePrices",
+                "publicdata/Datasets/Wholesale/DispatchAndPricing/FinalReservePrices/ByMonth"
+            ]
+        );
+        assert!(folders("NO_SUCH_TABLE").is_empty());
+        assert!(
+            folders("DISPATCH_UNIT_SCADA").is_empty(),
+            "another feed's table"
+        );
     }
 }
