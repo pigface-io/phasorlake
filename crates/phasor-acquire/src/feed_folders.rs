@@ -1,6 +1,7 @@
 //! A feed's folder tree as a [`Source`]: the roots the shared feeds table names
-//! for it, walked by their listings, each file named by the feed's rules. Used by
-//! the gas feeds and the WEM's WEMDE documents.
+//! for it, walked by their listings (IIS pages, or a blob store's pages), each
+//! file named by the feed's rules. Used by the gas feeds, the WEM's WEMDE
+//! documents and New Zealand's EMI datasets.
 
 use std::collections::{BTreeMap, BTreeSet};
 use std::path::PathBuf;
@@ -8,18 +9,25 @@ use std::sync::Arc;
 
 use async_trait::async_trait;
 use phasor_kit::{
-    Entry, Listings, LocalFile, Pick, Picks, Query, RemoteFile, Serves, Source, TableOf,
+    Entry, Granularity, Listings, LocalFile, Pick, Picks, Query, RemoteFile, Serves, Source,
+    TableOf,
 };
+use phasor_net::bloblist;
 use url::Url;
 
 use crate::archive::{Archive, Held};
 use crate::error::FetchError;
 use crate::listing;
 use phasor_core::calendar::local_year_month;
-use phasor_core::timetext::{Stamp, parse_iis_listing};
-use phasor_core::{Period, YearMonth};
+use phasor_core::timetext::{Stamp, parse_http_date, parse_iis_listing};
+use phasor_core::{CivilDay, Period, YearMonth};
 use phasor_plain_decode::Feed;
-use phasor_plain_decode::names::block_name;
+use phasor_plain_decode::feeds::Listing;
+use phasor_plain_decode::names::{block_name, name_day};
+
+/// Whether a file under the feed's roots is this source's: where two sources
+/// share one feed (a daily and a monthly one), each claims its own files.
+pub type Claim = Arc<dyn Fn(&Url) -> bool + Send + Sync>;
 
 /// A feed's folders under one host.
 pub struct FeedFolders {
@@ -28,6 +36,12 @@ pub struct FeedFolders {
     feed: &'static Feed,
     table_of: TableOf,
     serves: Serves,
+    granularity: Granularity,
+    claim: Option<Claim>,
+    /// Whether a listed file is asked for by its listed time: the time is
+    /// the URL's fragment, so a file written again is fetched again and kept
+    /// beside the earlier one.
+    versioned: bool,
 }
 
 /// `url` as the base of a folder: with a `/` at the end of its path.
@@ -59,6 +73,9 @@ impl FeedFolders {
             feed,
             table_of,
             serves: Arc::new(|_| true),
+            granularity: Granularity::Month,
+            claim: None,
+            versioned: false,
         })
     }
 
@@ -66,6 +83,30 @@ impl FeedFolders {
     #[must_use]
     pub fn with_tables_served(mut self, serves: Serves) -> Self {
         self.serves = serves;
+        self
+    }
+
+    /// The same source, cutting its files as `granularity` says: a daily
+    /// source gives a file the day its name carries.
+    #[must_use]
+    pub fn with_granularity(mut self, granularity: Granularity) -> Self {
+        self.granularity = granularity;
+        self
+    }
+
+    /// The same source, taking only the files `claim` says are its own.
+    #[must_use]
+    pub fn with_claim(mut self, claim: Claim) -> Self {
+        self.claim = Some(claim);
+        self
+    }
+
+    /// The same source, asking for each listed file by its listed time (the
+    /// URL's fragment), so a file written again is fetched again and kept
+    /// beside the earlier one.
+    #[must_use]
+    pub fn with_versioned_listing(mut self) -> Self {
+        self.versioned = true;
         self
     }
 
@@ -89,6 +130,7 @@ impl FeedFolders {
     }
 
     /// A file at `url`: its block's table and release month, from its name, else its listed time.
+    /// A daily source gives a file whose name carries a day that day.
     fn remote(
         &self,
         url: Url,
@@ -98,12 +140,19 @@ impl FeedFolders {
     ) -> RemoteFile {
         let path = url.path();
         let table = block_name(self.feed, path).and_then(|b| (self.table_of)(&b));
-        let period = self
-            .feed
-            .release_month(path)
-            .and_then(|m| YearMonth::new(m.year(), m.month()))
-            .or_else(|| modified_at.and_then(|at| month_of(at, self.feed.offset_secs)))
-            .map(Period::Month);
+        let day = match self.granularity {
+            Granularity::Day => name_day(path).and_then(|(y, m, d)| {
+                CivilDay::new(y, u8::try_from(m).ok()?, u8::try_from(d).ok()?).map(Period::Day)
+            }),
+            Granularity::Month => None,
+        };
+        let period = day.or_else(|| {
+            self.feed
+                .release_month(path)
+                .and_then(|m| YearMonth::new(m.year(), m.month()))
+                .or_else(|| modified_at.and_then(|at| month_of(at, self.feed.offset_secs)))
+                .map(Period::Month)
+        });
         RemoteFile {
             url,
             source: self.id,
@@ -115,8 +164,17 @@ impl FeedFolders {
         }
     }
 
-    /// Whether a query asks for this file by month and table.
+    /// Whether this file is this source's at all: under its roots, in no
+    /// folder the feed skips, and claimed where the source claims.
+    fn owns(&self, url: &Url) -> bool {
+        !self.skipped(url.path()) && self.claim.as_ref().is_none_or(|c| c(url))
+    }
+
+    /// Whether a query asks for this file by period and table.
     fn wanted(&self, remote: &RemoteFile, query: &Query) -> bool {
+        if !self.owns(&remote.url) {
+            return false;
+        }
         if remote.period.is_some_and(|p| !query.range.contains(p)) {
             return false;
         }
@@ -134,6 +192,77 @@ impl FeedFolders {
         path.split('/')
             .filter(|s| !s.is_empty())
             .any(|s| self.feed.ignores(&s.replace("%20", " ")))
+    }
+
+    /// The files one blob folder lists, page by page, and the folders under
+    /// it; `None` when the host no longer lists the folder.
+    async fn blob_folder(
+        &self,
+        folder: &Url,
+        fetcher: &dyn Listings,
+    ) -> Result<Option<(Vec<RemoteFile>, Vec<Url>)>, FetchError> {
+        // The names a page gives are under the container, the first segment
+        // of the folder's path.
+        let container = {
+            let mut c = folder.clone();
+            let first = c
+                .path_segments()
+                .and_then(|mut s| s.next())
+                .unwrap_or_default();
+            c.set_path(&format!("/{first}/"));
+            c
+        };
+        let mut files = Vec::new();
+        let mut folders = Vec::new();
+        let mut marker: Option<String> = None;
+        loop {
+            let request = bloblist::list_url(folder.as_str(), marker.as_deref())
+                .ok_or_else(|| FetchError::parse(folder.as_str(), "blob folder")("not a folder"))?;
+            let body = match fetcher.fetch_listing(&request).await {
+                Ok(b) => b,
+                Err(FetchError::HttpStatus { status: 404, .. }) => return Ok(None),
+                Err(e) => return Err(e),
+            };
+            let page =
+                bloblist::parse(&body).map_err(FetchError::parse(&request, "blob listing"))?;
+            for prefix in &page.prefixes {
+                let url = container
+                    .join(prefix)
+                    .map_err(FetchError::parse(prefix, "blob prefix"))?;
+                let last = prefix
+                    .trim_end_matches('/')
+                    .rsplit('/')
+                    .next()
+                    .unwrap_or("");
+                if url.as_str().starts_with(folder.as_str())
+                    && url.as_str() != folder.as_str()
+                    && !self.feed.ignores(last)
+                {
+                    folders.push(url);
+                }
+            }
+            for b in page.blobs.iter().filter(|b| b.size > 0) {
+                let mut url = container
+                    .join(&b.name)
+                    .map_err(FetchError::parse(&b.name, "blob name"))?;
+                let modified_at = parse_http_date(&b.last_modified);
+                if self.versioned
+                    && let Some(at) = modified_at
+                {
+                    url.set_fragment(Some(&at.rfc3339().replace([':', '-'], "")));
+                }
+                files.push(self.remote(
+                    url,
+                    Some(b.size),
+                    Some(b.last_modified.clone()),
+                    modified_at,
+                ));
+            }
+            marker = page.next_marker;
+            if marker.is_none() {
+                return Ok(Some((files, folders)));
+            }
+        }
     }
 
     /// The version stamp in a kept version's name (`{name}@{stamp}`), else its listed time.
@@ -159,6 +288,10 @@ impl Source for FeedFolders {
         (self.serves)(table)
     }
 
+    fn granularity(&self) -> Granularity {
+        self.granularity
+    }
+
     /// Lists every file under the feed's roots the query asks for.
     async fn list(
         &self,
@@ -170,6 +303,13 @@ impl Source for FeedFolders {
         let mut seen: BTreeSet<String> = BTreeSet::new();
         while let Some(folder) = queue.pop() {
             if !seen.insert(folder.to_string()) {
+                continue;
+            }
+            if self.feed.listing == Listing::AzureBlob {
+                if let Some((files, folders)) = self.blob_folder(&folder, fetcher).await? {
+                    out.extend(files.into_iter().filter(|r| self.wanted(r, query)));
+                    queue.extend(folders);
+                }
                 continue;
             }
             let body = match fetcher.fetch_listing(folder.as_str()).await {
@@ -235,7 +375,7 @@ impl Source for FeedFolders {
                 let Ok(base) = Url::parse(&url) else {
                     continue;
                 };
-                if self.skipped(base.path()) {
+                if !self.owns(&base) {
                     continue;
                 }
                 versions.sort_by_cached_key(|x| {
@@ -290,7 +430,7 @@ impl Source for FeedFolders {
             let root = format!("/{}/", r.trim_matches('/'));
             path.contains(&root) && path.len() > path.find(&root).unwrap_or(0) + root.len()
         });
-        if !under_root || path.ends_with('/') || self.skipped(path) {
+        if !under_root || path.ends_with('/') || !self.owns(url) {
             return None;
         }
         Some(self.remote(url.clone(), None, None, None))
@@ -804,5 +944,221 @@ mod tests {
         assert!(s.serves("ANYTHING"), "every table until told otherwise");
         let s = s.with_tables_served(Arc::new(|t: &str| t.starts_with("STTM_")));
         assert!(s.serves("STTM_INT651_EX_ANTE_MARKET_PRICE") && !s.serves("GBB_FACILITIES"));
+    }
+
+    /// One page of a blob listing: folders, files (name, size, HTTP date)
+    /// and the next page's marker.
+    fn blob_page(prefixes: &[&str], blobs: &[(&str, u64, &str)], next: Option<&str>) -> Vec<u8> {
+        let mut xml = String::from("\u{feff}<?xml version=\"1.0\"?><EnumerationResults><Blobs>");
+        for p in prefixes {
+            let _ = write!(xml, "<BlobPrefix><Name>{p}</Name></BlobPrefix>");
+        }
+        for (name, size, at) in blobs {
+            let _ = write!(
+                xml,
+                "<Blob><Name>{name}</Name><Properties><Last-Modified>{at}</Last-Modified><Etag>0x1</Etag><Content-Length>{size}</Content-Length></Properties></Blob>"
+            );
+        }
+        let _ = write!(
+            xml,
+            "</Blobs><NextMarker>{}</NextMarker></EnumerationResults>",
+            next.unwrap_or("")
+        );
+        xml.into_bytes()
+    }
+
+    fn nz_tables() -> TableOf {
+        Arc::new(
+            |b: &phasor_plain_decode::BlockName| match (b.family.as_str(), b.name.as_str()) {
+                ("EMI", "FINAL_ENERGY_PRICES") => Some("NZ_FINAL_ENERGY_PRICES".to_owned()),
+                ("EMI", "DISPATCH_ENERGY_PRICES") => Some("NZ_DISPATCH_ENERGY_PRICES".to_owned()),
+                _ => None,
+            },
+        )
+    }
+
+    #[tokio::test]
+    async fn a_blob_store_is_listed_page_by_page_and_its_files_claimed_by_cadence() {
+        use phasor_plain_decode::names::{Cadence, name_cadence};
+        let dir = tempfile::tempdir().unwrap();
+        let emi = feed("emi").unwrap();
+        let base = "https://h/publicdata";
+        let listing = |prefix: &str, marker: Option<&str>| {
+            bloblist::list_url(&format!("{base}/{prefix}"), marker).unwrap()
+        };
+        let t = Arc::new(StaticTransport::default());
+        // Five roots the host no longer lists; the sixth, with a folder the
+        // feed skips, a folder of two pages, and a folder with a year below it.
+        for r in &emi.roots[1..] {
+            t.add(&listing(&r[11..], None), Canned::status(404));
+        }
+        let dp = "Datasets/Wholesale/DispatchAndPricing";
+        let fep = format!("{dp}/FinalEnergyPrices");
+        let dep = format!("{dp}/DispatchEnergyPrices");
+        let at = "Tue, 04 Nov 2026 18:05:00 GMT";
+        t.add(
+            &listing(dp, None),
+            Canned::ok(&blob_page(
+                &[
+                    &format!("{dp}/CaseFiles/"),
+                    &format!("{fep}/"),
+                    &format!("{dep}/"),
+                ],
+                &[(&fep, 0, at)],
+                None,
+            )),
+        );
+        t.add(
+            &listing(&fep, None),
+            Canned::ok(&blob_page(
+                &[&format!("{fep}/ByMonth/")],
+                &[(&format!("{fep}/20261103_FinalEnergyPrices.csv"), 100, at)],
+                Some("m1"),
+            )),
+        );
+        t.add(
+            &listing(&fep, Some("m1")),
+            Canned::ok(&blob_page(
+                &[],
+                &[
+                    (&format!("{fep}/20261103_FinalEnergyPrices_I.csv"), 90, at),
+                    (&format!("{fep}/20261103_Notes.csv"), 7, at),
+                ],
+                None,
+            )),
+        );
+        t.add(
+            &listing(&format!("{fep}/ByMonth"), None),
+            Canned::ok(&blob_page(
+                &[],
+                &[(
+                    &format!("{fep}/ByMonth/202610_FinalEnergyPrices.csv"),
+                    9000,
+                    at,
+                )],
+                None,
+            )),
+        );
+        t.add(
+            &listing(&dep, None),
+            Canned::ok(&blob_page(&[&format!("{dep}/2026/")], &[], None)),
+        );
+        t.add(
+            &listing(&format!("{dep}/2026"), None),
+            Canned::ok(&blob_page(
+                &[],
+                &[(
+                    &format!("{dep}/2026/20260105_DispatchEnergyPrices.csv"),
+                    4000,
+                    at,
+                )],
+                None,
+            )),
+        );
+        let f = fetcher(&t, dir.path());
+        let daily = FeedFolders::new("nz-emi-daily", "https://h", emi, nz_tables())
+            .unwrap()
+            .with_granularity(phasor_kit::Granularity::Day)
+            .with_claim(Arc::new(|u: &Url| {
+                name_cadence(u.path()) == Some(Cadence::Day)
+            }))
+            .with_versioned_listing();
+        let monthly = FeedFolders::new("nz-emi-monthly", "https://h", emi, nz_tables())
+            .unwrap()
+            .with_claim(Arc::new(|u: &Url| {
+                name_cadence(u.path()) == Some(Cadence::Month)
+            }));
+        assert_eq!(daily.granularity(), phasor_kit::Granularity::Day);
+        assert_eq!(monthly.granularity(), phasor_kit::Granularity::Month);
+        // The daily source: the day's file and its interim, each a day,
+        // asked for by its listed time; the month's file and January's are
+        // not its, or not asked for.
+        let got = daily
+            .list(&query(&[], months("2026-10", "2026-11")), &f)
+            .await
+            .unwrap();
+        let urls: Vec<&str> = got.iter().map(|r| r.url.as_str()).collect();
+        assert_eq!(
+            urls,
+            [
+                format!("{base}/{fep}/20261103_FinalEnergyPrices.csv#20261104T180500Z"),
+                format!("{base}/{fep}/20261103_FinalEnergyPrices_I.csv#20261104T180500Z"),
+                format!("{base}/{fep}/20261103_Notes.csv#20261104T180500Z"),
+            ]
+        );
+        assert_eq!(got[0].period.unwrap().to_string(), "2026-11-03");
+        assert_eq!(got[0].table.as_deref(), Some("NZ_FINAL_ENERGY_PRICES"));
+        assert_eq!(got[2].table, None, "no table claims the block");
+        assert_eq!(got[0].size, Some(100));
+        assert_eq!(got[0].modified.as_deref(), Some(at));
+        assert_eq!(
+            got[0].modified_at.unwrap().rfc3339(),
+            "2026-11-04T18:05:00Z"
+        );
+        assert_eq!(t.request_count(), 11, "five 404s and six pages");
+        // January's day, asked for by its month.
+        let jan = daily
+            .list(
+                &query(&["NZ_DISPATCH_ENERGY_PRICES"], months("2026-01", "2026-01")),
+                &f,
+            )
+            .await
+            .unwrap();
+        assert_eq!(jan.len(), 1);
+        assert_eq!(jan[0].period.unwrap().to_string(), "2026-01-05");
+        // The monthly source: the month's file alone, by its month, with no
+        // fragment.
+        let got = monthly
+            .list(&query(&[], months("2026-10", "2026-10")), &f)
+            .await
+            .unwrap();
+        let urls: Vec<&str> = got.iter().map(|r| r.url.as_str()).collect();
+        assert_eq!(
+            urls,
+            [format!("{base}/{fep}/ByMonth/202610_FinalEnergyPrices.csv")]
+        );
+        assert_eq!(got[0].period.unwrap().to_string(), "2026-10");
+        // Each claims its own files by name, and neither the other's.
+        let day = Url::parse(&format!("{base}/{fep}/20261103_FinalEnergyPrices.csv")).unwrap();
+        let month = Url::parse(&format!(
+            "{base}/{fep}/ByMonth/202610_FinalEnergyPrices.csv"
+        ))
+        .unwrap();
+        assert!(daily.describe(&day).is_some() && daily.describe(&month).is_none());
+        assert!(monthly.describe(&month).is_some() && monthly.describe(&day).is_none());
+        assert_eq!(
+            daily.describe(&day).unwrap().period.unwrap().to_string(),
+            "2026-11-03"
+        );
+        // A page that is not a listing is the error, as is a host that fails;
+        // a folder URL with no container cannot be listed.
+        let t2 = Arc::new(StaticTransport::default());
+        t2.add(&listing(dp, None), Canned::ok(b"<html>not blobs</html>"));
+        t2.add(&listing(&fep, None), Canned::status(500));
+        let f2 = fetcher(&t2, dir.path());
+        assert!(
+            daily
+                .blob_folder(&Url::parse(&format!("{base}/{fep}/")).unwrap(), &f2)
+                .await
+                .is_err()
+        );
+        assert!(matches!(
+            daily
+                .blob_folder(&Url::parse(&format!("{base}/{dp}/")).unwrap(), &f2)
+                .await,
+            Err(FetchError::Parse {
+                what: "blob listing",
+                ..
+            })
+        ));
+        assert!(matches!(
+            daily
+                .blob_folder(&Url::parse("https://h/").unwrap(), &f2)
+                .await,
+            Err(FetchError::Parse {
+                what: "blob folder",
+                ..
+            })
+        ));
     }
 }
