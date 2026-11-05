@@ -2,15 +2,17 @@
 
 Reads the mirror's archive only. For each NEM table, its file in the newest
 MMSDM month that has one; for each gas folder the census saw, its newest
-file of each report; for each WEM folder the census saw, its newest file. An
-MMS file keeps its C row, the table's I row, five D rows and a footer; a
-plain CSV its header and five rows; a WEMDE document its scalars and the
-first five elements of each array. Writes under OUT, the gas and WEM files
-at their paths below their hosts, so each feed reads its own.
+file of each report; for each WEM or New Zealand folder the census saw, its
+newest file. An MMS file keeps its C row, the table's I row, five D rows and
+a footer; a plain CSV its header and five rows; a WEMDE document its scalars
+and the first five elements of each array. Writes under OUT, the gas, WEM and
+NZ files at their paths below their hosts, so each feed reads its own.
 
-usage: python3 -I scripts/table-heads.py SCHEMAS ARCHIVE_HOST OUT [gas|wem|all] [WA_HOST]
-       (gas, wem: that market's feeds only; WA_HOST: the WA host's directory
-       in the mirror archive, `{ARCHIVE_HOST}/../data.wa.aemo.com.au` unless given)
+usage: python3 -I scripts/table-heads.py SCHEMAS ARCHIVE_HOST OUT [gas|wem|nz|all]
+                                         [WA_HOST] [NZ_HOST]
+       (gas, wem, nz: that market's feeds only; WA_HOST and NZ_HOST: those hosts'
+       directories in the mirror archive, `{ARCHIVE_HOST}/../data.wa.aemo.com.au`
+       and `{ARCHIVE_HOST}/../emidatasets.blob.core.windows.net` unless given)
        (`just table-heads {home}` writes testdata/heads)
 """
 
@@ -55,13 +57,14 @@ class Args:
     out: Path
     only: str | None
     wa: Path
+    nz: Path
 
     @classmethod
     def parse(cls, argv: list[str]) -> Args:
         """The arguments.
 
         Returns:
-            The three paths, the optional market and the WA host's directory.
+            The three paths, the optional market and the WA and NZ hosts' directories.
 
         Raises:
             SystemExit: Too few arguments; the usage is the message.
@@ -72,7 +75,12 @@ class Args:
         only = argv[4] if len(argv) > 4 else None  # ruff: ignore[magic-value-comparison] — the optional fourth
         only = None if only == "all" else only
         wa = Path(argv[5]) if len(argv) > 5 else host.parent / "data.wa.aemo.com.au"  # ruff: ignore[magic-value-comparison] — the optional fifth
-        return cls(schemas, host, out, only, wa)
+        nz = Path(argv[6]) if len(argv) > 6 else host.parent / "emidatasets.blob.core.windows.net"  # ruff: ignore[magic-value-comparison] — the optional sixth
+        return cls(schemas, host, out, only, wa, nz)
+
+    def wants(self, market: str) -> bool:
+        """Whether `market`'s heads are asked for: every market, or the one named."""
+        return self.only is None or self.only == market
 
 
 def pairs(schemas: Path, market: str) -> dict[Pair, str]:
@@ -212,7 +220,7 @@ def nem_heads(args: Args) -> tuple[dict[str, str], set[str]]:
     for y in sorted(mmsdm.iterdir(), reverse=True):
         if y.name.isdigit():
             months.extend(sorted(y.iterdir(), reverse=True))
-    want_tables = set() if args.only in {"gas", "wem"} else set(nem.values())
+    want_tables = set(nem.values()) if args.wants("nem") else set()
     done: dict[str, str] = {}
     for mdir in months[: 0 if not want_tables else MONTHS_SEARCHED]:
         if want_tables <= set(done):
@@ -341,18 +349,48 @@ def wem_heads(args: Args) -> dict[tuple[str, str], str]:
     return wem_done
 
 
+def nz_heads(args: Args) -> dict[tuple[str, str], str]:
+    """Each New Zealand folder the census saw: its newest CSV's head.
+
+    A folder's files are a day's or a month's and all one shape, so the
+    newest one stands for the folder; the head keeps the file's name, which
+    names the table (`20261104_FinalEnergyPrices.csv`).
+
+    Returns:
+        `{(root, folder): newest file name}` for each folder that had a head.
+    """
+    nz_done: dict[tuple[str, str], str] = {}
+    folders = json.loads((args.schemas / "nz/pulled/folders.json").read_text())["folders"]
+    for fo in folders:
+        root, folder = str(fo["root"]), str(fo["folder"])
+        d = args.nz / root / folder
+        files = data_files(d)
+        if not files:
+            continue
+        newest = files[-1]
+        for name, lines in plain_texts(d, newest):
+            if len(lines) < 2:  # ruff: ignore[magic-value-comparison] — a header and a row
+                continue
+            write(args.out, Path("nz", root, folder, name), "\n".join(lines) + "\n")
+            nz_done[root, folder] = newest
+        log.info("nz %d %s", len(nz_done), folder)
+    return nz_done
+
+
 def main(argv: list[str]) -> None:
     """Write the heads; log what was found as JSON."""
     args = Args.parse(argv)
     done, want_tables = nem_heads(args)
-    gas_done = {} if args.only == "wem" else gas_heads(args)
-    wem_done = {} if args.only == "gas" else wem_heads(args)
+    gas_done = gas_heads(args) if args.wants("gas") else {}
+    wem_done = wem_heads(args) if args.wants("wem") else {}
+    nz_done = nz_heads(args) if args.wants("nz") else {}
     found = {
         "nem": len(done),
         "nem_tables": len(want_tables),
         "nem_missing": sorted(want_tables - set(done)),
         "gas_files": len(gas_done),
         "wem_files": len(wem_done),
+        "nz_files": len(nz_done),
     }
     log.info("%s", json.dumps(found, default=str))
 

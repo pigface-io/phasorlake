@@ -3392,6 +3392,7 @@ async fn every_real_head_survives_the_lake() {
     e.deps.kits = Arc::new(KitRegistry::new(vec![
         phasor_gas::kit(registry.clone(), &phasor_gas::GasConfig::default()).unwrap(),
         phasor_wem::kit(&phasor_wem::WemConfig::default(), registry.clone()).unwrap(),
+        phasor_nz::kit(&phasor_nz::NzConfig::default(), registry.clone()).unwrap(),
         phasor_nem::kit(registry.clone(), "https://h").unwrap(),
     ]));
     let heads = Path::new(env!("CARGO_MANIFEST_DIR"))
