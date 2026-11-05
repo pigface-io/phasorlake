@@ -41,15 +41,21 @@ impl Context {
         let user_home = std::env::var_os("HOME").map(PathBuf::from);
         let home = Home::resolve(cli.home.as_deref(), user_home.as_deref())
             .context("No home directory: pass --home or set PHASOR_HOME.")?;
-        home.ensure_dirs().with_context(|| {
-            format!(
-                "The home directory {} could not be created.",
-                home.root().display()
-            )
-        })?;
+        let made = format!(
+            "The home directory {} could not be created.",
+            home.root().display()
+        );
+        home.ensure_dirs().with_context(|| made.clone())?;
         let config_path = cli.config.clone().unwrap_or_else(|| home.config_file());
-        let config = Config::load(&config_path)
-            .map_err(|e| anyhow::anyhow!("{}", phasor_core::Diagnose::diagnostic(&e).render()))?;
+        let rendered = |e: phasor_core::config::ConfigError| {
+            anyhow::anyhow!("{}", phasor_core::Diagnose::diagnostic(&e).render())
+        };
+        let config = Config::load(&config_path).map_err(rendered)?;
+        // The archive where the config file says, which must be there (a
+        // drive); else under the home, made as needed.
+        config.archive_present().map_err(rendered)?;
+        let home = home.with_archive(config.archive.clone());
+        home.ensure_archive().with_context(|| made)?;
         let mut registry = phasor_nem::registry();
         let overlay = home.schemas();
         let has_overlay = !cli.no_user_schemas

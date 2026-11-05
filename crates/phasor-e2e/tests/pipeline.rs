@@ -69,6 +69,7 @@ fn env() -> Env {
     let dir = tempfile::tempdir().unwrap();
     let home = Home::at(dir.path().join("home"));
     home.ensure_dirs().unwrap();
+    home.ensure_archive().unwrap();
     let (manifest, thread) = ManifestHandle::spawn_with(Manifest::open(&home.manifest()).unwrap());
     let transport = Arc::new(StaticTransport::default());
     let fetcher = Fetcher::new(

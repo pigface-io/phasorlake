@@ -1,7 +1,7 @@
 //! `~/.phasor/config.toml`. Unknown keys are errors so a typo never silently
 //! falls back to a default.
 
-use std::path::Path;
+use std::path::{Path, PathBuf};
 
 use serde::{Deserialize, Serialize};
 
@@ -11,6 +11,11 @@ use crate::diag::{Category, Diagnose, Diagnostic};
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields, default)]
 pub struct Config {
+    /// Where the archive of downloads is, when not `{home}/archive`: a
+    /// directory that must exist when phasor runs (a drive of its own,
+    /// mounted). The lake and the manifest stay under the home.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub archive: Option<PathBuf>,
     /// Parse workers; 0 means half the available cores.
     pub jobs: usize,
     /// Concurrent downloads.
@@ -239,6 +244,7 @@ impl Sources {
 impl Default for Config {
     fn default() -> Self {
         Self {
+            archive: None,
             jobs: 0,
             downloads: 4,
             request_interval_ms: 600,
@@ -284,11 +290,23 @@ pub enum ConfigError {
         /// What it may be.
         range: String,
     },
+    /// The config file names an archive directory that is not there.
+    #[error(
+        "The archive {path} is not there: the config file's `archive` names it, so it must exist (is its drive mounted?)."
+    )]
+    ArchiveMissing {
+        /// The directory named.
+        path: String,
+    },
 }
 
 impl Diagnose for ConfigError {
     fn diagnostic(&self) -> Diagnostic {
         match self {
+            Self::ArchiveMissing { path } => {
+                Diagnostic::error("config.archive_missing", Category::CONFIG, self.to_string())
+                    .with_file(path.clone())
+            }
             Self::Read { path, source } => {
                 Diagnostic::error("config.read", Category::CONFIG, self.to_string())
                     .with_file(path.clone())
@@ -333,6 +351,18 @@ impl Config {
         config.lake.invalid().map_or(Ok(config), Err)
     }
 
+    /// Whether the archive the file names is there; a configured archive is
+    /// never created in its absence, so an unmounted drive is not stood in
+    /// for.
+    pub fn archive_present(&self) -> Result<(), ConfigError> {
+        match &self.archive {
+            Some(a) if !a.is_dir() => Err(ConfigError::ArchiveMissing {
+                path: a.display().to_string(),
+            }),
+            _ => Ok(()),
+        }
+    }
+
     /// Parses TOML text.
     pub fn parse(text: &str) -> Result<Self, toml::de::Error> {
         toml::from_str(text)
@@ -350,6 +380,31 @@ impl Config {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn the_archive_is_under_the_home_unless_named_and_then_must_exist() {
+        let c = Config::parse("").unwrap();
+        assert_eq!(c.archive, None);
+        assert!(c.archive_present().is_ok());
+        let dir = tempfile::tempdir().unwrap();
+        let there = dir.path().join("drive");
+        std::fs::create_dir_all(&there).unwrap();
+        let c = Config::parse(&format!("archive = {:?}\n", there.to_str().unwrap())).unwrap();
+        assert_eq!(c.archive.as_deref(), Some(there.as_path()));
+        assert!(c.archive_present().is_ok());
+        let c = Config::parse("archive = \"/no/such/drive/archive\"\n").unwrap();
+        let d = c.archive_present().unwrap_err().diagnostic();
+        assert_eq!(d.code, "config.archive_missing");
+        assert_eq!(d.file.as_deref(), Some("/no/such/drive/archive"));
+        assert!(d.message.contains("is its drive mounted?"), "{}", d.message);
+        // Written back, the key is there only when set.
+        assert!(
+            !toml::to_string(&Config::default())
+                .unwrap()
+                .contains("archive")
+        );
+        assert!(toml::to_string(&c).unwrap().contains("archive = "));
+    }
 
     #[test]
     fn defaults_and_parse() {
