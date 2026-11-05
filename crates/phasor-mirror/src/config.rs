@@ -202,7 +202,7 @@ pub struct Rule {
     pub every_secs: u64,
 }
 
-/// How a host lists a folder.
+/// How a host lists a folder ([`crate::listers`]).
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(rename_all = "kebab-case")]
 pub enum ListingKind {
@@ -213,6 +213,14 @@ pub enum ListingKind {
     /// at a time (the Electricity Authority's `emidatasets` account); its
     /// times are HTTP dates, so `listing_offset_secs` is 0.
     AzureBlob,
+    /// A THREDDS data server (NCI): a folder is `catalog.xml` under
+    /// `/thredds/catalog/`, its files served under `/thredds/fileServer/`;
+    /// roots are given as `fileServer` paths. Times are UTC.
+    Thredds,
+    /// A fixed list of files (`documents`), each asked for by HEAD: a folder
+    /// is the files it holds. Times are HTTP dates, so `listing_offset_secs`
+    /// is 0; `roots` may be left out, they are the files' folders.
+    Documents,
 }
 
 /// One host: `[[hosts]]` in the config file. nemweb is one like any other
@@ -263,7 +271,12 @@ pub struct HostConfig {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub attempts: Option<u32>,
     /// The folders mirrored, as paths under `base_url`.
+    #[serde(default)]
     pub roots: Vec<String>,
+    /// For a host of documents (`listing = "documents"`): the files watched,
+    /// as paths under `base_url`, each kept by version as it is rewritten.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub documents: Vec<String>,
     /// Seconds between a watch's reads of this host's folders that no rule
     /// names; the top-level `watch_secs` when absent.
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -302,6 +315,7 @@ impl HostConfig {
                 .iter()
                 .map(|r| (*r).to_owned())
                 .collect(),
+            documents: Vec::new(),
             every_secs: None,
             schedule: fast
                 .chain(std::iter::once(Rule {
@@ -640,5 +654,60 @@ every_secs = 1800
         let c = Config::load(&p).unwrap();
         assert!(matches!(c.hosts().unwrap_err(), MirrorError::Root { .. }));
         assert!(c.cadence().is_err());
+    }
+
+    #[test]
+    fn a_thredds_host_and_a_host_of_documents_read_from_the_config() {
+        let c = Config::parse(
+            r#"
+[[hosts]]
+id = "nci"
+base_url = "https://thredds.nci.org.au"
+listing = "thredds"
+listing_offset_secs = 0
+roots = ["thredds/fileServer/rv74/satellite-products/arc/der/himawari-ahi/solar/p1h/v1.1/"]
+every_secs = 3600
+
+[[hosts]]
+base_url = "https://aemo.com.au"
+listing = "documents"
+listing_offset_secs = 0
+documents = [
+  "/-/media/files/gas/sttm/data/sttm-price-and-withdrawals.xlsx",
+  "-/media/files/gas/sttm/data/other.xlsx",
+  "-/media/files/electricity/nem/registration.xlsx",
+]
+every_secs = 86400
+"#,
+        )
+        .unwrap();
+        let hosts = c.hosts().unwrap();
+        assert_eq!(hosts[0].listing, ListingKind::Thredds);
+        assert_eq!(hosts[0].id, "nci");
+        assert_eq!(hosts[1].listing, ListingKind::Documents);
+        assert_eq!(hosts[1].id, "aemo.com.au");
+        assert_eq!(hosts[1].documents.len(), 3);
+        assert_eq!(
+            hosts[1].documents[0].as_str(),
+            "https://aemo.com.au/-/media/files/gas/sttm/data/sttm-price-and-withdrawals.xlsx"
+        );
+        // The documents' folders are the roots, each once.
+        assert_eq!(
+            hosts[1].roots.iter().map(Url::as_str).collect::<Vec<_>>(),
+            [
+                "https://aemo.com.au/-/media/files/gas/sttm/data/",
+                "https://aemo.com.au/-/media/files/electricity/nem/"
+            ]
+        );
+        // A documents host round-trips, and a document that is no URL refuses.
+        assert_eq!(Config::parse(&c.to_toml()).unwrap(), c);
+        let bad = Config {
+            hosts: vec![HostConfig {
+                base_url: "aemo".to_owned(),
+                ..c.hosts[1].clone()
+            }],
+            ..Config::default()
+        };
+        assert!(matches!(bad.hosts().unwrap_err(), MirrorError::Root { .. }));
     }
 }

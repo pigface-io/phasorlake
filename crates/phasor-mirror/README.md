@@ -133,6 +133,40 @@ A `--root` on a host the config does not name is read as an IIS site in
 AEST at the default pace, and the roots a crawl read are kept in
 `crawl.json`, so a home built with `--root` alone still knows them offline.
 
+Four kinds of host are read (`listing`), each in `src/listers.rs`:
+
+- `iis` (the default): an IIS directory page, AEMO's sites.
+- `azure-blob`: an Azure Blob Storage container, a page of blobs and
+  prefixes at a time (New Zealand's EMI store); times are HTTP dates, so
+  `listing_offset_secs = 0`.
+- `thredds`: a THREDDS data server (NCI). A folder is given as its
+  `/thredds/fileServer/` path and listed by `catalog.xml` under
+  `/thredds/catalog/`; `catalogRef`s are folders, `dataset`s with a
+  `urlPath` are files. Times are UTC; a size is kept only when the catalog
+  gives it in whole bytes, so a day's `.nc` files download without a size
+  to hold them to.
+- `documents`: a fixed list of files (`documents`, paths under `base_url`)
+  a site rewrites in place, each asked for by HEAD; a folder is the
+  documents it holds, `roots` may be left out. A rewrite is a new version
+  beside the old (`{name}@{stamp}`), as everywhere in the archive.
+
+```toml
+[[hosts]]
+id = "nci"
+base_url = "https://thredds.nci.org.au"
+listing = "thredds"
+listing_offset_secs = 0
+roots = ["thredds/fileServer/rv74/satellite-products/arc/der/himawari-ahi/solar/p1h/v1.1/"]
+every_secs = 3600
+
+[[hosts]]
+base_url = "https://aemo.com.au"
+listing = "documents"
+listing_offset_secs = 0
+documents = ["-/media/files/gas/sttm/data/sttm-price-and-withdrawals.xlsx"]
+every_secs = 86400
+```
+
 Older configs named nemweb by top-level keys (`base_url`, `watch_fast`,
 `watch_current`, `watch_fast_secs`, `watch_current_secs`); such a key is now
 an error that says where it went. `phasor-mirror init --nemweb` writes

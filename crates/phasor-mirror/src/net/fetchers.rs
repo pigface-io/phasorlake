@@ -22,6 +22,8 @@ pub struct HostFetcher {
     pub offset_secs: i32,
     /// How the host lists a folder.
     pub listing: ListingKind,
+    /// For a host of documents, the files it watches, as absolute URLs.
+    pub documents: Vec<String>,
     /// Its fetcher.
     pub fetcher: Fetcher,
 }
@@ -86,6 +88,7 @@ impl Fetchers {
             base_url: String::new(),
             offset_secs: AEST,
             listing: ListingKind::Iis,
+            documents: Vec::new(),
             fetcher,
         }])
     }
@@ -113,26 +116,11 @@ impl Fetchers {
         self.for_url(url).listing
     }
 
-    /// The listing of the folder `folder`, as its host gives it: an IIS page
-    /// whole, or a blob store's pages one after another, each a document.
+    /// The listing of the folder `folder`, as its host's kind gives it
+    /// ([`ListingKind::fetch_folder`]).
     pub async fn fetch_folder(&self, folder: &str) -> Result<Vec<u8>, FetchError> {
-        if self.listing_of(folder) == ListingKind::Iis {
-            return self.fetch_listing(folder).await;
-        }
-        let mut out = Vec::new();
-        let mut marker: Option<String> = None;
-        loop {
-            let request = phasor_net::bloblist::list_url(folder, marker.as_deref())
-                .ok_or_else(|| FetchError::parse(folder, "blob folder")("not a folder"))?;
-            let page = self.fetch_listing(&request).await?;
-            marker = phasor_net::bloblist::parse(&page)
-                .map_err(FetchError::parse(&request, "blob listing"))?
-                .next_marker;
-            out.extend_from_slice(&page);
-            if marker.is_none() {
-                return Ok(out);
-            }
-        }
+        let host = self.for_url(folder);
+        host.listing.fetch_folder(host, folder).await
     }
 
     /// The same, as a value a thread may carry.
@@ -236,6 +224,7 @@ pub fn per_host(
                     base_url: h.base_url.clone(),
                     offset_secs: h.offset_secs,
                     listing: h.listing,
+                    documents: h.documents.iter().map(ToString::to_string).collect(),
                     fetcher: Fetcher::new(transport, archive.clone(), config),
                 }
             })
@@ -268,6 +257,7 @@ mod tests {
             base_url: base.to_owned(),
             offset_secs: offset,
             listing: ListingKind::Iis,
+            documents: Vec::new(),
             fetcher: Fetcher::new(Arc::new(t.clone()), archive.clone(), fast()),
         }
     }
@@ -437,6 +427,7 @@ mod tests {
                 downloads: Some(1),
                 attempts: None,
                 roots: vec![],
+                documents: vec![],
                 rules: vec![],
                 every: None,
             },

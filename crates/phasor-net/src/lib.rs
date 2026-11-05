@@ -19,7 +19,7 @@ pub use archive::{
 };
 pub use error::FetchError;
 #[cfg(feature = "fetch")]
-pub use fetch::{FetcherConfig, RangeRead, Requests, Streamed, stream_to_file};
+pub use fetch::{FetcherConfig, Headers, RangeRead, Requests, Streamed, stream_to_file};
 #[cfg(feature = "http")]
 pub use transport::ReqwestTransport;
 pub use transport::{HttpResponse, OfflineTransport, Span, Transport};

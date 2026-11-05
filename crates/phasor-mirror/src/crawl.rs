@@ -15,7 +15,6 @@ pub use crate::config::Mirror;
 use crate::error::MirrorError;
 use crate::listing::{self, LinkKind, Unparsed};
 use crate::stamp::Stamp;
-use phasor_net::bloblist;
 
 /// The folders mirrored under `base`: the long-term archive and the reports.
 pub fn default_roots(base: &str) -> Result<Vec<Url>, MirrorError> {
@@ -398,77 +397,16 @@ pub(crate) fn read_page(
     offset: i32,
     listing: ListingKind,
 ) -> Result<Vec<Remote>, MirrorError> {
-    let bad = |source| MirrorError::Listing {
-        url: folder.to_string(),
-        source,
-    };
-    if listing == ListingKind::AzureBlob {
-        let page = bloblist::parse_pages(html).map_err(|e| {
-            bad(Unparsed {
-                reason: e.reason,
-                text: e.text,
-            })
-        })?;
-        // A blob's name is under the container, the folder's first segment.
-        let mut container = folder.clone();
-        let first = container
-            .path_segments()
-            .and_then(|mut s| s.next())
-            .unwrap_or_default()
-            .to_owned();
-        container.set_path(&format!("/{first}/"));
-        let under_roots = |url: &Url| roots.iter().any(|r| url.as_str().starts_with(r.as_str()));
-        let join = |name: &str| {
-            container.join(name).map_err(|_| {
-                bad(Unparsed {
-                    reason: "a blob name that is not a URL",
-                    text: name.to_owned(),
-                })
-            })
-        };
-        let mut out = Vec::new();
-        for prefix in &page.prefixes {
-            let url = join(prefix)?;
-            out.push(Remote {
-                url: url.to_string(),
-                kind: if under_roots(&url) {
-                    RemoteKind::Dir
-                } else {
-                    RemoteKind::External
-                },
-                size: None,
-                modified: String::new(),
-                modified_at: None,
-                listed_on: folder.to_string(),
-                crawled_at,
-            });
-        }
-        for b in page.blobs.iter().filter(|b| b.size > 0) {
-            let url = join(&b.name)?;
-            out.push(Remote {
-                url: url.to_string(),
-                kind: RemoteKind::File,
-                size: Some(b.size),
-                modified: b.last_modified.clone(),
-                modified_at: Stamp::from_http_date(&b.last_modified),
-                listed_on: folder.to_string(),
-                crawled_at,
-            });
-        }
-        return Ok(out);
-    }
-    listing::parse_in(html, offset)
-        .map_err(bad)?
-        .iter()
-        .map(|link| {
-            let mut remote = resolve(folder, link, roots).map_err(bad)?;
-            remote.crawled_at = crawled_at;
-            Ok(remote)
-        })
-        .collect()
+    listing.read_page(folder, html, roots, crawled_at, offset)
 }
 
-fn resolve(folder: &Url, link: &listing::Link, roots: &[Url]) -> Result<Remote, Unparsed> {
+/// An IIS page's link as a record: a folder under the roots, a file of the
+/// same host, or a link out.
+pub(crate) fn resolve(
+    folder: &Url,
+    link: &listing::Link,
+    roots: &[Url],
+) -> Result<Remote, Unparsed> {
     let bad = |reason| Unparsed {
         reason,
         text: link.href.clone(),
@@ -758,7 +696,9 @@ mod tests {
                 items.concat()
             )
         };
-        let list = |folder: &str, marker: Option<&str>| bloblist::list_url(folder, marker).unwrap();
+        let list = |folder: &str, marker: Option<&str>| {
+            phasor_net::bloblist::list_url(folder, marker).unwrap()
+        };
         t.add(
             &list("https://b/c/D/A/", None),
             Canned::ok(
@@ -787,6 +727,7 @@ mod tests {
             base_url: "https://b".to_owned(),
             offset_secs: 0,
             listing: ListingKind::AzureBlob,
+            documents: vec![],
             fetcher: crate::net::Fetcher::new(
                 Arc::new(t.clone()),
                 archive,
@@ -843,6 +784,7 @@ mod tests {
             base_url: "https://b".to_owned(),
             offset_secs: 0,
             listing: ListingKind::AzureBlob,
+            documents: vec![],
             fetcher: crate::net::Fetcher::new(
                 Arc::new(bad),
                 Archive::new(home.path().join("archive2")),
@@ -905,6 +847,7 @@ mod tests {
             base_url: base.to_owned(),
             offset_secs: offset,
             listing: ListingKind::Iis,
+            documents: vec![],
             fetcher: crate::net::Fetcher::new(Arc::new(t.clone()), archive.clone(), fast.clone()),
         };
         let f = Fetchers::new(vec![

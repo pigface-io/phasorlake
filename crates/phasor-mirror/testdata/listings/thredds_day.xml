@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<catalog xmlns="http://www.unidata.ucar.edu/namespaces/thredds/InvCatalog/v1.0" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.2">
+  <service name="all" serviceType="Compound" base="">
+    <service name="ncdods" serviceType="OPENDAP" base="/thredds/dodsC/" />
+    <service name="HTTPServer" serviceType="HTTPServer" base="/thredds/fileServer/" />
+    <service name="wms" serviceType="WMS" base="/thredds/wms/" />
+    <service name="wcs" serviceType="WCS" base="/thredds/wcs/" />
+    <service name="subsetServer" serviceType="NetcdfSubset" base="/thredds/ncss/grid/" />
+    <service name="uddc" serviceType="UDDC" base="/thredds/uddc/" />
+    <service name="iso" serviceType="ISO" base="/thredds/iso/" />
+  </service>
+  <service name="all_ex_NCSS" serviceType="Compound" base="">
+    <service name="HTTPServer" serviceType="HTTPServer" base="/thredds/fileServer/" />
+    <service name="ncdods" serviceType="OPENDAP" base="/thredds/dodsC/" />
+    <service name="wms" serviceType="WMS" base="/thredds/wms/" />
+    <service name="wcs" serviceType="WCS" base="/thredds/wcs/" />
+  </service>
+  <service name="HTTPonly" serviceType="Compound" base="">
+    <service name="HTTPServer" serviceType="HTTPServer" base="/thredds/fileServer/" />
+  </service>
+  <service name="timeseries" serviceType="Compound" base="">
+    <service name="ncdods" serviceType="OPENDAP" base="/thredds/dodsC/" />
+    <service name="HTTPServer" serviceType="HTTPServer" base="/thredds/fileServer/" />
+    <service name="subsetServer" serviceType="NetcdfSubset" base="/thredds/ncss/point/" />
+    <service name="uddc" serviceType="UDDC" base="/thredds/uddc/" />
+    <service name="iso" serviceType="ISO" base="/thredds/iso/" />
+  </service>
+  <dataset name="solar/p1h/v1.1/2025/10/01/">
+    <property name="DatasetScan" value="true" />
+    <metadata inherited="true">
+      <serviceName>all_ex_NCSS</serviceName>
+      <dataType>Grid</dataType>
+      <documentation xlink:href="https://geonetwork.nci.org.au/geonetwork/srv/eng/catalog.search#/metadata/f4117_3971_6692_9859" xlink:title="NCI Catalogue: Metadata, Licence and Readme" />
+      <documentation type="rights" xlink:href="/thredds/fileServer/rv74/satellite-products/arc/der/license.txt" xlink:title="Licence" />
+    </metadata>
+    <dataset name="IDE02327.202509301830.nc" ID="rv74/solar/p1h/v1.1/2025/10/01/IDE02327.202509301830.nc" urlPath="rv74/satellite-products/arc/der/himawari-ahi/solar/p1h/v1.1/2025/10/01/IDE02327.202509301830.nc">
+      <dataSize units="Kbytes">333.7</dataSize>
+      <date type="modified">2026-03-04T00:12:41Z</date>
+    </dataset>
+    <dataset name="IDE02327.202509301930.nc" ID="rv74/solar/p1h/v1.1/2025/10/01/IDE02327.202509301930.nc" urlPath="rv74/satellite-products/arc/der/himawari-ahi/solar/p1h/v1.1/2025/10/01/IDE02327.202509301930.nc">
+      <dataSize units="Mbytes">2.140</dataSize>
+      <date type="modified">2026-03-04T00:12:41Z</date>
+    </dataset>
+    <dataset name="IDE02327.202509302030.nc" ID="rv74/solar/p1h/v1.1/2025/10/01/IDE02327.202509302030.nc" urlPath="rv74/satellite-products/arc/der/himawari-ahi/solar/p1h/v1.1/2025/10/01/IDE02327.202509302030.nc">
+      <dataSize units="Mbytes">4.641</dataSize>
+      <date type="modified">2026-03-04T00:12:44Z</date>
+    </dataset>
+  </dataset>
+</catalog>

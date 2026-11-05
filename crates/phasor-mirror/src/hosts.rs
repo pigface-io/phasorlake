@@ -30,6 +30,8 @@ pub struct Host {
     pub attempts: Option<u32>,
     /// The folders mirrored, under `base_url`.
     pub roots: Vec<Url>,
+    /// For a host of documents, the files watched, under `base_url`.
+    pub documents: Vec<Url>,
     /// How often a watch reads the folders under each absolute URL prefix.
     pub rules: Vec<(String, Duration)>,
     /// How often a watch reads this host's other folders, when it says.
@@ -42,7 +44,23 @@ impl Host {
     /// of 15 minutes and an hour.
     pub fn from_config(c: &HostConfig, request_interval_ms: u64) -> Result<Self, MirrorError> {
         let base = c.base_url.trim_end_matches('/').to_owned();
-        let roots = under(&base, &c.roots)
+        let documents = under(&base, &c.documents)
+            .iter()
+            .map(|d| Url::parse(d).map_err(|_| MirrorError::Root { url: d.clone() }))
+            .collect::<Result<Vec<Url>, MirrorError>>()?;
+        // A host of documents needs no roots: its folders are the documents'.
+        let mut root_paths = c.roots.clone();
+        if c.listing == ListingKind::Documents && root_paths.is_empty() {
+            for d in &c.documents {
+                let folder = d.trim_start_matches('/');
+                let folder = folder.rsplit_once('/').map_or("", |(dir, _)| dir);
+                let folder = format!("{folder}/");
+                if !root_paths.contains(&folder) {
+                    root_paths.push(folder);
+                }
+            }
+        }
+        let roots = under(&base, &root_paths)
             .iter()
             .map(|r| root(r))
             .collect::<Result<Vec<Url>, MirrorError>>()?;
@@ -69,6 +87,7 @@ impl Host {
         Ok(Self {
             id: c.name(),
             roots,
+            documents,
             rules,
             every: c.every_secs.map(Duration::from_secs),
             base_url: base,
@@ -95,6 +114,7 @@ impl Host {
             downloads: None,
             attempts: None,
             roots: vec![root.clone()],
+            documents: Vec::new(),
             rules: Vec::new(),
             every: None,
         }
@@ -198,6 +218,7 @@ mod tests {
             request_interval_ms: None,
             downloads: Some(1),
             attempts: Some(3),
+            documents: Vec::new(),
             roots: vec![
                 "public/public-data/datafiles/".to_owned(),
                 "/public/market-data/wemde/facilityScada/previous/".to_owned(),
@@ -294,6 +315,7 @@ mod tests {
                 downloads: None,
                 attempts: None,
                 roots: vec![],
+                documents: vec![],
                 rules: vec![],
                 every: None,
             },

@@ -196,6 +196,20 @@ impl Requests {
         .await
     }
 
+    /// HEADs `url`: its headers, paced and retried like a GET; a status
+    /// other than 200 is [`FetchError::HttpStatus`].
+    pub async fn head(&self, url: &str) -> Result<Headers, FetchError> {
+        self.ensure_online(url)?;
+        self.ask_with_retries(url, Ask::Head, |resp| async move {
+            Ok(Headers {
+                content_length: resp.content_length,
+                etag: resp.etag,
+                last_modified: resp.last_modified,
+            })
+        })
+        .await
+    }
+
     /// GETs `url` (or `span` of it) and hands a 200 or 206 to `consume`, paced, retried
     /// with backoff, tripping the breaker on a refusal.
     pub async fn get_with_retries<T, F, Fut>(
@@ -208,6 +222,26 @@ impl Requests {
         F: Fn(HttpResponse) -> Fut,
         Fut: std::future::Future<Output = Result<T, FetchError>>,
     {
+        let ask = span.map_or(Ask::Get, Ask::Range);
+        self.ask_with_retries(url, ask, consume).await
+    }
+
+    /// Asks `url` for `ask` and hands the expected status to `consume`,
+    /// paced, retried with backoff, tripping the breaker on a refusal.
+    async fn ask_with_retries<T, F, Fut>(
+        &self,
+        url: &str,
+        ask: Ask,
+        consume: F,
+    ) -> Result<T, FetchError>
+    where
+        F: Fn(HttpResponse) -> Fut,
+        Fut: std::future::Future<Output = Result<T, FetchError>>,
+    {
+        let span = match ask {
+            Ask::Range(s) => Some(s),
+            Ask::Get | Ask::Head => None,
+        };
         let mut last: Option<FetchError> = None;
         for attempt in 0..self.config.attempts.max(1) {
             if attempt > 0 {
@@ -224,9 +258,10 @@ impl Requests {
             }
             self.pace(url).await;
             let answered = if span.is_some() { 206 } else { 200 };
-            let sent = match span {
-                Some(s) => self.transport.get_range(url, s).await,
-                None => self.transport.get(url).await,
+            let sent = match ask {
+                Ask::Range(s) => self.transport.get_range(url, s).await,
+                Ask::Get => self.transport.get(url).await,
+                Ask::Head => self.transport.head(url).await,
             };
             let result = match sent {
                 Err(e) => Err(e),
@@ -272,6 +307,28 @@ impl Requests {
             })),
         })
     }
+}
+
+/// What a request asks of a URL.
+#[derive(Debug, Clone, Copy)]
+enum Ask {
+    /// The whole body (200).
+    Get,
+    /// A span of it (206).
+    Range(Span),
+    /// The headers alone (200).
+    Head,
+}
+
+/// What a HEAD answered: the headers the mirror lists a file by.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct Headers {
+    /// `Content-Length`.
+    pub content_length: Option<u64>,
+    /// `ETag`.
+    pub etag: Option<String>,
+    /// `Last-Modified`.
+    pub last_modified: Option<String>,
 }
 
 /// The first `limit` bytes of a body, or fewer when it ends or fails.
@@ -520,6 +577,45 @@ pub async fn stream_to_file(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[tokio::test]
+    async fn a_head_gives_the_headers_and_a_missing_file_its_status() {
+        use crate::transport::{Canned, StaticTransport};
+        let t = Arc::new(StaticTransport::default());
+        t.add("https://h/a.xlsx", Canned::ok(b"abcde"));
+        t.add("https://h/gone.xlsx", Canned::status(404));
+        let r = Requests::new(
+            Arc::new(t.clone()),
+            FetcherConfig {
+                attempts: 1,
+                backoff: Duration::ZERO,
+                max_backoff: Duration::ZERO,
+                min_interval: Duration::ZERO,
+            },
+        );
+        let h = r.head("https://h/a.xlsx").await.unwrap();
+        assert_eq!(
+            h,
+            Headers {
+                content_length: Some(5),
+                etag: Some("\"etag\"".into()),
+                last_modified: Some("Tue, 13 Feb 2024 08:27:00 GMT".into()),
+            }
+        );
+        assert!(matches!(
+            r.head("https://h/gone.xlsx").await.unwrap_err(),
+            FetchError::HttpStatus { status: 404, .. }
+        ));
+        assert_eq!(r.succeeded(), 1);
+        let off = Requests::new(
+            Arc::new(crate::transport::OfflineTransport),
+            r.config().clone(),
+        );
+        assert!(matches!(
+            off.head("https://h/a.xlsx").await.unwrap_err(),
+            FetchError::Offline { .. }
+        ));
+    }
 
     #[test]
     fn aemo_hosts_are_asked_no_faster_than_the_least_interval() {

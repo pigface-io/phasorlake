@@ -75,6 +75,13 @@ pub trait Transport: Send + Sync {
         let _ = span;
         self.get(url).await
     }
+    /// HEADs `url`: the headers alone, the body empty. By default a
+    /// transport GETs and drops the body unread.
+    async fn head(&self, url: &str) -> Result<HttpResponse, FetchError> {
+        let mut resp = self.get(url).await?;
+        resp.body = Box::pin(futures::stream::empty());
+        Ok(resp)
+    }
     /// Whether this transport never touches the network.
     fn is_offline(&self) -> bool {
         false
@@ -112,7 +119,15 @@ impl ReqwestTransport {
     }
 
     async fn send(&self, url: &str, span: Option<Span>) -> Result<HttpResponse, FetchError> {
-        let mut request = self.client.get(url);
+        self.ask(self.client.get(url), url, span).await
+    }
+
+    async fn ask(
+        &self,
+        mut request: reqwest::RequestBuilder,
+        url: &str,
+        span: Option<Span>,
+    ) -> Result<HttpResponse, FetchError> {
         if let Some(span) = span {
             request = request.header(reqwest::header::RANGE, span.header());
         }
@@ -137,9 +152,13 @@ impl ReqwestTransport {
         };
         let owned = url.to_owned();
         let timeout = self.timeout_secs;
+        // The header first: a HEAD has no body for the length to be known from.
+        let content_length = header("content-length")
+            .and_then(|v| v.trim().parse().ok())
+            .or_else(|| resp.content_length());
         Ok(HttpResponse {
             status: resp.status().as_u16(),
-            content_length: resp.content_length(),
+            content_length,
             total_size: header("content-range").as_deref().and_then(total_of),
             etag: header("etag"),
             last_modified: header("last-modified"),
@@ -161,6 +180,9 @@ impl Transport for ReqwestTransport {
     }
     async fn get_range(&self, url: &str, span: Span) -> Result<HttpResponse, FetchError> {
         self.send(url, Some(span)).await
+    }
+    async fn head(&self, url: &str) -> Result<HttpResponse, FetchError> {
+        self.ask(self.client.head(url), url, None).await
     }
 }
 
@@ -339,6 +361,35 @@ mod ranged_tests {
         // What is not queued is a 404 to a span too.
         let r = t.get_range("https://h/none", Span::Last(1)).await.unwrap();
         assert_eq!(r.status, 404);
+    }
+
+    #[tokio::test]
+    async fn a_head_is_the_headers_alone() {
+        // reqwest sends a real HEAD; a transport without one GETs and drops the body.
+        let (base, seen) = serve(vec![http(
+            "200 OK",
+            "Content-Length: 5\r\nLast-Modified: Tue, 13 Feb 2024 08:27:00 GMT",
+            b"",
+        )])
+        .await;
+        let t = ReqwestTransport::new(
+            "phasor-test",
+            Duration::from_secs(2),
+            Duration::from_millis(500),
+        )
+        .unwrap();
+        let r = t.head(&format!("{base}/a.xlsx")).await.unwrap();
+        assert_eq!((r.status, r.content_length), (200, Some(5)));
+        assert_eq!(
+            r.last_modified.as_deref(),
+            Some("Tue, 13 Feb 2024 08:27:00 GMT")
+        );
+        assert!(body_of(r).await.is_empty());
+        let requests = seen.await.unwrap();
+        assert!(requests[0].starts_with("HEAD /a.xlsx"), "{}", requests[0]);
+        let r = Plain.head("https://h/a").await.unwrap();
+        assert_eq!(r.content_length, Some(3));
+        assert!(body_of(r).await.is_empty(), "the body is dropped unread");
     }
 
     /// A transport that only knows GET: a span is the whole file.

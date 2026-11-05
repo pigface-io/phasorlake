@@ -96,6 +96,11 @@ impl Fetcher {
         self.requests.config().attempts
     }
 
+    /// The headers of `url`, by HEAD: how a document is listed.
+    pub async fn head(&self, url: &str) -> Result<phasor_net::fetch::Headers, FetchError> {
+        self.requests.head(url).await
+    }
+
     /// Requests that succeeded so far: a run that got somewhere.
     pub fn succeeded(&self) -> u64 {
         self.requests.succeeded()
