@@ -73,6 +73,7 @@ fn synthetic_zip(dir: &Path) -> std::path::PathBuf {
 fn ingest_once(dir: &Path, zip_path: &Path, registry: &Arc<Registry>) -> (Duration, f64, u64) {
     let home = Home::at(dir.join("home"));
     home.ensure_dirs().expect("home");
+    home.ensure_archive().expect("archive");
     let runtime = tokio::runtime::Builder::new_multi_thread()
         .enable_all()
         .build()

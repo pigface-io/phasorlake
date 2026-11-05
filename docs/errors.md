@@ -6,6 +6,7 @@ Every error and warning phasor reports carries one of these codes. Codes are sta
 
 | code | raised in |
 |---|---|
+| `config.archive_missing` | `crates/phasor-core/src/config.rs` |
 | `config.bad_path` | `crates/phasor-pipeline/src/run.rs` |
 | `config.invalid` | `crates/phasor-core/src/config.rs` |
 | `config.keep_from_missing` | `crates/phasor-mirror/src/error.rs` |

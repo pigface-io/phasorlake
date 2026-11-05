@@ -1039,6 +1039,53 @@ fn the_archive_lists_and_verifies_every_download() {
     assert!(out.contains("\"code\":\"cache.sha256_mismatch\""), "{out}");
 }
 
+/// `archive = "..."` in the config file keeps the downloads on a drive of
+/// their own; the drive must be there.
+#[test]
+fn the_archive_lives_where_the_config_says_and_the_drive_must_be_mounted() {
+    let cli = Cli::new();
+    let drive = tempfile::tempdir().unwrap();
+    let archive = drive.path().join("phasor/archive");
+    let dir = archive.join("h/DATA");
+    std::fs::create_dir_all(&dir).unwrap();
+    std::fs::write(dir.join("a.zip"), b"zip bytes").unwrap();
+    std::fs::write(
+        dir.join("a.zip.json"),
+        format!(
+            r#"{{"url":"https://h/DATA/a.zip","size":9,"sha256":"{}","fetched_at":"2026-10-03T10:00:05Z","request":{{"by":"fetch"}}}}"#,
+            phasor_acquire::archive::sha256_hex(b"zip bytes")
+        ),
+    )
+    .unwrap();
+    let config = cli.home.path().join("config.toml");
+    std::fs::write(
+        &config,
+        format!("archive = {:?}\n", archive.to_str().unwrap()),
+    )
+    .unwrap();
+    let out = cli.ok(&["list", "--archive"]);
+    assert!(
+        out.contains("1 file(s)") && out.contains("https://h/DATA/a.zip"),
+        "{out}"
+    );
+    assert!(
+        cli.ok(&["verify", "--archive"])
+            .contains("1 file(s) checked, 0 do not match")
+    );
+    // The lake and the manifest stay under the home; no archive is made there.
+    assert!(cli.home.path().join("lake").is_dir());
+    assert!(!cli.home.path().join("archive").exists());
+    // The drive gone, phasor says so and does nothing.
+    drop(drive);
+    let (code, _, err) = cli.code(&["list", "--archive"]);
+    assert_eq!(code, 1, "{err}");
+    assert!(
+        err.contains("config.archive_missing") && err.contains("is its drive mounted?"),
+        "{err}"
+    );
+    assert!(!archive.exists(), "the missing archive is not created");
+}
+
 #[test]
 fn cache_wem_fetch_and_config() {
     let cli = Cli::new();
