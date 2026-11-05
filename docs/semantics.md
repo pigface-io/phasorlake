@@ -19,6 +19,20 @@ AEMO's data has two clocks:
   reader trusts), and no earlier than `LASTCHANGED` or `RUN_DATETIME`
   say where those are later.
 
+Every timestamp is stored as an instant and shown in its market's one
+clock: `+10:00` for the NEM, `+08:00` for the WEM, `+12:00` for New Zealand,
+whose files write daylight time with its own offset (`+13:00`); the instant
+is kept exactly, so a summer value displays an hour early in that fixed
+clock. A market that observes daylight saving carries beside each timestamp
+column a `{COLUMN}_UTC_US` sibling, the same instant as a `long` of
+microseconds since 1970 UTC, and a table keyed by trading date and period
+carries `INTERVAL_START_UTC_US`, the start of its half hour (New Zealand's
+period n is the n-th half hour from local midnight, so a day has 46, 48 or
+50). The lake computes these columns from each row as it is written (the
+table's `phasor.derived` property names them and their rule); they are
+not in the published schema, as the `_phasor_*` columns are not, and no
+reader needs the daylight-saving rule.
+
 Dedupe, "as of" reads, effective-date windows and forecast vintages are
 one question asked of these axes: which revision of a fact is the truth,
 as known at some time.
@@ -88,6 +102,15 @@ two copies of one row. Copies rank by the server's time (a source with
 none first), then the source: a total order, so a permutation of the
 files read cannot change which copy wins, and reading the same month
 again cannot double a fact.
+
+New Zealand's prices arrive as revisions by file: an interim day file
+(`_I`) the next morning, the final file in its place a business day or two
+later, the month's file under `ByMonth/` (an `_incomplete` one while the
+month is open), and any of them rewritten when the Authority restates. The
+lake keeps each as its own source (`_phasor_source` names the file, and a
+rewrite is the same URL at a later listed time); the rows differ only
+where the price was restated, and a reader takes the latest
+`_phasor_server_last_modified` per (trading date, period, node).
 
 A table with no key and no valid time collapses only rows equal in every
 column.
