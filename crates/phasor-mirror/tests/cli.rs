@@ -886,7 +886,7 @@ fn a_host_is_locked_while_read_and_its_robots_are_honoured() {
     );
     let locks = tempfile::tempdir().unwrap();
     let cli = Cli::new();
-    cli.config(FAST);
+    cli.config(&format!("{FAST}robots = true\n"));
     let root = srv.url("/A/");
     let run = |args: &[&str]| {
         Command::new(env!("CARGO_BIN_EXE_phasor-mirror"))

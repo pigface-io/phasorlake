@@ -120,11 +120,14 @@ host, each through its own paced fetcher and refusal breaker, so a refusal
 by one host stops only that host, and every `_at` instant is read in its
 host's clock.
 
-Before a host is read, its `robots.txt` is fetched once (no pacing, no
-breaker): a root it disallows `phasor-mirror` is an error, and a
-`Crawl-delay` longer than the host's pace becomes its pace. A host that
-serves none, or answers with anything but 200 (nemweb's sits behind a
-challenge page), has no rules. On one machine a host is read by one
+With `robots = true` at the top level, each host's `robots.txt` is fetched
+once before it is read (no pacing, no breaker): a root it disallows
+`phasor-mirror` is an error, and a `Crawl-delay` longer than the host's
+pace becomes its pace; a host that serves none, or answers with anything
+but 200 (nemweb's sits behind a challenge page), has no rules. The default
+is off: the data servers the mirror reads publish their files for
+programs to fetch, and some (NCI's THREDDS) carry a blanket `Disallow: /`
+meant for search engines. On one machine a host is read by one
 process at a time, whatever home each runs from, through a lock under the
 user's cache directory (`PHASOR_MIRROR_LOCK_DIR` to move it): two readers of
 one site draw its refusal together.

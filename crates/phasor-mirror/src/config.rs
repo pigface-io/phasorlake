@@ -175,6 +175,11 @@ pub struct Config {
     pub watch_secs: u64,
     /// The fewest seconds between two reads of a folder found changed.
     pub watch_least_secs: u64,
+    /// Whether each host's `robots.txt` is read before the host is, a root
+    /// it disallows refused and its crawl delay honoured. Off: the servers
+    /// read publish their files for programs, and some carry a blanket
+    /// `Disallow: /` meant for search engines.
+    pub robots: bool,
     /// The hosts read, each with its own roots, clock, pace and schedule.
     pub hosts: Vec<HostConfig>,
     /// Keep nothing whose data is for a month before this (`"2020-01"`);
@@ -352,6 +357,7 @@ impl Default for Config {
             progress_every_secs: 5,
             watch_secs: 24 * 60 * 60,
             watch_least_secs: 5 * 60,
+            robots: false,
             hosts: Vec::new(),
             keep_from: None,
         }
@@ -540,6 +546,10 @@ mod tests {
         );
         // The defaults name no host, and a config round-trips through TOML.
         assert!(Config::default().hosts().unwrap().is_empty());
+        assert!(
+            !Config::default().robots,
+            "robots.txt is read only when asked"
+        );
         let c = Config {
             hosts: vec![HostConfig::nemweb()],
             ..Config::default()

@@ -98,7 +98,7 @@ impl Context {
     /// slows the host's pace where it is the longer.
     pub async fn fetchers(&self, roots: &[Url]) -> Result<Fetchers, MirrorError> {
         let mut hosts = self.hosts_for(roots)?;
-        if !self.transport.is_offline() {
+        if self.config.robots && !self.transport.is_offline() {
             for h in &mut hosts {
                 robots::apply(self.transport.as_ref(), h).await?;
             }
