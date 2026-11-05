@@ -6,6 +6,7 @@ use std::time::Duration;
 
 use url::Url;
 
+use crate::config::ListingKind;
 use crate::crawl::{default_roots, root};
 use crate::error::MirrorError;
 use crate::stamp::AEST;
@@ -15,6 +16,8 @@ use crate::stamp::AEST;
 pub struct Host {
     /// `https://www.nemweb.com.au`, no trailing slash.
     pub base_url: String,
+    /// How it lists a folder.
+    pub listing: ListingKind,
     /// Seconds east of UTC of the host's listed and packed times.
     pub offset_secs: i32,
     /// Minimum gap between two requests to this host.
@@ -41,6 +44,7 @@ impl Host {
             watch_fast: under(&base, watch_fast),
             watch_current: under(&base, watch_current),
             base_url: base,
+            listing: ListingKind::Iis,
             offset_secs: AEST,
             request_interval: Duration::from_millis(request_interval_ms),
         })
@@ -61,6 +65,7 @@ impl Host {
             watch_fast: under(&base, &c.watch_fast),
             watch_current: under(&base, &c.watch_current),
             base_url: base,
+            listing: c.listing,
             offset_secs: c.listing_offset_secs,
             request_interval: Duration::from_millis(
                 c.request_interval_ms.unwrap_or(request_interval_ms),
@@ -156,6 +161,7 @@ mod tests {
 
         let wa = crate::config::HostConfig {
             base_url: "https://data.wa.aemo.com.au".to_owned(),
+            listing: ListingKind::Iis,
             listing_offset_secs: 8 * 3600,
             request_interval_ms: None,
             roots: vec![
@@ -167,7 +173,16 @@ mod tests {
         };
         let h = Host::from_config(&wa, 750).unwrap();
         assert_eq!(h.offset_secs, 28_800);
+        assert_eq!(h.listing, ListingKind::Iis);
         assert_eq!(h.request_interval, Duration::from_millis(750));
+        let blobs = crate::config::HostConfig {
+            listing: ListingKind::AzureBlob,
+            ..wa.clone()
+        };
+        assert_eq!(
+            Host::from_config(&blobs, 750).unwrap().listing,
+            ListingKind::AzureBlob
+        );
         assert_eq!(
             h.roots.iter().map(ToString::to_string).collect::<Vec<_>>(),
             [
@@ -205,6 +220,7 @@ mod tests {
             Host::nemweb("https://www.nemweb.com.au", 1, &[], &[]).unwrap(),
             Host {
                 base_url: "https://data.wa.aemo.com.au".to_owned(),
+                listing: ListingKind::Iis,
                 offset_secs: 28_800,
                 request_interval: Duration::from_secs(1),
                 roots: vec![],

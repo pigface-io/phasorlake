@@ -191,6 +191,19 @@ pub struct Config {
     pub keep_from: Option<Month>,
 }
 
+/// How a host lists a folder.
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize)]
+#[serde(rename_all = "kebab-case")]
+pub enum ListingKind {
+    /// An IIS directory page (AEMO's hosts).
+    #[default]
+    Iis,
+    /// An Azure Blob Storage container listing, a page of blobs and prefixes
+    /// at a time (the Electricity Authority's `emidatasets` account); its
+    /// times are HTTP dates, so `listing_offset_secs` is 0.
+    AzureBlob,
+}
+
 /// A further host: `[[hosts]]` in the config file.
 ///
 /// ```toml
@@ -199,12 +212,22 @@ pub struct Config {
 /// listing_offset_secs = 28800
 /// roots = ["public/public-data/datafiles/", "public/public-data/manifests/"]
 /// watch_current = ["public/public-data/datafiles/"]
+///
+/// [[hosts]]
+/// base_url = "https://emidatasets.blob.core.windows.net"
+/// listing = "azure-blob"
+/// listing_offset_secs = 0
+/// roots = ["publicdata/Datasets/Wholesale/DispatchAndPricing/"]
+/// watch_current = ["publicdata/Datasets/Wholesale/DispatchAndPricing/"]
 /// ```
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub struct HostConfig {
     /// The site.
     pub base_url: String,
+    /// How it lists a folder: an IIS page unless said otherwise.
+    #[serde(default)]
+    pub listing: ListingKind,
     /// Seconds east of UTC of the times its listings and zips carry.
     pub listing_offset_secs: i32,
     /// Its own minimum gap between requests, in milliseconds; the top-level one when absent.
@@ -415,16 +438,29 @@ base_url = "https://data.wa.aemo.com.au/"
 listing_offset_secs = 28800
 roots = ["public/public-data/datafiles/"]
 watch_current = ["public/market-data/wemde/"]
+
+[[hosts]]
+base_url = "https://emidatasets.blob.core.windows.net"
+listing = "azure-blob"
+listing_offset_secs = 0
+roots = ["publicdata/Datasets/Wholesale/DispatchAndPricing/"]
 "#,
         )
         .unwrap();
         let c = Config::load(&p).unwrap();
         let hosts = c.hosts().unwrap();
-        assert_eq!(hosts.len(), 2);
+        assert_eq!(hosts.len(), 3);
         assert_eq!(hosts[0].base_url, "https://www.nemweb.com.au");
         assert_eq!(hosts[1].base_url, "https://data.wa.aemo.com.au");
         assert_eq!(hosts[1].offset_secs, 28_800);
+        assert_eq!(
+            hosts[1].listing,
+            ListingKind::Iis,
+            "an IIS page unless said"
+        );
         assert_eq!(hosts[1].request_interval, Duration::from_millis(400));
+        assert_eq!(hosts[2].listing, ListingKind::AzureBlob);
+        assert_eq!(hosts[2].offset_secs, 0);
         let cadence = c.cadence().unwrap();
         assert_eq!(cadence.fast.len(), 5);
         assert_eq!(
@@ -434,6 +470,13 @@ watch_current = ["public/market-data/wemde/"]
                 "https://data.wa.aemo.com.au/public/market-data/wemde/"
             ]
         );
+        // A listing kind that is not one is a config error.
+        std::fs::write(
+            &p,
+            "[[hosts]]\nbase_url = \"https://h\"\nlisting = \"ftp\"\nlisting_offset_secs = 0\nroots = []\n",
+        )
+        .unwrap();
+        assert!(Config::load(&p).is_err());
         // A host without its clock or roots is a config error, named.
         std::fs::write(&p, "[[hosts]]\nbase_url = \"https://h\"\n").unwrap();
         let d = Config::load(&p).unwrap_err().diagnostic();

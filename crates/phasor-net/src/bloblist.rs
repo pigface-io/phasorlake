@@ -167,6 +167,29 @@ pub fn parse(xml: &[u8]) -> Result<Page, Unparsed> {
     Ok(page)
 }
 
+/// Every blob and prefix of one or more listing pages kept one after
+/// another, each an `<EnumerationResults>` document, as a mirror keeps a
+/// folder's pages; the last page's marker. A single page without the
+/// wrapper reads as [`parse`] reads it.
+pub fn parse_pages(bytes: &[u8]) -> Result<Page, Unparsed> {
+    const OPEN: &[u8] = b"<EnumerationResults";
+    const CLOSE: &[u8] = b"</EnumerationResults>";
+    let Some(mut pos) = find(bytes, OPEN, 0) else {
+        return parse(bytes);
+    };
+    let mut all = Page::default();
+    while let Some(start) = find(bytes, OPEN, pos) {
+        let end = find(bytes, CLOSE, start)
+            .ok_or_else(|| Unparsed::new("a listing page is not closed", &bytes[start..]))?;
+        let page = parse(&bytes[start..end + CLOSE.len()])?;
+        all.blobs.extend(page.blobs);
+        all.prefixes.extend(page.prefixes);
+        all.next_marker = page.next_marker;
+        pos = end + CLOSE.len();
+    }
+    Ok(all)
+}
+
 /// The listing request for `folder` (a blob folder's URL, `https://{account}/
 /// {container}/{prefix}/`): one page, from `marker` when given. The folder
 /// URL stays plain everywhere else; only this request carries a query.
@@ -301,6 +324,37 @@ mod tests {
         assert_eq!(find(b"ab", b"", 0), None);
         assert_eq!(find(b"ab", b"a", 5), None);
         assert_eq!(find(b"ab", b"b", 1), Some(1));
+    }
+
+    #[test]
+    fn pages_kept_one_after_another_read_as_one() {
+        let mut both = fixture("emi_generation_md_page.xml");
+        both.extend(fixture("emi_dispatch_and_pricing.xml"));
+        let all = parse_pages(&both).unwrap();
+        assert_eq!(
+            all.blobs.len(),
+            3 + parse(&fixture("emi_dispatch_and_pricing.xml"))
+                .unwrap()
+                .blobs
+                .len()
+        );
+        assert!(!all.prefixes.is_empty());
+        assert_eq!(all.next_marker, None, "the last page's marker");
+        // One page alone, with or without its wrapper; a page cut short.
+        assert_eq!(
+            parse_pages(&fixture("emi_generation_md_page.xml"))
+                .unwrap()
+                .blobs
+                .len(),
+            3
+        );
+        assert!(parse_pages(b"<Blobs></Blobs>").unwrap().blobs.is_empty());
+        assert_eq!(
+            parse_pages(b"<EnumerationResults><Blobs></Blobs>")
+                .unwrap_err()
+                .reason,
+            "a listing page is not closed"
+        );
     }
 
     #[test]

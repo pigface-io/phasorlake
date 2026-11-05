@@ -10,10 +10,12 @@ use crate::net::Fetchers;
 use serde::{Deserialize, Serialize};
 use url::Url;
 
+use crate::config::ListingKind;
 pub use crate::config::Mirror;
 use crate::error::MirrorError;
 use crate::listing::{self, LinkKind, Unparsed};
 use crate::stamp::Stamp;
+use phasor_net::bloblist;
 
 /// The folders mirrored under `base`: the long-term archive and the reports.
 pub fn default_roots(base: &str) -> Result<Vec<Url>, MirrorError> {
@@ -306,7 +308,7 @@ pub async fn crawl(
         let (html, kept) = match std::fs::read(&page_path) {
             Ok(html) => (html, true),
             Err(e) if e.kind() == std::io::ErrorKind::NotFound => {
-                let html = fetcher.fetch_listing(folder.as_str()).await?;
+                let html = fetcher.fetch_folder(folder.as_str()).await?;
                 write_atomic(&page_path, &html)?;
                 summary.pages_fetched += 1;
                 (html, false)
@@ -321,7 +323,8 @@ pub async fn crawl(
             .and_then(|t| t.duration_since(std::time::UNIX_EPOCH).ok())
             .map(|d| Stamp::from_unix(i64::try_from(d.as_secs()).unwrap_or(0)));
         let offset = fetcher.offset_of(folder.as_str());
-        let links = read_page(&folder, &html, roots, crawled_at, offset)?;
+        let listing = fetcher.listing_of(folder.as_str());
+        let links = read_page(&folder, &html, roots, crawled_at, offset, listing)?;
         let count = links.len();
         for remote in links {
             if remote.kind == RemoteKind::Dir && seen.insert(remote.url.clone()) {
@@ -350,18 +353,76 @@ pub async fn crawl(
     })
 }
 
-/// Every link of `folder`'s listing page as a record (`offset` seconds east of UTC).
+/// Every link of `folder`'s listing page as a record (`offset` seconds east
+/// of UTC): an IIS page's, or a blob store's pages' (its folder markers,
+/// zero-length blobs named for the folder, are not files).
 pub(crate) fn read_page(
     folder: &Url,
     html: &[u8],
     roots: &[Url],
     crawled_at: Option<Stamp>,
     offset: i32,
+    listing: ListingKind,
 ) -> Result<Vec<Remote>, MirrorError> {
     let bad = |source| MirrorError::Listing {
         url: folder.to_string(),
         source,
     };
+    if listing == ListingKind::AzureBlob {
+        let page = bloblist::parse_pages(html).map_err(|e| {
+            bad(Unparsed {
+                reason: e.reason,
+                text: e.text,
+            })
+        })?;
+        // A blob's name is under the container, the folder's first segment.
+        let mut container = folder.clone();
+        let first = container
+            .path_segments()
+            .and_then(|mut s| s.next())
+            .unwrap_or_default()
+            .to_owned();
+        container.set_path(&format!("/{first}/"));
+        let under_roots = |url: &Url| roots.iter().any(|r| url.as_str().starts_with(r.as_str()));
+        let join = |name: &str| {
+            container.join(name).map_err(|_| {
+                bad(Unparsed {
+                    reason: "a blob name that is not a URL",
+                    text: name.to_owned(),
+                })
+            })
+        };
+        let mut out = Vec::new();
+        for prefix in &page.prefixes {
+            let url = join(prefix)?;
+            out.push(Remote {
+                url: url.to_string(),
+                kind: if under_roots(&url) {
+                    RemoteKind::Dir
+                } else {
+                    RemoteKind::External
+                },
+                size: None,
+                modified: String::new(),
+                modified_at: None,
+                listed_on: folder.to_string(),
+                crawled_at,
+            });
+        }
+        for b in page.blobs.iter().filter(|b| b.size > 0) {
+            let url = join(&b.name)?;
+            out.push(Remote {
+                url: url.to_string(),
+                kind: RemoteKind::File,
+                size: Some(b.size),
+                modified: b.last_modified.clone(),
+                modified_at: Stamp::from_http_date(&b.last_modified),
+                listed_on: folder.to_string(),
+                crawled_at,
+            });
+        }
+        return Ok(out);
+    }
     listing::parse_in(html, offset)
         .map_err(bad)?
         .iter()
@@ -643,6 +704,150 @@ mod tests {
         assert_eq!(t.request_count(), 9);
     }
 
+    /// A blob store: a root folder with a folder below it and a folder
+    /// marker, a page of two, and a folder outside the roots.
+    #[tokio::test]
+    async fn a_blob_store_is_crawled_page_by_page_folders_and_files_alike() {
+        let home = tempfile::tempdir().unwrap();
+        let mirror = Mirror::new(home.path().join("mirror"));
+        let t = Arc::new(StaticTransport::default());
+        let at = "Tue, 04 Nov 2026 18:05:00 GMT";
+        let blob = |name: &str, size: u64| {
+            format!(
+                "<Blob><Name>{name}</Name><Properties><Last-Modified>{at}</Last-Modified><Content-Length>{size}</Content-Length></Properties></Blob>"
+            )
+        };
+        let prefix = |name: &str| format!("<BlobPrefix><Name>{name}</Name></BlobPrefix>");
+        let page = |items: &[String], next: &str| {
+            format!(
+                "<EnumerationResults><Blobs>{}</Blobs><NextMarker>{next}</NextMarker></EnumerationResults>",
+                items.concat()
+            )
+        };
+        let list = |folder: &str, marker: Option<&str>| bloblist::list_url(folder, marker).unwrap();
+        t.add(
+            &list("https://b/c/D/A/", None),
+            Canned::ok(
+                page(
+                    &[
+                        prefix("D/A/sub/"),
+                        blob("D/A/sub", 0),
+                        blob("D/A/x.csv", 3),
+                        prefix("D/Z/"),
+                    ],
+                    "m1",
+                )
+                .as_bytes(),
+            ),
+        );
+        t.add(
+            &list("https://b/c/D/A/", Some("m1")),
+            Canned::ok(page(&[blob("D/A/y.csv", 5)], "").as_bytes()),
+        );
+        t.add(
+            &list("https://b/c/D/A/sub/", None),
+            Canned::ok(page(&[], "").as_bytes()),
+        );
+        let archive = Archive::new(home.path().join("archive"));
+        let f = Fetchers::new(vec![crate::net::HostFetcher {
+            base_url: "https://b".to_owned(),
+            offset_secs: 0,
+            listing: ListingKind::AzureBlob,
+            fetcher: crate::net::Fetcher::new(
+                Arc::new(t.clone()),
+                archive,
+                FetcherConfig {
+                    attempts: 1,
+                    backoff: Duration::ZERO,
+                    max_backoff: Duration::ZERO,
+                    min_interval: Duration::ZERO,
+                },
+            ),
+        }]);
+        let roots = vec![root("https://b/c/D/A/").unwrap()];
+        let s = crawl(&f, &mirror, &roots, false, |_| {}).await.unwrap();
+        assert_eq!(
+            s,
+            CrawlSummary {
+                pages: 2,
+                pages_fetched: 2,
+                dirs: 1,
+                files: 2,
+                bytes: 8,
+                external: 1,
+                already_done: false,
+            }
+        );
+        assert_eq!(
+            t.request_count(),
+            3,
+            "two pages of the root, one of the folder"
+        );
+        let record = mirror.record().unwrap();
+        let urls: Vec<_> = record.iter().map(|r| (r.url.as_str(), r.kind)).collect();
+        assert_eq!(
+            urls,
+            [
+                ("https://b/c/D/A/sub/", RemoteKind::Dir),
+                ("https://b/c/D/A/x.csv", RemoteKind::File),
+                ("https://b/c/D/A/y.csv", RemoteKind::File),
+                ("https://b/c/D/Z/", RemoteKind::External),
+            ]
+        );
+        assert_eq!(record[1].size, Some(3));
+        assert_eq!(record[1].modified, at);
+        assert_eq!(
+            record[1].modified_at.unwrap().to_string(),
+            "2026-11-04T18:05:00Z"
+        );
+        assert_eq!(record[0].modified, "", "a folder has no listed time");
+        // A page that is not a listing stops the crawl, naming the folder.
+        let bad = Arc::new(StaticTransport::default());
+        bad.add(&list("https://b/c/D/A/", None), Canned::ok(b"<html/>"));
+        let mirror2 = Mirror::new(home.path().join("mirror2"));
+        let f2 = Fetchers::new(vec![crate::net::HostFetcher {
+            base_url: "https://b".to_owned(),
+            offset_secs: 0,
+            listing: ListingKind::AzureBlob,
+            fetcher: crate::net::Fetcher::new(
+                Arc::new(bad),
+                Archive::new(home.path().join("archive2")),
+                FetcherConfig {
+                    attempts: 1,
+                    backoff: Duration::ZERO,
+                    max_backoff: Duration::ZERO,
+                    min_interval: Duration::ZERO,
+                },
+            ),
+        }]);
+        assert!(crawl(&f2, &mirror2, &roots, false, |_| {}).await.is_err());
+        // Pages kept whole but cut: the read refuses, naming the folder.
+        let e = read_page(
+            &roots[0],
+            b"<EnumerationResults><Blobs></Blobs>",
+            &roots,
+            None,
+            0,
+            ListingKind::AzureBlob,
+        )
+        .unwrap_err();
+        assert!(matches!(e, MirrorError::Listing { ref url, .. } if url == "https://b/c/D/A/"));
+        // A name the container cannot take as a URL.
+        let e = read_page(
+            &roots[0],
+            page(&[prefix("http://[::1")], "").as_bytes(),
+            &roots,
+            None,
+            0,
+            ListingKind::AzureBlob,
+        )
+        .unwrap_err();
+        assert!(
+            matches!(e, MirrorError::Listing { ref source, .. } if source.reason == "a blob name that is not a URL"),
+            "{e}"
+        );
+    }
+
     #[tokio::test]
     async fn each_host_is_read_through_its_own_fetcher_in_its_own_clock() {
         let home = tempfile::tempdir().unwrap();
@@ -665,6 +870,7 @@ mod tests {
         let host = |base: &str, offset: i32, t: &Arc<StaticTransport>| crate::net::HostFetcher {
             base_url: base.to_owned(),
             offset_secs: offset,
+            listing: ListingKind::Iis,
             fetcher: crate::net::Fetcher::new(Arc::new(t.clone()), archive.clone(), fast.clone()),
         };
         let f = Fetchers::new(vec![

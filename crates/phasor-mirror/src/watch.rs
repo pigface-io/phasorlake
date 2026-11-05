@@ -189,7 +189,7 @@ pub async fn refresh(
     let mut failed = None;
     while let Some(folder) = queue.pop_front() {
         let url = root(&folder)?;
-        let html = match fetcher.fetch_listing(&folder).await {
+        let html = match fetcher.fetch_folder(&folder).await {
             Ok(html) => html,
             Err(FetchError::HttpStatus { status: 404, .. }) => {
                 record.retain(|u, _| u == &folder || !u.starts_with(&folder));
@@ -206,7 +206,8 @@ pub async fn refresh(
         };
         write_atomic(&mirror.page_path(&url), &html)?;
         let offset = fetcher.offset_of(&folder);
-        let now = read_page(&url, &html, roots, Some(Stamp::now()), offset)?;
+        let listing = fetcher.listing_of(&folder);
+        let now = read_page(&url, &html, roots, Some(Stamp::now()), offset, listing)?;
         let listed_before: BTreeMap<String, Listed> = record
             .values()
             .filter(|r| r.listed_on == folder)
