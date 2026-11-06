@@ -1255,6 +1255,56 @@ fn status(
     Ok(0)
 }
 
+/// One host's roots added up.
+#[derive(Debug, Default)]
+struct HostTotal {
+    roots: usize,
+    files: usize,
+    bytes: u64,
+    archived_files: usize,
+    archived_bytes: u64,
+}
+
+/// The roots added up per host, a table after the roots' own, when the
+/// roots are on more than one host; nothing when they are not.
+fn hosts_text(roots: &[phasor_mirror::RootStatus]) -> String {
+    let mut hosts: std::collections::BTreeMap<String, HostTotal> =
+        std::collections::BTreeMap::new();
+    for r in roots {
+        let host = Url::parse(&r.root)
+            .ok()
+            .and_then(|u| u.host_str().map(str::to_owned))
+            .unwrap_or_else(|| r.root.clone());
+        let t = hosts.entry(host).or_default();
+        t.roots += 1;
+        t.files += r.files;
+        t.bytes += r.bytes;
+        t.archived_files += r.archived_files;
+        t.archived_bytes += r.archived_bytes;
+    }
+    if hosts.len() < 2 {
+        return String::new();
+    }
+    let rows: Vec<Vec<String>> = hosts
+        .iter()
+        .map(|(host, t)| {
+            vec![
+                host.clone(),
+                t.roots.to_string(),
+                format!("{}/{}", t.archived_files, t.files),
+                format!(
+                    "{:.1}/{:.1}",
+                    t.archived_bytes as f64 / 1e9,
+                    t.bytes as f64 / 1e9
+                ),
+            ]
+        })
+        .collect();
+    let mut out = String::from("\n");
+    out.push_str(&render::table(&["host", "roots", "files", "GB"], &rows));
+    out
+}
+
 fn status_text(s: &Status) -> String {
     let run = if s.running { "running" } else { "not running" };
     let crawl = if s.crawl_done {
@@ -1301,6 +1351,7 @@ fn status_text(s: &Status) -> String {
         })
         .collect();
     out.push_str(&render::table(&["root", "files", "GB"], &rows));
+    out.push_str(&hosts_text(&s.roots));
     if s.external > 0 {
         let _ = writeln!(out, "{} links out of the roots, not followed", s.external);
     }

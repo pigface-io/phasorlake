@@ -101,7 +101,7 @@ export PHASOR_MIRROR_HOME=/path/to/mirror       # no default: a home is always n
 m=target/release/phasor-mirror
 $m init --nemweb                                 # config.toml with nemweb as its host
 nohup caffeinate -ims $m run --json > mirror.log 2>&1 &
-$m status
+$m status                                        # per root, then per host when there are several
 $m compare --delete
 $m map && $m summary
 nohup caffeinate -ims $m watch --json --delete-duplicates >> mirror.log 2>&1 &

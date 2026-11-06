@@ -852,6 +852,47 @@ fn a_batched_host_yields_the_rest_of_its_files_to_the_next_round() {
     assert_eq!(std::fs::read_to_string(&carried).unwrap(), "[]");
 }
 
+/// Roots on two hosts: `status` adds the roots up per host after the roots'
+/// own table; one host gets no such table.
+#[test]
+fn status_adds_the_roots_up_per_host() {
+    let cli = Cli::new();
+    for (host, size) in [("h", 9), ("k", 4)] {
+        let pages = cli
+            .home
+            .path()
+            .join(format!("state/folders/{host}/A/pages"));
+        std::fs::create_dir_all(&pages).unwrap();
+        std::fs::write(
+            pages.join("index.html"),
+            format!("<pre> Monday, October 12, 2026 10:45 AM {size} <A HREF=\"/A/a.zip\">a.zip</A><br></pre>"),
+        )
+        .unwrap();
+    }
+    let file = cli.home.path().join("archive/h/A/a.zip");
+    std::fs::create_dir_all(file.parent().unwrap()).unwrap();
+    std::fs::write(&file, b"zip bytes").unwrap();
+    cli.ok(&[
+        "--offline",
+        "crawl",
+        "--root",
+        "https://h/A/",
+        "--root",
+        "https://k/A/",
+    ]);
+    let status = cli.ok(&["status", "--root", "https://h/A/", "--root", "https://k/A/"]);
+    let hosts = status
+        .split_once("\nhost ")
+        .map(|(_, t)| t)
+        .unwrap_or_default();
+    assert!(hosts.contains("\nh "), "{status}");
+    assert!(hosts.contains("\nk "), "{status}");
+    assert!(hosts.contains("1/1"), "{status}");
+    assert!(hosts.contains("0/1"), "{status}");
+    let status = cli.ok(&["status", "--root", "https://h/A/"]);
+    assert!(!status.contains("\nhost "), "{status}");
+}
+
 #[test]
 fn prune_deletes_what_is_before_the_month_kept_from() {
     let cli = Cli::new();
