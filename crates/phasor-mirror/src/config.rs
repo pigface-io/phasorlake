@@ -17,12 +17,12 @@ use std::time::Duration;
 use serde::{Deserialize, Serialize};
 use url::Url;
 
-use crate::diag::{Category, Diagnose, Diagnostic};
 use crate::error::MirrorError;
 use crate::hosts::Host;
 use crate::keep::Month;
 use crate::net::Archive;
 use crate::watch::Cadence;
+pub use phasor_core::config::ConfigError;
 
 /// Where the mirror keeps things: `--home` or `PHASOR_MIRROR_HOME`. There is
 /// no default: an archive is too large and too long-lived to land where a
@@ -382,38 +382,26 @@ impl Default for Config {
 }
 
 impl Config {
-    /// Loads the file, or the defaults when it does not exist.
+    /// Loads the file, or the defaults when it does not exist; the message
+    /// of a key that moved says where it went.
     pub fn load(path: &Path) -> Result<Self, ConfigError> {
-        let text = match std::fs::read_to_string(path) {
-            Ok(t) => t,
-            Err(e) if e.kind() == std::io::ErrorKind::NotFound => return Ok(Self::default()),
-            Err(source) => {
-                return Err(ConfigError::Read {
-                    path: path.display().to_string(),
-                    source,
-                });
-            }
-        };
-        Self::parse(&text).map_err(|message| ConfigError::Parse {
-            path: path.display().to_string(),
-            message,
+        phasor_core::config::load_toml(path).map_err(|e| match e {
+            ConfigError::Parse {
+                path,
+                message,
+                line,
+            } => ConfigError::Parse {
+                path,
+                message: retired_key_message(message),
+                line,
+            },
+            e => e,
         })
     }
 
     /// The config in `text`; the message of a key that moved says where it went.
     pub fn parse(text: &str) -> Result<Self, String> {
-        toml::from_str(text).map_err(|e| {
-            let message = e.message().to_owned();
-            match RETIRED_KEYS
-                .iter()
-                .find(|k| message.contains(&format!("`{k}`")))
-            {
-                Some(key) => format!(
-                    "{message}. The key `{key}` moved into a host: nemweb is a [[hosts]] entry like any other (`phasor-mirror init` writes it), and a watch's cadence is its [[hosts.schedule]] rules."
-                ),
-                None => message,
-            }
-        })
+        toml::from_str(text).map_err(|e| retired_key_message(e.message().to_owned()))
     }
 
     /// The config as a file's text.
@@ -458,47 +446,23 @@ impl Config {
     }
 }
 
-/// Why a config file could not be used.
-#[derive(Debug, thiserror::Error)]
-pub enum ConfigError {
-    /// The file exists but could not be read.
-    #[error("The config file {path} could not be read.")]
-    Read {
-        /// The file.
-        path: String,
-        /// The I/O error.
-        #[source]
-        source: std::io::Error,
-    },
-    /// The file is not valid.
-    #[error("The config file {path} is not valid: {message}")]
-    Parse {
-        /// The file.
-        path: String,
-        /// TOML's message, which names the key.
-        message: String,
-    },
-}
-
-impl Diagnose for ConfigError {
-    fn diagnostic(&self) -> Diagnostic {
-        match self {
-            Self::Read { path, source } => {
-                Diagnostic::error("config.read", Category::CONFIG, self.to_string())
-                    .with_file(path.clone())
-                    .caused_by(source)
-            }
-            Self::Parse { path, .. } => {
-                Diagnostic::error("config.parse", Category::CONFIG, self.to_string())
-                    .with_file(path.clone())
-            }
-        }
+/// TOML's `message` with, when it names a key that moved, where it went.
+fn retired_key_message(message: String) -> String {
+    match RETIRED_KEYS
+        .iter()
+        .find(|k| message.contains(&format!("`{k}`")))
+    {
+        Some(key) => format!(
+            "{message}. The key `{key}` moved into a host: nemweb is a [[hosts]] entry like any other (`phasor-mirror init` writes it), and a watch's cadence is its [[hosts.schedule]] rules."
+        ),
+        None => message,
     }
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::diag::Diagnose as _;
 
     #[test]
     fn the_records_live_under_the_home() {

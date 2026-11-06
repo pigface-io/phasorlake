@@ -329,26 +329,32 @@ impl Diagnose for ConfigError {
     }
 }
 
+/// The TOML file at `path` read as a `T`, or `T::default()` when there is
+/// no file; a parse error names the file and the line.
+pub fn load_toml<T: serde::de::DeserializeOwned + Default>(path: &Path) -> Result<T, ConfigError> {
+    let text = match std::fs::read_to_string(path) {
+        Ok(t) => t,
+        Err(e) if e.kind() == std::io::ErrorKind::NotFound => return Ok(T::default()),
+        Err(source) => {
+            return Err(ConfigError::Read {
+                path: path.display().to_string(),
+                source,
+            });
+        }
+    };
+    toml::from_str(&text).map_err(|e: toml::de::Error| ConfigError::Parse {
+        path: path.display().to_string(),
+        message: e.message().to_owned(),
+        line: e
+            .span()
+            .map(|span| u64::try_from(text[..span.start].matches('\n').count()).unwrap_or(0) + 1),
+    })
+}
+
 impl Config {
     /// Loads the file, or the defaults when it does not exist.
     pub fn load(path: &Path) -> Result<Self, ConfigError> {
-        let text = match std::fs::read_to_string(path) {
-            Ok(t) => t,
-            Err(e) if e.kind() == std::io::ErrorKind::NotFound => return Ok(Self::default()),
-            Err(source) => {
-                return Err(ConfigError::Read {
-                    path: path.display().to_string(),
-                    source,
-                });
-            }
-        };
-        let config = Self::parse(&text).map_err(|e| ConfigError::Parse {
-            path: path.display().to_string(),
-            message: e.message().to_owned(),
-            line: e.span().map(|span| {
-                u64::try_from(text[..span.start].matches('\n').count()).unwrap_or(0) + 1
-            }),
-        })?;
+        let config: Self = load_toml(path)?;
         config.lake.invalid().map_or(Ok(config), Err)
     }
 

@@ -14,8 +14,8 @@ Every error and warning phasor reports carries one of these codes. Codes are sta
 | `config.mirror_root` | `crates/phasor-mirror/src/error.rs` |
 | `config.no_decoder` | `crates/phasor-py/src/lib.rs` |
 | `config.no_hosts` | `crates/phasor-mirror/src/error.rs` |
-| `config.parse` | `crates/phasor-mirror/src/config.rs` |
-| `config.read` | `crates/phasor-mirror/src/config.rs` |
+| `config.parse` | `crates/phasor-core/src/config.rs` |
+| `config.read` | `crates/phasor-core/src/config.rs` |
 
 ## net
 
