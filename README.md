@@ -93,8 +93,9 @@ hash changes, and `phasor ingest` reads that source again from the archive.
 
 The archive alone may live elsewhere: `archive = "/path/to/the/drive/phasor/archive"`
 in `config.toml` keeps the downloads on a drive of their own, which must be
-mounted when phasor runs (a missing archive is an error, never made). The
-lake, the manifest and the rest stay under the home.
+mounted when phasor runs (a missing archive is an error, never made). A
+leading `~/` is the user's home, as in a shell. The lake, the manifest and
+the rest stay under the home.
 
 How files are cut is `[lake]` in `config.toml`; it never changes what they
 hold, and each footer records it (`phasor.write_options`). The same rows

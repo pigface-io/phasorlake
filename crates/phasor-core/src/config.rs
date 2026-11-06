@@ -13,7 +13,8 @@ use crate::diag::{Category, Diagnose, Diagnostic};
 pub struct Config {
     /// Where the archive of downloads is, when not `{home}/archive`: a
     /// directory that must exist when phasor runs (a drive of its own,
-    /// mounted). The lake and the manifest stay under the home.
+    /// mounted). The lake and the manifest stay under the home. A leading
+    /// `~` is the user's home once [`Config::expanded`] has run.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub archive: Option<PathBuf>,
     /// Parse workers; 0 means half the available cores.
@@ -351,6 +352,18 @@ impl Config {
         config.lake.invalid().map_or(Ok(config), Err)
     }
 
+    /// This config with a `~` at the head of each path setting (`archive`)
+    /// standing for `user_home`, as a shell reads one: `~/drive/archive`,
+    /// or `~` alone. Another user's `~name` and a path without a user home
+    /// are left as written.
+    #[must_use]
+    pub fn expanded(mut self, user_home: Option<&Path>) -> Self {
+        if let Some(user_home) = user_home {
+            self.archive = self.archive.map(|p| expand_tilde(&p, user_home));
+        }
+        self
+    }
+
     /// Whether the archive the file names is there; a configured archive is
     /// never created in its absence, so an unmounted drive is not stood in
     /// for.
@@ -367,7 +380,26 @@ impl Config {
     pub fn parse(text: &str) -> Result<Self, toml::de::Error> {
         toml::from_str(text)
     }
+}
 
+/// `path` with a leading `~` component replaced by `user_home`; any other
+/// path as it is.
+fn expand_tilde(path: &Path, user_home: &Path) -> PathBuf {
+    let mut parts = path.components();
+    match parts.next() {
+        Some(std::path::Component::Normal(first)) if first == "~" => {
+            let rest = parts.as_path();
+            if rest.as_os_str().is_empty() {
+                user_home.to_path_buf()
+            } else {
+                user_home.join(rest)
+            }
+        }
+        _ => path.to_path_buf(),
+    }
+}
+
+impl Config {
     /// The effective number of parse workers.
     pub fn effective_jobs(&self) -> usize {
         if self.jobs > 0 {
@@ -404,6 +436,29 @@ mod tests {
                 .contains("archive")
         );
         assert!(toml::to_string(&c).unwrap().contains("archive = "));
+    }
+
+    #[test]
+    fn a_tilde_at_the_head_of_a_path_is_the_users_home() {
+        let user = Path::new("/u");
+        let at = |text: &str| Config::parse(text).unwrap().expanded(Some(user)).archive;
+        assert_eq!(
+            at("archive = \"~/drive/archive\"\n"),
+            Some("/u/drive/archive".into())
+        );
+        assert_eq!(at("archive = \"~\"\n"), Some("/u".into()));
+        // Another user's home, an absolute path and an unset key are as written.
+        assert_eq!(
+            at("archive = \"~other/archive\"\n"),
+            Some("~other/archive".into())
+        );
+        assert_eq!(at("archive = \"/d/archive\"\n"), Some("/d/archive".into()));
+        assert_eq!(at(""), None);
+        // Without a user home nothing is expanded.
+        let c = Config::parse("archive = \"~/drive\"\n")
+            .unwrap()
+            .expanded(None);
+        assert_eq!(c.archive, Some("~/drive".into()));
     }
 
     #[test]

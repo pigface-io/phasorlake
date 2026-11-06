@@ -50,7 +50,9 @@ impl Context {
         let rendered = |e: phasor_core::config::ConfigError| {
             anyhow::anyhow!("{}", phasor_core::Diagnose::diagnostic(&e).render())
         };
-        let config = Config::load(&config_path).map_err(rendered)?;
+        let config = Config::load(&config_path)
+            .map_err(rendered)?
+            .expanded(user_home.as_deref());
         // The archive where the config file says, which must be there (a
         // drive); else under the home, made as needed.
         config.archive_present().map_err(rendered)?;
