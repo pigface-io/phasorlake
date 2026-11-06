@@ -833,7 +833,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "39cab71617ae0d63f51a36d69f866391735b51691dbda63cf6f96d042b63efeb"
 dependencies = [
  "libc",
- "windows-sys 0.61.2",
+ "windows-sys 0.52.0",
 ]
 
 [[package]]
@@ -1902,9 +1902,9 @@ dependencies = [
  "criterion",
  "flate2",
  "futures",
- "memchr",
  "phasor-core",
  "phasor-kit",
+ "phasor-listing",
  "phasor-net",
  "phasor-plain-decode",
  "phasor-provenance",
@@ -1999,7 +1999,7 @@ dependencies = [
 [[package]]
 name = "phasor-decode"
 version = "0.2.0"
-source = "git+https://github.com/pigface-io/phasorlake-schemas.git?rev=1abef334c68f0ad5d44a7304d8bcce33d79e3c35#1abef334c68f0ad5d44a7304d8bcce33d79e3c35"
+source = "git+https://github.com/pigface-io/phasorlake-schemas.git?rev=f0e3e7d8a82030b352a32263349b0170fcd3aa47#f0e3e7d8a82030b352a32263349b0170fcd3aa47"
 dependencies = [
  "phasor-diag",
  "serde",
@@ -2010,7 +2010,7 @@ dependencies = [
 [[package]]
 name = "phasor-diag"
 version = "0.2.0"
-source = "git+https://github.com/pigface-io/phasorlake-schemas.git?rev=1abef334c68f0ad5d44a7304d8bcce33d79e3c35#1abef334c68f0ad5d44a7304d8bcce33d79e3c35"
+source = "git+https://github.com/pigface-io/phasorlake-schemas.git?rev=f0e3e7d8a82030b352a32263349b0170fcd3aa47#f0e3e7d8a82030b352a32263349b0170fcd3aa47"
 dependencies = [
  "serde",
 ]
@@ -2085,7 +2085,7 @@ dependencies = [
 [[package]]
 name = "phasor-gates"
 version = "0.2.0"
-source = "git+https://github.com/pigface-io/phasorlake-schemas.git?rev=1abef334c68f0ad5d44a7304d8bcce33d79e3c35#1abef334c68f0ad5d44a7304d8bcce33d79e3c35"
+source = "git+https://github.com/pigface-io/phasorlake-schemas.git?rev=f0e3e7d8a82030b352a32263349b0170fcd3aa47#f0e3e7d8a82030b352a32263349b0170fcd3aa47"
 dependencies = [
  "anyhow",
  "serde",
@@ -2095,7 +2095,7 @@ dependencies = [
 [[package]]
 name = "phasor-iceberg"
 version = "0.2.0"
-source = "git+https://github.com/pigface-io/phasorlake-schemas.git?rev=1abef334c68f0ad5d44a7304d8bcce33d79e3c35#1abef334c68f0ad5d44a7304d8bcce33d79e3c35"
+source = "git+https://github.com/pigface-io/phasorlake-schemas.git?rev=f0e3e7d8a82030b352a32263349b0170fcd3aa47#f0e3e7d8a82030b352a32263349b0170fcd3aa47"
 dependencies = [
  "phasor-diag",
  "serde",
@@ -2138,6 +2138,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "phasor-listing"
+version = "0.2.0"
+source = "git+https://github.com/pigface-io/phasorlake-schemas.git?rev=f0e3e7d8a82030b352a32263349b0170fcd3aa47#f0e3e7d8a82030b352a32263349b0170fcd3aa47"
+dependencies = [
+ "memchr",
+ "phasor-provenance",
+ "thiserror 2.0.21",
+]
+
+[[package]]
 name = "phasor-mirror"
 version = "0.1.0"
 dependencies = [
@@ -2149,9 +2159,9 @@ dependencies = [
  "criterion",
  "directories",
  "futures",
- "memchr",
  "phasor-core",
  "phasor-ftp",
+ "phasor-listing",
  "phasor-net",
  "phasor-plain-decode",
  "phasor-provenance",
@@ -2193,7 +2203,7 @@ dependencies = [
 [[package]]
 name = "phasor-mms-decode"
 version = "0.2.0"
-source = "git+https://github.com/pigface-io/phasorlake-schemas.git?rev=1abef334c68f0ad5d44a7304d8bcce33d79e3c35#1abef334c68f0ad5d44a7304d8bcce33d79e3c35"
+source = "git+https://github.com/pigface-io/phasorlake-schemas.git?rev=f0e3e7d8a82030b352a32263349b0170fcd3aa47#f0e3e7d8a82030b352a32263349b0170fcd3aa47"
 dependencies = [
  "memchr",
  "phasor-decode",
@@ -2283,7 +2293,7 @@ dependencies = [
 [[package]]
 name = "phasor-plain-decode"
 version = "0.2.0"
-source = "git+https://github.com/pigface-io/phasorlake-schemas.git?rev=1abef334c68f0ad5d44a7304d8bcce33d79e3c35#1abef334c68f0ad5d44a7304d8bcce33d79e3c35"
+source = "git+https://github.com/pigface-io/phasorlake-schemas.git?rev=f0e3e7d8a82030b352a32263349b0170fcd3aa47#f0e3e7d8a82030b352a32263349b0170fcd3aa47"
 dependencies = [
  "memchr",
  "phasor-decode",
@@ -2298,7 +2308,7 @@ dependencies = [
 [[package]]
 name = "phasor-provenance"
 version = "0.2.0"
-source = "git+https://github.com/pigface-io/phasorlake-schemas.git?rev=1abef334c68f0ad5d44a7304d8bcce33d79e3c35#1abef334c68f0ad5d44a7304d8bcce33d79e3c35"
+source = "git+https://github.com/pigface-io/phasorlake-schemas.git?rev=f0e3e7d8a82030b352a32263349b0170fcd3aa47#f0e3e7d8a82030b352a32263349b0170fcd3aa47"
 dependencies = [
  "crc32fast",
  "phasor-diag",
@@ -2401,7 +2411,7 @@ dependencies = [
 [[package]]
 name = "phasor-zip"
 version = "0.2.0"
-source = "git+https://github.com/pigface-io/phasorlake-schemas.git?rev=1abef334c68f0ad5d44a7304d8bcce33d79e3c35#1abef334c68f0ad5d44a7304d8bcce33d79e3c35"
+source = "git+https://github.com/pigface-io/phasorlake-schemas.git?rev=f0e3e7d8a82030b352a32263349b0170fcd3aa47#f0e3e7d8a82030b352a32263349b0170fcd3aa47"
 dependencies = [
  "flate2",
  "phasor-diag",
@@ -2615,7 +2625,7 @@ dependencies = [
  "once_cell",
  "socket2",
  "tracing",
- "windows-sys 0.61.2",
+ "windows-sys 0.52.0",
 ]
 
 [[package]]
@@ -2851,7 +2861,7 @@ dependencies = [
  "errno",
  "libc",
  "linux-raw-sys",
- "windows-sys 0.61.2",
+ "windows-sys 0.52.0",
 ]
 
 [[package]]
@@ -2908,7 +2918,7 @@ dependencies = [
  "security-framework",
  "security-framework-sys",
  "webpki-root-certs",
- "windows-sys 0.61.2",
+ "windows-sys 0.52.0",
 ]
 
 [[package]]
@@ -3275,10 +3285,10 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "32497e9a4c7b38532efcdebeef879707aa9f794296a4f0244f6f69e9bc8574bd"
 dependencies = [
  "fastrand",
- "getrandom 0.4.3",
+ "getrandom 0.3.4",
  "once_cell",
  "rustix",
- "windows-sys 0.61.2",
+ "windows-sys 0.52.0",
 ]
 
 [[package]]
@@ -3867,7 +3877,7 @@ version = "0.1.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c2a7b1c03c876122aa43f3020e6c3c3ee5c05081c9a00739faf7503aeba10d22"
 dependencies = [
- "windows-sys 0.61.2",
+ "windows-sys 0.52.0",
 ]
 
 [[package]]
