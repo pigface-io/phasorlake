@@ -52,7 +52,8 @@
   ],
   "phasor-iceberg-store": [
     "phasor-core",
-    "phasor-iceberg"
+    "phasor-iceberg",
+    "phasor-provenance"
   ],
   "phasor-kit": [
     "phasor-core",

@@ -12,6 +12,7 @@ use phasor_iceberg::table::{
     DataFile, ManifestFile, Snapshot, TableMetadata, read_manifest_list, write_manifest,
     write_manifest_list,
 };
+use phasor_provenance::{Durability, write_atomic};
 
 /// Why a table could not be read or written.
 #[derive(Debug, thiserror::Error)]
@@ -129,9 +130,8 @@ impl Store {
     fn publish(&self, metadata: &TableMetadata, version: u32) -> Result<()> {
         let dir = self.meta_dir();
         std::fs::write(self.version_file(version), serde_json::to_vec(metadata)?)?;
-        let tmp = dir.join(".version-hint.text");
-        std::fs::write(&tmp, version.to_string())?;
-        std::fs::rename(tmp, dir.join("version-hint.text"))?;
+        let hint = dir.join("version-hint.text");
+        write_atomic(&hint, version.to_string().as_bytes(), Durability::Unsynced)?;
         Ok(())
     }
 

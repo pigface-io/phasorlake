@@ -3,6 +3,7 @@
 use std::path::Path;
 
 use crate::net::{Archive, DirNames};
+use phasor_provenance::Durability;
 use serde::{Deserialize, Serialize};
 use url::Url;
 
@@ -147,12 +148,9 @@ impl Mirror {
         let mut status = status.clone();
         status.as_of = Some(Stamp::now());
         let path = self.progress_path();
-        let cache = self.cache_dir();
-        std::fs::create_dir_all(&cache).map_err(MirrorError::io(&cache))?;
-        let part = cache.join("status.json.part");
         let text = serde_json::to_vec(&status).expect("a Status always serialises");
-        std::fs::write(&part, text).map_err(MirrorError::io(&part))?;
-        std::fs::rename(&part, &path).map_err(MirrorError::io(&path))
+        phasor_provenance::write_atomic(&path, &text, Durability::Unsynced)
+            .map_err(MirrorError::io(&path))
     }
 
     /// A run's latest counts, when there are any.

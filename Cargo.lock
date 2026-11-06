@@ -2113,6 +2113,7 @@ dependencies = [
  "parquet",
  "phasor-core",
  "phasor-iceberg",
+ "phasor-provenance",
  "serde_json",
  "tempfile",
  "thiserror 2.0.21",

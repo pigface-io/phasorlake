@@ -3,10 +3,10 @@
 //! crawl picks up from the pages it already has.
 
 use std::collections::{BTreeMap, HashSet, VecDeque};
-use std::io::Write as _;
 use std::path::{Path, PathBuf};
 
 use crate::net::Fetchers;
+use phasor_provenance::Durability;
 use serde::{Deserialize, Serialize};
 use url::Url;
 
@@ -488,17 +488,10 @@ fn parse_record(path: &Path, text: &str) -> Result<Vec<Remote>, MirrorError> {
         .collect()
 }
 
-/// Writes `bytes` beside `path` and renames it into place.
+/// Writes `bytes` to `path` whole: by way of `{path}.part`, synced, then
+/// renamed into place.
 pub fn write_atomic(path: &Path, bytes: &[u8]) -> Result<(), MirrorError> {
-    let parent = path.parent().unwrap_or(Path::new("."));
-    std::fs::create_dir_all(parent).map_err(MirrorError::io(parent))?;
-    let mut part = path.as_os_str().to_owned();
-    part.push(".part");
-    let part = PathBuf::from(part);
-    let mut f = std::fs::File::create(&part).map_err(MirrorError::io(&part))?;
-    f.write_all(bytes).map_err(MirrorError::io(&part))?;
-    crate::net::archive::to_disk(&f).map_err(MirrorError::io(&part))?;
-    std::fs::rename(&part, path).map_err(MirrorError::io(path))
+    phasor_provenance::write_atomic(path, bytes, Durability::Synced).map_err(MirrorError::io(path))
 }
 
 #[cfg(test)]
