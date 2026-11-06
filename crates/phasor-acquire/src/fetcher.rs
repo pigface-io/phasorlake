@@ -18,7 +18,7 @@ use crate::error::FetchError;
 use crate::transport::{Span, Transport};
 use phasor_kit::{Listings, LocalFile, Pick, Picks, RemoteFile};
 pub use phasor_net::fetch::{FetcherConfig, RangeRead};
-use phasor_net::fetch::{Requests, stream_to_file};
+use phasor_net::fetch::{KeptFrom, Requests, keep_fetched, stream_to_file};
 
 /// The listing line a file was listed with, its text read as an instant in the host's clock.
 fn listed_of(remote: &RemoteFile) -> Listed {
@@ -377,39 +377,13 @@ impl Fetcher {
                 }
             }
         };
-        std::fs::rename(&part, &path).map_err(|source| FetchError::CacheIo {
-            path: path.display().to_string(),
-            source,
-        })?;
-        let provenance = Provenance::new(
-            Content {
-                size: streamed.size,
-                sha256: streamed.sha256,
-                crc32: Some(streamed.crc32),
-            },
-            AGENT.to_owned(),
-            Address {
-                url: url.to_owned(),
-                seen: Stamp::now(),
-                gone: None,
-                via: Via::Fetched {
-                    listed: Some(listed_of(remote)),
-                    served: Some(Served {
-                        etag: streamed.etag,
-                        modified: streamed
-                            .last_modified
-                            .as_deref()
-                            .and_then(timetext::parse_http_date),
-                    }),
-                },
-            },
-        );
-        Archive::write(&path, &provenance)?;
-        Ok(LocalFile::from_held(
-            remote,
-            Held { path, provenance },
-            false,
-        ))
+        let from = KeptFrom {
+            url,
+            listed: Some(listed_of(remote)),
+            tool: AGENT,
+        };
+        let held = keep_fetched(&part, &path, &streamed, from)?;
+        Ok(LocalFile::from_held(remote, held, false))
     }
 }
 

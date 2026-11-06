@@ -9,11 +9,11 @@ use std::time::Duration;
 use crate::net::Event;
 use crate::stamp::Stamp;
 pub use phasor_net::fetch::{FetcherConfig, RangeRead};
-use phasor_net::fetch::{PartMeta, Requests, Streamed, part_meta, stream_to_file};
-
-use crate::net::archive::{
-    Address, Archive, Content, Held, Provenance, Served, Sha256, Via, lookup_at,
+use phasor_net::fetch::{
+    KeptFrom, PartMeta, Requests, Streamed, keep_fetched, part_meta, stream_to_file,
 };
+
+use crate::net::archive::{Address, Archive, Held, Sha256, Via, lookup_at};
 use crate::net::error::FetchError;
 use crate::net::source::RemoteFile;
 use crate::net::transport::{Span, Transport};
@@ -229,38 +229,16 @@ impl Fetcher {
                 ..LocalFile::cached(remote, held)
             });
         }
-        std::fs::rename(&part, &path).map_err(|source| FetchError::CacheIo {
-            path: path.display().to_string(),
-            source,
-        })?;
-        let modified = streamed
-            .last_modified
-            .as_deref()
-            .and_then(Stamp::from_http_date);
-        let provenance = Provenance::new(
-            Content {
-                size: streamed.size,
-                sha256: streamed.sha256,
-                crc32: Some(streamed.crc32),
-            },
-            format!("phasor-mirror/{}", env!("CARGO_PKG_VERSION")),
-            Address {
-                url: url.to_owned(),
-                seen: Stamp::now(),
-                gone: None,
-                via: Via::Fetched {
-                    listed: Some(listed_of(remote)),
-                    served: Some(Served {
-                        etag: streamed.etag.clone(),
-                        modified,
-                    }),
-                },
-            },
-        );
-        Archive::write(&path, &provenance)?;
+        let tool = format!("phasor-mirror/{}", env!("CARGO_PKG_VERSION"));
+        let from = KeptFrom {
+            url,
+            listed: Some(listed_of(remote)),
+            tool: &tool,
+        };
+        let held = keep_fetched(&part, &path, &streamed, from)?;
         Ok(LocalFile {
             remote: remote.clone(),
-            path,
+            path: held.path,
             sha256: streamed.sha256.hex(),
             size: streamed.size,
             cached: false,

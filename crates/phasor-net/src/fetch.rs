@@ -17,7 +17,9 @@ use phasor_provenance::stamp::Stamp;
 use sha2::Digest;
 use tokio::sync::Mutex;
 
-use crate::archive::{Sha256, to_disk};
+use crate::archive::{
+    Address, Archive, Content, Held, Listed, Provenance, Served, Sha256, Via, to_disk,
+};
 use crate::error::FetchError;
 use crate::transport::{HttpResponse, Span, Transport};
 
@@ -390,6 +392,60 @@ pub struct Streamed {
     pub last_modified: Option<String>,
 }
 
+/// Where a fetched file came from, for [`keep_fetched`].
+#[derive(Debug, Clone, Copy)]
+pub struct KeptFrom<'a> {
+    /// The URL the bytes were fetched from.
+    pub url: &'a str,
+    /// The listing line it was fetched under, when a listing named it.
+    pub listed: Option<Listed>,
+    /// The program and version keeping it, e.g. `phasor-mirror/0.2.0`.
+    pub tool: &'a str,
+}
+
+/// Moves the download at `part` to `path` and writes its provenance beside
+/// it: the bytes `streamed` describes, obtained at `from.url` now, with what
+/// the server said of them. The file as held.
+pub fn keep_fetched(
+    part: &Path,
+    path: &Path,
+    streamed: &Streamed,
+    from: KeptFrom<'_>,
+) -> Result<Held, FetchError> {
+    std::fs::rename(part, path).map_err(|source| FetchError::CacheIo {
+        path: path.display().to_string(),
+        source,
+    })?;
+    let provenance = Provenance::new(
+        Content {
+            size: streamed.size,
+            sha256: streamed.sha256,
+            crc32: Some(streamed.crc32),
+        },
+        from.tool,
+        Address {
+            url: from.url.to_owned(),
+            seen: Stamp::now(),
+            gone: None,
+            via: Via::Fetched {
+                listed: from.listed,
+                served: Some(Served {
+                    etag: streamed.etag.clone(),
+                    modified: streamed
+                        .last_modified
+                        .as_deref()
+                        .and_then(Stamp::from_http_date),
+                }),
+            },
+        },
+    );
+    Archive::write(path, &provenance)?;
+    Ok(Held {
+        path: path.to_path_buf(),
+        provenance,
+    })
+}
+
 /// What the server said of a file when its download began, kept beside the part
 /// so a later run continues only if the file is unchanged.
 #[derive(Debug, Clone, PartialEq, Eq, serde::Serialize, serde::Deserialize)]
@@ -587,6 +643,45 @@ pub async fn stream_to_file(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn a_download_is_kept_with_its_provenance_or_the_rename_is_the_error() {
+        let dir = tempfile::tempdir().unwrap();
+        let (part, path) = (dir.path().join("a.zip.part"), dir.path().join("a.zip"));
+        std::fs::write(&part, b"abcde").unwrap();
+        let streamed = Streamed {
+            sha256: Sha256::of(b"abcde"),
+            crc32: 7,
+            size: 5,
+            etag: Some("\"e\"".into()),
+            last_modified: Some("Tue, 13 Feb 2024 08:27:00 GMT".into()),
+        };
+        let from = KeptFrom {
+            url: "https://h/a.zip",
+            listed: Some(Listed {
+                size: Some(5),
+                at: None,
+            }),
+            tool: "phasor-test/0",
+        };
+        let held = keep_fetched(&part, &path, &streamed, from).unwrap();
+        assert_eq!(held.path, path);
+        assert!(!part.exists());
+        let p = Archive::read(&path).unwrap().unwrap();
+        assert_eq!(p, held.provenance);
+        assert_eq!((p.content.size, p.content.crc32), (5, Some(7)));
+        assert_eq!(p.url(), "https://h/a.zip");
+        assert_eq!(p.etag(), Some("\"e\""));
+        assert_eq!(
+            p.modified().map(Stamp::http_date).as_deref(),
+            Some("Tue, 13 Feb 2024 08:27:00 GMT")
+        );
+        // The listed size is the file's: given back, not written.
+        assert_eq!(p.listed("https://h/a.zip").unwrap().size, Some(5));
+        // No part to move: the error names the destination.
+        let e = keep_fetched(&part, &path, &streamed, from).unwrap_err();
+        assert!(matches!(e, FetchError::CacheIo { .. }), "{e}");
+    }
 
     #[tokio::test]
     async fn a_head_gives_the_headers_and_a_missing_file_its_status() {
