@@ -217,7 +217,10 @@ pub async fn peek(
             seen: None,
         };
         let offset = fetcher.offset_of(url);
-        let read = zipdir::read_directory_in(&mut src, remote.size.unwrap_or(0), offset).await;
+        let read = {
+            stretch!(PEEK_ZIP_PATH);
+            zipdir::read_directory_in(&mut src, remote.size.unwrap_or(0), offset).await
+        };
         let seen = src.seen.take();
         let last_modified = seen.as_ref().and_then(|s| s.last_modified.clone());
         let mut record = Peeked {

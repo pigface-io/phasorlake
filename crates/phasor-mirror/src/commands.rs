@@ -188,10 +188,27 @@ fn host_locks(
 }
 
 /// Runs the command; the exit code.
+/// The root path of a command's tree, for the commands worth timing.
+#[cfg(feature = "zones")]
+fn root_path(cmd: &Command) -> Option<&'static [&'static zonetrace::Zone]> {
+    use phasor_mirror::zones;
+    match cmd {
+        Command::Crawl { .. } => Some(&zones::CRAWL_PATH),
+        Command::Download { .. } => Some(&zones::DOWNLOAD_PATH),
+        Command::Peek => Some(&zones::PEEK_PATH),
+        Command::Run { .. } => Some(&zones::RUN_PATH),
+        Command::Watch { .. } => Some(&zones::WATCH_PATH),
+        _ => None,
+    }
+}
+
 pub async fn run_command(cli: &Cli) -> Result<i32> {
     let ctx = &Context::new(cli)?;
     let cmd = &cli.command;
     let mirror = ctx.home.records().keeping(ctx.config.keep_from);
+    // The command's root, a stretch: it crosses every await beneath it.
+    #[cfg(feature = "zones")]
+    let _root = root_path(cmd).map(zonetrace::stretch);
     let result = match cmd {
         Command::Init { nemweb, force } => init(ctx, *nemweb, *force),
         Command::Crawl { roots, fresh } => {
@@ -537,7 +554,11 @@ async fn watch(ctx: &Context, mirror: &Mirror, plan: &WatchPlan<'_>) -> Result<i
             } else {
                 next.min(not_before)
             };
-            tokio::time::sleep_until(next.max(not_before).into()).await;
+            {
+                #[cfg(feature = "zones")]
+                let _idle = zonetrace::stretch(&phasor_mirror::zones::WATCH_IDLE_PATH);
+                tokio::time::sleep_until(next.max(not_before).into()).await;
+            }
             continue;
         }
         rounds += 1;
@@ -550,7 +571,13 @@ async fn watch(ctx: &Context, mirror: &Mirror, plan: &WatchPlan<'_>) -> Result<i
             continue;
         }
         let round = async {
-            let r = phasor_mirror::refresh(&fetcher, mirror, &roots, &due).await?;
+            #[cfg(feature = "zones")]
+            let _round = zonetrace::stretch(&phasor_mirror::zones::WATCH_ROUND_PATH);
+            let r = {
+                #[cfg(feature = "zones")]
+                let _refresh = zonetrace::stretch(&phasor_mirror::zones::WATCH_REFRESH_PATH);
+                phasor_mirror::refresh(&fetcher, mirror, &roots, &due).await?
+            };
             let now = std::time::Instant::now();
             for f in &r.removed {
                 schedule.remove(f);
@@ -599,6 +626,8 @@ async fn watch(ctx: &Context, mirror: &Mirror, plan: &WatchPlan<'_>) -> Result<i
                     read.push(f);
                 }
             }
+            #[cfg(feature = "zones")]
+            let _download = zonetrace::stretch(&phasor_mirror::zones::WATCH_DOWNLOAD_PATH);
             download(
                 ctx,
                 &fetcher,

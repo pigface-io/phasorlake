@@ -2,6 +2,29 @@
 //! the config names ([`hosts`]), and the catalog of it, which the lake reads.
 //! [`crawl()`] lists, [`net::Fetcher`] downloads, [`map()`] writes the catalog.
 
+/// Opens a zone of `zonetrace` until the end of the block, with the
+/// feature `zones`; nothing without it. For synchronous code only.
+#[allow(unused_macros)]
+macro_rules! zone {
+    ($z:ident) => {
+        #[cfg(feature = "zones")]
+        let _zone = zonetrace::enter(&crate::zones::$z);
+    };
+}
+
+/// Records a stretch of time on a path of zones when the block ends, with
+/// the feature `zones`; nothing without it. Safe across an `.await`.
+#[allow(unused_macros)]
+macro_rules! stretch {
+    ($p:ident) => {
+        #[cfg(feature = "zones")]
+        let _stretch = zonetrace::stretch(&crate::zones::$p);
+    };
+}
+
+#[cfg(feature = "zones")]
+pub mod zones;
+
 pub mod compare;
 pub mod config;
 pub mod crawl;

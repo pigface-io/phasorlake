@@ -21,3 +21,7 @@ pub static COMMIT: Zone = Zone::new(306, "parquet.commit");
 pub static FIT: Zone = Zone::new(307, "session.fit");
 /// Closing every open file of a source.
 pub static SESSION_CLOSE: Zone = Zone::new(308, "session.close");
+
+/// One command the manifest thread served: the SQLite work of the lake,
+/// on its own thread, so its tree is a root of its own.
+pub static MANIFEST_CMD: Zone = Zone::new(320, "manifest.cmd");

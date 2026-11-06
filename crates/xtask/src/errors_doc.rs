@@ -136,7 +136,9 @@ pub fn collect_codes(root: &Path) -> BTreeMap<String, String> {
                 }
                 continue;
             }
+            // A crate's `zones.rs` names zones with dots too; they are not codes.
             if p.extension().is_none_or(|e| e != "rs")
+                || p.file_name().is_some_and(|n| n == "zones.rs")
                 || p.components().any(|c| {
                     c.as_os_str() == "xtask"
                         || c.as_os_str() == "tests"

@@ -228,7 +228,10 @@ impl Fetchers {
     pub async fn fetch(&self, remote: &RemoteFile) -> Result<LocalFile, FetchError> {
         let i = self.index_of(remote.url.as_str());
         let _permit = match &self.limits[i] {
-            Some(s) => Some(s.acquire().await.expect("a semaphore never closed")),
+            Some(s) => {
+                stretch!(DOWNLOAD_PERMIT_PATH);
+                Some(s.acquire().await.expect("a semaphore never closed"))
+            }
             None => None,
         };
         self.hosts[i].fetcher.fetch(remote).await

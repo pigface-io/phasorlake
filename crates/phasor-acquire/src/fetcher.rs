@@ -121,6 +121,7 @@ impl Fetcher {
         remote: &RemoteFile,
         pick: &(dyn Fn(&[Entry]) -> Picks + Sync),
     ) -> Result<Picked, FetchError> {
+        stretch!(FETCH_PICKS_PATH);
         let url = remote.url.as_str();
         if let Some(found) = self.archive.lookup(url)? {
             return Ok(Picked::Whole(Box::new(LocalFile::from_held(
@@ -314,6 +315,7 @@ impl Fetcher {
 
     /// The archived copy of a remote file, else downloaded whole into the archive.
     pub async fn fetch(&self, remote: &RemoteFile) -> Result<LocalFile, FetchError> {
+        stretch!(FETCH_PATH);
         if let Some(found) = self.archive.lookup(remote.url.as_str())? {
             return Ok(LocalFile::from_held(remote, found, true));
         }
@@ -327,6 +329,7 @@ impl Fetcher {
     }
 
     async fn download(&self, remote: &RemoteFile, again: bool) -> Result<LocalFile, FetchError> {
+        stretch!(DOWNLOAD_PATH);
         let url = remote.url.as_str();
         self.ensure_online(url)?;
         let base = self.archive.path_for(url);

@@ -254,6 +254,7 @@ pub fn source_groups(sources: &[Arc<dyn Source>], tables: &[String]) -> Vec<Sour
 
 /// Plans the request over the kit's sources, listing each once.
 pub async fn plan_get(req: &GetRequest, deps: &Deps) -> Result<GetPlan, Box<Diagnostic>> {
+    stretch!(GET_PLAN_PATH);
     let kit = deps.kits.kit(&req.kit).ok_or_else(|| no_kit(req))?;
     let mut plan = GetPlan::default();
     for group in source_groups(&kit.sources, &req.tables) {

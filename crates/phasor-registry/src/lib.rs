@@ -2,6 +2,19 @@
 //! block's header to its plan ([`resolve`]), and the tables as a kit's [`catalog`].
 //! `build.rs` packs `schemas/`; [`Registry::load_embedded`] decodes it once.
 
+/// Opens a zone of `zonetrace` until the end of the block, with the
+/// feature `zones`; nothing without it.
+#[allow(unused_macros)]
+macro_rules! zone {
+    ($z:ident) => {
+        #[cfg(feature = "zones")]
+        let _zone = zonetrace::enter(&crate::zones::$z);
+    };
+}
+
+#[cfg(feature = "zones")]
+pub mod zones;
+
 pub mod arrow;
 pub mod catalog;
 pub mod columns;

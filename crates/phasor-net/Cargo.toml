@@ -19,10 +19,13 @@ fetch = ["dep:tokio", "dep:serde", "dep:serde_json", "dep:crc32fast"]
 http = ["dep:reqwest"]
 # A local HTTP server and archive records for other crates' tests.
 test-support = []
+# Times the requests, the pacing and the spooling in zones of zonetrace.
+zones = ["dep:zonetrace"]
 
 [dependencies]
 phasor-core.workspace = true
 phasor-provenance.workspace = true
+zonetrace = { workspace = true, optional = true }
 async-trait.workspace = true
 bytes.workspace = true
 crc32fast = { workspace = true, optional = true }

@@ -1115,3 +1115,14 @@ fn ftp_hosts_hand_their_kept_names_to_the_transport() {
     let out = cli.ok(&["status"]);
     assert!(out.starts_with("mirror not running"), "{out}");
 }
+
+/// `--zones` on a binary built without the feature: the command runs and
+/// stderr says what the flag needs.
+#[test]
+fn zones_flag_without_the_feature_warns_and_runs() {
+    let cli = Cli::new();
+    let (code, out, err) = cli.code(&["--zones", "--offline", "status"]);
+    assert_eq!(code, 0, "{err}");
+    assert!(out.starts_with("mirror not running"), "{out}");
+    assert!(err.contains("built without the feature zones"), "{err}");
+}

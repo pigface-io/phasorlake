@@ -342,6 +342,7 @@ impl Source for FeedFolders {
         query: &Query,
         fetcher: &dyn Listings,
     ) -> Result<Vec<RemoteFile>, FetchError> {
+        stretch!(LISTING_PATH);
         let mut out = Vec::new();
         let mut queue: Vec<Url> = self.starts(query)?;
         let mut seen: BTreeSet<String> = BTreeSet::new();

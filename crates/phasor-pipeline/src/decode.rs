@@ -132,6 +132,7 @@ fn decode_entry(
     scratch: &mut Vec<u8>,
     sink: &mut dyn FileSink,
 ) -> Flow {
+    zone!(ENTRY);
     let decoder = d
         .kit
         .decoder_for(entry)
@@ -144,6 +145,9 @@ fn decode_entry(
         options: d.options,
     };
     let blocks: &mut dyn BlockSink = sink;
-    let result = decoder.decode(reader, &ctx, blocks, scratch);
+    let result = {
+        zone!(DECODE);
+        decoder.decode(reader, &ctx, blocks, scratch)
+    };
     sink.entry_done(entry, result)
 }

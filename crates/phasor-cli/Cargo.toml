@@ -40,6 +40,20 @@ tokio = { workspace = true, features = ["rt-multi-thread", "sync", "macros", "si
 tokio-util.workspace = true
 tracing.workspace = true
 tracing-subscriber.workspace = true
+zonetrace = { workspace = true, optional = true }
+
+[features]
+# Times a command in zones of zonetrace, every crate's included; the
+# binary then takes `--zones [FILE]`.
+zones = [
+    "dep:zonetrace",
+    "phasor-pipeline/zones",
+    "phasor-acquire/zones",
+    "phasor-writer/zones",
+    "phasor-registry/zones",
+    "phasor-mms-conform/zones",
+    "phasor-zip/zones",
+]
 
 [dev-dependencies]
 # A manifest broken under the binary, to see it reported.

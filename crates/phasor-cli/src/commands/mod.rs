@@ -18,6 +18,9 @@ use crate::context::Context;
 pub async fn dispatch(cli: Cli) -> Result<i32> {
     init_logging(cli.verbose, cli.json);
     let ctx = Context::new(&cli)?;
+    // The command's root, a stretch: it crosses every await beneath it.
+    #[cfg(feature = "zones")]
+    let _root = zonetrace::stretch(crate::zones::root_path(&cli.command));
     match &cli.command {
         Command::Fetch(args) => fetch::fetch(&cli, &ctx, args).await,
         Command::Import(args) => lake::import(&cli, &ctx, args).await,

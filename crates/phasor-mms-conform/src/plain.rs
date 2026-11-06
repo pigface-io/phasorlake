@@ -247,6 +247,7 @@ impl Decoder for PlainCsvDecoder {
         sink: &mut dyn BlockSink,
         _scratch: &mut Vec<u8>,
     ) -> Result<DecodeStats, Box<Diagnostic>> {
+        zone!(PLAIN_DECODE);
         let name = name_of(self.feed, ctx, "csv.unnamed_block", Category::CSV)?;
         let opts = options(self.feed, ctx, &name.name);
         let mut bridge = PlainBridge::new(&self.registry, self.market, ctx, sink, name);
@@ -279,6 +280,7 @@ impl Decoder for WemdeDecoder {
         sink: &mut dyn BlockSink,
         _scratch: &mut Vec<u8>,
     ) -> Result<DecodeStats, Box<Diagnostic>> {
+        zone!(WEMDE_DECODE);
         let name = name_of(self.feed, ctx, "json.unnamed_block", Category::JSON)?;
         let opts = options(self.feed, ctx, &name.name);
         let mut bridge = PlainBridge::new(&self.registry, self.market, ctx, sink, name);
@@ -311,6 +313,7 @@ impl Decoder for SniffedCsv {
         sink: &mut dyn BlockSink,
         scratch: &mut Vec<u8>,
     ) -> Result<DecodeStats, Box<Diagnostic>> {
+        zone!(SNIFFED_DECODE);
         let (head, mut rest) = peek(&mut *reader).map_err(|e| {
             Box::new(
                 Diagnostic::error(

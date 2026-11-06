@@ -34,6 +34,19 @@ pub struct Cli {
     /// Use only the tables built into phasor; ignore `{home}/schemas/`.
     #[arg(long, global = true)]
     pub no_user_schemas: bool,
+    /// Where the run's time went, as zonetrace's call tree, at exit: on
+    /// stderr, or into FILE (`--zones=FILE`); NDJSON with `--json`. Needs a
+    /// build with the feature `zones`.
+    #[arg(
+        long,
+        global = true,
+        env = "PHASOR_ZONES",
+        value_name = "FILE",
+        num_args = 0..=1,
+        require_equals = true,
+        default_missing_value = "-"
+    )]
+    pub zones: Option<PathBuf>,
     /// The command.
     #[command(subcommand)]
     pub command: Command,

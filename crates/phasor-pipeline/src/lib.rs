@@ -12,6 +12,16 @@ macro_rules! zone {
     };
 }
 
+/// Records a stretch of time on a path of zones when the block ends, with
+/// the feature `zones`; nothing without it. Safe across an `.await`.
+#[allow(unused_macros)]
+macro_rules! stretch {
+    ($p:ident) => {
+        #[cfg(feature = "zones")]
+        let _stretch = zonetrace::stretch(&crate::zones::$p);
+    };
+}
+
 #[cfg(feature = "zones")]
 pub mod zones;
 

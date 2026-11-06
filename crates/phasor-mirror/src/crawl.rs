@@ -338,8 +338,14 @@ pub async fn crawl(
         let (html, kept) = match std::fs::read(&page_path) {
             Ok(html) => (html, true),
             Err(e) if e.kind() == std::io::ErrorKind::NotFound => {
-                let html = fetcher.fetch_folder(folder.as_str()).await?;
-                write_atomic(&page_path, &html)?;
+                let html = {
+                    stretch!(CRAWL_PAGE_PATH);
+                    fetcher.fetch_folder(folder.as_str()).await?
+                };
+                {
+                    zone!(CRAWL_WRITE_PAGE);
+                    write_atomic(&page_path, &html)?;
+                }
                 summary.pages_fetched += 1;
                 (html, false)
             }
@@ -352,7 +358,10 @@ pub async fn crawl(
             .ok()
             .and_then(|t| t.duration_since(std::time::UNIX_EPOCH).ok())
             .map(|d| Stamp::from_unix(i64::try_from(d.as_secs()).unwrap_or(0)));
-        let links = fetcher.read_page(&folder, &html, roots, crawled_at)?;
+        let links = {
+            zone!(CRAWL_READ_PAGE);
+            fetcher.read_page(&folder, &html, roots, crawled_at)?
+        };
         let count = links.len();
         for remote in links {
             if remote.kind == RemoteKind::Dir && seen.insert(remote.url.clone()) {

@@ -396,6 +396,7 @@ impl<'a> Pass<'a> {
         &self,
         remote: &'a RemoteFile,
     ) -> Result<(&'a RemoteFile, Option<Result<Got, FetchError>>), MirrorError> {
+        stretch!(DOWNLOAD_FILE_PATH);
         if let Some(pair) = self.paired.get(remote.url.as_str()) {
             // Found the same as its folder since the pass began?
             if self.mirror.removed()?.contains_key(&pair.zip) {

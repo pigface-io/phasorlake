@@ -41,5 +41,9 @@ name = "plain"
 harness = false
 
 [features]
-# Times the work in zones of zonetrace.
-zones = ["dep:zonetrace"]
+# Times the work in zones of zonetrace, the scanners' included.
+zones = [
+    "dep:zonetrace",
+    "phasor-mms-decode/zones",
+    "phasor-plain-decode/zones",
+]

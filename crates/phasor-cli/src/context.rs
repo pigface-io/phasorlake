@@ -38,6 +38,7 @@ pub struct Context {
 impl Context {
     /// Resolves home, config and registry. Cheap: no network, no SQLite.
     pub fn new(cli: &Cli) -> Result<Self> {
+        zone!(CONTEXT_NEW);
         let user_home = std::env::var_os("HOME").map(PathBuf::from);
         let home = Home::resolve(cli.home.as_deref(), user_home.as_deref())
             .context("No home directory: pass --home or set PHASOR_HOME.")?;
@@ -72,7 +73,10 @@ impl Context {
         }
         let progress =
             !cli.no_progress && !cli.json && std::io::IsTerminal::is_terminal(&std::io::stderr());
-        let kits = crate::kits::assemble(&config, registry.clone())?;
+        let kits = {
+            zone!(KITS_ASSEMBLE);
+            crate::kits::assemble(&config, registry.clone())?
+        };
         Ok(Self {
             home,
             config,
@@ -86,6 +90,7 @@ impl Context {
 
     /// The manifest, on its thread.
     pub fn manifest(&self) -> Result<(ManifestHandle, ManifestThread)> {
+        zone!(MANIFEST_OPEN);
         ManifestHandle::spawn(&self.home.manifest())
             .map_err(|e| anyhow::anyhow!("{}", phasor_core::Diagnose::diagnostic(&e).render()))
     }

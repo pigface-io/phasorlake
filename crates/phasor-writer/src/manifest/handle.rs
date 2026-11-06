@@ -71,6 +71,11 @@ impl ManifestHandle {
             .name("phasor-manifest".into())
             .spawn(move || {
                 while let Some(cmd) = rx.blocking_recv() {
+                    // The thread never ends until the handle drops, so each
+                    // command's zone goes into the process's report before the next.
+                    #[cfg(feature = "zones")]
+                    zonetrace::flush();
+                    zone!(MANIFEST_CMD);
                     match cmd {
                         Cmd::StartRun(argv, r) => {
                             let _ = r.send(manifest.start_run(&argv));
@@ -128,6 +133,9 @@ impl ManifestHandle {
                         }
                     }
                 }
+                // The last command's zone, once the handle has dropped.
+                #[cfg(feature = "zones")]
+                zonetrace::flush();
             })
             .expect("spawning the manifest thread");
         (Self { tx }, ManifestThread { join: Some(join) })

@@ -29,4 +29,9 @@ url.workspace = true
 
 [features]
 # Times the work in zones of zonetrace.
-zones = ["dep:zonetrace", "phasor-writer/zones"]
+zones = [
+    "dep:zonetrace",
+    "phasor-writer/zones",
+    "phasor-acquire/zones",
+    "phasor-zip/zones",
+]

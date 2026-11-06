@@ -1924,6 +1924,7 @@ dependencies = [
  "tokio",
  "url",
  "zip",
+ "zonetrace",
 ]
 
 [[package]]
@@ -1980,6 +1981,7 @@ dependencies = [
  "tracing-subscriber",
  "url",
  "zip",
+ "zonetrace",
 ]
 
 [[package]]
@@ -2003,7 +2005,7 @@ dependencies = [
 [[package]]
 name = "phasor-decode"
 version = "0.2.0"
-source = "git+https://github.com/pigface-io/phasorlake-schemas.git?rev=88634d56cef3fb8d45d1ff905a1f74fb0fe69333#88634d56cef3fb8d45d1ff905a1f74fb0fe69333"
+source = "git+https://github.com/pigface-io/phasorlake-schemas.git?rev=1abef334c68f0ad5d44a7304d8bcce33d79e3c35#1abef334c68f0ad5d44a7304d8bcce33d79e3c35"
 dependencies = [
  "phasor-diag",
  "serde",
@@ -2014,7 +2016,7 @@ dependencies = [
 [[package]]
 name = "phasor-diag"
 version = "0.2.0"
-source = "git+https://github.com/pigface-io/phasorlake-schemas.git?rev=88634d56cef3fb8d45d1ff905a1f74fb0fe69333#88634d56cef3fb8d45d1ff905a1f74fb0fe69333"
+source = "git+https://github.com/pigface-io/phasorlake-schemas.git?rev=1abef334c68f0ad5d44a7304d8bcce33d79e3c35#1abef334c68f0ad5d44a7304d8bcce33d79e3c35"
 dependencies = [
  "serde",
 ]
@@ -2089,7 +2091,7 @@ dependencies = [
 [[package]]
 name = "phasor-gates"
 version = "0.2.0"
-source = "git+https://github.com/pigface-io/phasorlake-schemas.git?rev=88634d56cef3fb8d45d1ff905a1f74fb0fe69333#88634d56cef3fb8d45d1ff905a1f74fb0fe69333"
+source = "git+https://github.com/pigface-io/phasorlake-schemas.git?rev=1abef334c68f0ad5d44a7304d8bcce33d79e3c35#1abef334c68f0ad5d44a7304d8bcce33d79e3c35"
 dependencies = [
  "anyhow",
  "serde",
@@ -2099,7 +2101,7 @@ dependencies = [
 [[package]]
 name = "phasor-iceberg"
 version = "0.2.0"
-source = "git+https://github.com/pigface-io/phasorlake-schemas.git?rev=88634d56cef3fb8d45d1ff905a1f74fb0fe69333#88634d56cef3fb8d45d1ff905a1f74fb0fe69333"
+source = "git+https://github.com/pigface-io/phasorlake-schemas.git?rev=1abef334c68f0ad5d44a7304d8bcce33d79e3c35#1abef334c68f0ad5d44a7304d8bcce33d79e3c35"
 dependencies = [
  "phasor-diag",
  "serde",
@@ -2172,6 +2174,7 @@ dependencies = [
  "toml",
  "url",
  "zip",
+ "zonetrace",
 ]
 
 [[package]]
@@ -2196,7 +2199,7 @@ dependencies = [
 [[package]]
 name = "phasor-mms-decode"
 version = "0.2.0"
-source = "git+https://github.com/pigface-io/phasorlake-schemas.git?rev=88634d56cef3fb8d45d1ff905a1f74fb0fe69333#88634d56cef3fb8d45d1ff905a1f74fb0fe69333"
+source = "git+https://github.com/pigface-io/phasorlake-schemas.git?rev=1abef334c68f0ad5d44a7304d8bcce33d79e3c35#1abef334c68f0ad5d44a7304d8bcce33d79e3c35"
 dependencies = [
  "memchr",
  "phasor-decode",
@@ -2244,6 +2247,7 @@ dependencies = [
  "tempfile",
  "thiserror 2.0.21",
  "tokio",
+ "zonetrace",
 ]
 
 [[package]]
@@ -2285,7 +2289,7 @@ dependencies = [
 [[package]]
 name = "phasor-plain-decode"
 version = "0.2.0"
-source = "git+https://github.com/pigface-io/phasorlake-schemas.git?rev=88634d56cef3fb8d45d1ff905a1f74fb0fe69333#88634d56cef3fb8d45d1ff905a1f74fb0fe69333"
+source = "git+https://github.com/pigface-io/phasorlake-schemas.git?rev=1abef334c68f0ad5d44a7304d8bcce33d79e3c35#1abef334c68f0ad5d44a7304d8bcce33d79e3c35"
 dependencies = [
  "memchr",
  "phasor-decode",
@@ -2294,12 +2298,13 @@ dependencies = [
  "serde_json",
  "thiserror 2.0.21",
  "xxhash-rust",
+ "zonetrace",
 ]
 
 [[package]]
 name = "phasor-provenance"
 version = "0.2.0"
-source = "git+https://github.com/pigface-io/phasorlake-schemas.git?rev=88634d56cef3fb8d45d1ff905a1f74fb0fe69333#88634d56cef3fb8d45d1ff905a1f74fb0fe69333"
+source = "git+https://github.com/pigface-io/phasorlake-schemas.git?rev=1abef334c68f0ad5d44a7304d8bcce33d79e3c35#1abef334c68f0ad5d44a7304d8bcce33d79e3c35"
 dependencies = [
  "crc32fast",
  "phasor-diag",
@@ -2353,6 +2358,7 @@ dependencies = [
  "thiserror 2.0.21",
  "toml",
  "xxhash-rust",
+ "zonetrace",
 ]
 
 [[package]]
@@ -2401,7 +2407,7 @@ dependencies = [
 [[package]]
 name = "phasor-zip"
 version = "0.2.0"
-source = "git+https://github.com/pigface-io/phasorlake-schemas.git?rev=88634d56cef3fb8d45d1ff905a1f74fb0fe69333#88634d56cef3fb8d45d1ff905a1f74fb0fe69333"
+source = "git+https://github.com/pigface-io/phasorlake-schemas.git?rev=1abef334c68f0ad5d44a7304d8bcce33d79e3c35#1abef334c68f0ad5d44a7304d8bcce33d79e3c35"
 dependencies = [
  "flate2",
  "phasor-diag",
@@ -4189,9 +4195,9 @@ checksum = "29666d0abbfad1e3dc4dcf6144730dd3a3ab225bbbdac83319345b1b44ccfc1b"
 
 [[package]]
 name = "zonetrace"
-version = "0.1.2"
+version = "0.1.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d7bc3800f1e18037a08c2988134f9b29884f7c5dd0ba9040dda80d86275d0703"
+checksum = "242778d4fbe0e3035b8b85d21fadd23ae615c06eb0005f56988ae5465f8ede28"
 
 [[package]]
 name = "zstd"

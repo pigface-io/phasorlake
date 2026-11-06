@@ -434,8 +434,12 @@ fn list_batch(
                     loop {
                         let i = next.fetch_add(1, std::sync::atomic::Ordering::Relaxed);
                         let Some((key, top)) = batch.get(i) else {
+                            // The worker's zones into the process's report.
+                            #[cfg(feature = "zones")]
+                            zonetrace::flush();
                             break done;
                         };
+                        zone!(MAP_TOP);
                         lister.offset = top.url.as_deref().map_or(AEST, |u| offsets.offset_of(u));
                         done.push((i, lister.top(archive, &key.0, top)));
                     }

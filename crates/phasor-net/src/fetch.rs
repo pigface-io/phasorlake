@@ -157,6 +157,7 @@ impl Requests {
     }
 
     async fn pace(&self, url: &str) {
+        stretch!(PACE_PATH);
         let gap = least_interval(url, self.config.min_interval);
         let mut last = self.last_request.lock().await;
         if let Some(t) = *last {
@@ -250,6 +251,7 @@ impl Requests {
                     .backoff
                     .saturating_mul(1u32 << (attempt - 1).min(16));
                 let jitter = Duration::from_millis(u64::from(attempt) * 37 % 250);
+                stretch!(BACKOFF_PATH);
                 tokio::time::sleep(exp.min(self.config.max_backoff) + jitter).await;
             }
             // A server that has refused us is left alone for the rest of the run.
@@ -422,6 +424,7 @@ fn spool(
     from: u64,
     mut rx: tokio::sync::mpsc::Receiver<Bytes>,
 ) -> std::io::Result<(Sha256, u32, u64)> {
+    zone!(SPOOL);
     let mut hasher = sha2::Sha256::new();
     let mut crc = crc32fast::Hasher::new();
     let file = if from > 0 {
@@ -497,11 +500,18 @@ pub async fn stream_to_file(
     }
     let (tx, rx) = tokio::sync::mpsc::channel::<Bytes>(SPOOL_CHUNKS);
     let owned = part.to_owned();
-    let writer = tokio::task::spawn_blocking(move || spool(&owned, from, rx));
+    let writer = tokio::task::spawn_blocking(move || {
+        let spooled = spool(&owned, from, rx);
+        // The pool thread's zones into the process's report.
+        #[cfg(feature = "zones")]
+        zonetrace::flush();
+        spooled
+    });
     let mut body = resp.body;
     let mut received: u64 = 0;
     let mut last_event = 0u64;
     let mut broken = None;
+    stretch!(BODY_PATH);
     while let Some(chunk) = body.next().await {
         let chunk = match chunk {
             Ok(c) => c,

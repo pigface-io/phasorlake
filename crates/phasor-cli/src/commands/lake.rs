@@ -328,6 +328,7 @@ fn reads(
 
 /// After a run, rebuilds the Iceberg metadata of every table it ingested.
 pub async fn refresh_iceberg(ctx: &Context, run_id: Option<i64>) -> Result<()> {
+    stretch!(ICEBERG_REFRESH_PATH);
     let Some(run_id) = run_id else {
         return Ok(());
     };

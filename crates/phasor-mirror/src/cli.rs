@@ -30,6 +30,19 @@ pub struct Cli {
     /// held of it. Overrides `keep_from` in the config.
     #[arg(long, global = true, value_name = "YYYY-MM")]
     pub keep_from: Option<phasor_mirror::Month>,
+    /// Where the run's time went, as zonetrace's call tree, at exit: on
+    /// stderr, or into FILE (`--zones=FILE`); NDJSON with `--json`. Needs a
+    /// build with the feature `zones`.
+    #[arg(
+        long,
+        global = true,
+        env = "PHASOR_ZONES",
+        value_name = "FILE",
+        num_args = 0..=1,
+        require_equals = true,
+        default_missing_value = "-"
+    )]
+    pub zones: Option<PathBuf>,
     /// Threads that read zips for the map (default: the config, else half the cores).
     #[arg(long, global = true)]
     pub jobs: Option<usize>,

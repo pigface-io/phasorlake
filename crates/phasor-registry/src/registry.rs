@@ -166,6 +166,7 @@ impl Registry {
     pub fn load_embedded() -> Arc<Registry> {
         EMBEDDED
             .get_or_init(|| {
+                zone!(LOAD);
                 let set = SchemaSet::decode(EMBEDDED_BLOB)
                     .expect("build.rs validated and packed the embedded registry");
                 Arc::new(Self::from_set(set))

@@ -117,11 +117,33 @@ pub fn local_file(remote: RemoteFile, path: &std::path::Path) -> std::io::Result
     })
 }
 
+/// The source's listing, as the run's `run.list` stretch.
+async fn list_stretch<T>(list: impl std::future::Future<Output = T>) -> T {
+    stretch!(LIST_PATH);
+    list.await
+}
+
+/// A file's ingest awaited on the blocking pool, as the run's
+/// `run.ingest_await` stretch: less `ingest.file`, the wait for a thread.
+async fn ingest_await_stretch<T>(ingest: impl std::future::Future<Output = T>) -> T {
+    stretch!(INGEST_AWAIT_PATH);
+    ingest.await
+}
+
 /// [`local_file`] on a blocking thread.
 async fn hash_local(remote: RemoteFile, path: std::path::PathBuf) -> std::io::Result<LocalFile> {
-    tokio::task::spawn_blocking(move || local_file(remote, &path))
-        .await
-        .unwrap_or_else(|e| Err(std::io::Error::other(e)))
+    tokio::task::spawn_blocking(move || {
+        let hashed = {
+            zone!(HASH_LOCAL);
+            local_file(remote, &path)
+        };
+        // The pool thread's zones into the process's report.
+        #[cfg(feature = "zones")]
+        zonetrace::flush();
+        hashed
+    })
+    .await
+    .unwrap_or_else(|e| Err(std::io::Error::other(e)))
 }
 
 /// A recorded source as the file to read it from again, with its kit; `None` when unreadable.
@@ -215,30 +237,32 @@ pub async fn run(
             query,
             files,
         } => remote_listed(source, query, files.clone()),
-        Input::Remote { source, query } => match source.list(query, deps.fetcher.as_ref()).await {
-            Ok(files) => remote_listed(source, query, files),
-            Err(e) => {
-                let d = e.diagnostic().with_request(request.clone());
-                emit(&events, Event::Diagnostic(Box::new(d.clone())));
-                let code = if d.code == "net.offline" {
-                    EXIT_OFFLINE
-                } else {
-                    EXIT_FAILURE
-                };
-                report.emit(d);
-                return finish(
-                    deps,
-                    run_id,
-                    report,
-                    summary,
-                    vec![],
-                    code,
-                    started,
-                    &events,
-                )
-                .await;
+        Input::Remote { source, query } => {
+            match list_stretch(source.list(query, deps.fetcher.as_ref())).await {
+                Ok(files) => remote_listed(source, query, files),
+                Err(e) => {
+                    let d = e.diagnostic().with_request(request.clone());
+                    emit(&events, Event::Diagnostic(Box::new(d.clone())));
+                    let code = if d.code == "net.offline" {
+                        EXIT_OFFLINE
+                    } else {
+                        EXIT_FAILURE
+                    };
+                    report.emit(d);
+                    return finish(
+                        deps,
+                        run_id,
+                        report,
+                        summary,
+                        vec![],
+                        code,
+                        started,
+                        &events,
+                    )
+                    .await;
+                }
             }
-        },
+        }
         Input::Archive { source, query } => match source.archived(deps.fetcher.archive(), query) {
             Ok(files) => files
                 .into_iter()
@@ -333,16 +357,23 @@ pub async fn run(
                 if current {
                     continue;
                 }
-                {
-                    out.push(Listed {
-                        kit,
-                        picks: None,
-                        remote,
-                        path: Some(std::path::PathBuf::from(&rec.cache_path)),
-                        known: Some(rec),
-                        archived: None,
-                    });
-                }
+                // The file where it was read from; else where the archive, which
+                // the config may have moved since, holds its URL now.
+                let recorded = std::path::PathBuf::from(&rec.cache_path);
+                let path = if recorded.is_file() {
+                    recorded
+                } else {
+                    let now = deps.fetcher.archive().path_for(&rec.url);
+                    if now.is_file() { now } else { recorded }
+                };
+                out.push(Listed {
+                    kit,
+                    picks: None,
+                    remote,
+                    path: Some(path),
+                    known: Some(rec),
+                    archived: None,
+                });
             }
             out
         }
@@ -375,6 +406,7 @@ pub async fn run(
             let fetcher = fetcher.clone();
             let req = req.clone();
             async move {
+                stretch!(FETCH_PATH);
                 if let Some(l) = archived {
                     return vec![Fetched::Ok(kit, l)];
                 }
@@ -480,6 +512,10 @@ pub async fn run(
                         if !options.ingest {
                             return Step::Downloaded(Box::new(local));
                         }
+                        // The manifest asked what it holds of the file, three awaits
+                        // on its one thread; the stretch ends before the ingest.
+                        #[cfg(feature = "zones")]
+                        let asks = zonetrace::stretch(&crate::zones::MANIFEST_ASKS_PATH);
                         // An entry whose zip was already read whole is in the lake.
                         let url = local.remote.url.to_string();
                         if let Some((zip, entry)) = url.split_once('!')
@@ -532,6 +568,8 @@ pub async fn run(
                             rules_changed,
                             skip,
                         };
+                        #[cfg(feature = "zones")]
+                        drop(asks);
                         let ingest = move || {
                             let rep = ingest_file(input);
                             // Merge the worker's zones for zonetrace::take_all.
@@ -539,7 +577,7 @@ pub async fn run(
                             zonetrace::flush();
                             rep
                         };
-                        match tokio::task::spawn_blocking(ingest).await {
+                        match ingest_await_stretch(tokio::task::spawn_blocking(ingest)).await {
                             Ok(rep) => Step::Ingested(Box::new(rep)),
                             Err(e) => Step::Panicked(req, e.to_string()),
                         }
@@ -639,7 +677,10 @@ pub async fn run(
                 }
             }
             Step::Ingested(rep) => {
-                let stop = commit(&deps, run_id, *rep, &mut report, &mut summary, &events).await;
+                let stop = {
+                    stretch!(COMMIT_PATH);
+                    commit(&deps, run_id, *rep, &mut report, &mut summary, &events).await
+                };
                 if stop {
                     stopped = true;
                     cancel.cancel();
@@ -655,6 +696,7 @@ pub async fn run(
     } else {
         exit_code(&report)
     };
+    stretch!(FINISH_PATH);
     finish(
         deps, run_id, report, summary, remotes, code, started, &events,
     )

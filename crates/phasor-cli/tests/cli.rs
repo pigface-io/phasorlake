@@ -1928,3 +1928,18 @@ fn ctrl_c_finishes_the_files_in_flight_and_twice_stops_at_once() {
     assert_eq!(code, 1, "{err}");
     assert!(err.contains("listing.parse_failed"), "{err}");
 }
+
+/// `--zones` on a binary built without the feature: the command runs and
+/// stderr says what the flag needs.
+#[test]
+fn zones_flag_without_the_feature_warns_and_runs() {
+    let cli = Cli::new();
+    let (code, out, err) = cli.code(&["--zones", "list"]);
+    assert_eq!(code, 0, "{err}");
+    assert!(!out.is_empty(), "{out}");
+    assert!(err.contains("built without the feature zones"), "{err}");
+    // Not asked for: not a word.
+    let (code, _, err) = cli.code(&["list"]);
+    assert_eq!(code, 0, "{err}");
+    assert!(!err.contains("zones"), "{err}");
+}

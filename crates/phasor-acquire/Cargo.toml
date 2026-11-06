@@ -31,10 +31,18 @@ sha2.workspace = true
 thiserror.workspace = true
 tokio = { workspace = true, features = ["sync", "time", "fs", "io-util"] }
 url.workspace = true
+zonetrace = { workspace = true, optional = true }
 
 [features]
 # The canned transport of phasor-net, for other crates' tests.
 test-support = ["phasor-net/test-support"]
+# Times the listings and downloads in zones of zonetrace, the readers' included.
+zones = [
+    "dep:zonetrace",
+    "phasor-net/zones",
+    "phasor-zip/zones",
+    "phasor-plain-decode/zones",
+]
 
 [dev-dependencies]
 phasor-net = { workspace = true, features = ["http", "fetch", "test-support"] }

@@ -72,8 +72,8 @@ fmt-check:
 
 # clippy with warnings as errors, and the docs with broken links as errors
 lint:
-    cargo clippy --workspace --all-targets --locked -- -D warnings
-    RUSTDOCFLAGS="-D warnings" cargo doc --workspace --no-deps --locked --quiet
+    cargo clippy --workspace --all-targets --locked --features phasor-cli/zones,phasor-mirror/zones,phasor-bench/zones -- -D warnings
+    RUSTDOCFLAGS="-D warnings" cargo doc --workspace --no-deps --locked --quiet --features phasor-cli/zones,phasor-mirror/zones,phasor-bench/zones
 
 # shellcheck over every shell script the repository tracks
 shellcheck:
