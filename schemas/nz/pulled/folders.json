@@ -3,6 +3,272 @@
     {
       "blocks": [
         {
+          "first-release": "2013-01",
+          "last-release": "2013-12",
+          "months": 12,
+          "report": [
+            "EMI",
+            "BIDS"
+          ],
+          "version": 1
+        }
+      ],
+      "cadence": "day",
+      "feed": "emi",
+      "folder": "Bids/2013",
+      "listings": [],
+      "root": "publicdata/Datasets/Wholesale/BidsAndOffers"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2014-01",
+          "last-release": "2014-12",
+          "months": 12,
+          "report": [
+            "EMI",
+            "BIDS"
+          ],
+          "version": 1
+        }
+      ],
+      "cadence": "day",
+      "feed": "emi",
+      "folder": "Bids/2014",
+      "listings": [],
+      "root": "publicdata/Datasets/Wholesale/BidsAndOffers"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2015-01",
+          "last-release": "2015-12",
+          "months": 12,
+          "report": [
+            "EMI",
+            "BIDS"
+          ],
+          "version": 1
+        }
+      ],
+      "cadence": "day",
+      "feed": "emi",
+      "folder": "Bids/2015",
+      "listings": [],
+      "root": "publicdata/Datasets/Wholesale/BidsAndOffers"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2016-01",
+          "last-release": "2016-12",
+          "months": 12,
+          "report": [
+            "EMI",
+            "BIDS"
+          ],
+          "version": 1
+        }
+      ],
+      "cadence": "day",
+      "feed": "emi",
+      "folder": "Bids/2016",
+      "listings": [],
+      "root": "publicdata/Datasets/Wholesale/BidsAndOffers"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2017-01",
+          "last-release": "2017-12",
+          "months": 12,
+          "report": [
+            "EMI",
+            "BIDS"
+          ],
+          "version": 1
+        }
+      ],
+      "cadence": "day",
+      "feed": "emi",
+      "folder": "Bids/2017",
+      "listings": [],
+      "root": "publicdata/Datasets/Wholesale/BidsAndOffers"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2018-01",
+          "last-release": "2018-12",
+          "months": 12,
+          "report": [
+            "EMI",
+            "BIDS"
+          ],
+          "version": 1
+        }
+      ],
+      "cadence": "day",
+      "feed": "emi",
+      "folder": "Bids/2018",
+      "listings": [],
+      "root": "publicdata/Datasets/Wholesale/BidsAndOffers"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2019-01",
+          "last-release": "2019-12",
+          "months": 12,
+          "report": [
+            "EMI",
+            "BIDS"
+          ],
+          "version": 1
+        }
+      ],
+      "cadence": "day",
+      "feed": "emi",
+      "folder": "Bids/2019",
+      "listings": [],
+      "root": "publicdata/Datasets/Wholesale/BidsAndOffers"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2020-01",
+          "last-release": "2020-12",
+          "months": 12,
+          "report": [
+            "EMI",
+            "BIDS"
+          ],
+          "version": 1
+        }
+      ],
+      "cadence": "day",
+      "feed": "emi",
+      "folder": "Bids/2020",
+      "listings": [],
+      "root": "publicdata/Datasets/Wholesale/BidsAndOffers"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2021-01",
+          "last-release": "2021-12",
+          "months": 12,
+          "report": [
+            "EMI",
+            "BIDS"
+          ],
+          "version": 1
+        }
+      ],
+      "cadence": "day",
+      "feed": "emi",
+      "folder": "Bids/2021",
+      "listings": [],
+      "root": "publicdata/Datasets/Wholesale/BidsAndOffers"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2022-01",
+          "last-release": "2022-12",
+          "months": 12,
+          "report": [
+            "EMI",
+            "BIDS"
+          ],
+          "version": 1
+        }
+      ],
+      "cadence": "day",
+      "feed": "emi",
+      "folder": "Bids/2022",
+      "listings": [],
+      "root": "publicdata/Datasets/Wholesale/BidsAndOffers"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2023-01",
+          "last-release": "2023-12",
+          "months": 12,
+          "report": [
+            "EMI",
+            "BIDS"
+          ],
+          "version": 1
+        }
+      ],
+      "cadence": "day",
+      "feed": "emi",
+      "folder": "Bids/2023",
+      "listings": [],
+      "root": "publicdata/Datasets/Wholesale/BidsAndOffers"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2024-01",
+          "last-release": "2024-12",
+          "months": 12,
+          "report": [
+            "EMI",
+            "BIDS"
+          ],
+          "version": 1
+        }
+      ],
+      "cadence": "day",
+      "feed": "emi",
+      "folder": "Bids/2024",
+      "listings": [],
+      "root": "publicdata/Datasets/Wholesale/BidsAndOffers"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2025-01",
+          "last-release": "2025-12",
+          "months": 12,
+          "report": [
+            "EMI",
+            "BIDS"
+          ],
+          "version": 1
+        }
+      ],
+      "cadence": "day",
+      "feed": "emi",
+      "folder": "Bids/2025",
+      "listings": [],
+      "root": "publicdata/Datasets/Wholesale/BidsAndOffers"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2026-01",
+          "last-release": "2026-11",
+          "months": 11,
+          "report": [
+            "EMI",
+            "BIDS"
+          ],
+          "version": 1
+        }
+      ],
+      "cadence": "day",
+      "feed": "emi",
+      "folder": "Bids/2026",
+      "listings": [],
+      "root": "publicdata/Datasets/Wholesale/BidsAndOffers"
+    },
+    {
+      "blocks": [
+        {
           "first-release": "2022-04",
           "last-release": "2022-12",
           "months": 9,
@@ -732,6 +998,272 @@
       "folder": "NodalPricesAndVolumes/2026",
       "listings": [],
       "root": "publicdata/Datasets/Wholesale/DispatchAndPricing"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2013-01",
+          "last-release": "2013-12",
+          "months": 12,
+          "report": [
+            "EMI",
+            "OFFERS"
+          ],
+          "version": 1
+        }
+      ],
+      "cadence": "day",
+      "feed": "emi",
+      "folder": "Offers/2013",
+      "listings": [],
+      "root": "publicdata/Datasets/Wholesale/BidsAndOffers"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2014-01",
+          "last-release": "2014-12",
+          "months": 12,
+          "report": [
+            "EMI",
+            "OFFERS"
+          ],
+          "version": 1
+        }
+      ],
+      "cadence": "day",
+      "feed": "emi",
+      "folder": "Offers/2014",
+      "listings": [],
+      "root": "publicdata/Datasets/Wholesale/BidsAndOffers"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2015-01",
+          "last-release": "2015-12",
+          "months": 12,
+          "report": [
+            "EMI",
+            "OFFERS"
+          ],
+          "version": 1
+        }
+      ],
+      "cadence": "day",
+      "feed": "emi",
+      "folder": "Offers/2015",
+      "listings": [],
+      "root": "publicdata/Datasets/Wholesale/BidsAndOffers"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2016-01",
+          "last-release": "2016-12",
+          "months": 12,
+          "report": [
+            "EMI",
+            "OFFERS"
+          ],
+          "version": 1
+        }
+      ],
+      "cadence": "day",
+      "feed": "emi",
+      "folder": "Offers/2016",
+      "listings": [],
+      "root": "publicdata/Datasets/Wholesale/BidsAndOffers"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2017-01",
+          "last-release": "2017-12",
+          "months": 12,
+          "report": [
+            "EMI",
+            "OFFERS"
+          ],
+          "version": 1
+        }
+      ],
+      "cadence": "day",
+      "feed": "emi",
+      "folder": "Offers/2017",
+      "listings": [],
+      "root": "publicdata/Datasets/Wholesale/BidsAndOffers"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2018-01",
+          "last-release": "2018-12",
+          "months": 12,
+          "report": [
+            "EMI",
+            "OFFERS"
+          ],
+          "version": 1
+        }
+      ],
+      "cadence": "day",
+      "feed": "emi",
+      "folder": "Offers/2018",
+      "listings": [],
+      "root": "publicdata/Datasets/Wholesale/BidsAndOffers"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2019-01",
+          "last-release": "2019-12",
+          "months": 12,
+          "report": [
+            "EMI",
+            "OFFERS"
+          ],
+          "version": 1
+        }
+      ],
+      "cadence": "day",
+      "feed": "emi",
+      "folder": "Offers/2019",
+      "listings": [],
+      "root": "publicdata/Datasets/Wholesale/BidsAndOffers"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2020-01",
+          "last-release": "2020-12",
+          "months": 12,
+          "report": [
+            "EMI",
+            "OFFERS"
+          ],
+          "version": 1
+        }
+      ],
+      "cadence": "day",
+      "feed": "emi",
+      "folder": "Offers/2020",
+      "listings": [],
+      "root": "publicdata/Datasets/Wholesale/BidsAndOffers"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2021-01",
+          "last-release": "2021-12",
+          "months": 12,
+          "report": [
+            "EMI",
+            "OFFERS"
+          ],
+          "version": 1
+        }
+      ],
+      "cadence": "day",
+      "feed": "emi",
+      "folder": "Offers/2021",
+      "listings": [],
+      "root": "publicdata/Datasets/Wholesale/BidsAndOffers"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2022-01",
+          "last-release": "2022-12",
+          "months": 12,
+          "report": [
+            "EMI",
+            "OFFERS"
+          ],
+          "version": 1
+        }
+      ],
+      "cadence": "day",
+      "feed": "emi",
+      "folder": "Offers/2022",
+      "listings": [],
+      "root": "publicdata/Datasets/Wholesale/BidsAndOffers"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2023-01",
+          "last-release": "2023-12",
+          "months": 12,
+          "report": [
+            "EMI",
+            "OFFERS"
+          ],
+          "version": 1
+        }
+      ],
+      "cadence": "day",
+      "feed": "emi",
+      "folder": "Offers/2023",
+      "listings": [],
+      "root": "publicdata/Datasets/Wholesale/BidsAndOffers"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2024-01",
+          "last-release": "2024-12",
+          "months": 12,
+          "report": [
+            "EMI",
+            "OFFERS"
+          ],
+          "version": 1
+        }
+      ],
+      "cadence": "day",
+      "feed": "emi",
+      "folder": "Offers/2024",
+      "listings": [],
+      "root": "publicdata/Datasets/Wholesale/BidsAndOffers"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2025-01",
+          "last-release": "2025-12",
+          "months": 12,
+          "report": [
+            "EMI",
+            "OFFERS"
+          ],
+          "version": 1
+        }
+      ],
+      "cadence": "day",
+      "feed": "emi",
+      "folder": "Offers/2025",
+      "listings": [],
+      "root": "publicdata/Datasets/Wholesale/BidsAndOffers"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2026-01",
+          "last-release": "2026-11",
+          "months": 11,
+          "report": [
+            "EMI",
+            "OFFERS"
+          ],
+          "version": 1
+        }
+      ],
+      "cadence": "day",
+      "feed": "emi",
+      "folder": "Offers/2026",
+      "listings": [],
+      "root": "publicdata/Datasets/Wholesale/BidsAndOffers"
     },
     {
       "blocks": [

@@ -109,7 +109,9 @@ mod tests {
         // The generation and metered tables come a month a file, so the
         // monthly source alone serves them.
         assert!(monthly.serves("NZ_GRID_EXPORT") && !daily.serves("NZ_GRID_EXPORT"));
-        assert_eq!(k.catalog.tables().len(), 23);
+        // Offers and bids come a day a file under a year folder: daily only.
+        assert!(daily.serves("NZ_OFFERS") && !monthly.serves("NZ_BIDS"));
+        assert_eq!(k.catalog.tables().len(), 25);
         let prices = k.catalog.table("NZ_FINAL_ENERGY_PRICES").unwrap();
         assert_eq!(prices.utc_offset_secs, 43_200);
         assert!(prices.time_column.is_some());

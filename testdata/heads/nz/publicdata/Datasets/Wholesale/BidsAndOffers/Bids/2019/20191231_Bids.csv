@@ -1,0 +1,6 @@
+TradingDate,TradingPeriod,ParticipantCode,PointOfConnection,Unit,UTCSubmissionDate,UTCSubmissionTime,SubmissionOrder,IsLatestYesNo,DispatchableYesNo,Tranche,Megawatts,DollarsPerMegawattHour
+2019-12-31,1,CTCT,ASB0661,"",2019-12-26,11:21:42.000,1,Y,"",1,4.863,2000.00
+2019-12-31,1,CTCT,ASB0661,"",2019-12-26,11:21:42.000,1,Y,"",2,0.000,0.00
+2019-12-31,1,CTCT,ASB0661,"",2019-12-26,11:21:42.000,1,Y,"",3,0.000,0.00
+2019-12-31,1,CTCT,ASB0661,"",2019-12-26,11:21:42.000,1,Y,"",4,0.000,0.00
+2019-12-31,1,CTCT,ASB0661,"",2019-12-26,11:21:42.000,1,Y,"",5,0.000,0.00

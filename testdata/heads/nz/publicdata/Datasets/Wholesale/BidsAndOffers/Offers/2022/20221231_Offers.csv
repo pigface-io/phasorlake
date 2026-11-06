@@ -1,0 +1,6 @@
+TradingDate,TradingPeriod,ParticipantCode,PointOfConnection,Unit,ProductType,ProductClass,ReserveType,ProductDescription,UTCSubmissionDate,UTCSubmissionTime,SubmissionOrder,IsLatestYesNo,Tranche,MaximumRampUpMegawattsPerHour,MaximumRampDownMegawattsPerHour,PartiallyLoadedSpinningReservePercent,MaximumOutputMegawatts,ForecastOfGenerationPotentialMegawatts,Megawatts,DollarsPerMegawattHour
+2022-12-31,48,PUNZ,MAT1101,ANI0,Energy,Injection,"",Energy injected at a point of connection,2022-12-31,01:44:51.000,26,N,1,150.000,150.000,"",25.000,"",14.000,0.00
+2022-12-31,48,PUNZ,MAT1101,ANI0,Energy,Injection,"",Energy injected at a point of connection,2022-12-31,01:59:51.000,27,N,1,150.000,150.000,"",25.000,"",15.710,0.00
+2022-12-31,48,PUNZ,MAT1101,ANI0,Energy,Injection,"",Energy injected at a point of connection,2022-12-31,02:34:51.000,28,N,1,150.000,150.000,"",25.000,"",12.400,0.00
+2022-12-31,48,PUNZ,MAT1101,ANI0,Energy,Injection,"",Energy injected at a point of connection,2022-12-31,02:44:51.000,29,N,1,150.000,150.000,"",25.000,"",12.050,0.00
+2022-12-31,48,PUNZ,MAT1101,ANI0,Energy,Injection,"",Energy injected at a point of connection,2022-12-31,02:54:51.000,30,N,1,150.000,150.000,"",25.000,"",11.780,0.00

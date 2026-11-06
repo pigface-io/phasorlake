@@ -1,0 +1,6 @@
+TradingDate,TradingPeriod,ParticipantCode,PointOfConnection,Unit,ProductType,ProductClass,ReserveType,ProductDescription,UTCSubmissionDate,UTCSubmissionTime,SubmissionOrder,IsLatestYesNo,Tranche,MaximumRampUpMegawattsPerHour,MaximumRampDownMegawattsPerHour,PartiallyLoadedSpinningReservePercent,MaximumOutputMegawatts,ForecastOfGenerationPotentialMegawatts,Megawatts,DollarsPerMegawattHour
+2013-12-31,1,ALNT,GLN0332,GLN0,Energy,Injection,"",Energy injected at a point of connection,2012-06-26,09:01:51.000,1,N,1,999.000,999.000,"",58.000,"",58.000,0.00
+2013-12-31,1,ALNT,GLN0332,GLN0,Energy,Injection,"",Energy injected at a point of connection,2013-12-30,08:07:17.000,2,N,1,999.000,999.000,"",53.000,"",53.000,0.00
+2013-12-31,1,ALNT,GLN0332,GLN0,Energy,Injection,"",Energy injected at a point of connection,2013-12-30,10:50:50.000,3,N,1,999.000,999.000,"",52.000,"",52.000,0.00
+2013-12-31,1,ALNT,GLN0332,GLN0,Energy,Injection,"",Energy injected at a point of connection,2013-12-30,10:52:04.000,4,Y,1,999.000,999.000,"",51.000,"",51.000,0.00
+2013-12-31,1,ALNT,GLN0332,GLN0,Energy,Injection,"",Energy injected at a point of connection,2012-06-26,09:01:51.000,1,N,2,999.000,999.000,"",58.000,"",0.000,0.00

@@ -1,0 +1,6 @@
+TradingDate,TradingPeriod,ParticipantCode,PointOfConnection,Unit,UTCSubmissionDate,UTCSubmissionTime,SubmissionOrder,IsLatestYesNo,DispatchableYesNo,Tranche,Megawatts,DollarsPerMegawattHour
+2020-12-31,1,CHHE,KIN0111,"",2020-12-27,23:41:59.000,1,Y,"",1,18.800,1000.00
+2020-12-31,1,CHHE,KIN0111,"",2020-12-27,23:41:59.000,1,Y,"",2,0.000,0.00
+2020-12-31,1,CHHE,KIN0111,"",2020-12-27,23:41:59.000,1,Y,"",3,0.000,0.00
+2020-12-31,1,CHHE,KIN0111,"",2020-12-27,23:41:59.000,1,Y,"",4,0.000,0.00
+2020-12-31,1,CHHE,KIN0111,"",2020-12-27,23:41:59.000,1,Y,"",5,0.000,0.00

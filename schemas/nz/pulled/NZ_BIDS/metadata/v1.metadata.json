@@ -1,0 +1,168 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 7486470116735111965,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 13,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1356955200000,
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nz/NZ_BIDS",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "phasor.declared": "true",
+    "phasor.derived": "[{\"column\":\"INTERVAL_START_UTC_US\",\"rule\":\"nz_trading_period_start\",\"from\":[\"TRADINGDATE\",\"TRADINGPERIOD\"]}]",
+    "phasor.format": "5",
+    "phasor.headers": "{\"1\":\"TradingDate\",\"2\":\"TradingPeriod\",\"3\":\"ParticipantCode\",\"4\":\"PointOfConnection\",\"5\":\"Unit\",\"6\":\"UTCSubmissionDate\",\"7\":\"UTCSubmissionTime\",\"8\":\"SubmissionOrder\",\"9\":\"IsLatestYesNo\",\"10\":\"DispatchableYesNo\",\"11\":\"Tranche\",\"12\":\"Megawatts\",\"13\":\"DollarsPerMegawattHour\"}",
+    "phasor.load": "append",
+    "phasor.market": "nz",
+    "phasor.offset": "+12:00",
+    "phasor.reports": "[[\"EMI\",\"BIDS\"]]",
+    "phasor.table": "NZ_BIDS",
+    "phasor.time": "TRADINGDATE",
+    "phasor.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 7486470116735111965,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "id": 1,
+          "name": "TRADINGDATE",
+          "required": false,
+          "type": "date"
+        },
+        {
+          "id": 2,
+          "name": "TRADINGPERIOD",
+          "required": false,
+          "type": "long"
+        },
+        {
+          "id": 3,
+          "name": "PARTICIPANTCODE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 4,
+          "name": "POINTOFCONNECTION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 5,
+          "name": "UNIT",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 6,
+          "name": "UTCSUBMISSIONDATE",
+          "required": false,
+          "type": "date"
+        },
+        {
+          "id": 7,
+          "name": "UTCSUBMISSIONTIME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 8,
+          "name": "SUBMISSIONORDER",
+          "required": false,
+          "type": "long"
+        },
+        {
+          "id": 9,
+          "name": "ISLATESTYESNO",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 10,
+          "name": "DISPATCHABLEYESNO",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 11,
+          "name": "TRANCHE",
+          "required": false,
+          "type": "long"
+        },
+        {
+          "id": 12,
+          "name": "MEGAWATTS",
+          "required": false,
+          "type": "decimal(6, 3)"
+        },
+        {
+          "id": 13,
+          "name": "DOLLARSPERMEGAWATTHOUR",
+          "required": false,
+          "type": "decimal(8, 2)"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 7486470116735111965,
+      "timestamp-ms": 1356955200000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nz/NZ_BIDS/metadata/snap-7486470116735111965-1-efa63606-4af1-8733-9105-f28e5ab4b95a.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 7486470116735111965,
+      "summary": {
+        "operation": "append",
+        "phasor.files": "5056",
+        "phasor.from.file": "20130101_Bids.csv",
+        "phasor.from.release": "2013-01",
+        "phasor.from.sha256": "619f55b5134151d01e88bd54d5697a6b9198be5d8c840636b27be053691ae7bc",
+        "phasor.from.time": "2013-01-01T00:00:00+12:00",
+        "phasor.kinds": "[\"emi\"]",
+        "phasor.report-subtype": "BIDS",
+        "phasor.report-type": "EMI",
+        "phasor.rows": "151894048",
+        "phasor.to.file": "20261105_Bids.csv",
+        "phasor.to.release": "2026-11",
+        "phasor.to.sha256": "01f084f2361491a8ed03a120ca8b31b232bddf4c41473d5fac1ec57876d0ad26",
+        "phasor.to.time": "2026-11-05T00:00:00+12:00",
+        "phasor.total-rows": "151894048",
+        "phasor.version": "1"
+      },
+      "timestamp-ms": 1356955200000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "efa63606-4af1-8733-9105-f28e5ab4b95a"
+}
