@@ -13,10 +13,6 @@ pub static FETCH: Zone = Zone::new(551, "acquire.fetch");
 pub static DOWNLOAD: Zone = Zone::new(552, "acquire.download");
 /// One folder listed from the host.
 pub static LISTING: Zone = Zone::new(553, "acquire.listing");
-/// One listing page parsed.
-pub static PARSE_LISTING: Zone = Zone::new(554, "acquire.parse_listing");
-/// One archived file checked against its record.
-pub static VERIFY: Zone = Zone::new(555, "acquire.verify");
 /// The path of a [`FETCH_PICKS`] stretch.
 pub static FETCH_PICKS_PATH: [&Zone; 1] = [&FETCH_PICKS];
 /// The path of a [`FETCH`] stretch.

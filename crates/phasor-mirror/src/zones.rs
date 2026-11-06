@@ -16,8 +16,6 @@ pub static PEEK: Zone = Zone::new(602, "cmd.peek");
 pub static RUN: Zone = Zone::new(603, "cmd.run");
 /// `watch`.
 pub static WATCH: Zone = Zone::new(604, "cmd.watch");
-/// `map`.
-pub static MAP: Zone = Zone::new(605, "cmd.map");
 /// One folder's listing page fetched.
 pub static CRAWL_PAGE: Zone = Zone::new(610, "crawl.page");
 /// One listing page read into links.
