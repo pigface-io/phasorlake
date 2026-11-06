@@ -26,15 +26,24 @@ pub struct Cadence {
     pub least: Duration,
 }
 
+/// The interval beyond which a folder's first read is spread rather than
+/// due at once: an hour. Folders read that often or faster are read as soon
+/// as a watch starts; a host's thousands of daily folders are not all read
+/// at every start.
+const SPREAD_OVER: Duration = Duration::from_secs(3600);
+
 impl Cadence {
     /// A folder's own interval, and whether its first read is spread over it
-    /// (only the folders no rule names are spread).
+    /// (an interval longer than an hour is; whether a rule names the folder
+    /// or the host's `every_secs` does makes no difference).
     fn base(&self, folder: &str) -> (Duration, bool) {
-        self.rules
+        let every = self
+            .rules
             .iter()
             .filter(|(p, _)| folder.starts_with(p.as_str()))
             .max_by_key(|(p, _)| p.len())
-            .map_or((self.every, true), |(_, every)| (*every, false))
+            .map_or(self.every, |(_, every)| *every);
+        (every, every > SPREAD_OVER)
     }
 }
 
@@ -293,6 +302,17 @@ mod tests {
         let half = now + Duration::from_secs(43_200);
         assert_eq!(s.due(half).len(), 4);
         assert_eq!(s.next(), Some(now));
+        // A rule of a day over a host's folders spreads them too: a start
+        // reads one of them, not every one.
+        let mut daily = cadence();
+        daily
+            .rules
+            .push(("https://n/".to_owned(), Duration::from_secs(86_400)));
+        let many = (0..4).map(|i| format!("https://n/{i}/"));
+        let spread = Schedule::new(daily, many, now);
+        assert_eq!(spread.due(now), ["https://n/0/"]);
+        assert_eq!(spread.due(now + Duration::from_secs(43_200)).len(), 3);
+        assert_eq!(spread.due(now + Duration::from_secs(86_400)).len(), 4);
 
         // Changed: half the interval, not under the least; the same: twice
         // it, not over its own.
