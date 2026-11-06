@@ -62,19 +62,9 @@ fn fnv(bytes: &[u8], seed: u64) -> u64 {
 
 /// Milliseconds since 1970 at the start of `YYYY-MM` (UTC), or 0.
 fn month_ms(period: Option<&str>) -> i64 {
-    let Some((y, m)) = period.and_then(|p| p.split_once('-')) else {
-        return 0;
-    };
-    let (Ok(y), Ok(m)) = (y.parse::<i64>(), m.parse::<i64>()) else {
-        return 0;
-    };
-    // Days from 1970-01-01 to the first of the month (civil calendar).
-    let (y, m) = if m <= 2 { (y - 1, m + 9) } else { (y, m - 3) };
-    let era = y.div_euclid(400);
-    let yoe = y - era * 400;
-    let doy = (153 * m + 2) / 5;
-    let doe = yoe * 365 + yoe / 4 - yoe / 100 + doy;
-    (era * 146_097 + doe - 719_468) * 86_400_000
+    period
+        .and_then(|p| phasor_iceberg::publish::month_start_ms_at(p, 0))
+        .unwrap_or(0)
 }
 
 /// Builds the Iceberg metadata of table `t` from `outputs`, replacing any already there.

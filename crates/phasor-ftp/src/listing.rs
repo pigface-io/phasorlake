@@ -3,8 +3,8 @@
 //! time an HTTP date, so the same code reads an FTP folder and a host of
 //! documents.
 
-use std::time::{Duration, UNIX_EPOCH};
-
+use phasor_provenance::Stamp;
+use phasor_provenance::stamp::UTC;
 use serde::{Deserialize, Serialize};
 
 /// One entry of a folder, as the page lists it.
@@ -85,27 +85,12 @@ pub fn http_date(ftp_time: &str) -> Option<String> {
     if digits.len() != 14 || !digits.bytes().all(|b| b.is_ascii_digit()) {
         return None;
     }
-    let num = |range: std::ops::Range<usize>| digits[range].parse::<i64>().ok();
-    let (y, m, d) = (num(0..4)?, num(4..6)?, num(6..8)?);
+    let num = |range: std::ops::Range<usize>| digits[range].parse::<u32>().ok();
+    let y = digits[0..4].parse::<i32>().ok()?;
+    let (m, d) = (num(4..6)?, num(6..8)?);
     let (hh, mm, ss) = (num(8..10)?, num(10..12)?, num(12..14)?);
-    if !(1..=12).contains(&m) || !(1..=31).contains(&d) || hh > 23 || mm > 59 || ss > 60 {
-        return None;
-    }
-    let days = days_from_civil(y, m, d);
-    let secs = days * 86_400 + hh * 3600 + mm * 60 + ss;
-    let at = UNIX_EPOCH.checked_add(Duration::from_secs(u64::try_from(secs).ok()?))?;
-    Some(httpdate::fmt_http_date(at))
-}
-
-/// Days since 1970-01-01 of a proleptic Gregorian date (Howard Hinnant's algorithm).
-fn days_from_civil(y: i64, m: i64, d: i64) -> i64 {
-    let y = if m <= 2 { y - 1 } else { y };
-    let era = y.div_euclid(400);
-    let yoe = y - era * 400;
-    let mp = (m + 9) % 12;
-    let doy = (153 * mp + 2) / 5 + d - 1;
-    let doe = yoe * 365 + yoe / 4 - yoe / 100 + doy;
-    era * 146_097 + doe - 719_468
+    let at = Stamp::at(y, m, d, hh, mm, ss, UTC)?;
+    (at.unix() >= 0).then(|| at.http_date())
 }
 
 /// Whether `name` matches `pattern`: `*` any run of characters, `?` any one,

@@ -144,7 +144,6 @@ bytes = "1"
 async-trait = "0.1"
 reqwest = { version = "0.13", default-features = false, features = ["rustls", "stream", "http2"] }
 url = { version = "2", features = ["serde"] }
-httpdate = "1"
 sha2 = "0.11"
 # robots.txt rules and crawl delays, read once per host per run
 texting_robots = "0.2"
