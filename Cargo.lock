@@ -2022,6 +2022,7 @@ dependencies = [
 [[package]]
 name = "phasor-decode"
 version = "0.2.0"
+source = "git+https://github.com/pigface-io/phasorlake-schemas.git?rev=3378e39d608886d0c6fcaff3aaab5db79b131bbc#3378e39d608886d0c6fcaff3aaab5db79b131bbc"
 dependencies = [
  "phasor-diag",
  "serde",
@@ -2032,6 +2033,7 @@ dependencies = [
 [[package]]
 name = "phasor-diag"
 version = "0.2.0"
+source = "git+https://github.com/pigface-io/phasorlake-schemas.git?rev=3378e39d608886d0c6fcaff3aaab5db79b131bbc#3378e39d608886d0c6fcaff3aaab5db79b131bbc"
 dependencies = [
  "serde",
 ]
@@ -2106,6 +2108,7 @@ dependencies = [
 [[package]]
 name = "phasor-gates"
 version = "0.2.0"
+source = "git+https://github.com/pigface-io/phasorlake-schemas.git?rev=3378e39d608886d0c6fcaff3aaab5db79b131bbc#3378e39d608886d0c6fcaff3aaab5db79b131bbc"
 dependencies = [
  "anyhow",
  "serde",
@@ -2115,6 +2118,7 @@ dependencies = [
 [[package]]
 name = "phasor-iceberg"
 version = "0.2.0"
+source = "git+https://github.com/pigface-io/phasorlake-schemas.git?rev=3378e39d608886d0c6fcaff3aaab5db79b131bbc#3378e39d608886d0c6fcaff3aaab5db79b131bbc"
 dependencies = [
  "phasor-diag",
  "serde",
@@ -2211,6 +2215,7 @@ dependencies = [
 [[package]]
 name = "phasor-mms-decode"
 version = "0.2.0"
+source = "git+https://github.com/pigface-io/phasorlake-schemas.git?rev=3378e39d608886d0c6fcaff3aaab5db79b131bbc#3378e39d608886d0c6fcaff3aaab5db79b131bbc"
 dependencies = [
  "memchr",
  "phasor-decode",
@@ -2299,6 +2304,7 @@ dependencies = [
 [[package]]
 name = "phasor-plain-decode"
 version = "0.2.0"
+source = "git+https://github.com/pigface-io/phasorlake-schemas.git?rev=3378e39d608886d0c6fcaff3aaab5db79b131bbc#3378e39d608886d0c6fcaff3aaab5db79b131bbc"
 dependencies = [
  "memchr",
  "phasor-decode",
@@ -2312,6 +2318,7 @@ dependencies = [
 [[package]]
 name = "phasor-provenance"
 version = "0.2.0"
+source = "git+https://github.com/pigface-io/phasorlake-schemas.git?rev=3378e39d608886d0c6fcaff3aaab5db79b131bbc#3378e39d608886d0c6fcaff3aaab5db79b131bbc"
 dependencies = [
  "crc32fast",
  "phasor-diag",
@@ -2413,6 +2420,7 @@ dependencies = [
 [[package]]
 name = "phasor-zip"
 version = "0.2.0"
+source = "git+https://github.com/pigface-io/phasorlake-schemas.git?rev=3378e39d608886d0c6fcaff3aaab5db79b131bbc#3378e39d608886d0c6fcaff3aaab5db79b131bbc"
 dependencies = [
  "flate2",
  "phasor-diag",

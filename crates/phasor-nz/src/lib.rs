@@ -1,6 +1,6 @@
 //! New Zealand's wholesale electricity market kit: the Electricity
 //! Authority's EMI datasets, plain CSV files on a blob store, one a day or
-//! one a month, as two sources over one feed ([`kit`]), set by
+//! one a month, as two sources over one feed ([`kit()`]), set by
 //! [`NzConfig`]. A day's file, its interim and the month's file of a dataset
 //! are one table; a file written again is fetched again and kept beside the
 //! earlier one.
