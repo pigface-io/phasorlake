@@ -150,6 +150,9 @@ pub async fn download(
             false
         });
         summary.deferred_folders = deferred.into_iter().collect();
+        // A host with a cap is working off a backlog; the other hosts' files
+        // are due now and go first, so a round's new files never wait on it.
+        files.sort_by_key(|f| fetcher.for_url(f.url.as_str()).batch.is_some());
     }
     let (paired, held, record) = (&paired, &held, &record);
     // The listings, read once, when the first paired zip comes up: peek
@@ -569,6 +572,71 @@ mod tests {
                 min_interval: Duration::ZERO,
             },
         ))
+    }
+
+    /// A batched pass takes the hosts without a cap first: a capped host is
+    /// working off a backlog and the others' files are due now. A plain pass
+    /// keeps URL order.
+    #[tokio::test]
+    async fn a_batched_pass_downloads_the_uncapped_hosts_files_first() {
+        let home = tempfile::tempdir().unwrap();
+        let mirror = Mirror::new(home.path().join("mirror"));
+        let archive = home.path().join("archive");
+        let t = Arc::new(StaticTransport::default());
+        const ONE: &str =
+            "<pre> Monday, October 12, 2026 10:45 AM 3 <A HREF=\"/A/x.zip\">x</A><br></pre>";
+        t.add("https://c/A/", Canned::ok(ONE.as_bytes()));
+        t.add("https://c/A/x.zip", Canned::ok(b"xxx"));
+        t.add("https://n/A/", Canned::ok(ONE.as_bytes()));
+        t.add("https://n/A/x.zip", Canned::ok(b"xxx"));
+        let host = |base: &str, batch| crate::net::HostFetcher {
+            base_url: base.to_owned(),
+            offset_secs: crate::stamp::AEST,
+            listing: crate::config::ListingKind::Iis,
+            documents: Vec::new(),
+            only: Vec::new(),
+            batch,
+            fetcher: crate::net::Fetcher::new(
+                Arc::new(t.clone()),
+                Archive::new(&archive),
+                FetcherConfig {
+                    attempts: 1,
+                    backoff: Duration::ZERO,
+                    max_backoff: Duration::ZERO,
+                    min_interval: Duration::ZERO,
+                },
+            ),
+        };
+        // `c` is capped and sorts first by URL; `n` is not capped.
+        let fetchers = Fetchers::new(vec![host("https://c", Some(600)), host("https://n", None)]);
+        let roots = [root("https://c/A/").unwrap(), root("https://n/A/").unwrap()];
+        crawl(&fetchers, &mirror, &roots, false, |_| {})
+            .await
+            .unwrap();
+        let options = |batched| DownloadOptions {
+            downloads: 1,
+            only: &[],
+            folders: None,
+            delete_duplicates: false,
+            batched,
+        };
+        let mut batched: Vec<String> = Vec::new();
+        download(&fetchers, &mirror, &options(true), |d| {
+            batched.push(d.url.to_owned());
+        })
+        .await
+        .unwrap();
+        assert_eq!(batched, ["https://n/A/x.zip", "https://c/A/x.zip"]);
+        std::fs::remove_dir_all(&archive).unwrap();
+        let fresh = Mirror::new(home.path().join("mirror"));
+        assert_eq!(fresh.reindex(&Archive::new(&archive)).unwrap(), 0);
+        let mut plain: Vec<String> = Vec::new();
+        download(&fetchers, &fresh, &options(false), |d| {
+            plain.push(d.url.to_owned());
+        })
+        .await
+        .unwrap();
+        assert_eq!(plain, ["https://c/A/x.zip", "https://n/A/x.zip"]);
     }
 
     /// A host with a batch: its files past the cap wait, their folder named

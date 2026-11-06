@@ -49,7 +49,9 @@ what the data means, this knows what exists.
   downloads first: every file the record lists and the archive lacks, each
   host's `batch` of them, before any folder is read again; the folders
   whose files were put off come first in the next round and are noted in
-  `state/cache/carried.json`.
+  `state/cache/carried.json`. In every round the hosts without a `batch`
+  download first: a capped host is working off a backlog, and the others'
+  new files are due now.
   A refusal
   is waited out as in `run`, and so is an archive linked to a drive not
   mounted.
