@@ -3,7 +3,6 @@
 //! journals and removes each that is the same as an earlier one.
 
 use std::collections::BTreeSet;
-use std::io::Write as _;
 
 use serde::Serialize;
 
@@ -122,18 +121,12 @@ pub async fn versions(
                     modified_at: held[url].modified_at,
                     file: name_of(k).filter(|_| !first),
                 };
-                lines.push(serde_json::to_string(&line).expect("a HeldEntry always serialises"));
+                lines.push(line);
             }
         }
     }
     if !lines.is_empty() {
-        let mut text = lines.join("\n");
-        text.push('\n');
-        std::fs::OpenOptions::new()
-            .append(true)
-            .open(&path)
-            .and_then(|mut f| f.write_all(text.as_bytes()))
-            .map_err(MirrorError::io(&path))?;
+        crate::ndjson::append(&path, lines, |_| Ok(()))?;
     }
     Ok(summary)
 }

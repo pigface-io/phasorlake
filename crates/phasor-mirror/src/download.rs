@@ -1,7 +1,6 @@
 //! Downloading every file of the crawl record into the archive.
 
 use std::collections::{BTreeMap, HashMap};
-use std::io::Write as _;
 use std::path::PathBuf;
 
 use futures::StreamExt as _;
@@ -75,11 +74,6 @@ pub async fn download(
     let held_path = mirror.held_path();
     let cache = mirror.cache_dir();
     std::fs::create_dir_all(&cache).map_err(MirrorError::io(&cache))?;
-    let mut note = std::fs::OpenOptions::new()
-        .create(true)
-        .append(true)
-        .open(&held_path)
-        .map_err(MirrorError::io(&held_path))?;
     let record = mirror.record()?;
     let paired: HashMap<String, Pair> = pairs_in(&record, &removed, fetcher.archive())
         .into_iter()
@@ -182,7 +176,7 @@ pub async fn download(
                 .map(task)
                 .buffer_unordered(downloads.max(1)),
         );
-    let (mut done, mut line) = (0, Vec::new());
+    let mut done = 0;
     while let Some(next) = results.next().await {
         let (remote, result) = next?;
         done += 1;
@@ -204,10 +198,7 @@ pub async fn download(
                     mirror.note(folder, event)?;
                 }
                 if let Some(held) = &local.note {
-                    line.clear();
-                    serde_json::to_writer(&mut line, held).expect("a HeldEntry always serialises");
-                    line.push(b'\n');
-                    note.write_all(&line).map_err(MirrorError::io(&held_path))?;
+                    crate::ndjson::append(&held_path, [held], |_| Ok(()))?;
                 }
                 on_file(&FileDone {
                     url: remote.url.as_str(),
