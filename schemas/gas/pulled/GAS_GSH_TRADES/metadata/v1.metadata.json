@@ -20,6 +20,7 @@
   "properties": {
     "comment": "Provides participants (buyer and seller) a confirmation whenever a trade is executed through auto matching of bids and offers or by off-market trades. Also provides participants with a list of all their future trades when triggered daily after the end of the trades for the current day",
     "phasor.declared": "true",
+    "phasor.derived": "[{\"column\":\"TRADE_DATE_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"TRADE_DATE\"]},{\"column\":\"START_DATE_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"START_DATE\"]},{\"column\":\"END_DATE_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"END_DATE\"]}]",
     "phasor.format": "5",
     "phasor.load": "append",
     "phasor.market": "gas",

@@ -20,6 +20,7 @@
   "properties": {
     "comment": "Summary record for an Upper MW Limit submission for an intermittent generating unit for a Trading Day",
     "phasor.declared": "true",
+    "phasor.derived": "[{\"column\":\"TRADINGDATE_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"TRADINGDATE\"]},{\"column\":\"OFFERDATETIME_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"OFFERDATETIME\"]},{\"column\":\"LASTCHANGED_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"LASTCHANGED\"]}]",
     "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"VARCHAR(20)\",\"3\":\"TIMESTAMP(0)\",\"4\":\"VARCHAR(20)\",\"5\":\"TIMESTAMP(0)\",\"6\":\"VARCHAR(20)\",\"7\":\"VARCHAR(20)\"}",

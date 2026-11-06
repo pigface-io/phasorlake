@@ -20,6 +20,7 @@
   "properties": {
     "comment": "STATIONOWNER sets out the owner details of each station.",
     "phasor.declared": "true",
+    "phasor.derived": "[{\"column\":\"EFFECTIVEDATE_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"EFFECTIVEDATE\"]},{\"column\":\"LASTCHANGED_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"LASTCHANGED\"]}]",
     "phasor.format": "5",
     "phasor.load": "snapshot",
     "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"VARCHAR(10)\",\"3\":\"VARCHAR(10)\",\"4\":\"NUMERIC(3,0)\",\"5\":\"TIMESTAMP(0)\"}",

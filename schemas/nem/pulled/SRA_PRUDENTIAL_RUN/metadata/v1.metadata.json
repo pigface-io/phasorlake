@@ -20,6 +20,7 @@
   "properties": {
     "comment": "Records the prudential run details for each prudential date",
     "phasor.declared": "true",
+    "phasor.derived": "[{\"column\":\"PRUDENTIAL_DATE_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"PRUDENTIAL_DATE\"]}]",
     "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(8)\"}",

@@ -20,6 +20,7 @@
   "properties": {
     "comment": "MT PASA input table to define the regions that are part of a single MT PASA Reserve Requirement",
     "phasor.declared": "true",
+    "phasor.derived": "[{\"column\":\"EFFECTIVEDATE_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"EFFECTIVEDATE\"]},{\"column\":\"VERSION_DATETIME_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"VERSION_DATETIME\"]},{\"column\":\"LASTCHANGED_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"LASTCHANGED\"]}]",
     "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"VARCHAR(20)\",\"4\":\"VARCHAR(20)\",\"5\":\"NUMERIC(16,6)\",\"6\":\"TIMESTAMP(0)\"}",

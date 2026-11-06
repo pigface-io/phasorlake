@@ -20,6 +20,7 @@
   "properties": {
     "comment": "SETCFG_PARTICIPANT_MPF shows the Market Participation Factors (MPF) for each participant for each connection point. The MPF values are used to determine recovery amounts for regulation FCAS.",
     "phasor.declared": "true",
+    "phasor.derived": "[{\"column\":\"EFFECTIVEDATE_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"EFFECTIVEDATE\"]},{\"column\":\"LASTCHANGED_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"LASTCHANGED\"]}]",
     "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"VARCHAR(10)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"NUMERIC(3,0)\",\"4\":\"VARCHAR(10)\",\"5\":\"VARCHAR(10)\",\"6\":\"NUMERIC(15,5)\",\"7\":\"TIMESTAMP(0)\"}",

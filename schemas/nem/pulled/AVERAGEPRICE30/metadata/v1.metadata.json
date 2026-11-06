@@ -20,6 +20,7 @@
   "properties": {
     "comment": "Reflects the 30-minute average price (the pre-5MS trading price).",
     "phasor.declared": "true",
+    "phasor.derived": "[{\"column\":\"PERIODDATE_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"PERIODDATE\"]},{\"column\":\"LASTCHANGED_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"LASTCHANGED\"]}]",
     "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"VARCHAR(10)\",\"3\":\"NUMERIC(3,0)\",\"4\":\"NUMERIC(15,5)\",\"5\":\"VARCHAR(20)\",\"6\":\"TIMESTAMP(0)\"}",

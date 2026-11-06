@@ -20,6 +20,7 @@
   "properties": {
     "comment": "Records details of the settlement process for the cancellation and purchase of SRA Auction Units",
     "phasor.declared": "true",
+    "phasor.derived": "[{\"column\":\"RUNDATE_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"RUNDATE\"]},{\"column\":\"POSTEDDATE_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"POSTEDDATE\"]},{\"column\":\"LASTCHANGED_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"LASTCHANGED\"]}]",
     "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"NUMERIC(4)\",\"2\":\"NUMERIC(3)\",\"3\":\"NUMERIC(3)\",\"4\":\"VARCHAR(20)\",\"5\":\"TIMESTAMP(0)\",\"6\":\"TIMESTAMP(0)\",\"7\":\"NUMERIC(3)\",\"8\":\"NUMERIC(3)\",\"9\":\"TIMESTAMP(0)\"}",

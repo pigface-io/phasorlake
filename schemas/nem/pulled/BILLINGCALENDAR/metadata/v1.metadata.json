@@ -20,6 +20,7 @@
   "properties": {
     "comment": "BILLINGCALENDAR sets out the billing calendar for the year, with week number 1 starting on 1 January. BILLINGCALENDAR advises preliminary and final statement posting date and corresponding  settlement for each billing week.",
     "phasor.declared": "true",
+    "phasor.derived": "[{\"column\":\"STARTDATE_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"STARTDATE\"]},{\"column\":\"ENDDATE_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"ENDDATE\"]},{\"column\":\"PRELIMINARYSTATEMENTDATE_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"PRELIMINARYSTATEMENTDATE\"]},{\"column\":\"FINALSTATEMENTDATE_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"FINALSTATEMENTDATE\"]},{\"column\":\"PAYMENTDATE_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"PAYMENTDATE\"]},{\"column\":\"LASTCHANGED_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"LASTCHANGED\"]},{\"column\":\"REVISION1_STATEMENTDATE_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"REVISION1_STATEMENTDATE\"]},{\"column\":\"REVISION2_STATEMENTDATE_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"REVISION2_STATEMENTDATE\"]}]",
     "phasor.format": "5",
     "phasor.load": "snapshot",
     "phasor.model-types": "{\"1\":\"NUMERIC(4,0)\",\"2\":\"NUMERIC(3,0)\",\"3\":\"TIMESTAMP(0)\",\"4\":\"TIMESTAMP(0)\",\"5\":\"TIMESTAMP(0)\",\"6\":\"TIMESTAMP(0)\",\"7\":\"TIMESTAMP(0)\",\"8\":\"TIMESTAMP(0)\",\"9\":\"TIMESTAMP(0)\",\"10\":\"TIMESTAMP(0)\",\"11\":\"TIMESTAMP(0)\"}",

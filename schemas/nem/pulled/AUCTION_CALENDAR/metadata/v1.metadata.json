@@ -20,6 +20,7 @@
   "properties": {
     "comment": "AUCTION_CALENDAR holds the definitions of each auction quarter in a contract year. AUCTION_CALENDAR supports the Settlement Residue Auction.",
     "phasor.declared": "true",
+    "phasor.derived": "[{\"column\":\"STARTDATE_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"STARTDATE\"]},{\"column\":\"ENDDATE_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"ENDDATE\"]},{\"column\":\"NOTIFYDATE_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"NOTIFYDATE\"]},{\"column\":\"PAYMENTDATE_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"PAYMENTDATE\"]},{\"column\":\"RECONCILIATIONDATE_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"RECONCILIATIONDATE\"]},{\"column\":\"LASTCHANGED_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"LASTCHANGED\"]},{\"column\":\"PRELIMPURCHASESTMTDATE_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"PRELIMPURCHASESTMTDATE\"]},{\"column\":\"PRELIMPROCEEDSSTMTDATE_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"PRELIMPROCEEDSSTMTDATE\"]},{\"column\":\"FINALPURCHASESTMTDATE_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"FINALPURCHASESTMTDATE\"]},{\"column\":\"FINALPROCEEDSSTMTDATE_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"FINALPROCEEDSSTMTDATE\"]}]",
     "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"NUMERIC(4,0)\",\"2\":\"NUMERIC(1,0)\",\"3\":\"TIMESTAMP(0)\",\"4\":\"TIMESTAMP(0)\",\"5\":\"TIMESTAMP(0)\",\"6\":\"TIMESTAMP(0)\",\"7\":\"TIMESTAMP(0)\",\"8\":\"TIMESTAMP(0)\",\"9\":\"TIMESTAMP(0)\",\"10\":\"TIMESTAMP(0)\",\"11\":\"TIMESTAMP(0)\",\"12\":\"TIMESTAMP(0)\"}",

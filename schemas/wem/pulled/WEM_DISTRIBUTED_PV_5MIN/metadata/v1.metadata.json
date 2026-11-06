@@ -19,6 +19,7 @@
   ],
   "properties": {
     "phasor.declared": "true",
+    "phasor.derived": "[{\"column\":\"TIMESTAMP_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"TIMESTAMP\"]},{\"column\":\"EXTRACTED_AT_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"EXTRACTED_AT\"]}]",
     "phasor.format": "5",
     "phasor.headers": "{\"1\":\"Timestamp\",\"2\":\"Estimated DPV Generation(MW)\",\"3\":\"Extracted At\"}",
     "phasor.load": "append",

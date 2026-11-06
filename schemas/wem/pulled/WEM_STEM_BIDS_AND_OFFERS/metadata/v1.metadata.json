@@ -19,6 +19,7 @@
   ],
   "properties": {
     "phasor.declared": "true",
+    "phasor.derived": "[{\"column\":\"TRADING_INTERVAL_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"TRADING_INTERVAL\"]},{\"column\":\"EXTRACTED_AT_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"EXTRACTED_AT\"]}]",
     "phasor.format": "5",
     "phasor.headers": "{\"1\":\"Trading Date\",\"2\":\"Interval Number\",\"3\":\"Trading Interval\",\"4\":\"Participant Code\",\"5\":\"Bid or Offer\",\"6\":\"Price ($/MWh)\",\"7\":\"Quantity (MWh)\",\"8\":\"Extracted At\"}",
     "phasor.load": "append",

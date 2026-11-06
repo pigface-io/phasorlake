@@ -85,7 +85,9 @@ pub struct DerivedStep {
 ///
 /// Raise it when the same plan would be written differently by a newer phasor.
 /// 11: the columns a lake derives from a row (`phasor.derived`).
-pub const PLAN_FORMAT: u32 = 11;
+/// 12: every market's timestamp columns carry a `_UTC_US` sibling, so every
+/// file is read again for them.
+pub const PLAN_FORMAT: u32 = 12;
 
 /// The identity of a plan: everything that decides what files of its shape are written as.
 ///

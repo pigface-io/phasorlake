@@ -20,6 +20,7 @@
   "properties": {
     "comment": "PERDEMAND sets out the regional demands and MR schedule data for each half-hour period. PERDEMAND is a child table to RESDEMANDTRK.",
     "phasor.declared": "true",
+    "phasor.derived": "[{\"column\":\"EFFECTIVEDATE_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"EFFECTIVEDATE\"]},{\"column\":\"SETTLEMENTDATE_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"SETTLEMENTDATE\"]},{\"column\":\"OFFERDATE_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"OFFERDATE\"]},{\"column\":\"LASTCHANGED_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"LASTCHANGED\"]}]",
     "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"VARCHAR(10)\",\"4\":\"TIMESTAMP(0)\",\"5\":\"NUMERIC(3,0)\",\"6\":\"NUMERIC(3,0)\",\"7\":\"NUMERIC(10,0)\",\"8\":\"NUMERIC(10,0)\",\"9\":\"NUMERIC(10,0)\",\"10\":\"TIMESTAMP(0)\",\"11\":\"NUMERIC(6,0)\"}",

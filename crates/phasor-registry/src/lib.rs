@@ -4,6 +4,7 @@
 
 pub mod arrow;
 pub mod catalog;
+pub mod columns;
 pub mod error;
 pub mod file_model;
 pub mod plan;
@@ -16,6 +17,7 @@ pub use crate::file_model::{
     TableSchema,
 };
 pub use catalog::RegistryCatalog;
+pub use columns::{ColumnRole, ListedColumn, listed_columns};
 pub use error::ResolveError;
 pub use phasor_mms_decode::shape::{CanonicalShape, SHAPE_FORMAT, ShapeId};
 pub use plan::{

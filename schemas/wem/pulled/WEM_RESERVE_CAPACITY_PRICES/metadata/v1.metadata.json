@@ -19,6 +19,7 @@
   ],
   "properties": {
     "phasor.declared": "true",
+    "phasor.derived": "[{\"column\":\"EXTRACTED_AT_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"EXTRACTED_AT\"]}]",
     "phasor.format": "5",
     "phasor.headers": "{\"1\":\"Capacity Year\",\"2\":\"Price Type\",\"3\":\"Price ($)\",\"4\":\"Capacity Credits (MW)\",\"5\":\"Trans Floor ($)\",\"6\":\"Trans Ceiling ($)\",\"7\":\"Extracted At\"}",
     "phasor.load": "snapshot",

@@ -19,6 +19,7 @@
   ],
   "properties": {
     "phasor.declared": "true",
+    "phasor.derived": "[{\"column\":\"TRADING_INTERVAL_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"TRADING_INTERVAL\"]},{\"column\":\"EXTRACTED_AT_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"EXTRACTED_AT\"]}]",
     "phasor.format": "5",
     "phasor.headers": "{\"1\":\"Trading Date\",\"2\":\"Interval Number\",\"3\":\"Trading Interval\",\"4\":\"Trading Suspended\",\"5\":\"Offer Quantity (MWh)\",\"6\":\"Bid Quantity (MWh)\",\"7\":\"Clearing Quantity (MWh)\",\"8\":\"Clearing Price ($/MWh)\",\"9\":\"Extracted At\"}",
     "phasor.load": "append",

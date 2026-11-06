@@ -451,7 +451,7 @@ async fn the_same_rows_are_laid_out_byte_for_byte_the_same() {
     assert_eq!(files.len(), 1, "{files:?}");
     assert_eq!(
         layout(&files[0]),
-        (vec![150_000], 13_485_013_892_379_961_982)
+        (vec![150_000], 11_482_730_059_050_870_023)
     );
 }
 
@@ -1243,12 +1243,13 @@ C,\"END OF REPORT\",9\n";
     let first = parquet_batch(files.iter().find(|f| *f != second_name).unwrap());
     let second = parquet_batch(second_name);
     assert_eq!(first.num_rows(), 2);
-    // The table's columns, then each row's source and its three times.
-    assert_eq!(first.num_columns(), 4 + 4);
+    // The table's columns and the `_UTC_US` siblings of its two timestamps,
+    // then each row's source and its three times.
+    assert_eq!(first.num_columns(), 4 + 2 + 4);
     // Which columns may be null is a reader's to say: every one may.
     assert!(first.schema().field(1).is_nullable());
     assert_eq!(second.num_rows(), 4);
-    assert_eq!(second.num_columns(), 5 + 4);
+    assert_eq!(second.num_columns(), 5 + 2 + 4);
     let names: Vec<String> = second
         .schema()
         .fields()
@@ -1258,6 +1259,8 @@ C,\"END OF REPORT\",9\n";
     assert_eq!(
         &names[4..],
         [
+            "SETTLEMENTDATE_UTC_US",
+            "LASTCHANGED_UTC_US",
             "SCADAVALUE__raw",
             "_phasor_source",
             "_phasor_server_last_modified",

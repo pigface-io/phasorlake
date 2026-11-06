@@ -19,6 +19,7 @@
   ],
   "properties": {
     "phasor.declared": "true",
+    "phasor.derived": "[{\"column\":\"COMMENCEMENT_DATETIME_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"COMMENCEMENT_DATETIME\"]},{\"column\":\"TERMINATION_DATETIME_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"TERMINATION_DATETIME\"]},{\"column\":\"MOD_DATETIME_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"MOD_DATETIME\"]},{\"column\":\"CURRENT_DATE_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"CURRENT_DATE\"]}]",
     "phasor.format": "5",
     "phasor.headers": "{\"1\":\"gas_date\",\"2\":\"direction_code_name\",\"3\":\"direction\",\"4\":\"commencement_datetime\",\"5\":\"termination_datetime\",\"6\":\"quantity\",\"7\":\"time_sort_order\",\"8\":\"mod_datetime\",\"9\":\"current_date\"}",
     "phasor.load": "append",

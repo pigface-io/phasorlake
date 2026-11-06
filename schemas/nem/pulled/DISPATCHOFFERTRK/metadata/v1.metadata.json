@@ -20,6 +20,7 @@
   "properties": {
     "comment": "DISPATCHOFFERTRK is the energy and ancillary service bid tracking table for the Dispatch process. The table identifies which bids from BIDDAYOFFER and BIDOFFERPERIOD were applied for a given unit and bid type for each dispatch interval.",
     "phasor.declared": "true",
+    "phasor.derived": "[{\"column\":\"SETTLEMENTDATE_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"SETTLEMENTDATE\"]},{\"column\":\"BIDSETTLEMENTDATE_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"BIDSETTLEMENTDATE\"]},{\"column\":\"BIDOFFERDATE_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"BIDOFFERDATE\"]},{\"column\":\"LASTCHANGED_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"LASTCHANGED\"]}]",
     "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"VARCHAR(10)\",\"3\":\"VARCHAR(10)\",\"4\":\"TIMESTAMP(0)\",\"5\":\"TIMESTAMP(3)\",\"6\":\"TIMESTAMP(0)\"}",

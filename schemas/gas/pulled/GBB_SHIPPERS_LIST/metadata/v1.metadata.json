@@ -20,6 +20,7 @@
   "properties": {
     "comment": "A list of shippers who have contracted primary Storage, Compression or Pipeline capacity",
     "phasor.declared": "true",
+    "phasor.derived": "[{\"column\":\"LASTUPDATED_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"LASTUPDATED\"]}]",
     "phasor.format": "5",
     "phasor.headers": "{\"1\":\"EffectiveDate\",\"2\":\"FacilityId\",\"3\":\"FacilityName\",\"4\":\"FacilityType\",\"5\":\"CompanyId\",\"6\":\"OperatorName\",\"7\":\"ShipperName\",\"8\":\"LastUpdated\"}",
     "phasor.load": "snapshot",

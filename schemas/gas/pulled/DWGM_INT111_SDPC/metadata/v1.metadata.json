@@ -19,6 +19,7 @@
   ],
   "properties": {
     "phasor.declared": "true",
+    "phasor.derived": "[{\"column\":\"CURRENT_DATE_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"CURRENT_DATE\"]}]",
     "phasor.format": "5",
     "phasor.headers": "{\"1\":\"gas_date\",\"2\":\"ti\",\"3\":\"mirn\",\"4\":\"hourly_maximum_quantity\",\"5\":\"hourly_minimum_quantity\",\"6\":\"ramp_up_constraint\",\"7\":\"ramp_down_constraint\",\"8\":\"schedule_response_time\",\"9\":\"daily_minimum_quantity\",\"10\":\"daily_maximum_quantity\",\"11\":\"expiration_time\",\"12\":\"sdpc_id\",\"13\":\"current_date\",\"14\":\"ps_hourly_max_qty\",\"15\":\"ps_hourly_min_qty\",\"16\":\"os_hourly_max_qty\",\"17\":\"os_hourly_min_qty\",\"18\":\"ps_daily_min_qty\",\"19\":\"ps_daily_max_qty\",\"20\":\"os_daily_min_qty\",\"21\":\"os_daily_max_qty\"}",
     "phasor.load": "append",

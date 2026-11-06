@@ -20,6 +20,7 @@
   "properties": {
     "comment": "This report delivers the calculated performance value for each 5 minute trading interval for each FPP unit",
     "phasor.declared": "true",
+    "phasor.derived": "[{\"column\":\"INTERVAL_DATETIME_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"INTERVAL_DATETIME\"]},{\"column\":\"LASTCHANGED_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"LASTCHANGED\"]}]",
     "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"VARCHAR(20)\",\"3\":\"NUMERIC(5)\",\"4\":\"NUMERIC(18,5)\",\"5\":\"NUMERIC(5)\",\"6\":\"NUMERIC(18,5)\",\"7\":\"NUMERIC(5)\",\"8\":\"VARCHAR(20)\",\"9\":\"TIMESTAMP(0)\"}",

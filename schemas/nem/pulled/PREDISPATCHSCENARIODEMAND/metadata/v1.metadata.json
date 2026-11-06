@@ -20,6 +20,7 @@
   "properties": {
     "comment": "PREDISPATCHSCENARIODEMAND defines the demand offsets that are applied for each of the predispatch sensitivity scenarios.",
     "phasor.declared": "true",
+    "phasor.derived": "[{\"column\":\"EFFECTIVEDATE_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"EFFECTIVEDATE\"]}]",
     "phasor.format": "5",
     "phasor.load": "snapshot",
     "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(3)\",\"3\":\"NUMERIC(2)\",\"4\":\"VARCHAR(20)\",\"5\":\"NUMERIC(4)\"}",

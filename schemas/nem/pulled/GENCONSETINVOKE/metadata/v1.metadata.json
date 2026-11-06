@@ -20,6 +20,7 @@
   "properties": {
     "comment": "GENCONSETINVOKE provides details of invoked and revoked generic constraints. GENCONSETINVOKE is the key table for determining what constraints are active in dispatch, predispatch and PASA.\nGENCONSETINVOKE also indicates whether constraints are for interconnector limits, ancillary services, etc.",
     "phasor.declared": "true",
+    "phasor.derived": "[{\"column\":\"STARTDATE_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"STARTDATE\"]},{\"column\":\"ENDDATE_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"ENDDATE\"]},{\"column\":\"LASTCHANGED_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"LASTCHANGED\"]},{\"column\":\"STARTINTERVALDATETIME_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"STARTINTERVALDATETIME\"]},{\"column\":\"ENDINTERVALDATETIME_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"ENDINTERVALDATETIME\"]}]",
     "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"NUMERIC(9)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"NUMERIC(3,0)\",\"4\":\"VARCHAR(20)\",\"5\":\"TIMESTAMP(0)\",\"6\":\"NUMERIC(3,0)\",\"7\":\"VARCHAR(15)\",\"8\":\"VARCHAR(15)\",\"9\":\"VARCHAR(1)\",\"10\":\"VARCHAR(10)\",\"11\":\"TIMESTAMP(0)\",\"12\":\"TIMESTAMP(0)\",\"13\":\"TIMESTAMP(0)\",\"14\":\"VARCHAR(1)\"}",

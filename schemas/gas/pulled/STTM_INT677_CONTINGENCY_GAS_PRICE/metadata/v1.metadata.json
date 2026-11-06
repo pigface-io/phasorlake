@@ -19,6 +19,7 @@
   ],
   "properties": {
     "phasor.declared": "true",
+    "phasor.derived": "[{\"column\":\"APPROVAL_DATETIME_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"APPROVAL_DATETIME\"]},{\"column\":\"REPORT_DATETIME_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"REPORT_DATETIME\"]}]",
     "phasor.format": "5",
     "phasor.headers": "{\"1\":\"gas_date\",\"2\":\"hub_identifier\",\"3\":\"hub_name\",\"4\":\"contingency_gas_called_identifier\",\"5\":\"high_contingency_gas_price\",\"6\":\"low_contingency_gas_price\",\"7\":\"schedule_high_contingency_gas_price\",\"8\":\"schedule_low_contingency_gas_price\",\"9\":\"approval_datetime\",\"10\":\"report_datetime\"}",
     "phasor.load": "append",

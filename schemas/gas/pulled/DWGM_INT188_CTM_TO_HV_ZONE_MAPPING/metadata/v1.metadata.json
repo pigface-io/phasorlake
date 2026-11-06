@@ -19,6 +19,7 @@
   ],
   "properties": {
     "phasor.declared": "true",
+    "phasor.derived": "[{\"column\":\"CURRENT_DATE_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"CURRENT_DATE\"]}]",
     "phasor.format": "5",
     "phasor.headers": "{\"1\":\"mirn\",\"2\":\"site_company\",\"3\":\"hv_zone\",\"4\":\"hv_zone_desc\",\"5\":\"effective_from\",\"6\":\"current_date\"}",
     "phasor.load": "append",

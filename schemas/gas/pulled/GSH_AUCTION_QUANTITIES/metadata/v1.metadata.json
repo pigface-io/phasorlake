@@ -20,6 +20,7 @@
   "properties": {
     "comment": "Auction limit quantities for each product component available for the day ahead auction",
     "phasor.declared": "true",
+    "phasor.derived": "[{\"column\":\"AUCTION_DATE_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"AUCTION_DATE\"]},{\"column\":\"GAS_DATE_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"GAS_DATE\"]},{\"column\":\"VERSION_DATETIME_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"VERSION_DATETIME\"]},{\"column\":\"LASTCHANGED_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"LASTCHANGED\"]}]",
     "phasor.format": "5",
     "phasor.load": "append",
     "phasor.market": "gas",

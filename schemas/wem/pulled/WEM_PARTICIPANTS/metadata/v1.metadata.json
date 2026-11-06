@@ -19,6 +19,7 @@
   ],
   "properties": {
     "phasor.declared": "true",
+    "phasor.derived": "[{\"column\":\"REGISTERED_FROM_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"REGISTERED_FROM\"]},{\"column\":\"EXTRACTED_AT_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"EXTRACTED_AT\"]}]",
     "phasor.format": "5",
     "phasor.headers": "{\"1\":\"Participant Code\",\"2\":\"Participant Name\",\"3\":\"Address\",\"4\":\"City\",\"5\":\"State\",\"6\":\"Postcode\",\"7\":\"Country\",\"8\":\"Phone\",\"9\":\"Fax\",\"10\":\"Contact Name\",\"11\":\"Contact Position\",\"12\":\"Registered From\",\"13\":\"Market Customer\",\"14\":\"Market Generator\",\"16\":\"Network Operator\",\"17\":\"System Management\",\"18\":\"System Operator\",\"19\":\"Ancillary Service Provider\",\"20\":\"Extracted At\"}",
     "phasor.load": "snapshot",

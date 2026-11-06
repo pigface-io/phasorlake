@@ -20,6 +20,7 @@
   "properties": {
     "comment": "NETWORK_RATING defines a list of the equipment ratings that may be used as inputs to market constraints.\nIf the rating is flagged as dynamic then in real-time the rating will be dynamically determined and the static value will be used as a fallback value should the dynamic value fail.\nNote:\nIn some rare cases equipment has ratings provided from more than one TNSP. This is identified by a different SPD Id. The value used in the NEM is normally the more restrictive of the two values.",
     "phasor.declared": "true",
+    "phasor.derived": "[{\"column\":\"VALIDFROM_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"VALIDFROM\"]},{\"column\":\"VALIDTO_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"VALIDTO\"]},{\"column\":\"LASTCHANGED_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"LASTCHANGED\"]}]",
     "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"VARCHAR(21)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"TIMESTAMP(0)\",\"4\":\"VARCHAR(10)\",\"5\":\"VARCHAR(30)\",\"6\":\"VARCHAR(10)\",\"7\":\"VARCHAR(30)\",\"8\":\"VARCHAR(10)\",\"9\":\"NUMERIC(1,0)\",\"10\":\"TIMESTAMP(0)\"}",

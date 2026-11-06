@@ -19,6 +19,7 @@
   ],
   "properties": {
     "phasor.declared": "true",
+    "phasor.derived": "[{\"column\":\"CURRENT_DATE_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"CURRENT_DATE\"]}]",
     "phasor.format": "5",
     "phasor.headers": "{\"1\":\"gas_date\",\"2\":\"hv_zone\",\"3\":\"hv_zone_desc\",\"4\":\"energy_gj\",\"5\":\"volume_kscm\",\"6\":\"current_date\"}",
     "phasor.load": "append",

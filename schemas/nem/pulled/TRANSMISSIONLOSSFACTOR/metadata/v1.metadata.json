@@ -20,6 +20,7 @@
   "properties": {
     "comment": "TRANSMISSIONLOSSFACTOR shows the Transmission Loss factors applied at each connection point.",
     "phasor.declared": "true",
+    "phasor.derived": "[{\"column\":\"EFFECTIVEDATE_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"EFFECTIVEDATE\"]},{\"column\":\"LASTCHANGED_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"LASTCHANGED\"]}]",
     "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"NUMERIC(15,5)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"NUMERIC(22,0)\",\"4\":\"VARCHAR(10)\",\"5\":\"VARCHAR(10)\",\"6\":\"TIMESTAMP(0)\",\"7\":\"NUMERIC(18,8)\"}",

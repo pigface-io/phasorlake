@@ -20,6 +20,7 @@
   "properties": {
     "comment": "Unconstrained Intermittent Generation Forecasts (UIGF) for Dispatch",
     "phasor.declared": "true",
+    "phasor.derived": "[{\"column\":\"RUN_DATETIME_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"RUN_DATETIME\"]},{\"column\":\"OFFERDATETIME_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"OFFERDATETIME\"]},{\"column\":\"INTERVAL_DATETIME_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"INTERVAL_DATETIME\"]}]",
     "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"VARCHAR(20)\",\"3\":\"VARCHAR(20)\",\"4\":\"NUMERIC(10,0)\",\"5\":\"TIMESTAMP(0)\",\"6\":\"TIMESTAMP(0)\",\"7\":\"NUMERIC(18,8)\",\"8\":\"NUMERIC(18,8)\",\"9\":\"NUMERIC(18,8)\",\"10\":\"NUMERIC(18,8)\"}",

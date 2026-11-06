@@ -20,6 +20,7 @@
   "properties": {
     "comment": "MARKETNOTICEDATA shows market notices data provided to all participants (market) and specific participants (participant).",
     "phasor.declared": "true",
+    "phasor.derived": "[{\"column\":\"EFFECTIVEDATE_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"EFFECTIVEDATE\"]},{\"column\":\"LASTCHANGED_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"LASTCHANGED\"]}]",
     "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"NUMERIC(10,0)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"VARCHAR(25)\",\"4\":\"VARCHAR(25)\",\"5\":\"TIMESTAMP(0)\",\"6\":\"VARCHAR(2000)\",\"7\":\"VARCHAR(255)\"}",

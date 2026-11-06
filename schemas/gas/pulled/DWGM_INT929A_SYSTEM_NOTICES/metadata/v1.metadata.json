@@ -19,6 +19,7 @@
   ],
   "properties": {
     "phasor.declared": "true",
+    "phasor.derived": "[{\"column\":\"CURRENT_DATE_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"CURRENT_DATE\"]}]",
     "phasor.format": "5",
     "phasor.headers": "{\"1\":\"system_wide_notice_id\",\"2\":\"critical_notice_flag\",\"3\":\"system_message\",\"4\":\"system_email_message\",\"5\":\"notice_start_date\",\"6\":\"notice_end_date\",\"7\":\"url_path\",\"8\":\"current_date\"}",
     "phasor.load": "append",

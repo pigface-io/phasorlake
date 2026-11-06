@@ -20,6 +20,7 @@
   "properties": {
     "comment": "Notional Point currently registered under Part 24 of the Rules",
     "phasor.declared": "true",
+    "phasor.derived": "[{\"column\":\"EFFECTIVEDATE_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"EFFECTIVEDATE\"]},{\"column\":\"VERSION_DATETIME_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"VERSION_DATETIME\"]},{\"column\":\"LASTCHANGED_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"LASTCHANGED\"]}]",
     "phasor.format": "5",
     "phasor.load": "snapshot",
     "phasor.market": "gas",

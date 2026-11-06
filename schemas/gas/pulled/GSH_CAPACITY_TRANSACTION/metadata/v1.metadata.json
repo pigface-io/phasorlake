@@ -20,6 +20,7 @@
   "properties": {
     "comment": "Consolidated list of all secondary capacity trades which includes GSH trades (screen traded and off-market trades) and Bilateral trades submitted into the GBB",
     "phasor.declared": "true",
+    "phasor.derived": "[{\"column\":\"VERSION_DATETIME_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"VERSION_DATETIME\"]},{\"column\":\"TRADE_DATE_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"TRADE_DATE\"]},{\"column\":\"FROM_GAS_DATE_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"FROM_GAS_DATE\"]},{\"column\":\"TO_GAS_DATE_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"TO_GAS_DATE\"]},{\"column\":\"LASTCHANGED_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"LASTCHANGED\"]}]",
     "phasor.format": "5",
     "phasor.load": "append",
     "phasor.market": "gas",

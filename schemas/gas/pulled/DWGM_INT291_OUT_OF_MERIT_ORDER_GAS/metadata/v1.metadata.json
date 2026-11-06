@@ -19,6 +19,7 @@
   ],
   "properties": {
     "phasor.declared": "true",
+    "phasor.derived": "[{\"column\":\"CURRENT_DATE_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"CURRENT_DATE\"]}]",
     "phasor.format": "5",
     "phasor.headers": "{\"1\":\"gas_date\",\"2\":\"statement_version_id\",\"3\":\"ancillary_amt_gst_ex\",\"4\":\"scheduled_out_of_merit_gj\",\"5\":\"current_date\"}",
     "phasor.load": "append",

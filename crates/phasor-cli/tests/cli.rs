@@ -657,8 +657,9 @@ fn inspect_and_schema_commands() {
     ]);
     assert_eq!(code, 5);
     assert!(err.contains("schema."), "{err}");
-    // The plan of a shape: the table has four columns, the file of 2024
-    // three, as its schema 0 lists, so the fourth is written null.
+    // The plan of a shape: the table has four columns and the two `_UTC_US`
+    // siblings of its timestamps, the file of 2024 three, as its schema 0
+    // lists, so the fourth is written null, and so is its sibling.
     let plan: serde_json::Value = serde_json::from_str(&cli.ok(&[
         "schema",
         "plan",
@@ -675,9 +676,9 @@ fn inspect_and_schema_commands() {
     assert_eq!(plan["version"], 0);
     assert_eq!(plan["plan"]["schema"], 0);
     assert_eq!(plan["plan"]["table"], "DISPATCH_UNIT_SCADA");
-    assert_eq!(plan["plan"]["fields"].as_array().unwrap().len(), 4);
+    assert_eq!(plan["plan"]["fields"].as_array().unwrap().len(), 6);
     assert_eq!(plan["plan"]["routes"].as_array().unwrap().len(), 3);
-    assert_eq!(plan["plan"]["missing"], serde_json::json!([3]));
+    assert_eq!(plan["plan"]["missing"], serde_json::json!([3, 5]));
     assert_eq!(
         plan["plan"]["routes"][2]["cast"],
         serde_json::json!({"kind": "decimal128", "precision": 16, "scale": 6})

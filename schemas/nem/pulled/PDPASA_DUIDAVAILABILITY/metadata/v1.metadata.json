@@ -20,6 +20,7 @@
   "properties": {
     "comment": "This report delivers available capacity, PASA availability and given recall period for all scheduled resources. Note that for an MNSP, DUID = LINKID in the MNSP_INTERCONNECTOR table.",
     "phasor.declared": "true",
+    "phasor.derived": "[{\"column\":\"RUN_DATETIME_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"RUN_DATETIME\"]},{\"column\":\"INTERVAL_DATETIME_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"INTERVAL_DATETIME\"]},{\"column\":\"LASTCHANGED_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"LASTCHANGED\"]}]",
     "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"VARCHAR(20)\",\"4\":\"NUMERIC(12,6)\",\"5\":\"NUMERIC(12,0)\",\"6\":\"NUMERIC(8,3)\",\"7\":\"NUMERIC(12,6)\",\"8\":\"NUMERIC(12,0)\",\"9\":\"NUMERIC(8,3)\",\"10\":\"TIMESTAMP(0)\"}",

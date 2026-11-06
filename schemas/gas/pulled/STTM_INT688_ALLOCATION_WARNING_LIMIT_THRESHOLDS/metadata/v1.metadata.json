@@ -19,6 +19,7 @@
   ],
   "properties": {
     "phasor.declared": "true",
+    "phasor.derived": "[{\"column\":\"LAST_UPDATE_DATETIME_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"LAST_UPDATE_DATETIME\"]},{\"column\":\"REPORT_DATETIME_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"REPORT_DATETIME\"]}]",
     "phasor.format": "5",
     "phasor.headers": "{\"1\":\"gas_date\",\"2\":\"hub_identifier\",\"3\":\"hub_name\",\"4\":\"facility_identifier\",\"5\":\"facility_name\",\"6\":\"upper_warning_limit\",\"7\":\"lower_warning_limit\",\"8\":\"last_update_datetime\",\"9\":\"report_datetime\"}",
     "phasor.load": "append",

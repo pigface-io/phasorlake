@@ -20,6 +20,7 @@
   "properties": {
     "comment": "APEVENT is the driving data defining the existence and timeframes of an administered pricing event.",
     "phasor.declared": "true",
+    "phasor.derived": "[{\"column\":\"EFFECTIVEFROMINTERVAL_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"EFFECTIVEFROMINTERVAL\"]},{\"column\":\"EFFECTIVETOINTERVAL_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"EFFECTIVETOINTERVAL\"]},{\"column\":\"STARTAUTHORISEDDATE_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"STARTAUTHORISEDDATE\"]},{\"column\":\"ENDAUTHORISEDDATE_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"ENDAUTHORISEDDATE\"]},{\"column\":\"LASTCHANGED_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"LASTCHANGED\"]}]",
     "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"NUMERIC(22,0)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"TIMESTAMP(0)\",\"4\":\"VARCHAR(2000)\",\"5\":\"VARCHAR(15)\",\"6\":\"TIMESTAMP(0)\",\"7\":\"VARCHAR(15)\",\"8\":\"TIMESTAMP(0)\",\"9\":\"TIMESTAMP(0)\"}",

@@ -20,6 +20,7 @@
   "properties": {
     "comment": "MTPASA solution header table",
     "phasor.declared": "true",
+    "phasor.derived": "[{\"column\":\"RUN_DATETIME_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"RUN_DATETIME\"]},{\"column\":\"LASTCHANGED_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"LASTCHANGED\"]}]",
     "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(4)\",\"3\":\"VARCHAR(20)\",\"4\":\"TIMESTAMP(0)\"}",

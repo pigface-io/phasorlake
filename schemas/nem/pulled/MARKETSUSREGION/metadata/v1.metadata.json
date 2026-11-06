@@ -20,6 +20,7 @@
   "properties": {
     "comment": "MARKETSUSREGION  is obsolete from 2017 End of Year DM4.27 Release. \nMARKETSUSREGION sets out a regions affected by a market suspension.",
     "phasor.declared": "true",
+    "phasor.derived": "[{\"column\":\"LASTCHANGED_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"LASTCHANGED\"]}]",
     "phasor.format": "5",
     "phasor.load": "snapshot",
     "phasor.model-types": "{\"1\":\"VARCHAR(10)\",\"2\":\"VARCHAR(10)\",\"3\":\"TIMESTAMP(0)\"}",

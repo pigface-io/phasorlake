@@ -19,6 +19,7 @@
   ],
   "properties": {
     "phasor.declared": "true",
+    "phasor.derived": "[{\"column\":\"REGISTERED_FROM_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"REGISTERED_FROM\"]},{\"column\":\"EXTRACTED_AT_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"EXTRACTED_AT\"]}]",
     "phasor.format": "5",
     "phasor.headers": "{\"1\":\"Participant Code\",\"2\":\"Participant Name\",\"3\":\"Facility Code\",\"4\":\"Facility Type\",\"5\":\"Balancing Status\",\"6\":\"Capacity Credits (MW)\",\"7\":\"Maximum Capacity (MW)\",\"8\":\"Registered From\",\"9\":\"Extracted At\"}",
     "phasor.load": "snapshot",

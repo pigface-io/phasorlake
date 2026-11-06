@@ -20,6 +20,7 @@
   "properties": {
     "comment": "MNSP_INTERCONNECTOR sets out attributes of each interconnector.",
     "phasor.declared": "true",
+    "phasor.derived": "[{\"column\":\"EFFECTIVEDATE_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"EFFECTIVEDATE\"]},{\"column\":\"AUTHORISEDDATE_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"AUTHORISEDDATE\"]},{\"column\":\"LASTCHANGED_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"LASTCHANGED\"]}]",
     "phasor.format": "5",
     "phasor.load": "snapshot",
     "phasor.model-types": "{\"1\":\"VARCHAR(10)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"NUMERIC(3,0)\",\"4\":\"VARCHAR(10)\",\"5\":\"VARCHAR(10)\",\"6\":\"VARCHAR(10)\",\"7\":\"NUMERIC(5,0)\",\"8\":\"NUMERIC(12,7)\",\"9\":\"NUMERIC(12,7)\",\"10\":\"NUMERIC(12,7)\",\"11\":\"TIMESTAMP(0)\",\"12\":\"VARCHAR(15)\",\"13\":\"TIMESTAMP(0)\",\"14\":\"NUMERIC(12,7)\",\"15\":\"NUMERIC(12,7)\"}",

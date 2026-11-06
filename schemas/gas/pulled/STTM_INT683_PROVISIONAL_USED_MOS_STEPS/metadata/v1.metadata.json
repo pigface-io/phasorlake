@@ -19,6 +19,7 @@
   ],
   "properties": {
     "phasor.declared": "true",
+    "phasor.derived": "[{\"column\":\"REPORT_DATETIME_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"REPORT_DATETIME\"]}]",
     "phasor.format": "5",
     "phasor.headers": "{\"1\":\"gas_date\",\"2\":\"hub_identifier\",\"3\":\"hub_name\",\"4\":\"facility_identifier\",\"5\":\"facility_name\",\"6\":\"stack_identifier\",\"7\":\"stack_type\",\"8\":\"stack_step_identifier\",\"9\":\"report_datetime\"}",
     "phasor.load": "append",

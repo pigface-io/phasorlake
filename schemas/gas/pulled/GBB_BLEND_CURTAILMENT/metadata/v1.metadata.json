@@ -20,6 +20,7 @@
   "properties": {
     "comment": "A table with details of gas blend and gas blend curtailment information",
     "phasor.declared": "true",
+    "phasor.derived": "[{\"column\":\"LASTUPDATED_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"LASTUPDATED\"]}]",
     "phasor.format": "5",
     "phasor.headers": "{\"1\":\"Year\",\"2\":\"Month\",\"3\":\"State\",\"4\":\"FacilityId\",\"5\":\"FacilityName\",\"6\":\"FacilityType\",\"7\":\"ConnectionPointId\",\"8\":\"ConnectionPointName\",\"9\":\"FlowDirection\",\"10\":\"LocationName\",\"11\":\"LocationId\",\"12\":\"GasType\",\"13\":\"GasBlendCurtailEvent\",\"14\":\"GasBlendCurtailQty\",\"15\":\"GasBlendLimit\",\"16\":\"GasBlendHigh\",\"17\":\"MaxGasDate\",\"18\":\"GasBlendLow\",\"19\":\"MinGasDate\",\"20\":\"GasBlendAvg\",\"21\":\"LastUpdated\"}",
     "phasor.load": "append",

@@ -20,6 +20,7 @@
   "properties": {
     "comment": "NETWORK_OUTAGESTATUSCODE describes the different outage status codes",
     "phasor.declared": "true",
+    "phasor.derived": "[{\"column\":\"LASTCHANGED_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"LASTCHANGED\"]}]",
     "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"VARCHAR(10)\",\"2\":\"VARCHAR(100)\",\"3\":\"TIMESTAMP(0)\"}",

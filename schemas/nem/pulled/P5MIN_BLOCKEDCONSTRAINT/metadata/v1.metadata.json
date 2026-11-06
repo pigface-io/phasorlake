@@ -20,6 +20,7 @@
   "properties": {
     "comment": "P5MIN Blocked Constraints lists any constraints that were blocked in a P5MIN run. If no constraints are blocked, there will be no rows for that 5 minute predispatch run.",
     "phasor.declared": "true",
+    "phasor.derived": "[{\"column\":\"RUN_DATETIME_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"RUN_DATETIME\"]}]",
     "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"VARCHAR(20)\"}",

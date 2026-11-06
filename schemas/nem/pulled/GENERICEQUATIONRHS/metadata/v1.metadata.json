@@ -20,6 +20,7 @@
   "properties": {
     "comment": "GENERICEQUATIONRHS stores the formulation of commonly used Generic Constraint Right Hand Side Equations referenced from Generic Constraint Right Hand Side definitions stored in GENERICCONSTRAINTRHS. The Generic Equation definitions are versioned and the latest effective version is applied to the dispatch process.",
     "phasor.declared": "true",
+    "phasor.derived": "[{\"column\":\"EFFECTIVEDATE_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"EFFECTIVEDATE\"]},{\"column\":\"LASTCHANGED_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"LASTCHANGED\"]}]",
     "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"VARCHAR(20)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"NUMERIC(3,0)\",\"4\":\"NUMERIC(3,0)\",\"5\":\"NUMERIC(3,0)\",\"6\":\"VARCHAR(21)\",\"7\":\"VARCHAR(1)\",\"8\":\"NUMERIC(16,6)\",\"9\":\"VARCHAR(10)\",\"10\":\"NUMERIC(16,6)\",\"11\":\"VARCHAR(12)\",\"12\":\"VARCHAR(12)\",\"13\":\"VARCHAR(12)\",\"14\":\"TIMESTAMP(0)\"}",

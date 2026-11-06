@@ -20,6 +20,7 @@
   "properties": {
     "comment": "STPASA_INTERCONNECTORSOLN shows the results of the capacity evaluation for Interconnectors, including the calculated limits for the interval.",
     "phasor.declared": "true",
+    "phasor.derived": "[{\"column\":\"RUN_DATETIME_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"RUN_DATETIME\"]},{\"column\":\"INTERVAL_DATETIME_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"INTERVAL_DATETIME\"]},{\"column\":\"LASTCHANGED_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"LASTCHANGED\"]}]",
     "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"VARCHAR(10)\",\"4\":\"NUMERIC(12,2)\",\"5\":\"NUMERIC(12,2)\",\"6\":\"NUMERIC(12,2)\",\"7\":\"NUMERIC(12,2)\",\"8\":\"NUMERIC(12,2)\",\"9\":\"TIMESTAMP(0)\",\"10\":\"VARCHAR(20)\",\"11\":\"VARCHAR(20)\",\"12\":\"VARCHAR(20)\",\"13\":\"VARCHAR(20)\"}",

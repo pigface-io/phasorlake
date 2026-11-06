@@ -20,6 +20,7 @@
   "properties": {
     "comment": "Parent table for pricing regimes used in suspensions",
     "phasor.declared": "true",
+    "phasor.derived": "[{\"column\":\"EFFECTIVEDATE_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"EFFECTIVEDATE\"]},{\"column\":\"SOURCE_START_DATE_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"SOURCE_START_DATE\"]},{\"column\":\"SOURCE_END_DATE_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"SOURCE_END_DATE\"]},{\"column\":\"AUTHORISEDDATE_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"AUTHORISEDDATE\"]},{\"column\":\"LASTCHANGED_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"LASTCHANGED\"]}]",
     "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"TIMESTAMP(0)\",\"4\":\"VARCHAR(1000)\",\"5\":\"TIMESTAMP(0)\",\"6\":\"TIMESTAMP(0)\"}",

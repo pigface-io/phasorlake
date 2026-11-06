@@ -20,6 +20,7 @@
   "properties": {
     "comment": "Dispatch instruction (GD instruct) has types and subtypes. INSTRUCTIONTYPE, together with INSTRUCTIONSUBTYPE, sets out valid instruction types.",
     "phasor.declared": "true",
+    "phasor.derived": "[{\"column\":\"LASTCHANGED_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"LASTCHANGED\"]}]",
     "phasor.format": "5",
     "phasor.load": "snapshot",
     "phasor.model-types": "{\"1\":\"VARCHAR(10)\",\"2\":\"VARCHAR(64)\",\"3\":\"VARCHAR(10)\",\"4\":\"TIMESTAMP(0)\"}",

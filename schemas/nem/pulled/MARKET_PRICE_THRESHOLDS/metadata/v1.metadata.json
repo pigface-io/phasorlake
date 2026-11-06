@@ -20,6 +20,7 @@
   "properties": {
     "comment": "MARKET_PRICE_THRESHOLDS sets out the market cap , floor and administered price thresholds applying to the electricity market",
     "phasor.declared": "true",
+    "phasor.derived": "[{\"column\":\"EFFECTIVEDATE_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"EFFECTIVEDATE\"]},{\"column\":\"AUTHORISEDDATE_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"AUTHORISEDDATE\"]},{\"column\":\"LASTCHANGED_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"LASTCHANGED\"]}]",
     "phasor.format": "5",
     "phasor.load": "snapshot",
     "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(4,0)\",\"3\":\"NUMERIC(15,5)\",\"4\":\"NUMERIC(15,5)\",\"5\":\"NUMERIC(15,5)\",\"6\":\"TIMESTAMP(0)\",\"7\":\"VARCHAR(15)\",\"8\":\"TIMESTAMP(0)\"}",

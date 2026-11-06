@@ -19,6 +19,7 @@
   ],
   "properties": {
     "phasor.declared": "true",
+    "phasor.derived": "[{\"column\":\"CURRENT_DATE_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"CURRENT_DATE\"]}]",
     "phasor.format": "5",
     "phasor.headers": "{\"1\":\"company_name\",\"2\":\"abn\",\"3\":\"company_id\",\"4\":\"first_name\",\"5\":\"last_name\",\"6\":\"contact_email\",\"7\":\"current_date\"}",
     "phasor.load": "append",

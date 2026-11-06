@@ -20,6 +20,7 @@
   "properties": {
     "comment": "Estimate of regional Rooftop Solar actual generation for each half-hour interval in a day. AEMO plans to remove this table in a Data Model version release after 5.6.",
     "phasor.declared": "true",
+    "phasor.derived": "[{\"column\":\"INTERVAL_DATETIME_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"INTERVAL_DATETIME\"]},{\"column\":\"LASTCHANGED_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"LASTCHANGED\"]}]",
     "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"VARCHAR(20)\",\"3\":\"NUMERIC(12,3)\",\"4\":\"NUMERIC(2,1)\",\"5\":\"VARCHAR(20)\",\"6\":\"TIMESTAMP(0)\"}",

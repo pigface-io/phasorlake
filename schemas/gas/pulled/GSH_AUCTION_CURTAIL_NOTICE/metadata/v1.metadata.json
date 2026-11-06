@@ -20,6 +20,7 @@
   "properties": {
     "comment": "Contains details of curtailment of nominations against secondary firm rights (CTP trades) for service points (receipt and delivery points).",
     "phasor.declared": "true",
+    "phasor.derived": "[{\"column\":\"EFFECTIVE_DATE_TIME_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"EFFECTIVE_DATE_TIME\"]},{\"column\":\"GAS_DATE_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"GAS_DATE\"]},{\"column\":\"LASTCHANGED_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"LASTCHANGED\"]}]",
     "phasor.format": "5",
     "phasor.load": "append",
     "phasor.market": "gas",

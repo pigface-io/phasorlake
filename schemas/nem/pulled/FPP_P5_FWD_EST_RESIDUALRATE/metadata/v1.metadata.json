@@ -20,6 +20,7 @@
   "properties": {
     "comment": "This report delivers the forward estimated residual cost rate based on P5min runs. These high-level estimates (i.e. assuming that all is unused FCAS) will be provided for each constraint for each 5 minute pre-dispatch interval.",
     "phasor.declared": "true",
+    "phasor.derived": "[{\"column\":\"RUN_DATETIME_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"RUN_DATETIME\"]},{\"column\":\"INTERVAL_DATETIME_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"INTERVAL_DATETIME\"]},{\"column\":\"LASTCHANGED_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"LASTCHANGED\"]}]",
     "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(5)\",\"3\":\"TIMESTAMP(0)\",\"4\":\"VARCHAR(20)\",\"5\":\"NUMERIC(5)\",\"6\":\"VARCHAR(10)\",\"7\":\"VARCHAR(200)\",\"8\":\"NUMERIC(18,8)\",\"9\":\"TIMESTAMP(0)\"}",

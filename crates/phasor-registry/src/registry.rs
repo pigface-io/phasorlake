@@ -659,7 +659,8 @@ mod tests {
         assert_eq!(r.market(Market::Gas).unwrap().utc_offset_secs, 36_000);
         assert_eq!(r.table(id).name, "DISPATCH_UNIT_SCADA");
         assert_eq!(r.market_of(id).arrow_tz(), "+10:00");
-        assert_eq!(r.lake_schema(id).fields().len(), 4);
+        // The four columns and the two `_UTC_US` siblings of its timestamps.
+        assert_eq!(r.lake_schema(id).fields().len(), 6);
         assert_eq!(r.schema_source(id), SchemaSource::Registry);
         assert_eq!(SchemaSource::User.to_string(), "user");
         let h = r.history(id).unwrap();

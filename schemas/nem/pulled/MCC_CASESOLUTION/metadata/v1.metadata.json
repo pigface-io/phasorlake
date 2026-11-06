@@ -20,6 +20,7 @@
   "properties": {
     "comment": "Top level table for each MCC dispatch rerun process. Note there will be one record for each dispatch interval",
     "phasor.declared": "true",
+    "phasor.derived": "[{\"column\":\"RUN_DATETIME_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"RUN_DATETIME\"]}]",
     "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\"}",

@@ -20,6 +20,7 @@
   "properties": {
     "comment": "Dispatchable unit MW from SCADA at the start of the dispatch interval. The table includes all scheduled and semi-scheduled (and non-scheduled units where SCADA is available)",
     "phasor.declared": "true",
+    "phasor.derived": "[{\"column\":\"SETTLEMENTDATE_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"SETTLEMENTDATE\"]},{\"column\":\"LASTCHANGED_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"LASTCHANGED\"]}]",
     "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"VARCHAR(20)\",\"3\":\"NUMERIC(16,6)\",\"4\":\"TIMESTAMP(0)\"}",

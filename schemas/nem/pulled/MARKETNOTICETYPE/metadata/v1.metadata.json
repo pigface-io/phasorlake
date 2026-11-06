@@ -20,6 +20,7 @@
   "properties": {
     "comment": "MARKETNOTICETYPE sets out the different types of market notices (e.g. market systems).",
     "phasor.declared": "true",
+    "phasor.derived": "[{\"column\":\"LASTCHANGED_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"LASTCHANGED\"]}]",
     "phasor.format": "5",
     "phasor.load": "snapshot",
     "phasor.model-types": "{\"1\":\"VARCHAR(25)\",\"2\":\"VARCHAR(64)\",\"3\":\"VARCHAR(10)\",\"4\":\"TIMESTAMP(0)\"}",

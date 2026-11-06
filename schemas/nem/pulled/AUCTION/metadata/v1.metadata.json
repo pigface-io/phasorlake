@@ -20,6 +20,7 @@
   "properties": {
     "comment": "AUCTION holds auction details. AUCTION is new in March 2003 to support SRA Inter-Temporal Linking.",
     "phasor.declared": "true",
+    "phasor.derived": "[{\"column\":\"AUCTIONDATE_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"AUCTIONDATE\"]},{\"column\":\"NOTIFYDATE_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"NOTIFYDATE\"]},{\"column\":\"STARTDATE_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"STARTDATE\"]},{\"column\":\"ENDDATE_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"ENDDATE\"]},{\"column\":\"AUTHORISEDDATE_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"AUTHORISEDDATE\"]},{\"column\":\"LASTCHANGED_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"LASTCHANGED\"]}]",
     "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"VARCHAR(30)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"TIMESTAMP(0)\",\"4\":\"TIMESTAMP(0)\",\"5\":\"TIMESTAMP(0)\",\"6\":\"VARCHAR(100)\",\"7\":\"TIMESTAMP(0)\",\"8\":\"VARCHAR(30)\",\"9\":\"TIMESTAMP(0)\"}",

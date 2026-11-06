@@ -19,6 +19,7 @@
   ],
   "properties": {
     "phasor.declared": "true",
+    "phasor.derived": "[{\"column\":\"REPORT_DATETIME_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"REPORT_DATETIME\"]}]",
     "phasor.format": "5",
     "phasor.headers": "{\"1\":\"gas_date\",\"2\":\"hub_identifier\",\"3\":\"hub_name\",\"4\":\"schedule_identifier\",\"5\":\"facility_identifier\",\"6\":\"facility_name\",\"7\":\"provisional_qty\",\"8\":\"provisional_firm_gas_scheduled\",\"9\":\"provisional_as_available_scheduled\",\"10\":\"flow_direction\",\"11\":\"price_taker_bid_provisional_not_sched_qty\",\"12\":\"price_taker_bid_provisional_qty\",\"13\":\"provisional_schedule_type\",\"14\":\"report_datetime\"}",
     "phasor.load": "append",

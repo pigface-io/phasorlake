@@ -20,6 +20,7 @@
   "properties": {
     "comment": "INTERCONNECTOR sets out valid identifiers for each interconnector.",
     "phasor.declared": "true",
+    "phasor.derived": "[{\"column\":\"LASTCHANGED_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"LASTCHANGED\"]}]",
     "phasor.format": "5",
     "phasor.load": "snapshot",
     "phasor.model-types": "{\"1\":\"VARCHAR(10)\",\"2\":\"VARCHAR(10)\",\"3\":\"VARCHAR(10)\",\"4\":\"VARCHAR(10)\",\"5\":\"VARCHAR(64)\",\"6\":\"TIMESTAMP(0)\"}",

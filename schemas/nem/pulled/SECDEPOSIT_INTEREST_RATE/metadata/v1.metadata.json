@@ -20,6 +20,7 @@
   "properties": {
     "comment": "The security deposit interest rate on a daily basis. This is the public table published when the business enter and authorise a new daily interest rate",
     "phasor.declared": "true",
+    "phasor.derived": "[{\"column\":\"EFFECTIVEDATE_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"EFFECTIVEDATE\"]},{\"column\":\"VERSION_DATETIME_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"VERSION_DATETIME\"]}]",
     "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"VARCHAR(20)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"TIMESTAMP(0)\",\"4\":\"NUMERIC(18,8)\"}",

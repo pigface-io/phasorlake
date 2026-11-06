@@ -20,6 +20,7 @@
   "properties": {
     "comment": "Sets out local pricing offsets associated with each DUID connection point for each dispatch period",
     "phasor.declared": "true",
+    "phasor.derived": "[{\"column\":\"DATETIME_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"DATETIME\"]},{\"column\":\"LASTCHANGED_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"LASTCHANGED\"]}]",
     "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"VARCHAR(20)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"VARCHAR(20)\",\"4\":\"VARCHAR(20)\",\"5\":\"NUMERIC(10,2)\",\"6\":\"NUMERIC(1,0)\",\"7\":\"TIMESTAMP(0)\"}",

@@ -20,6 +20,7 @@
   "properties": {
     "comment": "The report provides a summary of all trades executed in the current gas day per product. It provides information on the high/low open/close prices, total traded quantities and number of trades.",
     "phasor.declared": "true",
+    "phasor.derived": "[{\"column\":\"CURRENTDATE_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"CURRENTDATE\"]},{\"column\":\"FROM_GAS_DATE_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"FROM_GAS_DATE\"]},{\"column\":\"TO_GAS_DATE_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"TO_GAS_DATE\"]},{\"column\":\"LASTCHANGED_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"LASTCHANGED\"]}]",
     "phasor.format": "5",
     "phasor.load": "append",
     "phasor.market": "gas",

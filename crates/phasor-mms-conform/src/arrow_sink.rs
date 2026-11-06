@@ -745,8 +745,9 @@ mod tests {
         assert_eq!(out.batches.len(), 1);
         let b = &out.batches[0].batch;
         assert_eq!(b.num_rows(), 20);
-        // The file's three columns, and the one a later month added, null.
-        assert_eq!(b.num_columns(), 4);
+        // The file's three columns, the one a later month added (null), and
+        // the two timestamps' `_UTC_US` siblings.
+        assert_eq!(b.num_columns(), 6);
         assert_eq!(b.column(3).null_count(), 20);
         let ts = b
             .column(0)
@@ -1005,12 +1006,13 @@ mod tests {
                 .iter()
                 .any(|w| w.code == "schema.unseen_version")
         );
-        // The column the table does not have is kept, as text.
+        // The column the table does not have is kept, as text, after the
+        // table's four and their two `_UTC_US` siblings.
         let batch = &out.batches[0].batch;
-        assert_eq!(batch.num_columns(), 5);
-        assert_eq!(batch.schema().field(4).name(), "EXTRA");
+        assert_eq!(batch.num_columns(), 7);
+        assert_eq!(batch.schema().field(6).name(), "EXTRA");
         let extra = batch
-            .column(4)
+            .column(6)
             .as_any()
             .downcast_ref::<StringArray>()
             .unwrap();
@@ -1175,6 +1177,8 @@ D,DISPATCH,UNIT_SCADA,1,\"2024/01/01 00:05:00\",E,2\n";
                 "DUID",
                 "SCADAVALUE",
                 "LASTCHANGED",
+                "SETTLEMENTDATE_UTC_US",
+                "LASTCHANGED_UTC_US",
                 "SETTLEMENTDATE__raw",
                 "SCADAVALUE__raw"
             ]
@@ -1190,7 +1194,7 @@ D,DISPATCH,UNIT_SCADA,1,\"2024/01/01 00:05:00\",E,2\n";
                 .collect::<Vec<_>>()
         };
         assert_eq!(
-            text(4),
+            text(6),
             [
                 None,
                 Some("2024/13/01 00:05:00".into()),
@@ -1201,7 +1205,7 @@ D,DISPATCH,UNIT_SCADA,1,\"2024/01/01 00:05:00\",E,2\n";
             ]
         );
         assert_eq!(
-            text(5),
+            text(7),
             [
                 None,
                 None,
@@ -1212,7 +1216,7 @@ D,DISPATCH,UNIT_SCADA,1,\"2024/01/01 00:05:00\",E,2\n";
             ]
         );
         assert_eq!(
-            b.schema().field(5).metadata()[RAW_OF_KEY],
+            b.schema().field(7).metadata()[RAW_OF_KEY],
             b.schema().field(2).metadata()[phasor_registry::arrow::FIELD_ID_KEY]
         );
         // The typed columns are null where the value did not fit; every
@@ -1249,14 +1253,15 @@ D,DISPATCH,UNIT_SCADA,1,\"2024/01/01 00:05:00\",E,2\n";
         let out = sink.into_inner().unwrap();
         let widths: Vec<_> = out.batches.iter().map(|b| b.batch.num_columns()).collect();
         // Rows A,B: a bad date. C,D: a bad number and an empty key. Bad
-        // number, then E: a bad number only.
-        assert_eq!(widths, [5, 5, 5]);
+        // number, then E: a bad number only. Four columns, two siblings and
+        // one raw column each.
+        assert_eq!(widths, [7, 7, 7]);
         assert_eq!(
-            out.batches[0].batch.schema().field(4).name(),
+            out.batches[0].batch.schema().field(6).name(),
             "SETTLEMENTDATE__raw"
         );
         assert_eq!(
-            out.batches[1].batch.schema().field(4).name(),
+            out.batches[1].batch.schema().field(6).name(),
             "SCADAVALUE__raw"
         );
         assert!(out.batches[1].batch.schema().field(1).is_nullable());
@@ -1270,7 +1275,7 @@ D,DISPATCH,UNIT_SCADA,1,\"2024/01/01 00:05:00\",A,1\n";
             &ScanOptions::default(),
         )
         .unwrap();
-        assert_eq!(out.batches[0].batch.num_columns(), 4);
+        assert_eq!(out.batches[0].batch.num_columns(), 6);
         assert!(out.warnings.is_empty());
     }
 

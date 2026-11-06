@@ -20,6 +20,7 @@
   "properties": {
     "comment": "Tracks the predispatch scenario offset updates across time",
     "phasor.declared": "true",
+    "phasor.derived": "[{\"column\":\"EFFECTIVEDATE_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"EFFECTIVEDATE\"]},{\"column\":\"AUTHORISEDDATE_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"AUTHORISEDDATE\"]},{\"column\":\"LASTCHANGED_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"LASTCHANGED\"]}]",
     "phasor.format": "5",
     "phasor.load": "snapshot",
     "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(3)\",\"3\":\"VARCHAR(15)\",\"4\":\"TIMESTAMP(0)\",\"5\":\"TIMESTAMP(0)\"}",

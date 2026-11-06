@@ -19,6 +19,7 @@
   ],
   "properties": {
     "phasor.declared": "true",
+    "phasor.derived": "[{\"column\":\"REPORT_DATETIME_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"REPORT_DATETIME\"]}]",
     "phasor.format": "5",
     "phasor.headers": "{\"1\":\"hub_identifier\",\"2\":\"hub_name\",\"3\":\"effective_from_date\",\"4\":\"effective_to_date\",\"5\":\"dp_flag\",\"6\":\"report_datetime\"}",
     "phasor.load": "append",

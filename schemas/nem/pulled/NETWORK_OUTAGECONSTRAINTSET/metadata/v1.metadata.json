@@ -20,6 +20,7 @@
   "properties": {
     "comment": "NETWORK_OUTAGECONSTRAINTSET lists the Constraint Set or Sets that are expected to be invoked for the outage once it is confirmed to proceed.",
     "phasor.declared": "true",
+    "phasor.derived": "[{\"column\":\"STARTINTERVAL_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"STARTINTERVAL\"]},{\"column\":\"ENDINTERVAL_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"ENDINTERVAL\"]}]",
     "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"NUMERIC(15,0)\",\"2\":\"VARCHAR(50)\",\"3\":\"TIMESTAMP(0)\",\"4\":\"TIMESTAMP(0)\"}",

@@ -20,6 +20,7 @@
   "properties": {
     "comment": "Uniquely tracks which Intermittent Generation forecast was used for the DUID in which Dispatch run",
     "phasor.declared": "true",
+    "phasor.derived": "[{\"column\":\"SETTLEMENTDATE_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"SETTLEMENTDATE\"]},{\"column\":\"OFFERDATETIME_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"OFFERDATETIME\"]}]",
     "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"VARCHAR(20)\",\"3\":\"VARCHAR(20)\",\"4\":\"NUMERIC(10,0)\",\"5\":\"TIMESTAMP(0)\"}",

@@ -20,6 +20,7 @@
   "properties": {
     "comment": "Provide details of the gate station capacity on a particular day.",
     "phasor.declared": "true",
+    "phasor.derived": "[{\"column\":\"EFFECTIVEDATE_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"EFFECTIVEDATE\"]},{\"column\":\"LASTUPDATED_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"LASTUPDATED\"]}]",
     "phasor.format": "5",
     "phasor.headers": "{\"1\":\"ConnectionPointId\",\"2\":\"ConnectionPointName\",\"3\":\"EffectiveDate\",\"4\":\"CapacityQuantity\",\"5\":\"Description\",\"6\":\"FacilityName\",\"7\":\"FacilityId\",\"8\":\"FacilityType\",\"9\":\"OperatorId\",\"10\":\"OperatorName\",\"11\":\"OwnerId\",\"12\":\"OwnerName\",\"13\":\"LastUpdated\"}",
     "phasor.load": "append",

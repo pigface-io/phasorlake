@@ -20,6 +20,7 @@
   "properties": {
     "comment": "NETWORK_SUBSTATIONDETAIL sets out the attributes of sub-stations across time",
     "phasor.declared": "true",
+    "phasor.derived": "[{\"column\":\"VALIDFROM_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"VALIDFROM\"]},{\"column\":\"VALIDTO_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"VALIDTO\"]},{\"column\":\"LASTCHANGED_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"LASTCHANGED\"]}]",
     "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"VARCHAR(30)\",\"2\":\"TIMESTAMP(3)\",\"3\":\"TIMESTAMP(3)\",\"4\":\"VARCHAR(100)\",\"5\":\"VARCHAR(10)\",\"6\":\"VARCHAR(30)\",\"7\":\"TIMESTAMP(3)\"}",

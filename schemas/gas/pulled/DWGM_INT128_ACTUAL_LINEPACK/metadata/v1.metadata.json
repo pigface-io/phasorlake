@@ -19,6 +19,7 @@
   ],
   "properties": {
     "phasor.declared": "true",
+    "phasor.derived": "[{\"column\":\"COMMENCEMENT_DATETIME_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"COMMENCEMENT_DATETIME\"]},{\"column\":\"CURRENT_DATE_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"CURRENT_DATE\"]}]",
     "phasor.format": "5",
     "phasor.headers": "{\"1\":\"commencement_datetime\",\"2\":\"actual_linepack\",\"3\":\"current_date\"}",
     "phasor.load": "append",

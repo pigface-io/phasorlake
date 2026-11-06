@@ -20,6 +20,7 @@
   "properties": {
     "comment": "Billing reconciliation result table for both provisional and final directions",
     "phasor.declared": "true",
+    "phasor.derived": "[{\"column\":\"DIRECTION_START_DATE_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"DIRECTION_START_DATE\"]},{\"column\":\"DIRECTION_END_DATE_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"DIRECTION_END_DATE\"]},{\"column\":\"DIRECTION_START_INTERVAL_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"DIRECTION_START_INTERVAL\"]},{\"column\":\"DIRECTION_END_INTERVAL_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"DIRECTION_END_INTERVAL\"]}]",
     "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"NUMERIC(4)\",\"2\":\"NUMERIC(3)\",\"3\":\"NUMERIC(3)\",\"4\":\"VARCHAR(20)\",\"5\":\"VARCHAR(20)\",\"6\":\"VARCHAR(200)\",\"7\":\"VARCHAR(20)\",\"8\":\"TIMESTAMP(0)\",\"9\":\"TIMESTAMP(0)\",\"10\":\"TIMESTAMP(0)\",\"11\":\"TIMESTAMP(0)\",\"12\":\"NUMERIC(18,8)\",\"13\":\"NUMERIC(18,8)\",\"14\":\"NUMERIC(18,8)\",\"15\":\"NUMERIC(18,8)\",\"16\":\"NUMERIC(18,8)\",\"17\":\"NUMERIC(18,8)\",\"18\":\"NUMERIC(18,8)\",\"19\":\"NUMERIC(18,8)\",\"20\":\"NUMERIC(18,8)\",\"21\":\"VARCHAR(20)\"}",

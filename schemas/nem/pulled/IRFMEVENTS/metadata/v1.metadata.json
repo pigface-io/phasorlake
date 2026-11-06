@@ -20,6 +20,7 @@
   "properties": {
     "comment": "IRFMEVENTS sets out specific Industrial Relations Forced Majeure events.",
     "phasor.declared": "true",
+    "phasor.derived": "[{\"column\":\"STARTDATE_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"STARTDATE\"]},{\"column\":\"ENDDATE_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"ENDDATE\"]},{\"column\":\"LASTCHANGED_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"LASTCHANGED\"]}]",
     "phasor.format": "5",
     "phasor.load": "snapshot",
     "phasor.model-types": "{\"1\":\"VARCHAR(10)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"NUMERIC(3,0)\",\"4\":\"TIMESTAMP(0)\",\"5\":\"NUMERIC(3,0)\",\"6\":\"TIMESTAMP(0)\"}",

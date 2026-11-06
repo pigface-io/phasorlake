@@ -20,6 +20,7 @@
   "properties": {
     "comment": "Settlements WDR transactions",
     "phasor.declared": "true",
+    "phasor.derived": "[{\"column\":\"VERSION_DATETIME_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"VERSION_DATETIME\"]},{\"column\":\"LASTCHANGED_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"LASTCHANGED\"]}]",
     "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"VARCHAR(20)\",\"2\":\"VARCHAR(20)\",\"3\":\"TIMESTAMP(3)\",\"4\":\"NUMERIC(18,8)\",\"5\":\"NUMERIC(3,0)\",\"6\":\"TIMESTAMP(3)\"}",

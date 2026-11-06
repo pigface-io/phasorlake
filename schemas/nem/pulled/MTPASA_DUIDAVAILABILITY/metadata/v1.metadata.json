@@ -20,6 +20,7 @@
   "properties": {
     "comment": "Offered PASA Availability of the scheduled generator DUID for each day over the Medium Term PASA period. The data in this table is input data to the MT PASA process it is not part of the MTPASA solution. The availability does not reflect any energy limitations in the MT PASA offers",
     "phasor.declared": "true",
+    "phasor.derived": "[{\"column\":\"PUBLISH_DATETIME_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"PUBLISH_DATETIME\"]},{\"column\":\"DAY_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"DAY\"]},{\"column\":\"LATEST_OFFER_DATETIME_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"LATEST_OFFER_DATETIME\"]},{\"column\":\"LASTCHANGED_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"LASTCHANGED\"]}]",
     "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"VARCHAR(20)\",\"4\":\"VARCHAR(20)\",\"5\":\"NUMERIC(12,0)\",\"6\":\"TIMESTAMP(0)\",\"7\":\"TIMESTAMP(0)\",\"8\":\"NUMERIC(1,0)\",\"9\":\"VARCHAR(20)\",\"10\":\"NUMERIC(4)\"}",

@@ -20,6 +20,7 @@
   "properties": {
     "comment": "The report provides a summary of all trades delivered in the current gas day and the last thirty gas days per product location. It provides information on the volume weighted average price, and the total traded quantities.",
     "phasor.declared": "true",
+    "phasor.derived": "[{\"column\":\"GAS_DATE_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"GAS_DATE\"]},{\"column\":\"LASTCHANGED_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"LASTCHANGED\"]}]",
     "phasor.format": "5",
     "phasor.load": "append",
     "phasor.market": "gas",

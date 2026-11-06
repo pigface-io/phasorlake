@@ -20,6 +20,7 @@
   "properties": {
     "comment": "Constraint results for Binding or Violating Constraints",
     "phasor.declared": "true",
+    "phasor.derived": "[{\"column\":\"RUN_DATETIME_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"RUN_DATETIME\"]},{\"column\":\"DAY_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"DAY\"]},{\"column\":\"EFFECTIVEDATE_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"EFFECTIVEDATE\"]},{\"column\":\"LASTCHANGED_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"LASTCHANGED\"]}]",
     "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(4)\",\"3\":\"VARCHAR(20)\",\"4\":\"VARCHAR(20)\",\"5\":\"TIMESTAMP(0)\",\"6\":\"VARCHAR(20)\",\"7\":\"TIMESTAMP(0)\",\"8\":\"NUMERIC(3,0)\",\"9\":\"NUMERIC(3,0)\",\"10\":\"NUMERIC(8,5)\",\"11\":\"NUMERIC(8,5)\",\"12\":\"NUMERIC(12,2)\",\"13\":\"NUMERIC(12,2)\",\"14\":\"NUMERIC(12,2)\",\"15\":\"TIMESTAMP(0)\"}",

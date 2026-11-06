@@ -19,6 +19,7 @@
   ],
   "properties": {
     "phasor.declared": "true",
+    "phasor.derived": "[{\"column\":\"EVENT_DATETIME_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"EVENT_DATETIME\"]},{\"column\":\"CURRENT_DATE_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"CURRENT_DATE\"]}]",
     "phasor.format": "5",
     "phasor.headers": "{\"1\":\"version_id\",\"2\":\"gas_date\",\"3\":\"event_datetime\",\"4\":\"event_interval\",\"5\":\"heating_value_zone\",\"6\":\"heating_value_zone_desc\",\"7\":\"initial_heating_value\",\"8\":\"current_heating_value\",\"9\":\"current_date\"}",
     "phasor.load": "append",

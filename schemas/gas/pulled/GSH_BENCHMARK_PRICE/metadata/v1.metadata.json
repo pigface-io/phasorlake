@@ -20,6 +20,7 @@
   "properties": {
     "comment": "The report contains the benchmark prices for the day ahead (non-firm price) PLUS the last two years of daily benchmark prices (firm price)",
     "phasor.declared": "true",
+    "phasor.derived": "[{\"column\":\"GAS_DATE_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"GAS_DATE\"]},{\"column\":\"LASTCHANGED_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"LASTCHANGED\"]}]",
     "phasor.format": "5",
     "phasor.load": "append",
     "phasor.market": "gas",

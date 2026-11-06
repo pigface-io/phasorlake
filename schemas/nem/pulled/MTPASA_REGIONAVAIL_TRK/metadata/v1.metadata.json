@@ -20,6 +20,7 @@
   "properties": {
     "comment": "The tracking table to assist in versioning of the region-aggregate offered PASA Availability data published to the MTPASA_REGIONAVAILABILITY table.",
     "phasor.declared": "true",
+    "phasor.derived": "[{\"column\":\"PUBLISH_DATETIME_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"PUBLISH_DATETIME\"]},{\"column\":\"STARTDATE_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"STARTDATE\"]},{\"column\":\"ENDDATE_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"ENDDATE\"]},{\"column\":\"LATEST_OFFER_DATETIME_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"LATEST_OFFER_DATETIME\"]}]",
     "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"TIMESTAMP(0)\",\"4\":\"TIMESTAMP(0)\"}",

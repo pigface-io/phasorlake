@@ -20,6 +20,7 @@
   "properties": {
     "comment": "The report lists the following items for each facility and service type:initial cleared quantity as determined by the Auction Solver;where there has been a curtailment of the initial cleared quantity, the revised auction quantity which must be the aggregate minimum quantity made available to auction participants on the gas day; final aggregated scheduled nominations.",
     "phasor.declared": "true",
+    "phasor.derived": "[{\"column\":\"AUCTION_DATE_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"AUCTION_DATE\"]},{\"column\":\"GAS_DATE_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"GAS_DATE\"]},{\"column\":\"LASTCHANGED_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"LASTCHANGED\"]}]",
     "phasor.format": "5",
     "phasor.load": "append",
     "phasor.market": "gas",

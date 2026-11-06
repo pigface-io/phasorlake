@@ -19,6 +19,7 @@
   ],
   "properties": {
     "phasor.declared": "true",
+    "phasor.derived": "[{\"column\":\"CURRENT_DATE_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"CURRENT_DATE\"]}]",
     "phasor.format": "5",
     "phasor.headers": "{\"1\":\"forecast_date\",\"2\":\"version_id\",\"3\":\"ti\",\"4\":\"forecast_demand_gj\",\"5\":\"vc_override_gj\",\"6\":\"current_date\"}",
     "phasor.load": "append",

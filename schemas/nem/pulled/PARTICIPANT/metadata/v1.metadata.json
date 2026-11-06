@@ -20,6 +20,7 @@
   "properties": {
     "comment": "PARTICIPANT sets out Participant ID, name and class for all participants.",
     "phasor.declared": "true",
+    "phasor.derived": "[{\"column\":\"LASTCHANGED_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"LASTCHANGED\"]}]",
     "phasor.format": "5",
     "phasor.load": "snapshot",
     "phasor.model-types": "{\"1\":\"VARCHAR(10)\",\"2\":\"VARCHAR(20)\",\"3\":\"VARCHAR(80)\",\"4\":\"VARCHAR(64)\",\"5\":\"VARCHAR(9)\",\"6\":\"VARCHAR(40)\",\"7\":\"TIMESTAMP(0)\"}",

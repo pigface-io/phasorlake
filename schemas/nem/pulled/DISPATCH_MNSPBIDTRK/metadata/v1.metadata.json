@@ -20,6 +20,7 @@
   "properties": {
     "comment": "DISPATCH_MNSPBIDTRK shows the MNSP bid tracking, including the bid version used in each dispatch run for each MNSP Interconnector Link. The table identifies which bids from MNSP_DAYOFFER and MNSP_BIDOFFERPERIOD were applied.",
     "phasor.declared": "true",
+    "phasor.derived": "[{\"column\":\"SETTLEMENTDATE_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"SETTLEMENTDATE\"]},{\"column\":\"OFFERSETTLEMENTDATE_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"OFFERSETTLEMENTDATE\"]},{\"column\":\"OFFEREFFECTIVEDATE_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"OFFEREFFECTIVEDATE\"]},{\"column\":\"LASTCHANGED_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"LASTCHANGED\"]}]",
     "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"NUMERIC(3,0)\",\"3\":\"VARCHAR(10)\",\"4\":\"VARCHAR(10)\",\"5\":\"TIMESTAMP(0)\",\"6\":\"TIMESTAMP(3)\",\"7\":\"NUMERIC(3,0)\",\"8\":\"TIMESTAMP(0)\"}",

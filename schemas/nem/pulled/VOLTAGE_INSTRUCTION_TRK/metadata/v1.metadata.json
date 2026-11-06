@@ -20,6 +20,7 @@
   "properties": {
     "comment": "Parent record for Voltage Instructions (MVAr Dispatch). 'SIGNAL' records will have no children; 'INSTRUCTION' records will have children",
     "phasor.declared": "true",
+    "phasor.derived": "[{\"column\":\"RUN_DATETIME_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"RUN_DATETIME\"]},{\"column\":\"VERSION_DATETIME_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"VERSION_DATETIME\"]},{\"column\":\"SE_DATETIME_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"SE_DATETIME\"]},{\"column\":\"EST_EXPIRY_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"EST_EXPIRY\"]},{\"column\":\"EST_NEXT_INSTRUCTION_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"EST_NEXT_INSTRUCTION\"]}]",
     "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"VARCHAR(20)\",\"3\":\"TIMESTAMP(0)\",\"4\":\"TIMESTAMP(0)\",\"5\":\"VARCHAR(60)\",\"6\":\"VARCHAR(60)\",\"7\":\"VARCHAR(60)\",\"8\":\"VARCHAR(100)\",\"9\":\"TIMESTAMP(0)\",\"10\":\"TIMESTAMP(0)\"}",

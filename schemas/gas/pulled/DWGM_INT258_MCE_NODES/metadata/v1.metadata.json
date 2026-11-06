@@ -19,6 +19,7 @@
   ],
   "properties": {
     "phasor.declared": "true",
+    "phasor.derived": "[{\"column\":\"LAST_MOD_DATE_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"LAST_MOD_DATE\"]},{\"column\":\"CURRENT_DATE_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"CURRENT_DATE\"]}]",
     "phasor.format": "5",
     "phasor.headers": "{\"1\":\"pipeline_id\",\"2\":\"point_group_identifier_id\",\"3\":\"point_group_identifier_name\",\"4\":\"nodal_altitude\",\"5\":\"last_mod_date\",\"6\":\"current_date\"}",
     "phasor.load": "snapshot",

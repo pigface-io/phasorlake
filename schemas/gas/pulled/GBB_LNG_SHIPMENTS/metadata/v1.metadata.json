@@ -20,6 +20,7 @@
   "properties": {
     "comment": "This table displays a list of all LNG shipments",
     "phasor.declared": "true",
+    "phasor.derived": "[{\"column\":\"SHIPMENTDATE_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"SHIPMENTDATE\"]},{\"column\":\"VERSIONDATETIME_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"VERSIONDATETIME\"]}]",
     "phasor.format": "5",
     "phasor.headers": "{\"1\":\"TransactionId\",\"2\":\"FacilityId\",\"3\":\"FacilityName\",\"4\":\"VolumePJ\",\"5\":\"ShipmentDate\",\"6\":\"VersionDateTime\"}",
     "phasor.load": "append",

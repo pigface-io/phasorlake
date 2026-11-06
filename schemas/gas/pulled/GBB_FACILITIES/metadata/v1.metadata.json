@@ -20,6 +20,7 @@
   "properties": {
     "comment": "Provides details of all facilities",
     "phasor.declared": "true",
+    "phasor.derived": "[{\"column\":\"LASTUPDATED_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"LASTUPDATED\"]}]",
     "phasor.format": "5",
     "phasor.headers": "{\"1\":\"FacilityName\",\"2\":\"FacilityShortName\",\"3\":\"FacilityId\",\"4\":\"FacilityType\",\"5\":\"FacilityTypeDescription\",\"6\":\"OperatingState\",\"7\":\"OperatingStateDate\",\"8\":\"OperatorName\",\"9\":\"OperatorId\",\"10\":\"OperatorChangeDate\",\"11\":\"LastUpdated\"}",
     "phasor.load": "snapshot",

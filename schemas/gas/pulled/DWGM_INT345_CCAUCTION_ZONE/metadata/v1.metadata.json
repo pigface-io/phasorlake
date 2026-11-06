@@ -19,6 +19,7 @@
   ],
   "properties": {
     "phasor.declared": "true",
+    "phasor.derived": "[{\"column\":\"CURRENT_DATE_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"CURRENT_DATE\"]}]",
     "phasor.format": "5",
     "phasor.headers": "{\"1\":\"zone_id\",\"2\":\"zone_name\",\"3\":\"zone_type\",\"4\":\"from_date\",\"5\":\"to_date\",\"6\":\"current_date\"}",
     "phasor.load": "append",

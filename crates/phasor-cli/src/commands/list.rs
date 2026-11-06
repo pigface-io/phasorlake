@@ -4,7 +4,7 @@
 use std::collections::BTreeMap;
 
 use anyhow::Result;
-use phasor_registry::TableId;
+use phasor_registry::{TableId, listed_columns};
 use phasor_writer::manifest::LiveOutput;
 
 use crate::cli::ListCmd;
@@ -177,34 +177,28 @@ async fn tables(ctx: &Context, args: &ListCmd) -> Result<i32> {
 fn columns(ctx: &Context, id: TableId) -> Result<i32> {
     let r = &ctx.registry;
     let t = r.table(id);
-    // The data model's words for each column, as phasor-schemas publishes them.
+    // The data model's words for each column, as phasor-schemas publishes
+    // them; the table's own columns, then those the lake derives.
     let docs: BTreeMap<u32, String> = t.published().docs;
-    let role = |name: &str| {
-        if t.time_column.as_deref() == Some(name) {
-            "time"
-        } else {
-            ""
-        }
-    };
-    let rows: Vec<Vec<String>> = t
-        .columns
+    let columns = listed_columns(t, &docs);
+    let rows: Vec<Vec<String>> = columns
         .iter()
         .map(|c| {
             vec![
                 c.name.clone(),
-                c.ty.to_string(),
-                role(&c.name).to_owned(),
-                c.id.to_string(),
-                docs.get(&c.id.0).cloned().unwrap_or_default(),
+                c.ty.clone(),
+                c.role.as_str().to_owned(),
+                c.field_id.to_string(),
+                c.description.clone().unwrap_or_default(),
             ]
         })
         .collect();
     if ctx.json {
-        for c in &t.columns {
+        for c in &columns {
             render::json_line(&serde_json::json!({
-                "table": t.name, "column": c.name, "type": c.ty.to_string(),
-                "role": role(&c.name), "field_id": c.id.0, "nullable": c.nullable,
-                "description": docs.get(&c.id.0),
+                "table": t.name, "column": c.name, "type": c.ty,
+                "role": c.role.as_str(), "field_id": c.field_id, "nullable": c.nullable,
+                "description": c.description,
             }));
         }
     } else {

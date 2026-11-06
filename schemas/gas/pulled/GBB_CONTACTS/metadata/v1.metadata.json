@@ -20,6 +20,7 @@
   "properties": {
     "comment": "The registered user list of responsible contact persons for each BB Participant organisation as identified at registration or otherwise",
     "phasor.declared": "true",
+    "phasor.derived": "[{\"column\":\"LASTUPDATED_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"LASTUPDATED\"]}]",
     "phasor.format": "5",
     "phasor.headers": "{\"1\":\"PersonId\",\"2\":\"PersonName\",\"3\":\"CompanyId\",\"4\":\"CompanyName\",\"5\":\"Position\",\"6\":\"Email\",\"7\":\"LastUpdated\"}",
     "phasor.load": "snapshot",

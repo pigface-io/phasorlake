@@ -19,6 +19,7 @@
   ],
   "properties": {
     "phasor.declared": "true",
+    "phasor.derived": "[{\"column\":\"CURRENT_DATE_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"CURRENT_DATE\"]}]",
     "phasor.format": "5",
     "phasor.headers": "{\"1\":\"network_name\",\"2\":\"version_id\",\"3\":\"extract_type\",\"4\":\"version_from_date\",\"5\":\"version_to_date\",\"6\":\"issued_date\",\"7\":\"current_date\"}",
     "phasor.load": "append",

@@ -19,6 +19,7 @@
   ],
   "properties": {
     "phasor.declared": "true",
+    "phasor.derived": "[{\"column\":\"EDD_UPDATE_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"EDD_UPDATE\"]},{\"column\":\"CURRENT_DATE_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"CURRENT_DATE\"]}]",
     "phasor.format": "5",
     "phasor.headers": "{\"1\":\"edd_update\",\"2\":\"edd_date\",\"3\":\"edd_value\",\"4\":\"edd_type\",\"5\":\"current_date\"}",
     "phasor.load": "append",

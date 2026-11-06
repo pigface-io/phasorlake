@@ -20,6 +20,7 @@
   "properties": {
     "comment": "This report delivers the curated 4 second frequency deviation and frequency measure data for each region",
     "phasor.declared": "true",
+    "phasor.derived": "[{\"column\":\"INTERVAL_DATETIME_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"INTERVAL_DATETIME\"]},{\"column\":\"MEASUREMENT_DATETIME_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"MEASUREMENT_DATETIME\"]},{\"column\":\"LASTCHANGED_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"LASTCHANGED\"]}]",
     "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"TIMESTAMP(0)\",\"3\":\"VARCHAR(20)\",\"4\":\"NUMERIC(5)\",\"5\":\"NUMERIC(18,8)\",\"6\":\"NUMERIC(5)\",\"7\":\"NUMERIC(18,8)\",\"8\":\"NUMERIC(5)\",\"9\":\"TIMESTAMP(0)\"}",

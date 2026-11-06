@@ -20,6 +20,7 @@
   "properties": {
     "comment": "SSM Contract Enablement Periods",
     "phasor.declared": "true",
+    "phasor.derived": "[{\"column\":\"ENABLEMENT_START_INTERVAL_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"ENABLEMENT_START_INTERVAL\"]},{\"column\":\"ENABLEMENT_END_INTERVAL_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"ENABLEMENT_END_INTERVAL\"]},{\"column\":\"LASTCHANGED_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"LASTCHANGED\"]}]",
     "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"VARCHAR(20)\",\"2\":\"VARCHAR(20)\",\"3\":\"TIMESTAMP(0)\",\"4\":\"TIMESTAMP(0)\",\"5\":\"VARCHAR(40)\",\"6\":\"TIMESTAMP(0)\"}",

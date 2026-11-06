@@ -20,6 +20,7 @@
   "properties": {
     "comment": "Provides the aggregate of forecast and nominations by location.",
     "phasor.declared": "true",
+    "phasor.derived": "[{\"column\":\"GASDATE_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"GASDATE\"]},{\"column\":\"EARLIESTSUBMISSIONDATE_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"EARLIESTSUBMISSIONDATE\"]}]",
     "phasor.format": "5",
     "phasor.headers": "{\"1\":\"GasDate\",\"2\":\"FacilityName\",\"3\":\"FacilityId\",\"4\":\"ConnectionPointId\",\"5\":\"EarliestSubmissionDate\",\"6\":\"LateTimeSpan\"}",
     "phasor.load": "append",

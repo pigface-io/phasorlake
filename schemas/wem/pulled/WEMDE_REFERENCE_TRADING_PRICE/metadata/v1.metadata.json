@@ -19,6 +19,7 @@
   ],
   "properties": {
     "phasor.declared": "true",
+    "phasor.derived": "[{\"column\":\"TRADING_INTERVAL_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"TRADING_INTERVAL\"]}]",
     "phasor.format": "5",
     "phasor.headers": "{\"1\":\"isPublished\",\"2\":\"referenceTradingPrice\",\"3\":\"tradingDay\",\"4\":\"tradingInterval\",\"5\":\"transactionId\"}",
     "phasor.load": "append",

@@ -20,6 +20,7 @@
   "properties": {
     "comment": "SSM Contract Enablement Costs for NEM",
     "phasor.declared": "true",
+    "phasor.derived": "[{\"column\":\"END_TRADINGDATE_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"END_TRADINGDATE\"]},{\"column\":\"LASTCHANGED_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"LASTCHANGED\"]}]",
     "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"TIMESTAMP(0)\",\"2\":\"VARCHAR(40)\",\"3\":\"NUMERIC(18,8)\",\"4\":\"TIMESTAMP(0)\"}",

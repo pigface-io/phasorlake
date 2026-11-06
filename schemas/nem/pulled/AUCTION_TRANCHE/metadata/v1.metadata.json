@@ -20,6 +20,7 @@
   "properties": {
     "comment": "AUCTION_TRANCHE supports the Settlement Residue Auction, by holding the default definitions for the percentage number of units allocated and dates applicable to each tranche for a specified auction quarter. This information provides the basis for setting up contracts for individual tranches.",
     "phasor.declared": "true",
+    "phasor.derived": "[{\"column\":\"AUCTIONDATE_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"AUCTIONDATE\"]},{\"column\":\"NOTIFYDATE_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"NOTIFYDATE\"]},{\"column\":\"CHANGEDATE_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"CHANGEDATE\"]},{\"column\":\"LASTCHANGED_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"LASTCHANGED\"]}]",
     "phasor.format": "5",
     "phasor.load": "append",
     "phasor.model-types": "{\"1\":\"NUMERIC(4,0)\",\"2\":\"NUMERIC(1,0)\",\"3\":\"NUMERIC(3,0)\",\"4\":\"NUMERIC(2,0)\",\"5\":\"TIMESTAMP(0)\",\"6\":\"TIMESTAMP(0)\",\"7\":\"NUMERIC(18,8)\",\"8\":\"TIMESTAMP(0)\",\"9\":\"VARCHAR(15)\",\"10\":\"TIMESTAMP(0)\"}",

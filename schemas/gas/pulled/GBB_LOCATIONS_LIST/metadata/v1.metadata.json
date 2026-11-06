@@ -20,6 +20,7 @@
   "properties": {
     "comment": "Lists all production and demand locations within the Bulletin Board system.",
     "phasor.declared": "true",
+    "phasor.derived": "[{\"column\":\"LASTUPDATED_UTC_US\",\"rule\":\"utc_us\",\"from\":[\"LASTUPDATED\"]}]",
     "phasor.format": "5",
     "phasor.headers": "{\"1\":\"LocationName\",\"2\":\"LocationId\",\"3\":\"LocationType\",\"4\":\"State\",\"5\":\"Description\",\"6\":\"LastUpdated\"}",
     "phasor.load": "snapshot",
