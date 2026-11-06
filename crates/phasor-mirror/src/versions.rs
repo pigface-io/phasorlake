@@ -157,7 +157,7 @@ mod tests {
             serde_json::json!({
                 "url": url,
                 "size": bytes.len(),
-                "sha256": crate::net::archive::sha256_hex(bytes),
+                "sha256": crate::net::archive::Sha256::of(bytes).hex(),
                 "fetched_at": "2026-10-21T10:00:00Z",
                 "last_modified": "Wed, 21 Oct 2026 10:00:00 GMT",
                 "listed_size": bytes.len(),

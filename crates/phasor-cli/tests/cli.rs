@@ -1004,7 +1004,7 @@ fn the_archive_lists_and_verifies_every_download() {
         dir.join("a.zip.json"),
         format!(
             r#"{{"url":"https://h/DATA/a.zip","size":9,"sha256":"{}","fetched_at":"2026-10-03T10:00:05Z","last_modified":"Tue, 13 Feb 2024 08:27:00 GMT","request":{{"by":"fetch nem REGION 2024-01..2024-01"}}}}"#,
-            phasor_acquire::archive::sha256_hex(b"zip bytes")
+            phasor_acquire::archive::Sha256::of(b"zip bytes").hex()
         ),
     )
     .unwrap();
@@ -1054,7 +1054,7 @@ fn the_archive_lives_where_the_config_says_and_the_drive_must_be_mounted() {
         dir.join("a.zip.json"),
         format!(
             r#"{{"url":"https://h/DATA/a.zip","size":9,"sha256":"{}","fetched_at":"2026-10-03T10:00:05Z","request":{{"by":"fetch"}}}}"#,
-            phasor_acquire::archive::sha256_hex(b"zip bytes")
+            phasor_acquire::archive::Sha256::of(b"zip bytes").hex()
         ),
     )
     .unwrap();

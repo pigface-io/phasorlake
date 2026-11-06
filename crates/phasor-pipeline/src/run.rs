@@ -103,12 +103,12 @@ pub fn local_remote_in(
 
 /// Hashes a local file into a `LocalFile`; blocking.
 pub fn local_file(remote: RemoteFile, path: &std::path::Path) -> std::io::Result<LocalFile> {
-    let (sha256, size) = phasor_acquire::sha256_file(path)?;
+    let content = phasor_acquire::Content::of_file(path)?;
     Ok(LocalFile {
         remote,
         path: path.to_path_buf(),
-        sha256,
-        size,
+        sha256: content.sha256.hex(),
+        size: content.size,
         cached: true,
         etag: None,
         last_modified: None,

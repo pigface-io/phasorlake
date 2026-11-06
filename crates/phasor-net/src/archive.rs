@@ -4,10 +4,7 @@
 
 use std::collections::{HashMap, HashSet};
 use std::ffi::OsString;
-use std::io::Read;
 use std::path::{Path, PathBuf};
-
-use sha2::{Digest, Sha256 as Hasher};
 
 pub use phasor_provenance::archive::{Archive, Held, is_noise, is_record};
 pub use phasor_provenance::{Address, Content, Listed, Provenance, Served, Sha256, Span, Via};
@@ -72,34 +69,6 @@ impl From<phasor_provenance::archive::Error> for FetchError {
             },
         }
     }
-}
-
-/// sha256 hex of `bytes`.
-pub fn sha256_hex(bytes: &[u8]) -> String {
-    Sha256::of(bytes).hex()
-}
-
-/// sha256 hex and length of the file at `path`, read in 1 MiB pieces. Blocking.
-pub fn sha256_file(path: &Path) -> std::io::Result<(String, u64)> {
-    sha256_read(&mut std::fs::File::open(path)?)
-}
-
-/// sha256 hex and length of everything `f` reads, in 1 MiB pieces.
-fn sha256_read(f: &mut impl Read) -> std::io::Result<(String, u64)> {
-    let mut hasher = Hasher::new();
-    let mut buf = vec![0u8; 1 << 20];
-    let mut len = 0u64;
-    loop {
-        let n = match f.read(&mut buf) {
-            Ok(0) => break,
-            Ok(n) => n,
-            Err(e) if e.kind() == std::io::ErrorKind::Interrupted => continue,
-            Err(e) => return Err(e),
-        };
-        hasher.update(&buf[..n]);
-        len += n as u64;
-    }
-    Ok((Sha256(hasher.finalize().into()).hex(), len))
 }
 
 /// The content of the file at `path`, from one read. Blocking.

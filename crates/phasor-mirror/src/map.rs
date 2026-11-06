@@ -1121,7 +1121,7 @@ mod tests {
             &crate::net::Provenance::from_json(
                 serde_json::json!({
                     "url": "https://h/A/gone.txt", "size": 3,
-                    "sha256": crate::net::archive::sha256_hex(b"old"),
+                    "sha256": crate::net::archive::Sha256::of(b"old").hex(),
                     "fetched_at": "2026-10-05T00:00:00Z",
                     "last_modified": "Mon, 12 Oct 2026 00:32:30 GMT", "tool": "nemlake",
                 })
@@ -1146,7 +1146,7 @@ mod tests {
             &crate::net::Provenance::from_json(
                 serde_json::json!({
                     "url": "https://h/A/b.txt", "size": 6,
-                    "sha256": crate::net::archive::sha256_hex(b"hello!"),
+                    "sha256": crate::net::archive::Sha256::of(b"hello!").hex(),
                     "fetched_at": "2026-10-05T00:00:00Z", "listed_size": 6,
                     "listed_modified": "Tuesday, October 13, 2026 11:53 AM",
                     "tool": "phasor-mirror",
@@ -1742,7 +1742,7 @@ h/
             b.contains("\"crc32\":9")
                 && b.contains(&format!(
                     "\"sha256\":\"{}\"",
-                    crate::net::archive::sha256_hex(b"hello")
+                    crate::net::archive::Sha256::of(b"hello").hex()
                 )),
             "{b}"
         );

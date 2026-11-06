@@ -38,7 +38,7 @@ pub mod transport;
 
 pub use archive::{
     Address, Archive, Content, DirNames, Held, Provenance, Served, Sha256, Via, content_of,
-    is_apple_double, sha256_file,
+    is_apple_double,
 };
 pub use error::FetchError;
 #[cfg(feature = "fetch")]

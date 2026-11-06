@@ -357,7 +357,6 @@ mod tests {
     use url::Url;
 
     use super::*;
-    use crate::net::archive::sha256_hex;
     use crate::net::transport::{Canned, OfflineTransport, StaticTransport};
 
     fn remote(url: &str) -> RemoteFile {
@@ -390,7 +389,7 @@ mod tests {
         let local = f.fetch(&remote(url)).await.unwrap();
         assert!(!local.cached);
         assert_eq!(local.size, body.len() as u64);
-        assert_eq!(local.sha256, sha256_hex(&body));
+        assert_eq!(local.sha256, Sha256::of(&body).hex());
         assert_eq!(local.path, dir.path().join("h/Data_Archive/DATA/a.zip"));
         assert_eq!(std::fs::read(&local.path).unwrap(), body);
         assert_eq!(local.etag.as_deref(), Some("\"etag\""));
@@ -474,7 +473,7 @@ mod tests {
         assert_eq!(third.path, second.path);
         let same = third.same_as.unwrap();
         assert!(!same.repacked);
-        assert_eq!((same.sha256, same.size), (sha256_hex(b"two!"), 4));
+        assert_eq!((same.sha256, same.size), (Sha256::of(b"two!").hex(), 4));
         assert!(same.last_modified.is_some());
         assert!(
             !dir.path()
@@ -508,7 +507,7 @@ mod tests {
         assert_eq!(z2.path, z1.path);
         let same = z2.same_as.unwrap();
         assert!(same.repacked);
-        assert_eq!(same.sha256, sha256_hex(&b));
+        assert_eq!(same.sha256, Sha256::of(&b).hex());
         // New files in it: a version.
         let z3 = f
             .fetch(&listed_zip("Wednesday, October 14, 2026 09:00 AM"))
@@ -594,7 +593,7 @@ mod tests {
         assert_eq!(sc.addresses[1].url, b);
         assert!(matches!(sc.addresses[1].via, Via::Same { .. }));
         // The data file is untouched: its hash is the download's.
-        assert_eq!(sc.content.sha256.hex(), sha256_hex(b"same"));
+        assert_eq!(sc.content.sha256.hex(), Sha256::of(b"same").hex());
         assert_eq!(f.archive().lookup(b).unwrap().unwrap().path, one.path);
         let three = f
             .fetch(&listed(b, "Tuesday, October 13, 2026 11:53 AM"))
@@ -915,7 +914,7 @@ mod tests {
         // The next run asks only for the rest, and the file is whole.
         let local = f.fetch(&remote(url)).await.unwrap();
         assert_eq!(std::fs::read(&local.path).unwrap(), body);
-        assert_eq!(local.sha256, sha256_hex(&body));
+        assert_eq!(local.sha256, Sha256::of(&body).hex());
         let sc = Archive::read(&local.path).unwrap().unwrap();
         assert_eq!(sc.content.crc32, Some(crc32fast::hash(&body)));
         assert!(!part.exists() && !part_meta(&part).exists());
@@ -974,7 +973,7 @@ mod tests {
         let local = f.fetch(&remote(url)).await.unwrap();
         assert_eq!(
             (local.sha256.clone(), t.request_count()),
-            (sha256_hex(&body), 0)
+            (Sha256::of(&body).hex(), 0)
         );
         std::fs::remove_file(&local.path).unwrap();
         std::fs::remove_file(Archive::record_path(&local.path)).unwrap();

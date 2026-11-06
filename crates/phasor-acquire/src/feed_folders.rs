@@ -775,7 +775,7 @@ mod tests {
         let v1 = serde_json::json!({
             "url": url,
             "size": bytes.len(),
-            "sha256": crate::archive::sha256_hex(bytes),
+            "sha256": crate::archive::Sha256::of(bytes).hex(),
             "fetched_at": "2026-10-21T12:00:00Z",
             "listed_modified": listed,
             "tool": "test",

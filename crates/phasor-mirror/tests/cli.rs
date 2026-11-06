@@ -132,7 +132,7 @@ fn the_mirror_downloads_what_the_crawl_listed() {
         dir.join("a.zip.json"),
         format!(
             r#"{{"url":"https://h/A/a.zip","size":9,"sha256":"{}","fetched_at":"2026-10-15T10:00:05Z","tool":"nemlake"}}"#,
-            phasor_mirror::net::archive::sha256_hex(b"zip bytes")
+            phasor_mirror::net::archive::Sha256::of(b"zip bytes").hex()
         ),
     )
     .unwrap();
@@ -513,7 +513,7 @@ fn a_duplicate_is_ruled_on_from_its_listing_and_never_downloaded() {
         format!(
             r#"{{"url":"https://h/A/M/t.zip","size":{},"sha256":"{}","fetched_at":"2026-10-05T00:00:00Z","tool":"x"}}"#,
             t.len(),
-            phasor_mirror::net::archive::sha256_hex(&t)
+            phasor_mirror::net::archive::Sha256::of(&t).hex()
         ),
     )
     .unwrap();

@@ -468,7 +468,7 @@ mod tests {
     use url::Url;
 
     use super::*;
-    use crate::archive::sha256_hex;
+    use crate::archive::Sha256;
     use crate::transport::{Canned, OfflineTransport, StaticTransport};
 
     fn remote(url: &str) -> RemoteFile {
@@ -504,7 +504,7 @@ mod tests {
         let local = f.fetch(&remote(url)).await.unwrap();
         assert!(!local.cached);
         assert_eq!(local.size, body.len() as u64);
-        assert_eq!(local.sha256, sha256_hex(&body));
+        assert_eq!(local.sha256, Sha256::of(&body).hex());
         assert_eq!(local.path, dir.path().join("h/Data_Archive/DATA/a.zip"));
         assert_eq!(std::fs::read(&local.path).unwrap(), body);
         assert_eq!(local.etag.as_deref(), Some("\"etag\""));
@@ -938,7 +938,10 @@ mod picks_tests {
         assert!(via["span"]["compressed"].as_u64().unwrap() > 0);
         assert!(via["listed"]["at"].is_string(), "the zip's listing time");
         assert_eq!(side.content.size, text.len() as u64);
-        assert_eq!(side.content.sha256.hex(), crate::archive::sha256_hex(&text));
+        assert_eq!(
+            side.content.sha256.hex(),
+            crate::archive::Sha256::of(&text).hex()
+        );
         assert!(side.content.crc32.is_some());
         assert!(
             f.archive()

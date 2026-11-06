@@ -951,7 +951,10 @@ mod tests {
         assert_eq!(sc.addresses.len(), 2);
         assert_eq!(sc.addresses[1].url, format!("{day17}!{na}"));
         assert_eq!(sc.addresses[1].via, Via::Entry);
-        assert_eq!(sc.content.sha256.hex(), crate::net::archive::sha256_hex(&a));
+        assert_eq!(
+            sc.content.sha256.hex(),
+            crate::net::archive::Sha256::of(&a).hex()
+        );
         // Removed: left out unless asked for.
         let left: Vec<String> = pairs(&mirror, &archive, false)
             .unwrap()
