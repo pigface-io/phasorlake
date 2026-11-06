@@ -106,7 +106,10 @@ mod tests {
         assert!(daily.serves("NZ_FINAL_ENERGY_PRICES"));
         assert!(monthly.serves("nz_final_reserve_prices"));
         assert!(!daily.serves("DISPATCH_UNIT_SCADA") && !monthly.serves("NO_SUCH_TABLE"));
-        assert_eq!(k.catalog.tables().len(), 6);
+        // The generation and metered tables come a month a file, so the
+        // monthly source alone serves them.
+        assert!(monthly.serves("NZ_GRID_EXPORT") && !daily.serves("NZ_GRID_EXPORT"));
+        assert_eq!(k.catalog.tables().len(), 14);
         let prices = k.catalog.table("NZ_FINAL_ENERGY_PRICES").unwrap();
         assert_eq!(prices.utc_offset_secs, 43_200);
         assert!(prices.time_column.is_some());

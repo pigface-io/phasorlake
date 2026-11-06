@@ -503,8 +503,13 @@ async fn watch(ctx: &Context, mirror: &Mirror, plan: &WatchPlan<'_>) -> Result<i
     let mut fetcher = ctx.fetchers(&roots).await?;
     let (mut rounds, mut refused) = (0, 0);
     // The folders whose files a host's `batch` put off last round: the next
-    // round comes back for them as soon as the least interval allows.
-    let mut carried: Vec<String> = Vec::new();
+    // round comes back for them as soon as the least interval allows. Kept
+    // in the cache across restarts, so a backlog carries on where it was.
+    let carried_path = mirror.cache_dir().join("carried.json");
+    let mut carried: Vec<String> = std::fs::read(&carried_path)
+        .ok()
+        .and_then(|text| serde_json::from_slice(&text).ok())
+        .unwrap_or_default();
     while plan.rounds.is_none_or(|n| rounds < n) {
         let now = std::time::Instant::now();
         let due = schedule.due(now);
@@ -597,6 +602,8 @@ async fn watch(ctx: &Context, mirror: &Mirror, plan: &WatchPlan<'_>) -> Result<i
             Ok(d) => {
                 refused = 0;
                 carried = d.deferred_folders;
+                let text = serde_json::to_vec(&carried).expect("folder names serialise");
+                phasor_mirror::write_atomic(&carried_path, &text)?;
                 continue;
             }
             Err(MirrorError::Fetch(e)) if waits_out(&e) => e.diagnostic(),

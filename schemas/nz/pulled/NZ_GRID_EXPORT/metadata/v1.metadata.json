@@ -1,0 +1,150 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 2254132214668331780,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 10,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 844084800000,
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nz/NZ_GRID_EXPORT",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "phasor.declared": "true",
+    "phasor.derived": "[{\"column\":\"INTERVAL_START_UTC_US\",\"rule\":\"nz_trading_period_start\",\"from\":[\"TRADING_DATE\",\"TRADING_PERIOD\"]}]",
+    "phasor.format": "5",
+    "phasor.headers": "{\"2\":\"NWK_Code\",\"3\":\"Generation_Type\",\"4\":\"Trader\",\"5\":\"Unit_Measure\",\"6\":\"Flow_Direction\",\"7\":\"Status\",\"8\":\"Trading_Date\"}",
+    "phasor.load": "append",
+    "phasor.market": "nz",
+    "phasor.offset": "+12:00",
+    "phasor.reports": "[[\"EMI\",\"GRID_EXPORT\"]]",
+    "phasor.table": "NZ_GRID_EXPORT",
+    "phasor.time": "TRADING_DATE",
+    "phasor.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 2254132214668331780,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "id": 1,
+          "name": "POC",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 2,
+          "name": "NWK_CODE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 3,
+          "name": "GENERATION_TYPE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 4,
+          "name": "TRADER",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 5,
+          "name": "UNIT_MEASURE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 6,
+          "name": "FLOW_DIRECTION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 7,
+          "name": "STATUS",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 8,
+          "name": "TRADING_DATE",
+          "required": false,
+          "type": "date"
+        },
+        {
+          "id": 9,
+          "name": "TRADING_PERIOD",
+          "required": false,
+          "type": "long"
+        },
+        {
+          "id": 10,
+          "name": "QUANTITY",
+          "required": false,
+          "type": "decimal(10, 4)"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 2254132214668331780,
+      "timestamp-ms": 844084800000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nz/NZ_GRID_EXPORT/metadata/snap-2254132214668331780-1-7c810bfb-d961-8685-a815-422d2c394ab2.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 2254132214668331780,
+      "summary": {
+        "operation": "append",
+        "phasor.files": "360",
+        "phasor.from.file": "199610_Grid_export.csv",
+        "phasor.from.release": "1996-10",
+        "phasor.from.sha256": "11b24f706d7faac1f4d7d4cd43225ad007eb3f9696ff5e2f9ddb18301f79bff2",
+        "phasor.from.time": "1996-10-01T00:00:00+12:00",
+        "phasor.kinds": "[\"emi\"]",
+        "phasor.report-subtype": "GRID_EXPORT",
+        "phasor.report-type": "EMI",
+        "phasor.rows": "119724872",
+        "phasor.to.file": "202609_Grid_export.csv",
+        "phasor.to.release": "2026-09",
+        "phasor.to.sha256": "5a1af14bf2ee786ff5c6c63d3ee30000419f6d98e667cc035d2993798605db62",
+        "phasor.to.time": "2026-09-30T00:00:00+12:00",
+        "phasor.total-rows": "119724872",
+        "phasor.version": "1"
+      },
+      "timestamp-ms": 844084800000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "7c810bfb-d961-8685-a815-422d2c394ab2"
+}

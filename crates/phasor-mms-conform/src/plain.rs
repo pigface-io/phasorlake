@@ -101,6 +101,7 @@ fn options<'a>(feed: &'a Feed, ctx: &DecodeCtx<'_>, name: &str) -> PlainOptions<
         offset: feed.offset_text(),
         max_bad_rows: ctx.options.max_bad_rows,
         unpivot: feed.unpivot_of(name),
+        nulls: feed.nulls,
         ..PlainOptions::default()
     }
 }

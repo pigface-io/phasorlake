@@ -480,7 +480,7 @@ fn parse_record(path: &Path, text: &str) -> Result<Vec<Remote>, MirrorError> {
 }
 
 /// Writes `bytes` beside `path` and renames it into place.
-pub(crate) fn write_atomic(path: &Path, bytes: &[u8]) -> Result<(), MirrorError> {
+pub fn write_atomic(path: &Path, bytes: &[u8]) -> Result<(), MirrorError> {
     let parent = path.parent().unwrap_or(Path::new("."));
     std::fs::create_dir_all(parent).map_err(MirrorError::io(parent))?;
     let mut part = path.as_os_str().to_owned();

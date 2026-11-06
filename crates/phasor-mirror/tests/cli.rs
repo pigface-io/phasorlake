@@ -823,9 +823,16 @@ fn a_batched_host_yields_the_rest_of_its_files_to_the_next_round() {
     assert_eq!(std::fs::read(b.join("one.csv")).unwrap(), b"one");
     assert_eq!(std::fs::read(b.join("two.csv")).unwrap(), b"two");
     forget();
-    let out = cli.ok(&["watch", "--root", &root, "--rounds", "2"]);
+    let out = cli.ok(&["watch", "--root", &root, "--rounds", "1"]);
     assert!(out.contains("1 files wait for the next round"), "{out}");
+    assert!(!b.join("two.csv").exists());
+    // The folders carried are kept across a restart: the next watch comes
+    // back for the rest first.
+    let carried = cli.home.path().join("state/cache/carried.json");
+    assert!(std::fs::read_to_string(&carried).unwrap().contains("/B/"));
+    cli.ok(&["watch", "--root", &root, "--rounds", "1"]);
     assert_eq!(std::fs::read(b.join("two.csv")).unwrap(), b"two");
+    assert_eq!(std::fs::read_to_string(&carried).unwrap(), "[]");
 }
 
 #[test]

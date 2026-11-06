@@ -5101,6 +5101,16 @@
         {
           "breaks": 0,
           "declared": true,
+          "first_release": "1998-10",
+          "last_release": "2026-09",
+          "name": "NZ_EMBEDDED_GENERATION",
+          "package": null,
+          "runs": 1,
+          "schemas": 1
+        },
+        {
+          "breaks": 0,
+          "declared": true,
           "first_release": "1996-10",
           "last_release": "2026-11",
           "name": "NZ_FINAL_ENERGY_PRICES",
@@ -5117,10 +5127,80 @@
           "package": null,
           "runs": 1,
           "schemas": 1
+        },
+        {
+          "breaks": 0,
+          "declared": true,
+          "first_release": "1997-08",
+          "last_release": "2026-09",
+          "name": "NZ_GENERATION_MD",
+          "package": null,
+          "runs": 1,
+          "schemas": 1
+        },
+        {
+          "breaks": 0,
+          "declared": true,
+          "first_release": "1996-10",
+          "last_release": "2026-09",
+          "name": "NZ_GRID_EXPORT",
+          "package": null,
+          "runs": 1,
+          "schemas": 1
+        },
+        {
+          "breaks": 0,
+          "declared": true,
+          "first_release": "1996-10",
+          "last_release": "2026-09",
+          "name": "NZ_GRID_EXPORT_TO_TIWAI",
+          "package": null,
+          "runs": 1,
+          "schemas": 1
+        },
+        {
+          "breaks": 0,
+          "declared": true,
+          "first_release": "2000-10",
+          "last_release": "2026-09",
+          "name": "NZ_GRID_IMPORT",
+          "package": null,
+          "runs": 1,
+          "schemas": 1
+        },
+        {
+          "breaks": 0,
+          "declared": true,
+          "first_release": "1996-10",
+          "last_release": "2026-09",
+          "name": "NZ_HVDC_FLOWS",
+          "package": null,
+          "runs": 1,
+          "schemas": 1
+        },
+        {
+          "breaks": 0,
+          "declared": true,
+          "first_release": "1997-01",
+          "last_release": "2026-09",
+          "name": "NZ_REACTIVE_POWER",
+          "package": null,
+          "runs": 1,
+          "schemas": 1
+        },
+        {
+          "breaks": 0,
+          "declared": true,
+          "first_release": "2000-01",
+          "last_release": "2026-10",
+          "name": "NZ_UNIT_LEVEL_GENERATION",
+          "package": null,
+          "runs": 1,
+          "schemas": 1
         }
       ],
-      "schemas": 6,
-      "tables": 6
+      "schemas": 14,
+      "tables": 14
     },
     "wem": {
       "baseline": {
@@ -5223,7 +5303,7 @@
       "tables": 9
     }
   },
-  "schemas": 733,
+  "schemas": 741,
   "sha256": {
     "gas/DWGM_INT029A_SYSTEM_NOTICES/metadata/snap-3248816567870203441-1-b81e8e26-7793-8fe9-abcf-7b2e78fd80ed.avro": "382efa05d14b431f815b68db718223164670217a10f46ff17db3adfac8df0ef7",
     "gas/DWGM_INT029A_SYSTEM_NOTICES/metadata/v1.metadata.json": "cde45f01bb5258605ce9aef18678e4436a7be985755707dc35bb09ac55fb75b8",
@@ -10165,6 +10245,10 @@
     "nz/NZ_DISPATCH_RESERVE_PRICES/metadata/v1.metadata.json": "4c2ad5e66bdc918501b253a6ab13753747f10a2450f2e49399beeeeeed7405c0",
     "nz/NZ_DISPATCH_RESERVE_PRICES/metadata/version-hint.text": "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b",
     "nz/NZ_DISPATCH_RESERVE_PRICES/schema-0.json": "323f83882afbf7c5460a1f87151224945b2e87b17a4765157d3a0fe453fe78c3",
+    "nz/NZ_EMBEDDED_GENERATION/metadata/snap-5498706175731704294-1-6188e16a-92ce-8b87-9aed-d96d26039ba0.avro": "b502f48843257cfdcc25f074b7a51c70173acd984a69fd4cd23cabd1bf0c49d6",
+    "nz/NZ_EMBEDDED_GENERATION/metadata/v1.metadata.json": "4ec943aa7b30e007928ae8bdc339c35c392fd7225520d5cce3c2110431fddd62",
+    "nz/NZ_EMBEDDED_GENERATION/metadata/version-hint.text": "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b",
+    "nz/NZ_EMBEDDED_GENERATION/schema-0.json": "6bf005e3c89254771abc7b5489405987abed0b534065e7accf7a976e47208103",
     "nz/NZ_FINAL_ENERGY_PRICES/metadata/snap-8302410763910962495-1-a0515e5f-7ca9-86fe-889b-015371268613.avro": "831589308fc2bb2abcdfaf5582faf6118cbb1133330d99924c07f078e76bd569",
     "nz/NZ_FINAL_ENERGY_PRICES/metadata/v1.metadata.json": "268950723d53c2abc39826fdbf8f95208038b627eacdcecb8ebafd1201984eba",
     "nz/NZ_FINAL_ENERGY_PRICES/metadata/version-hint.text": "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b",
@@ -10173,8 +10257,36 @@
     "nz/NZ_FINAL_RESERVE_PRICES/metadata/v1.metadata.json": "c8cea0f850d224f45b5166007c12de9db78b0fdf886329356f17b2fe01d949a2",
     "nz/NZ_FINAL_RESERVE_PRICES/metadata/version-hint.text": "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b",
     "nz/NZ_FINAL_RESERVE_PRICES/schema-0.json": "b6628d179a4a7c4447ad18783ad3f931a2c9ad6adffa1c1e210299018e0d04d7",
-    "nz/folders.json": "39299824d098fa4e144637db6b75d73821eeefce903342da7fe8b237b0876a5a",
-    "nz/headers.json": "cdf4c7800dd0ebb12d9595924ea4fdbf40f8e0fb14901ec830bbcedb0d78d8a3",
+    "nz/NZ_GENERATION_MD/metadata/snap-6578471064967532165-1-fb374ac3-6fa3-811a-a485-9f66ae30e3a3.avro": "f7b9a98a498ab072ceee7f4538efb076da54be64809f6d95bd699f9f461338fc",
+    "nz/NZ_GENERATION_MD/metadata/v1.metadata.json": "2f4aa4ca1b566f12900e9058271c7cac15e0b2baab86318a8aa9f31a21670938",
+    "nz/NZ_GENERATION_MD/metadata/version-hint.text": "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b",
+    "nz/NZ_GENERATION_MD/schema-0.json": "65505deb769d9fe2406cb20101ab7a7dfc28e5a3376f48a04057de05a0e6ccf6",
+    "nz/NZ_GRID_EXPORT/metadata/snap-2254132214668331780-1-7c810bfb-d961-8685-a815-422d2c394ab2.avro": "d2cb72b14b36413a23e9d5e7309058823689149d440e3b843cc8ddb27dedf138",
+    "nz/NZ_GRID_EXPORT/metadata/v1.metadata.json": "8f230cf22ae7c36910d63214884cd22f344e36f135c796084c12c80d2213be4c",
+    "nz/NZ_GRID_EXPORT/metadata/version-hint.text": "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b",
+    "nz/NZ_GRID_EXPORT/schema-0.json": "c1cebb6aa58f356947d048776320e4d820c66f41ea1ae0e00d0d63440e449e91",
+    "nz/NZ_GRID_EXPORT_TO_TIWAI/metadata/snap-2018157763497774265-1-a200ecbd-6e25-8387-aea3-3a26452b46a3.avro": "cd61f25e866b3d371d148949511d693859178a2b2d856b8482a7f10aa0048dbf",
+    "nz/NZ_GRID_EXPORT_TO_TIWAI/metadata/v1.metadata.json": "afd5d8f795c6f52bbbc05968a9344c0278858e285bf35c2c5b175dcf999b5fbd",
+    "nz/NZ_GRID_EXPORT_TO_TIWAI/metadata/version-hint.text": "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b",
+    "nz/NZ_GRID_EXPORT_TO_TIWAI/schema-0.json": "49779972604a45a9e119f54419dddcdb9e12f07cc1756eae22d35a38c190d5e2",
+    "nz/NZ_GRID_IMPORT/metadata/snap-2074077061008417625-1-eabedadf-0d16-8e48-ab0a-4f3be5352f24.avro": "25a149c682cebae46e695984f52a42a1db82dbceea0bf3936ccfe509c392bfc5",
+    "nz/NZ_GRID_IMPORT/metadata/v1.metadata.json": "50c92c287a1a60968e0d72ca7b4a5d65521923e62f59e54004251d12b49da09b",
+    "nz/NZ_GRID_IMPORT/metadata/version-hint.text": "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b",
+    "nz/NZ_GRID_IMPORT/schema-0.json": "448aa032ab4481e64896f02f5bb37d9011a06ebee3d333b7fc25bfe16f8937b9",
+    "nz/NZ_HVDC_FLOWS/metadata/snap-8288691738963974515-1-7a8c9334-6c2a-8b20-a3c2-d462a05d4463.avro": "d9d4587a79eeeb72c33589c472c41166760e30e784eb7f629377229ec24ea275",
+    "nz/NZ_HVDC_FLOWS/metadata/v1.metadata.json": "93286b2bc6d8f6e81b2abf2bbbf75f741771ad24292d55346a3ea54c7c5fa16b",
+    "nz/NZ_HVDC_FLOWS/metadata/version-hint.text": "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b",
+    "nz/NZ_HVDC_FLOWS/schema-0.json": "fc84df2c1736ce444c269ce126e36d35604f5851200df874373b73b671827bb5",
+    "nz/NZ_REACTIVE_POWER/metadata/snap-2783947407209403467-1-5e453af1-f172-8020-aee0-7e920124f5d2.avro": "3e6dda2add15800ce6841d4ce628efd9d04c219752b196d2f49ae51497703b09",
+    "nz/NZ_REACTIVE_POWER/metadata/v1.metadata.json": "2d39c73a4a3e62604615a4f0c8707f5a6a15e643e302ae3a48a852f373e280ca",
+    "nz/NZ_REACTIVE_POWER/metadata/version-hint.text": "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b",
+    "nz/NZ_REACTIVE_POWER/schema-0.json": "d70ac0ede24398c9016e28e6b1e6d9384155c2161ff51dd52e6afdf18f4a56e1",
+    "nz/NZ_UNIT_LEVEL_GENERATION/metadata/snap-3611381924212856778-1-880c238f-c4a5-8a61-a6a4-f585594b5884.avro": "f67f0e97e40183f9619aa086915ae64e28d843a1c483cb55a5816e7f7ff83cb4",
+    "nz/NZ_UNIT_LEVEL_GENERATION/metadata/v1.metadata.json": "5caad0a13756bcaf1afb5ec0440ae5040e90e57d1a95d06f9784ef1d25a04b05",
+    "nz/NZ_UNIT_LEVEL_GENERATION/metadata/version-hint.text": "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b",
+    "nz/NZ_UNIT_LEVEL_GENERATION/schema-0.json": "134ea4aa55354f74d447b7fe4bd8f7804b2470fa8501237a00bbbd3d685e69fb",
+    "nz/folders.json": "0d13d4fbc2ea22bbb692ba1d7c93bf680bcdadcb20362c2d1e526fc03e287baa",
+    "nz/headers.json": "ab4dfebc3edebec79523ab579325dffe8e82e005808ef54ea54053c8a91b2d41",
     "wem/WEMDE_REFERENCE_TRADING_PRICE/metadata/snap-3845576662466461030-1-0551813b-68e4-89c2-9817-6833581310e2.avro": "143fe378ab37e302ac23df05c39f53e04a3ec174ffb9bf761f177821ce048299",
     "wem/WEMDE_REFERENCE_TRADING_PRICE/metadata/v1.metadata.json": "8083475a4a72892b17d769c8b40e69bd3a79c5b1d5d17834b370a9e372695821",
     "wem/WEMDE_REFERENCE_TRADING_PRICE/metadata/version-hint.text": "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b",
@@ -10218,5 +10330,5 @@
     "wem/folders.json": "611390a6c9942265546d3834109913d609c5f454cf1e0b1b6cd30362e5bc49ef",
     "wem/headers.json": "252ddcb44b57520da95db9c532bed78ef5b9450cfa9f8bc5a05bce74e8c36d95"
   },
-  "tables": 518
+  "tables": 526
 }

@@ -3553,7 +3553,16 @@ async fn every_real_head_survives_the_lake() {
     for p in &files {
         let want = held(p);
         let got = by_path.get(p).copied().unwrap_or(0);
-        let unpivoted = p.to_string_lossy().contains("ForecastUtilisation");
+        // The GBB's forecast utilisation (a column a day) and the EMI's
+        // generation and metered files (a column a trading period).
+        let text = p.to_string_lossy();
+        let unpivoted = [
+            "ForecastUtilisation",
+            "/Wholesale/Generation/",
+            "/Wholesale/Metered_data/",
+        ]
+        .iter()
+        .any(|wide| text.contains(wide));
         let whole = if unpivoted {
             got > want && got % want == 0
         } else {

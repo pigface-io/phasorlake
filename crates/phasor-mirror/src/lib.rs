@@ -34,6 +34,7 @@ pub use compare::{
 };
 pub use crawl::{
     CrawlSummary, Mirror, PageRead, Remote, RemoteKind, crawl, default_roots, read_record, root,
+    write_atomic,
 };
 pub use diag::{Category, Diagnose, Diagnostic};
 pub use download::{DownloadOptions, DownloadSummary, FileDone, download};
