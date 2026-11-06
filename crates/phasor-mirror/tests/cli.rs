@@ -793,11 +793,13 @@ fn a_batched_host_yields_the_rest_of_its_files_to_the_next_round() {
         "/B/",
         Reply::Ok(dated(&[
             ("/B/one.csv", MON, Some(3)),
+            ("/B/three.csv", MON, Some(5)),
             ("/B/two.csv", MON, Some(3)),
         ])),
     );
     srv.route("/B/one.csv", Reply::Ok(b"one".to_vec()));
     srv.route("/B/two.csv", Reply::Ok(b"two".to_vec()));
+    srv.route("/B/three.csv", Reply::Ok(b"three".to_vec()));
     let cli = Cli::new();
     let base = srv.url("");
     // The folder is read once an hour; a round with files put off follows
@@ -816,22 +818,37 @@ fn a_batched_host_yields_the_rest_of_its_files_to_the_next_round() {
     };
     assert_eq!(std::fs::read(b.join("two.csv")).unwrap(), b"two");
     forget();
+    // A start downloads first (one file, two put off); the first round reads
+    // the folder and takes one more; the second, with the folder not due
+    // for an hour, comes straight back for the last after the least interval.
     let out = cli.ok(&["--json", "watch", "--root", &root, "--rounds", "2"]);
-    assert_eq!(out.matches("\"event\":\"watch_round\"").count(), 2, "{out}");
-    assert!(out.contains("\"deferred\":1"), "{out}");
+    assert_eq!(
+        out.matches("\"event\":\"download_done\"").count(),
+        3,
+        "{out}"
+    );
+    assert!(out.contains("\"deferred\":2"), "{out}");
     assert!(out.contains("\"read\":0"), "{out}");
-    assert_eq!(std::fs::read(b.join("one.csv")).unwrap(), b"one");
-    assert_eq!(std::fs::read(b.join("two.csv")).unwrap(), b"two");
+    for (name, body) in [
+        ("one.csv", "one"),
+        ("two.csv", "two"),
+        ("three.csv", "three"),
+    ] {
+        assert_eq!(std::fs::read(b.join(name)).unwrap(), body.as_bytes());
+    }
     forget();
-    let out = cli.ok(&["watch", "--root", &root, "--rounds", "1"]);
-    assert!(out.contains("1 files wait for the next round"), "{out}");
+    // No round at all: the start's pass alone, which leaves the rest named
+    // for the next start.
+    let out = cli.ok(&["watch", "--root", &root, "--rounds", "0"]);
+    assert!(out.contains("2 files wait for the next round"), "{out}");
+    assert_eq!(std::fs::read(b.join("one.csv")).unwrap(), b"one");
     assert!(!b.join("two.csv").exists());
-    // The folders carried are kept across a restart: the next watch comes
-    // back for the rest first.
     let carried = cli.home.path().join("state/cache/carried.json");
     assert!(std::fs::read_to_string(&carried).unwrap().contains("/B/"));
-    cli.ok(&["watch", "--root", &root, "--rounds", "1"]);
+    cli.ok(&["watch", "--root", &root, "--rounds", "0"]);
+    cli.ok(&["watch", "--root", &root, "--rounds", "0"]);
     assert_eq!(std::fs::read(b.join("two.csv")).unwrap(), b"two");
+    assert_eq!(std::fs::read(b.join("three.csv")).unwrap(), b"three");
     assert_eq!(std::fs::read_to_string(&carried).unwrap(), "[]");
 }
 

@@ -45,7 +45,11 @@ what the data means, this knows what exists.
   version nemweb rewrites twice between two reads is not seen, so a
   folder's interval is what decides how many versions are kept. A watch
   writes what it reads of a folder as that folder's listing, and notes in
-  each held file's record when nemweb stops listing its address.
+  each held file's record when nemweb stops listing its address. A start
+  downloads first: every file the record lists and the archive lacks, each
+  host's `batch` of them, before any folder is read again; the folders
+  whose files were put off come first in the next round and are noted in
+  `state/cache/carried.json`.
   A refusal
   is waited out as in `run`, and so is an archive linked to a drive not
   mounted.

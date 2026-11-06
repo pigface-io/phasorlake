@@ -502,14 +502,29 @@ async fn watch(ctx: &Context, mirror: &Mirror, plan: &WatchPlan<'_>) -> Result<i
     let archive = ctx.archive();
     let mut fetcher = ctx.fetchers(&roots).await?;
     let (mut rounds, mut refused) = (0, 0);
-    // The folders whose files a host's `batch` put off last round: the next
-    // round comes back for them as soon as the least interval allows. Kept
-    // in the cache across restarts, so a backlog carries on where it was.
+    // A start downloads first: every file the record lists and the archive
+    // lacks, each host's batch of them, before any folder is read again.
+    // Reading every folder due at a start (the hourly ones, hundreds on
+    // some hosts) takes minutes a backlog need not wait for.
+    let first = download(
+        ctx,
+        &fetcher,
+        mirror,
+        Pass {
+            delete_duplicates: plan.delete_duplicates,
+            batched: true,
+            ..Pass::ALL
+        },
+        None,
+    )
+    .await?;
+    // The folders whose files a host's `batch` put off: the next round comes
+    // back for them as soon as the least interval allows; noted in the cache
+    // so a reader can see what a backlog still owes.
     let carried_path = mirror.cache_dir().join("carried.json");
-    let mut carried: Vec<String> = std::fs::read(&carried_path)
-        .ok()
-        .and_then(|text| serde_json::from_slice(&text).ok())
-        .unwrap_or_default();
+    let mut carried = first.deferred_folders;
+    let text = serde_json::to_vec(&carried).expect("folder names serialise");
+    phasor_mirror::write_atomic(&carried_path, &text)?;
     while plan.rounds.is_none_or(|n| rounds < n) {
         let now = std::time::Instant::now();
         let due = schedule.due(now);
