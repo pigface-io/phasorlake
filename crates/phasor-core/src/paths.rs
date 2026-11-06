@@ -98,9 +98,39 @@ impl Home {
     }
 }
 
+/// `path` with a leading `~` component replaced by `user_home`; any other
+/// path as it is: `~/drive/archive` under `user_home`, `~` alone it,
+/// another user's `~name` and a path without one untouched.
+pub fn expand_tilde(path: &Path, user_home: &Path) -> PathBuf {
+    let mut parts = path.components();
+    match parts.next() {
+        Some(std::path::Component::Normal(first)) if first == "~" => {
+            let rest = parts.as_path();
+            if rest.as_os_str().is_empty() {
+                user_home.to_path_buf()
+            } else {
+                user_home.join(rest)
+            }
+        }
+        _ => path.to_path_buf(),
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn a_leading_tilde_is_the_user_home() {
+        let home = Path::new("/u");
+        assert_eq!(
+            expand_tilde(Path::new("~/d/a"), home),
+            PathBuf::from("/u/d/a")
+        );
+        assert_eq!(expand_tilde(Path::new("~"), home), PathBuf::from("/u"));
+        assert_eq!(expand_tilde(Path::new("~x/d"), home), PathBuf::from("~x/d"));
+        assert_eq!(expand_tilde(Path::new("/d/~"), home), PathBuf::from("/d/~"));
+    }
 
     #[test]
     fn precedence() {

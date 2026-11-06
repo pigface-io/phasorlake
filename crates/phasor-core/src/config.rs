@@ -365,7 +365,9 @@ impl Config {
     #[must_use]
     pub fn expanded(mut self, user_home: Option<&Path>) -> Self {
         if let Some(user_home) = user_home {
-            self.archive = self.archive.map(|p| expand_tilde(&p, user_home));
+            self.archive = self
+                .archive
+                .map(|p| crate::paths::expand_tilde(&p, user_home));
         }
         self
     }
@@ -385,23 +387,6 @@ impl Config {
     /// Parses TOML text.
     pub fn parse(text: &str) -> Result<Self, toml::de::Error> {
         toml::from_str(text)
-    }
-}
-
-/// `path` with a leading `~` component replaced by `user_home`; any other
-/// path as it is.
-fn expand_tilde(path: &Path, user_home: &Path) -> PathBuf {
-    let mut parts = path.components();
-    match parts.next() {
-        Some(std::path::Component::Normal(first)) if first == "~" => {
-            let rest = parts.as_path();
-            if rest.as_os_str().is_empty() {
-                user_home.to_path_buf()
-            } else {
-                user_home.join(rest)
-            }
-        }
-        _ => path.to_path_buf(),
     }
 }
 
