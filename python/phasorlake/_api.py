@@ -10,13 +10,14 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, cast
 
 from phasorlake import _native
-from phasorlake._types import Block, Table
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
     from os import PathLike
 
     import pyarrow as pa
+
+    from phasorlake._types import Block
 
 __version__ = _native.version()
 
@@ -92,42 +93,40 @@ def inspect(path: str | PathLike[str]) -> list[Block]:
     return _native.inspect(path)
 
 
-def table(name: str) -> Table:
-    """What the registry says of a table, as `phasor list TABLE --json` does.
+def schema(name: str) -> pa.Schema:
+    """The lake schema of a table: what `phasor ingest` writes its rows as.
+
+    Every column the table ever had and every one the lake derives (the
+    `_UTC_US` sibling of each timestamp), each field carrying its
+    `PARQUET:field_id`; the schema's metadata names the table
+    (`phasor:table`), its market (`phasor:market`), its load mode
+    (`phasor:load_mode`) and its time column (`phasor:time_column`, when it
+    has one). What one row is (a key) and which restatement is the latest
+    are a reader's decisions, so the registry says neither.
 
     Args:
         name: The table's name (`DISPATCHPRICE`), or its report pair (`DISPATCH.PRICE`).
 
     Returns:
-        The table's name, market, description, load mode, time column,
-        columns, and its lake schema.
+        The schema, with the table's facts in its metadata.
 
     Raises:
         PhasorError: No table has that name (`schema.unknown_table`).
 
     Examples:
         >>> import phasorlake as pl
-        >>> t = pl.table("DISPATCH.PRICE")
-        >>> t["name"], t["market"], t["load_mode"], t["time_column"]
-        ('DISPATCHPRICE', 'nem', 'append', 'SETTLEMENTDATE')
-        >>> t["columns"][0]["name"], t["columns"][0]["role"], t["columns"][0]["field_id"]
-        ('SETTLEMENTDATE', 'time', 1)
+        >>> s = pl.schema("DISPATCH.PRICE")
+        >>> s.metadata[b"phasor:table"], s.metadata[b"phasor:time_column"]
+        (b'DISPATCHPRICE', b'SETTLEMENTDATE')
+        >>> s.field("SETTLEMENTDATE").metadata[b"PARQUET:field_id"]
+        b'1'
         >>> try:
-        ...     pl.table("NOSUCHTABLE")
+        ...     pl.schema("NOSUCHTABLE")
         ... except pl.PhasorError as e:
         ...     e.code
         'schema.unknown_table'
     """
     import pyarrow as pa  # ruff: ignore[import-outside-top-level] — not with the package (above)
 
-    t = _native.table(name)
-    return Table(
-        name=t["name"],
-        market=t["market"],
-        description=t["description"],
-        load_mode=t["load_mode"],
-        time_column=t["time_column"],
-        columns=t["columns"],
-        # The native schema speaks the Arrow C data interface, which pyarrow's stubs do not name.
-        schema=pa.schema(cast("Iterable[pa.Field[pa.DataType]]", t["schema"])),
-    )
+    # The native schema speaks the Arrow C data interface, which pyarrow's stubs do not name.
+    return pa.schema(cast("Iterable[pa.Field[pa.DataType]]", _native.schema(name)))

@@ -4,7 +4,7 @@
 from os import PathLike
 from typing import final
 
-from phasorlake._types import Block, NativeTable
+from phasorlake._types import Block
 
 __all__ = [
     "ArrowSchema",
@@ -13,7 +13,7 @@ __all__ = [
     "PhasorWarning",
     "decode",
     "inspect",
-    "table",
+    "schema",
     "version",
 ]
 
@@ -49,5 +49,5 @@ def decode(
     max_bad_rows: int = 0,
 ) -> dict[str, ArrowTable]: ...
 def inspect(path: str | PathLike[str]) -> list[Block]: ...
-def table(name: str) -> NativeTable: ...
+def schema(name: str) -> ArrowSchema: ...
 def version() -> str: ...

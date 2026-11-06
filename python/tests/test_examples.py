@@ -17,7 +17,7 @@ PUBLIC = [name for name in pl.__all__ if inspect.isfunction(getattr(pl, name))]
 
 
 def test_the_package_has_public_functions() -> None:
-    assert PUBLIC == ["decode", "inspect", "run", "table"]
+    assert PUBLIC == ["decode", "inspect", "run", "schema"]
 
 
 @pytest.mark.parametrize("name", PUBLIC)

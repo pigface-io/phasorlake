@@ -56,20 +56,24 @@ for block in pl.inspect("testdata/csv/multi_block_dispatchis.csv"):
     print(block["table"], block["version"], block["status"], block["rows"])
 ```
 
-## Describe a table
+## A table's schema
 
-What the registry says of a table, as `phasor list TABLE --json` does: its
-load mode, time column, columns with their field ids, and the lake schema as
-a `pyarrow.Schema`. What one row is (a key) and which restatement is the
-latest (temporal roles) are a reader's decisions, so the registry says
+The lake schema of a table as a `pyarrow.Schema`: every column it ever had
+and every one the lake derives from each row (the `_UTC_US` sibling of
+every timestamp, an `int64` of microseconds since 1970 UTC), each field
+carrying its `PARQUET:field_id`. The schema's metadata names the table, its
+market, its load mode and its time column. For the columns with the data
+model's words and their roles, `phasor list TABLE --json` lists the same
+columns in the same order. What one row is (a key) and which restatement is
+the latest (temporal roles) are a reader's decisions, so the registry says
 neither.
 
 ```python
 import phasorlake as pl
 
-t = pl.table("DISPATCHPRICE")
-assert t["time_column"] == "SETTLEMENTDATE"
-print(t["schema"])
+s = pl.schema("DISPATCHPRICE")
+assert s.metadata[b"phasor:time_column"] == b"SETTLEMENTDATE"
+print(s)
 ```
 
 ## Run the command
@@ -118,7 +122,7 @@ through Python's `warnings` as `PhasorWarning`, the code first in its text.
 import phasorlake as pl
 
 try:
-    pl.table("NO_SUCH_TABLE")
+    pl.schema("NO_SUCH_TABLE")
 except pl.PhasorError as e:
     assert e.code == "schema.unknown_table"
 ```

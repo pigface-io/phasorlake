@@ -577,14 +577,14 @@ fn inspect<'py>(py: Python<'py>, path: PathBuf) -> PyResult<Bound<'py, PyList>> 
     Ok(out)
 }
 
-/// What the registry says of table `name`, as `phasor list TABLE --json` does.
-///
-/// Keys: `name`, `market`, `description`, `load_mode`, `time_column`,
-/// `columns` (each with `name`, `type`, `role`, `field_id`, `nullable`,
-/// `description`) and `schema`, the lake schema for `pyarrow.schema(...)`.
+/// The lake schema of table `name`, for `pyarrow.schema(...)`: every column
+/// the table ever had and every one the lake derives, each with its field
+/// id; the schema's metadata names the table (`phasor:table`), its market
+/// (`phasor:market`), its load mode (`phasor:load_mode`) and its time column
+/// (`phasor:time_column`, when it has one).
 #[pyfunction]
-fn table<'py>(py: Python<'py>, name: &str) -> PyResult<Bound<'py, PyDict>> {
-    zone!(TABLE);
+fn schema<'py>(py: Python<'py>, name: &str) -> PyResult<Bound<'py, ArrowSchema>> {
+    zone!(SCHEMA);
     let stack = stack()?;
     let r = &stack.registry;
     let Some(id) = table_id(r, name) else {
@@ -597,35 +597,23 @@ fn table<'py>(py: Python<'py>, name: &str) -> PyResult<Bound<'py, PyDict>> {
         return Err(error(py, &d));
     };
     let t = r.table(id);
-    let docs = t.published().docs;
-    let out = PyDict::new(py);
-    out.set_item("name", &t.name)?;
-    out.set_item("market", t.market.to_string())?;
-    out.set_item("description", t.description.as_deref())?;
+    let lake = r.lake_schema(id);
+    let mut metadata = lake.metadata().clone();
     let load_mode = match t.load_mode {
         phasor_registry::file_model::LoadMode::Append => "append",
         phasor_registry::file_model::LoadMode::Snapshot => "snapshot",
     };
-    out.set_item("load_mode", load_mode)?;
-    out.set_item("time_column", t.time_column.as_deref())?;
-    let columns = PyList::empty(py);
-    for c in &t.columns {
-        let d = PyDict::new(py);
-        d.set_item("name", &c.name)?;
-        d.set_item("type", c.ty.to_string())?;
-        let time = t.time_column.as_deref() == Some(c.name.as_str());
-        d.set_item("role", if time { "time" } else { "" })?;
-        d.set_item("field_id", c.id.0)?;
-        d.set_item("nullable", c.nullable)?;
-        d.set_item("description", docs.get(&c.id.0))?;
-        columns.append(d)?;
+    metadata.insert("phasor:load_mode".to_owned(), load_mode.to_owned());
+    if let Some(time) = &t.time_column {
+        metadata.insert("phasor:time_column".to_owned(), time.clone());
     }
-    out.set_item("columns", columns)?;
     let schema = ArrowSchema {
-        schema: r.lake_schema(id).clone(),
+        schema: std::sync::Arc::new(arrow_schema::Schema::new_with_metadata(
+            lake.fields().clone(),
+            metadata,
+        )),
     };
-    out.set_item("schema", Bound::new(py, schema)?)?;
-    Ok(out)
+    Bound::new(py, schema)
 }
 
 /// The version of phasor this module was built from.
@@ -639,7 +627,7 @@ fn version() -> &'static str {
 fn _native(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(decode, m)?)?;
     m.add_function(wrap_pyfunction!(inspect, m)?)?;
-    m.add_function(wrap_pyfunction!(table, m)?)?;
+    m.add_function(wrap_pyfunction!(schema, m)?)?;
     m.add_function(wrap_pyfunction!(version, m)?)?;
     m.add_class::<ArrowTable>()?;
     m.add_class::<ArrowSchema>()?;

@@ -72,8 +72,8 @@ pub static GATHER: Zone = Zone::new(904, "py.gather");
 pub static STREAM: Zone = Zone::new(905, "py.stream");
 /// One `inspect`.
 pub static INSPECT: Zone = Zone::new(906, "py.inspect");
-/// One `table`.
-pub static TABLE: Zone = Zone::new(907, "py.table");
+/// One `schema`.
+pub static SCHEMA: Zone = Zone::new(907, "py.schema");
 
 /// Zones named from Python, by name: each leaked once, so it lives as long
 /// as the tree that names it.
