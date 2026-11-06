@@ -1,153 +1,191 @@
 {
-  "phasor-acquire": [
-    "phasor-core",
-    "phasor-kit",
-    "phasor-listing",
-    "phasor-net",
-    "phasor-plain-decode",
-    "phasor-provenance",
-    "phasor-zip"
-  ],
-  "phasor-bench": [
-    "phasor-acquire",
-    "phasor-core",
-    "phasor-kit",
-    "phasor-mms-conform",
-    "phasor-mms-decode",
-    "phasor-nem",
-    "phasor-pipeline",
-    "phasor-registry",
-    "phasor-writer",
-    "phasor-zip"
-  ],
-  "phasor-cli": [
-    "phasor-acquire",
-    "phasor-core",
-    "phasor-gas",
-    "phasor-iceberg",
-    "phasor-kit",
-    "phasor-mms-conform",
-    "phasor-nem",
-    "phasor-nz",
-    "phasor-pipeline",
-    "phasor-registry",
-    "phasor-wem",
-    "phasor-writer",
-    "phasor-zip"
-  ],
-  "phasor-core": [
-    "phasor-decode",
-    "phasor-diag",
-    "phasor-provenance"
-  ],
-  "phasor-e2e": [],
-  "phasor-gas": [
-    "phasor-acquire",
-    "phasor-core",
-    "phasor-kit",
-    "phasor-mms-conform",
-    "phasor-plain-decode",
-    "phasor-registry",
-    "phasor-zip"
-  ],
-  "phasor-iceberg-store": [
-    "phasor-core",
-    "phasor-iceberg",
-    "phasor-provenance"
-  ],
-  "phasor-kit": [
-    "phasor-core",
-    "phasor-net",
-    "phasor-plain-decode",
-    "phasor-zip"
-  ],
-  "phasor-ftp": [
-    "phasor-net",
-    "phasor-provenance"
-  ],
-  "phasor-mirror": [
-    "phasor-core",
-    "phasor-ftp",
-    "phasor-listing",
-    "phasor-net",
-    "phasor-plain-decode",
-    "phasor-provenance",
-    "phasor-zip"
-  ],
-  "phasor-mms-conform": [
-    "phasor-core",
-    "phasor-kit",
-    "phasor-mms-decode",
-    "phasor-plain-decode",
-    "phasor-registry",
-    "phasor-zip"
-  ],
-  "phasor-nem": [
-    "phasor-acquire",
-    "phasor-core",
-    "phasor-kit",
-    "phasor-mms-conform",
-    "phasor-mms-decode",
-    "phasor-registry"
-  ],
-  "phasor-nz": [
-    "phasor-acquire",
-    "phasor-core",
-    "phasor-kit",
-    "phasor-mms-conform",
-    "phasor-plain-decode",
-    "phasor-registry"
-  ],
-  "phasor-net": [
-    "phasor-core",
-    "phasor-provenance"
-  ],
-  "phasor-pipeline": [
-    "phasor-acquire",
-    "phasor-core",
-    "phasor-kit",
-    "phasor-provenance",
-    "phasor-writer",
-    "phasor-zip"
-  ],
-  "phasor-py": [
-    "phasor-cli",
-    "phasor-core",
-    "phasor-kit",
-    "phasor-mms-conform",
-    "phasor-mms-decode",
-    "phasor-nem",
-    "phasor-pipeline",
-    "phasor-registry",
-    "phasor-zip"
-  ],
-  "phasor-registry": [
-    "phasor-core",
-    "phasor-iceberg",
-    "phasor-kit",
-    "phasor-mms-decode",
-    "phasor-plain-decode",
-    "phasor-provenance"
-  ],
-  "phasor-wem": [
-    "phasor-acquire",
-    "phasor-core",
-    "phasor-kit",
-    "phasor-mms-conform",
-    "phasor-plain-decode",
-    "phasor-registry"
-  ],
-  "phasor-writer": [
-    "phasor-core",
-    "phasor-iceberg",
-    "phasor-iceberg-store",
-    "phasor-kit"
-  ],
-  "xtask": [
-    "phasor-core",
-    "phasor-gates",
-    "phasor-iceberg",
-    "phasor-mms-decode",
-    "phasor-registry"
-  ]
+  "normal": {
+    "phasor-acquire": [
+      "phasor-core",
+      "phasor-kit",
+      "phasor-listing",
+      "phasor-net",
+      "phasor-plain-decode",
+      "phasor-provenance",
+      "phasor-zip"
+    ],
+    "phasor-bench": [
+      "phasor-acquire",
+      "phasor-core",
+      "phasor-kit",
+      "phasor-mms-conform",
+      "phasor-mms-decode",
+      "phasor-nem",
+      "phasor-pipeline",
+      "phasor-registry",
+      "phasor-writer",
+      "phasor-zip"
+    ],
+    "phasor-cli": [
+      "phasor-acquire",
+      "phasor-core",
+      "phasor-gas",
+      "phasor-iceberg",
+      "phasor-kit",
+      "phasor-mms-conform",
+      "phasor-nem",
+      "phasor-nz",
+      "phasor-pipeline",
+      "phasor-registry",
+      "phasor-wem",
+      "phasor-writer",
+      "phasor-zip"
+    ],
+    "phasor-core": [
+      "phasor-decode",
+      "phasor-diag",
+      "phasor-provenance"
+    ],
+    "phasor-e2e": [],
+    "phasor-gas": [
+      "phasor-acquire",
+      "phasor-core",
+      "phasor-kit",
+      "phasor-mms-conform",
+      "phasor-plain-decode",
+      "phasor-registry",
+      "phasor-zip"
+    ],
+    "phasor-iceberg-store": [
+      "phasor-core",
+      "phasor-iceberg",
+      "phasor-provenance"
+    ],
+    "phasor-kit": [
+      "phasor-core",
+      "phasor-net",
+      "phasor-plain-decode",
+      "phasor-zip"
+    ],
+    "phasor-ftp": [
+      "phasor-net",
+      "phasor-provenance"
+    ],
+    "phasor-mirror": [
+      "phasor-core",
+      "phasor-ftp",
+      "phasor-listing",
+      "phasor-net",
+      "phasor-plain-decode",
+      "phasor-provenance",
+      "phasor-zip"
+    ],
+    "phasor-mms-conform": [
+      "phasor-core",
+      "phasor-kit",
+      "phasor-mms-decode",
+      "phasor-plain-decode",
+      "phasor-registry",
+      "phasor-zip"
+    ],
+    "phasor-nem": [
+      "phasor-acquire",
+      "phasor-core",
+      "phasor-kit",
+      "phasor-mms-conform",
+      "phasor-mms-decode",
+      "phasor-registry"
+    ],
+    "phasor-nz": [
+      "phasor-acquire",
+      "phasor-core",
+      "phasor-kit",
+      "phasor-mms-conform",
+      "phasor-plain-decode",
+      "phasor-registry"
+    ],
+    "phasor-net": [
+      "phasor-core",
+      "phasor-provenance"
+    ],
+    "phasor-pipeline": [
+      "phasor-acquire",
+      "phasor-core",
+      "phasor-kit",
+      "phasor-provenance",
+      "phasor-writer",
+      "phasor-zip"
+    ],
+    "phasor-py": [
+      "phasor-cli",
+      "phasor-core",
+      "phasor-kit",
+      "phasor-mms-conform",
+      "phasor-mms-decode",
+      "phasor-nem",
+      "phasor-pipeline",
+      "phasor-registry",
+      "phasor-zip"
+    ],
+    "phasor-registry": [
+      "phasor-core",
+      "phasor-iceberg",
+      "phasor-kit",
+      "phasor-mms-decode",
+      "phasor-plain-decode",
+      "phasor-provenance"
+    ],
+    "phasor-wem": [
+      "phasor-acquire",
+      "phasor-core",
+      "phasor-kit",
+      "phasor-mms-conform",
+      "phasor-plain-decode",
+      "phasor-registry"
+    ],
+    "phasor-writer": [
+      "phasor-core",
+      "phasor-iceberg",
+      "phasor-iceberg-store",
+      "phasor-kit"
+    ],
+    "xtask": [
+      "phasor-core",
+      "phasor-gates",
+      "phasor-iceberg",
+      "phasor-mms-decode",
+      "phasor-registry"
+    ]
+  },
+  "dev": {
+    "phasor-acquire": [
+      "phasor-net"
+    ],
+    "phasor-e2e": [
+      "phasor-acquire",
+      "phasor-core",
+      "phasor-gas",
+      "phasor-kit",
+      "phasor-mms-conform",
+      "phasor-mms-decode",
+      "phasor-nem",
+      "phasor-nz",
+      "phasor-pipeline",
+      "phasor-provenance",
+      "phasor-registry",
+      "phasor-wem",
+      "phasor-writer",
+      "phasor-zip"
+    ],
+    "phasor-gas": [
+      "phasor-mms-decode"
+    ],
+    "phasor-mirror": [
+      "phasor-net"
+    ],
+    "phasor-nem": [
+      "phasor-acquire"
+    ],
+    "phasor-nz": [
+      "phasor-acquire"
+    ],
+    "phasor-wem": [
+      "phasor-acquire"
+    ]
+  }
 }

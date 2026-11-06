@@ -6,7 +6,7 @@ Entries name where it starts.
 ## Rules a hook or CI enforces
 
 - Run tools through `just`, never with hand-picked flags. `just check` runs every hook, as CI does.
-- Every dependency between the workspace's crates is one `layers.json` declares, and every one it declares exists (`just layers`, `crates/xtask/src/layers.rs`).
+- Every dependency between the workspace's crates is one `layers.json` declares, and every one it declares exists (`just layers`, in `crates/xtask/src/main.rs`).
 - `unsafe` is forbidden in every crate, so no mmap: zips are read through `BufReader<File>` (`phasor-zip`).
 - The hot path is the decoder's scanner and field splitter (phasor-schemas, `phasor-mms-decode`), `crates/phasor-mms-conform/src/arrow_sink.rs`, `crates/phasor-mms-conform/src/builders.rs`, `crates/phasor-mms-conform/src/mmstime.rs`, `crates/phasor-core/src/num.rs`: no allocation per row, no `chrono`/`jiff`/`regex`, nothing `dyn` or `async` in the loop; `just bench-fast` before and after.
 - A coverage floor in `coverage.json` only goes up; a budget in `bench/budgets.json` only tightens. Loosening one needs a `coverage-floor:` or `bench-budget:` commit trailer (`just budget-check`).

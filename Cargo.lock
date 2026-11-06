@@ -1999,7 +1999,7 @@ dependencies = [
 [[package]]
 name = "phasor-decode"
 version = "0.2.0"
-source = "git+https://github.com/pigface-io/phasorlake-schemas.git?rev=f0e3e7d8a82030b352a32263349b0170fcd3aa47#f0e3e7d8a82030b352a32263349b0170fcd3aa47"
+source = "git+https://github.com/pigface-io/phasorlake-schemas.git?rev=4665111d379c3498d86182f62e503383c11113e8#4665111d379c3498d86182f62e503383c11113e8"
 dependencies = [
  "phasor-diag",
  "serde",
@@ -2010,7 +2010,7 @@ dependencies = [
 [[package]]
 name = "phasor-diag"
 version = "0.2.0"
-source = "git+https://github.com/pigface-io/phasorlake-schemas.git?rev=f0e3e7d8a82030b352a32263349b0170fcd3aa47#f0e3e7d8a82030b352a32263349b0170fcd3aa47"
+source = "git+https://github.com/pigface-io/phasorlake-schemas.git?rev=4665111d379c3498d86182f62e503383c11113e8#4665111d379c3498d86182f62e503383c11113e8"
 dependencies = [
  "serde",
 ]
@@ -2085,7 +2085,7 @@ dependencies = [
 [[package]]
 name = "phasor-gates"
 version = "0.2.0"
-source = "git+https://github.com/pigface-io/phasorlake-schemas.git?rev=f0e3e7d8a82030b352a32263349b0170fcd3aa47#f0e3e7d8a82030b352a32263349b0170fcd3aa47"
+source = "git+https://github.com/pigface-io/phasorlake-schemas.git?rev=4665111d379c3498d86182f62e503383c11113e8#4665111d379c3498d86182f62e503383c11113e8"
 dependencies = [
  "anyhow",
  "serde",
@@ -2095,7 +2095,7 @@ dependencies = [
 [[package]]
 name = "phasor-iceberg"
 version = "0.2.0"
-source = "git+https://github.com/pigface-io/phasorlake-schemas.git?rev=f0e3e7d8a82030b352a32263349b0170fcd3aa47#f0e3e7d8a82030b352a32263349b0170fcd3aa47"
+source = "git+https://github.com/pigface-io/phasorlake-schemas.git?rev=4665111d379c3498d86182f62e503383c11113e8#4665111d379c3498d86182f62e503383c11113e8"
 dependencies = [
  "phasor-diag",
  "serde",
@@ -2141,7 +2141,7 @@ dependencies = [
 [[package]]
 name = "phasor-listing"
 version = "0.2.0"
-source = "git+https://github.com/pigface-io/phasorlake-schemas.git?rev=f0e3e7d8a82030b352a32263349b0170fcd3aa47#f0e3e7d8a82030b352a32263349b0170fcd3aa47"
+source = "git+https://github.com/pigface-io/phasorlake-schemas.git?rev=4665111d379c3498d86182f62e503383c11113e8#4665111d379c3498d86182f62e503383c11113e8"
 dependencies = [
  "memchr",
  "phasor-provenance",
@@ -2204,7 +2204,7 @@ dependencies = [
 [[package]]
 name = "phasor-mms-decode"
 version = "0.2.0"
-source = "git+https://github.com/pigface-io/phasorlake-schemas.git?rev=f0e3e7d8a82030b352a32263349b0170fcd3aa47#f0e3e7d8a82030b352a32263349b0170fcd3aa47"
+source = "git+https://github.com/pigface-io/phasorlake-schemas.git?rev=4665111d379c3498d86182f62e503383c11113e8#4665111d379c3498d86182f62e503383c11113e8"
 dependencies = [
  "memchr",
  "phasor-decode",
@@ -2294,7 +2294,7 @@ dependencies = [
 [[package]]
 name = "phasor-plain-decode"
 version = "0.2.0"
-source = "git+https://github.com/pigface-io/phasorlake-schemas.git?rev=f0e3e7d8a82030b352a32263349b0170fcd3aa47#f0e3e7d8a82030b352a32263349b0170fcd3aa47"
+source = "git+https://github.com/pigface-io/phasorlake-schemas.git?rev=4665111d379c3498d86182f62e503383c11113e8#4665111d379c3498d86182f62e503383c11113e8"
 dependencies = [
  "memchr",
  "phasor-decode",
@@ -2309,7 +2309,7 @@ dependencies = [
 [[package]]
 name = "phasor-provenance"
 version = "0.2.0"
-source = "git+https://github.com/pigface-io/phasorlake-schemas.git?rev=f0e3e7d8a82030b352a32263349b0170fcd3aa47#f0e3e7d8a82030b352a32263349b0170fcd3aa47"
+source = "git+https://github.com/pigface-io/phasorlake-schemas.git?rev=4665111d379c3498d86182f62e503383c11113e8#4665111d379c3498d86182f62e503383c11113e8"
 dependencies = [
  "crc32fast",
  "phasor-diag",
@@ -2412,7 +2412,7 @@ dependencies = [
 [[package]]
 name = "phasor-zip"
 version = "0.2.0"
-source = "git+https://github.com/pigface-io/phasorlake-schemas.git?rev=f0e3e7d8a82030b352a32263349b0170fcd3aa47#f0e3e7d8a82030b352a32263349b0170fcd3aa47"
+source = "git+https://github.com/pigface-io/phasorlake-schemas.git?rev=4665111d379c3498d86182f62e503383c11113e8#4665111d379c3498d86182f62e503383c11113e8"
 dependencies = [
  "flate2",
  "phasor-diag",
@@ -4057,7 +4057,6 @@ dependencies = [
  "phasor-iceberg",
  "phasor-mms-decode",
  "phasor-registry",
- "serde",
  "serde_json",
  "sha2",
  "tempfile",

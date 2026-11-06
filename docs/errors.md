@@ -12,7 +12,7 @@ Every error and warning phasor reports carries one of these codes. Codes are sta
 | `config.invalid` | `crates/phasor-core/src/config.rs` |
 | `config.keep_from_missing` | `crates/phasor-mirror/src/error.rs` |
 | `config.mirror_root` | `crates/phasor-mirror/src/error.rs` |
-| `config.no_decoder` | `crates/phasor-py/src/lib.rs` |
+| `config.no_decoder` | `crates/phasor-pipeline/src/decode.rs` |
 | `config.no_hosts` | `crates/phasor-mirror/src/error.rs` |
 | `config.parse` | `crates/phasor-core/src/config.rs` |
 | `config.read` | `crates/phasor-core/src/config.rs` |
@@ -26,9 +26,9 @@ Every error and warning phasor reports carries one of these codes. Codes are sta
 | `net.connect` | `crates/phasor-net/src/error.rs` |
 | `net.content_length_mismatch` | `crates/phasor-net/src/error.rs` |
 | `net.http_status` | `crates/phasor-net/src/error.rs` |
-| `net.offline` | `crates/phasor-pipeline/src/report.rs` |
+| `net.offline` | `crates/phasor-cli/src/commands/acquire.rs` |
 | `net.range_ignored` | `crates/phasor-net/src/error.rs` |
-| `net.retries_exhausted` | `crates/phasor-net/src/error.rs` |
+| `net.retries_exhausted` | `crates/phasor-mirror/src/commands.rs` |
 | `net.timeout` | `crates/phasor-net/src/error.rs` |
 
 ## listing
@@ -72,17 +72,17 @@ Every error and warning phasor reports carries one of these codes. Codes are sta
 | `csv.block_mismatch` | `phasorlake-schemas/crates/phasor-mms-decode/src/diagnose.rs` |
 | `csv.data_before_header` | `phasorlake-schemas/crates/phasor-mms-decode/src/diagnose.rs` |
 | `csv.field_count_mismatch` | `phasorlake-schemas/crates/phasor-mms-decode/src/diagnose.rs` |
-| `csv.footer_count_mismatch` | `crates/phasor-py/src/lib.rs` |
+| `csv.footer_count_mismatch` | `crates/phasor-pipeline/src/decode.rs` |
 | `csv.header_malformed` | `phasorlake-schemas/crates/phasor-mms-decode/src/diagnose.rs` |
 | `csv.header_missing` | `phasorlake-schemas/crates/phasor-plain-decode/src/diagnose.rs` |
 | `csv.line_too_long` | `phasorlake-schemas/crates/phasor-mms-decode/src/diagnose.rs` |
 | `csv.markup_skipped` | `crates/phasor-mms-conform/src/plain.rs` |
-| `csv.read_failed` | `crates/phasor-py/src/lib.rs` |
+| `csv.read_failed` | `crates/phasor-mms-conform/src/plain.rs` |
 | `csv.row_too_short` | `phasorlake-schemas/crates/phasor-mms-decode/src/diagnose.rs` |
 | `csv.stopped_fail_fast` | `crates/phasor-mms-conform/src/plain.rs` |
 | `csv.too_many_bad_rows` | `phasorlake-schemas/crates/phasor-mms-decode/src/diagnose.rs` |
 | `csv.unknown_record` | `phasorlake-schemas/crates/phasor-mms-decode/src/diagnose.rs` |
-| `csv.unnamed_block` | `crates/phasor-mms-conform/src/plain.rs` |
+| `csv.unnamed_block` | `crates/phasor-gas/src/decoder.rs` |
 
 ## json
 
@@ -114,7 +114,7 @@ Every error and warning phasor reports carries one of these codes. Codes are sta
 | `schema.file_parse` | `crates/phasor-registry/src/file_model/error.rs` |
 | `schema.file_read` | `crates/phasor-registry/src/file_model/error.rs` |
 | `schema.no_columns` | `crates/phasor-registry/src/error.rs` |
-| `schema.unknown_table` | `crates/phasor-registry/src/error.rs` |
+| `schema.unknown_table` | `crates/phasor-py/src/lib.rs` |
 | `schema.unseen_version` | `crates/phasor-registry/src/resolve.rs` |
 
 ## store
@@ -136,7 +136,7 @@ Every error and warning phasor reports carries one of these codes. Codes are sta
 | `store.quarantine_write` | `crates/phasor-writer/src/error.rs` |
 | `store.rename` | `crates/phasor-writer/src/error.rs` |
 | `store.schema_mismatch` | `crates/phasor-writer/src/error.rs` |
-| `store.write_failed` | `crates/phasor-pipeline/src/ingest_file.rs` |
+| `store.write_failed` | `crates/phasor-mms-conform/src/error.rs` |
 
 ## manifest
 
@@ -166,6 +166,21 @@ Every error and warning phasor reports carries one of these codes. Codes are sta
 | `internal.arrow` | `crates/phasor-mms-conform/src/error.rs` |
 | `internal.no_such_writer` | `crates/phasor-writer/src/error.rs` |
 | `internal.panic` | `crates/phasor-pipeline/src/run.rs` |
+
+## mirror
+
+| code | raised in |
+|---|---|
+| `mirror.crawl_incomplete` | `crates/phasor-mirror/src/error.rs` |
+| `mirror.files_failed` | `crates/phasor-mirror/src/commands.rs` |
+| `mirror.host_busy` | `crates/phasor-mirror/src/error.rs` |
+| `mirror.io` | `crates/phasor-mirror/src/error.rs` |
+| `mirror.locked` | `crates/phasor-mirror/src/error.rs` |
+| `mirror.no_lock_dir` | `crates/phasor-mirror/src/error.rs` |
+| `mirror.not_same` | `crates/phasor-mirror/src/error.rs` |
+| `mirror.record_corrupt` | `crates/phasor-mirror/src/error.rs` |
+| `mirror.robots_disallow` | `crates/phasor-mirror/src/error.rs` |
+| `mirror.summary_stale` | `crates/phasor-mirror/src/error.rs` |
 
 ## Retired
 
