@@ -1,0 +1,6 @@
+Region ID,Network reporting region,NSP,Parent NSP,Distributor price category code,Effective date,ICPs (Residential),ICPs (Non Residential)
+1,Bay of Islands (Top Energy),AKK0011SMRTEN,KOE1101TOPEGN,SNGG,2022-12-12,0,2
+1,Bay of Islands (Top Energy),AKK0011SMRTEN,KOE1101TOPEGN,SNLR,2021-08-01,93,22
+1,Bay of Islands (Top Energy),EKV0011EDCLEN,KOE1101TOPEGN,EDTEP6,2010-05-01,0,1
+1,Bay of Islands (Top Energy),EKV0011EDCLEN,KOE1101TOPEGN,EDTERH01,2026-05-01,53,4
+1,Bay of Islands (Top Energy),KOE1101TOPEGN,KOE1101TOPEGN,GA,2016-04-01,0,43

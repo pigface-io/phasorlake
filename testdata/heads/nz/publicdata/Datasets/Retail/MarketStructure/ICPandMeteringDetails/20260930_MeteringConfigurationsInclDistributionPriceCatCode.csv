@@ -1,0 +1,6 @@
+Region ID,Network reporting region,NSP,ICP count,Residential,Distributor price category code,Register(s) (Energy flow direction - register content code - period of availability)
+1,Bay of Islands (Top Energy),AKK0011SMRTEN,2,0,SNGG,X-7304-24 X-UN-24
+1,Bay of Islands (Top Energy),AKK0011SMRTEN,22,0,SNLR,X-7304-24 X-UN-24
+1,Bay of Islands (Top Energy),AKK0011SMRTEN,2,1,SNLR,I-7304-24 I-EG-24 X-7304-24 X-UN-24
+1,Bay of Islands (Top Energy),AKK0011SMRTEN,1,1,SNLR,X-7304-24 X-D-14 X-N-10
+1,Bay of Islands (Top Energy),AKK0011SMRTEN,90,1,SNLR,X-7304-24 X-UN-24

@@ -1,0 +1,134 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 960631461634939959,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 8,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1788177600000,
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nz/NZ_MARKET_SHARE_BY_MEP_AND_TRADER",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "phasor.declared": "true",
+    "phasor.format": "5",
+    "phasor.headers": "{\"1\":\"Region ID\",\"2\":\"Network reporting region\",\"3\":\"Metering equipment provider code\",\"4\":\"Trader code\",\"5\":\"ICPs (Total)\",\"6\":\"ICPs (Res)\",\"7\":\"ICPs (Ind)\",\"8\":\"ICPs (Com)\"}",
+    "phasor.load": "snapshot",
+    "phasor.market": "nz",
+    "phasor.offset": "+12:00",
+    "phasor.reports": "[[\"EMI\",\"MARKET_SHARE_BY_ME_PAND_TRADER\"]]",
+    "phasor.table": "NZ_MARKET_SHARE_BY_MEP_AND_TRADER",
+    "phasor.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 960631461634939959,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "id": 1,
+          "name": "REGION_ID",
+          "required": false,
+          "type": "long"
+        },
+        {
+          "id": 2,
+          "name": "NETWORK_REPORTING_REGION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 3,
+          "name": "METERING_EQUIPMENT_PROVIDER_CODE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 4,
+          "name": "TRADER_CODE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 5,
+          "name": "ICPS_TOTAL",
+          "required": false,
+          "type": "long"
+        },
+        {
+          "id": 6,
+          "name": "ICPS_RES",
+          "required": false,
+          "type": "long"
+        },
+        {
+          "id": 7,
+          "name": "ICPS_IND",
+          "required": false,
+          "type": "long"
+        },
+        {
+          "id": 8,
+          "name": "ICPS_COM",
+          "required": false,
+          "type": "long"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 960631461634939959,
+      "timestamp-ms": 1788177600000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nz/NZ_MARKET_SHARE_BY_MEP_AND_TRADER/metadata/snap-960631461634939959-1-76abe90b-0f1d-86d4-90af-22cd542f20cb.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 960631461634939959,
+      "summary": {
+        "operation": "append",
+        "phasor.files": "1",
+        "phasor.from.file": "20260930_MarketShareByMEPandTrader.csv",
+        "phasor.from.release": "2026-09",
+        "phasor.from.sha256": "59ffc82ee2ba2935858098b5f2889a1877dbaf21f00592e873f57a77ff5c31bf",
+        "phasor.kinds": "[\"emi\"]",
+        "phasor.report-subtype": "MARKET_SHARE_BY_ME_PAND_TRADER",
+        "phasor.report-type": "EMI",
+        "phasor.rows": "3123",
+        "phasor.to.file": "20260930_MarketShareByMEPandTrader.csv",
+        "phasor.to.release": "2026-09",
+        "phasor.to.sha256": "59ffc82ee2ba2935858098b5f2889a1877dbaf21f00592e873f57a77ff5c31bf",
+        "phasor.total-rows": "3123",
+        "phasor.version": "1"
+      },
+      "timestamp-ms": 1788177600000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "76abe90b-0f1d-86d4-90af-22cd542f20cb"
+}

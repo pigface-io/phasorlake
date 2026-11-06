@@ -1,0 +1,6 @@
+﻿MonthEnd,NetworkReportingRegionCode,NetworkReportingRegion,LoadType,FixedDollarPerDayInclGST,VariableDollarPerkWhInclGST,MonthlyNetworkMeankWh,TotalMonthlyBillDollarsInclGST,NetworkMonthlyChargeDollarsInclGST
+2025-01-31,1,Bay of Islands (Top Energy),Low user,1.1660,0.4385,367,197.19,85.15
+2025-01-31,1,Bay of Islands (Top Energy),Standard user,2.7903,0.3683,567,295.58,138.72
+2025-01-31,2,Whangārei and Kaipara (Northpower),Low user,1.1234,0.3428,395,170.51,68.75
+2025-01-31,2,Whangārei and Kaipara (Northpower),Standard user,2.6647,0.2751,596,246.83,108.09
+2025-01-31,3,Waitemata (Vector),Low user,1.1726,0.2911,382,147.78,53.14

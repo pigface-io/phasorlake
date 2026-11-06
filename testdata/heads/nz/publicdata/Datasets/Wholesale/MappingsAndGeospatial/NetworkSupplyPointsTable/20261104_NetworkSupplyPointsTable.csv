@@ -1,0 +1,6 @@
+Current flag,NSP,NSP replaced by,POC code,Network participant,Embedded under POC code,Embedded under network participant,Reconciliation type,X flow,I flow,Description,NZTM easting,NZTM northing,Network reporting region ID,Network reporting region,Zone,Island,Start date,Start TP,End date,End TP,SB ICP,Balancing code,MEP,Responsible participant,Certification expiry,Metering information exemption expiry date
+1,ABY0111ALPEGN,,ABY0111,ALPE,,,GN,1,1,ALBURY,1424393,5097839,32,South Canterbury (Alpine Energy),LSI,SI,2012-01-01,1,,,,CENTRALALPEG,TPNZ,TPNZ,2028-08-27,
+1,AER0011GALXEN,,AER0011,GALX,ALB1101,UNET,EN,1,0,9 Aeroview Drive,,,3,Waitemata (Vector),UNI,NI,2026-02-01,1,,,,AER0011GALXE,,GALX,,
+1,AKK0011SMRTEN,,AKK0011,SMRT,KOE1101,TOPE,EN,1,0,57 Hall Road Kerikeri,,,1,Bay of Islands (Top Energy),UNI,NI,2021-08-01,1,,,,AKK0011SMRTE,AMCI,SMRT,2029-02-08,
+1,AKL0331AIALEN,,AKL0331,AIAL,MNG0331,VECT,EN,1,0,AUCKLAND AIRPORT,1762701,5907699,4,Auckland (Vector),UNI,NI,2026-04-01,1,,,1001136290AA143,AKL0331AIALE,AMCI,AIAL,2025-12-13,
+1,ALB0331UNETGN,,ALB0331,UNET,,,GN,1,1,ALBANY,1750900,5932739,3,Waitemata (Vector),UNI,NI,2020-08-14,1,,,,NORTHRNUNETG,TPNZ,TPNZ,2028-04-22,

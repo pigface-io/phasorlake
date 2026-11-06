@@ -1,0 +1,6 @@
+PlantName,PointOfConnectionCode,UnitCode,TechnologyCode,Technology,FuelCode,Fuel,PeakingPlantFlag,PlantOperatorCode,PlantOperator,DateCommissioned,DateDecommissioned,NameplateMegawatts,EffectiveStartDate,EffectiveEndDate
+Ātiamuri,ATI2201,ATI0,HYD,Hydro,HYD,Hydro,N,MRPL,Mercury NZ Limited,1/01/1962,null,77,1899-12-31T12:30:00.000Z,9999-12-31T10:59:59.000Z
+Aniwhenua,MAT1101,ANI0,HYD,Hydro,HYD,Hydro,N,TODD,Todd Energy,1/01/1981,null,25,1899-12-31T12:30:00.000Z,2016-04-30T11:59:59.000Z
+Aniwhenua,MAT1101,ANI0,HYD,Hydro,HYD,Hydro,N,PUNZ,Pulse Energy Alliance LP,1/01/1981,null,25,2016-04-30T12:00:00.000Z,9999-12-31T10:59:59.000Z
+Ōhaaki,OKI2201,OKI0,GEO,Geothermal,GEO,Geothermal,N,CTCT,Contact Energy Limited,1/01/1992,null,44,1899-12-31T12:30:00.000Z,9999-12-31T10:59:59.000Z
+Ōhakuri,OHK2201,OHK0,HYD,Hydro,HYD,Hydro,N,MRPL,Mercury NZ Limited,1/01/1962,null,109,1899-12-31T12:30:00.000Z,9999-12-31T10:59:59.000Z

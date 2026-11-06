@@ -1,0 +1,128 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 4491987949672970470,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 7,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1788177600000,
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nz/NZ_METERING_CONFIGURATIONS",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "phasor.declared": "true",
+    "phasor.format": "5",
+    "phasor.headers": "{\"1\":\"Region ID\",\"2\":\"Network reporting region\",\"4\":\"ICP count\",\"5\":\"Residential\",\"6\":\"Distributor price category code\",\"7\":\"Register(s) (Energy flow direction - register content code - period of availability)\"}",
+    "phasor.load": "snapshot",
+    "phasor.market": "nz",
+    "phasor.offset": "+12:00",
+    "phasor.reports": "[[\"EMI\",\"METERING_CONFIGURATIONS_INCL_DISTRIBUTION_PRICE_CAT_CODE\"]]",
+    "phasor.table": "NZ_METERING_CONFIGURATIONS",
+    "phasor.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 4491987949672970470,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "id": 1,
+          "name": "REGION_ID",
+          "required": false,
+          "type": "long"
+        },
+        {
+          "id": 2,
+          "name": "NETWORK_REPORTING_REGION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 3,
+          "name": "NSP",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 4,
+          "name": "ICP_COUNT",
+          "required": false,
+          "type": "long"
+        },
+        {
+          "id": 5,
+          "name": "RESIDENTIAL",
+          "required": false,
+          "type": "long"
+        },
+        {
+          "id": 6,
+          "name": "DISTRIBUTOR_PRICE_CATEGORY_CODE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 7,
+          "name": "REGISTER_S_ENERGY_FLOW_DIRECTION_REGISTER_CONTENT_CODE_PERIOD_OF_AVAILABILITY",
+          "required": false,
+          "type": "string"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 4491987949672970470,
+      "timestamp-ms": 1788177600000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nz/NZ_METERING_CONFIGURATIONS/metadata/snap-4491987949672970470-1-8895fef7-efd8-8b08-bfbb-c86bf8ca9e20.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 4491987949672970470,
+      "summary": {
+        "operation": "append",
+        "phasor.files": "1",
+        "phasor.from.file": "20260930_MeteringConfigurationsInclDistributionPriceCatCode.csv",
+        "phasor.from.release": "2026-09",
+        "phasor.from.sha256": "a95c88b79dc3189b925015a168b3e14f31a10b376390a0e7d8fd507ab47e1023",
+        "phasor.kinds": "[\"emi\"]",
+        "phasor.report-subtype": "METERING_CONFIGURATIONS_INCL_DISTRIBUTION_PRICE_CAT_CODE",
+        "phasor.report-type": "EMI",
+        "phasor.rows": "59207",
+        "phasor.to.file": "20260930_MeteringConfigurationsInclDistributionPriceCatCode.csv",
+        "phasor.to.release": "2026-09",
+        "phasor.to.sha256": "a95c88b79dc3189b925015a168b3e14f31a10b376390a0e7d8fd507ab47e1023",
+        "phasor.total-rows": "59207",
+        "phasor.version": "1"
+      },
+      "timestamp-ms": 1788177600000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "8895fef7-efd8-8b08-bfbb-c86bf8ca9e20"
+}

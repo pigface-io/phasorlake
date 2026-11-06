@@ -5061,9 +5061,29 @@
         {
           "breaks": 0,
           "declared": true,
+          "first_release": "2026-05",
+          "last_release": "2026-05",
+          "name": "NZ_AVERAGE_POWER_USE_AND_COSTS",
+          "package": null,
+          "runs": 1,
+          "schemas": 1
+        },
+        {
+          "breaks": 0,
+          "declared": true,
           "first_release": "2022-04",
           "last_release": "2026-11",
           "name": "NZ_CLEARED_OFFERS",
+          "package": null,
+          "runs": 1,
+          "schemas": 1
+        },
+        {
+          "breaks": 0,
+          "declared": true,
+          "first_release": "2025-09",
+          "last_release": "2026-07",
+          "name": "NZ_DISPATCHED_GENERATION_PLANT",
           "package": null,
           "runs": 1,
           "schemas": 1
@@ -5094,6 +5114,16 @@
           "first_release": "2022-11",
           "last_release": "2026-11",
           "name": "NZ_DISPATCH_RESERVE_PRICES",
+          "package": null,
+          "runs": 1,
+          "schemas": 1
+        },
+        {
+          "breaks": 0,
+          "declared": true,
+          "first_release": "2026-11",
+          "last_release": "2026-11",
+          "name": "NZ_DISTRIBUTION_PRICE_CATEGORY_CODES_BY_NSP",
           "package": null,
           "runs": 1,
           "schemas": 1
@@ -5181,6 +5211,66 @@
         {
           "breaks": 0,
           "declared": true,
+          "first_release": "2026-09",
+          "last_release": "2026-09",
+          "name": "NZ_MARKET_SHARE_BY_MEP_AND_TRADER",
+          "package": null,
+          "runs": 1,
+          "schemas": 1
+        },
+        {
+          "breaks": 0,
+          "declared": true,
+          "first_release": "2026-09",
+          "last_release": "2026-09",
+          "name": "NZ_MARKET_SHARE_TRENDS_BY_NETWORK_REPORTING_REGION",
+          "package": null,
+          "runs": 1,
+          "schemas": 1
+        },
+        {
+          "breaks": 0,
+          "declared": true,
+          "first_release": "2026-09",
+          "last_release": "2026-09",
+          "name": "NZ_MARKET_SHARE_TRENDS_BY_ROOT_NSP",
+          "package": null,
+          "runs": 1,
+          "schemas": 1
+        },
+        {
+          "breaks": 0,
+          "declared": true,
+          "first_release": "2026-09",
+          "last_release": "2026-09",
+          "name": "NZ_METERING_CONFIGURATIONS",
+          "package": null,
+          "runs": 1,
+          "schemas": 1
+        },
+        {
+          "breaks": 0,
+          "declared": true,
+          "first_release": "2026-09",
+          "last_release": "2026-09",
+          "name": "NZ_METER_CATEGORY_BY_LEVEL1_ANZSIC",
+          "package": null,
+          "runs": 1,
+          "schemas": 1
+        },
+        {
+          "breaks": 0,
+          "declared": true,
+          "first_release": "2026-01",
+          "last_release": "2026-11",
+          "name": "NZ_NETWORK_SUPPLY_POINTS",
+          "package": null,
+          "runs": 1,
+          "schemas": 1
+        },
+        {
+          "breaks": 0,
+          "declared": true,
           "first_release": "1997-01",
           "last_release": "2026-09",
           "name": "NZ_REACTIVE_POWER",
@@ -5199,8 +5289,8 @@
           "schemas": 1
         }
       ],
-      "schemas": 14,
-      "tables": 14
+      "schemas": 23,
+      "tables": 23
     },
     "wem": {
       "baseline": {
@@ -5303,7 +5393,7 @@
       "tables": 9
     }
   },
-  "schemas": 741,
+  "schemas": 750,
   "sha256": {
     "gas/DWGM_INT029A_SYSTEM_NOTICES/metadata/snap-3248816567870203441-1-b81e8e26-7793-8fe9-abcf-7b2e78fd80ed.avro": "382efa05d14b431f815b68db718223164670217a10f46ff17db3adfac8df0ef7",
     "gas/DWGM_INT029A_SYSTEM_NOTICES/metadata/v1.metadata.json": "cde45f01bb5258605ce9aef18678e4436a7be985755707dc35bb09ac55fb75b8",
@@ -10229,10 +10319,18 @@
     "nem/YESTBID_BIDPEROFFER/schema-0.json": "9699d614f04ec65f1d36c402dd1470a281bc8fb451baebf5adc9320138bba3dd",
     "nem/folders.json": "fab7bea145fb774ae8b733414664a0eee4869dacdf90b627423ddda8f4a0cf48",
     "nem/headers.json": "d69a83146d144a6f6a6d20b7491e1d68c9315eb5b421dd3edffb863cb9b18801",
+    "nz/NZ_AVERAGE_POWER_USE_AND_COSTS/metadata/snap-5903501542922293413-1-bd8deb80-7c36-8f24-8694-6189f03f9e6b.avro": "634ae745f721c598b1f2c005ee4be62270e84e9a760a96a683501ab8ae824225",
+    "nz/NZ_AVERAGE_POWER_USE_AND_COSTS/metadata/v1.metadata.json": "58510d807119a85f5897b9e5924d9df845de40be07e23bbd96a54a0a46d52d0c",
+    "nz/NZ_AVERAGE_POWER_USE_AND_COSTS/metadata/version-hint.text": "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b",
+    "nz/NZ_AVERAGE_POWER_USE_AND_COSTS/schema-0.json": "85ae1a3cd32dc1515dc3c6a34e64d78630c0d12e65bcdc1703d1b56e92177c71",
     "nz/NZ_CLEARED_OFFERS/metadata/snap-8725642051822445146-1-9b2f74f7-e58a-8551-92a9-6a3174ac49d9.avro": "320f1b35a8e4c798500e14941d9a507fb0eb3c1da62a460af0e0319ada5a992b",
     "nz/NZ_CLEARED_OFFERS/metadata/v1.metadata.json": "4a7a471e03571e142884e329ee69e17884812e39e778973dd34322a3ccc46de5",
     "nz/NZ_CLEARED_OFFERS/metadata/version-hint.text": "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b",
     "nz/NZ_CLEARED_OFFERS/schema-0.json": "39a671c74177f9d695565d108a4c57e99f1b9b405018c4ee55d15ac1324ce101",
+    "nz/NZ_DISPATCHED_GENERATION_PLANT/metadata/snap-5682906470731977385-1-c3861d0f-4565-819d-807c-5202ce10ea9d.avro": "68ad96344f95fe1ebddecfcd3e4a85c4855f365948063829edf4f40eb7973b2f",
+    "nz/NZ_DISPATCHED_GENERATION_PLANT/metadata/v1.metadata.json": "f1fc39f691c1ea082822ec6f2056f99ba2335203478e02e250528a113ca9ab70",
+    "nz/NZ_DISPATCHED_GENERATION_PLANT/metadata/version-hint.text": "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b",
+    "nz/NZ_DISPATCHED_GENERATION_PLANT/schema-0.json": "dbd0d7fbe35b44c50b1d3774167d0087ef4b47587c27e60ba49f9261aab3213e",
     "nz/NZ_DISPATCH_ENERGY_PRICES/metadata/snap-7069668034384316701-1-14356dc1-c17f-8ee1-83eb-8c5bd812961e.avro": "602d772b5347459e139ca619a1447435ec8afb1e0d037965a287474b5b7b94f3",
     "nz/NZ_DISPATCH_ENERGY_PRICES/metadata/v1.metadata.json": "2ca7c7a5439791942a432e8f4849ecf4e753e19f429ff125bc69860c8272b91f",
     "nz/NZ_DISPATCH_ENERGY_PRICES/metadata/version-hint.text": "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b",
@@ -10245,6 +10343,10 @@
     "nz/NZ_DISPATCH_RESERVE_PRICES/metadata/v1.metadata.json": "4c2ad5e66bdc918501b253a6ab13753747f10a2450f2e49399beeeeeed7405c0",
     "nz/NZ_DISPATCH_RESERVE_PRICES/metadata/version-hint.text": "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b",
     "nz/NZ_DISPATCH_RESERVE_PRICES/schema-0.json": "323f83882afbf7c5460a1f87151224945b2e87b17a4765157d3a0fe453fe78c3",
+    "nz/NZ_DISTRIBUTION_PRICE_CATEGORY_CODES_BY_NSP/metadata/snap-190843052347926813-1-31e3e3f5-78ec-8e11-a9e5-f9663de9483d.avro": "ba6b3fda0fb4174cd85eb136620d1719b2deedd4aa138e9b3ef088fa75d966a6",
+    "nz/NZ_DISTRIBUTION_PRICE_CATEGORY_CODES_BY_NSP/metadata/v1.metadata.json": "c3678f509592ad4f7ca35cfc06ff0572c866ce9b4f5499c8fefaeda2434994a1",
+    "nz/NZ_DISTRIBUTION_PRICE_CATEGORY_CODES_BY_NSP/metadata/version-hint.text": "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b",
+    "nz/NZ_DISTRIBUTION_PRICE_CATEGORY_CODES_BY_NSP/schema-0.json": "76d7ee2648e07e7fae602e6887f32b301714dc8e84ecb6db17065f6ee35b1815",
     "nz/NZ_EMBEDDED_GENERATION/metadata/snap-5498706175731704294-1-6188e16a-92ce-8b87-9aed-d96d26039ba0.avro": "b502f48843257cfdcc25f074b7a51c70173acd984a69fd4cd23cabd1bf0c49d6",
     "nz/NZ_EMBEDDED_GENERATION/metadata/v1.metadata.json": "4ec943aa7b30e007928ae8bdc339c35c392fd7225520d5cce3c2110431fddd62",
     "nz/NZ_EMBEDDED_GENERATION/metadata/version-hint.text": "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b",
@@ -10277,6 +10379,30 @@
     "nz/NZ_HVDC_FLOWS/metadata/v1.metadata.json": "93286b2bc6d8f6e81b2abf2bbbf75f741771ad24292d55346a3ea54c7c5fa16b",
     "nz/NZ_HVDC_FLOWS/metadata/version-hint.text": "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b",
     "nz/NZ_HVDC_FLOWS/schema-0.json": "fc84df2c1736ce444c269ce126e36d35604f5851200df874373b73b671827bb5",
+    "nz/NZ_MARKET_SHARE_BY_MEP_AND_TRADER/metadata/snap-960631461634939959-1-76abe90b-0f1d-86d4-90af-22cd542f20cb.avro": "4f36085e133799c2fa65f17a4ff26b67125ba04c655f7ba13274973e675cf33e",
+    "nz/NZ_MARKET_SHARE_BY_MEP_AND_TRADER/metadata/v1.metadata.json": "2386a269b3e68082d025cf5099b752ba1c73bbdcfdee8a9fc7b701323ec4259f",
+    "nz/NZ_MARKET_SHARE_BY_MEP_AND_TRADER/metadata/version-hint.text": "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b",
+    "nz/NZ_MARKET_SHARE_BY_MEP_AND_TRADER/schema-0.json": "074e232a9d570185a9fd635a560b7a0f195cd4591d79893fc3625b18c50db913",
+    "nz/NZ_MARKET_SHARE_TRENDS_BY_NETWORK_REPORTING_REGION/metadata/snap-8552497479862239774-1-916787a1-f466-839d-b460-e468eeb03ad3.avro": "0c913e1bd145da286ceaf7528202bb0cc622bdce00b42f24b5e3bd79606d7a07",
+    "nz/NZ_MARKET_SHARE_TRENDS_BY_NETWORK_REPORTING_REGION/metadata/v1.metadata.json": "987fe60062fdc34e3a609aa094dd8ea3422eefa842610e0b37a2f5bfeb6c715e",
+    "nz/NZ_MARKET_SHARE_TRENDS_BY_NETWORK_REPORTING_REGION/metadata/version-hint.text": "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b",
+    "nz/NZ_MARKET_SHARE_TRENDS_BY_NETWORK_REPORTING_REGION/schema-0.json": "279500bc258306c948cb58467594160bc0a56eb79daae71a2749d4270a360320",
+    "nz/NZ_MARKET_SHARE_TRENDS_BY_ROOT_NSP/metadata/snap-8579268558408326596-1-a6174c90-7906-8bc9-93b7-3245214d4245.avro": "25ced351281b59b2b6bff24cd9179faad0b94054470f91b94121549465a28b7d",
+    "nz/NZ_MARKET_SHARE_TRENDS_BY_ROOT_NSP/metadata/v1.metadata.json": "6c7604b1465f0f36379e791f8dfc889e38ada961e0dae980a530a74d849c3836",
+    "nz/NZ_MARKET_SHARE_TRENDS_BY_ROOT_NSP/metadata/version-hint.text": "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b",
+    "nz/NZ_MARKET_SHARE_TRENDS_BY_ROOT_NSP/schema-0.json": "9edbaa9a1a0e3e6eff179f2ec4675c4e9933f58e627701429cca7286837ae266",
+    "nz/NZ_METERING_CONFIGURATIONS/metadata/snap-4491987949672970470-1-8895fef7-efd8-8b08-bfbb-c86bf8ca9e20.avro": "d6c1087fe2dc194c51c88ab2ece951981bea441c7b1d94ae4457d378380c39d0",
+    "nz/NZ_METERING_CONFIGURATIONS/metadata/v1.metadata.json": "9539ffb669c68010f51d7eb756c76c9e684fc16f85e9ea20bd0f17f6daee894f",
+    "nz/NZ_METERING_CONFIGURATIONS/metadata/version-hint.text": "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b",
+    "nz/NZ_METERING_CONFIGURATIONS/schema-0.json": "84bfa7cfc41b4d75231638fc9f5dcf7dfde8bed9c98bcd87272d5042cfa82de5",
+    "nz/NZ_METER_CATEGORY_BY_LEVEL1_ANZSIC/metadata/snap-6983702270144563744-1-9bc671f2-1731-86ce-ab4b-ad7f5f1de4ef.avro": "6dfddde5e4630bc69e33f794612b93213bfad8240d7fce4e0412e858b3dbc4c9",
+    "nz/NZ_METER_CATEGORY_BY_LEVEL1_ANZSIC/metadata/v1.metadata.json": "ac2af8ceb53a493332bbf5a3201da18ce8fadbe25eddbf3d18c9e252736c3b0b",
+    "nz/NZ_METER_CATEGORY_BY_LEVEL1_ANZSIC/metadata/version-hint.text": "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b",
+    "nz/NZ_METER_CATEGORY_BY_LEVEL1_ANZSIC/schema-0.json": "d7db2108aa626001276bfcab18ffea5e0562c9b4d9ef1f6fcf922ee446464f77",
+    "nz/NZ_NETWORK_SUPPLY_POINTS/metadata/snap-5392489557132173130-1-15f7c9f2-e48b-885b-84c1-e30fe97e7837.avro": "6fa51a6a609640fae1cf5ab58236f8341dc8d53122fdb18e77a2ce308ee4e71b",
+    "nz/NZ_NETWORK_SUPPLY_POINTS/metadata/v1.metadata.json": "20cad6cf9e1cb1b881e06d5e1fe2a46803321aeb6ac2d042e4757227db7116ac",
+    "nz/NZ_NETWORK_SUPPLY_POINTS/metadata/version-hint.text": "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b",
+    "nz/NZ_NETWORK_SUPPLY_POINTS/schema-0.json": "8af78d7dee4f461457b114d19f7472558a0056b62f051a4e6a27b2c930596f17",
     "nz/NZ_REACTIVE_POWER/metadata/snap-2783947407209403467-1-5e453af1-f172-8020-aee0-7e920124f5d2.avro": "3e6dda2add15800ce6841d4ce628efd9d04c219752b196d2f49ae51497703b09",
     "nz/NZ_REACTIVE_POWER/metadata/v1.metadata.json": "2d39c73a4a3e62604615a4f0c8707f5a6a15e643e302ae3a48a852f373e280ca",
     "nz/NZ_REACTIVE_POWER/metadata/version-hint.text": "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b",
@@ -10285,8 +10411,8 @@
     "nz/NZ_UNIT_LEVEL_GENERATION/metadata/v1.metadata.json": "5caad0a13756bcaf1afb5ec0440ae5040e90e57d1a95d06f9784ef1d25a04b05",
     "nz/NZ_UNIT_LEVEL_GENERATION/metadata/version-hint.text": "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b",
     "nz/NZ_UNIT_LEVEL_GENERATION/schema-0.json": "134ea4aa55354f74d447b7fe4bd8f7804b2470fa8501237a00bbbd3d685e69fb",
-    "nz/folders.json": "0d13d4fbc2ea22bbb692ba1d7c93bf680bcdadcb20362c2d1e526fc03e287baa",
-    "nz/headers.json": "ab4dfebc3edebec79523ab579325dffe8e82e005808ef54ea54053c8a91b2d41",
+    "nz/folders.json": "503dae41a6882b2e5c488343c5a448a458bda3bd3ad8b09f1be0e2b5a259e216",
+    "nz/headers.json": "fef997d834f1910aada7f2763c5f71984d0a7ff457b3c8b5169c13f1a3835edd",
     "wem/WEMDE_REFERENCE_TRADING_PRICE/metadata/snap-3845576662466461030-1-0551813b-68e4-89c2-9817-6833581310e2.avro": "143fe378ab37e302ac23df05c39f53e04a3ec174ffb9bf761f177821ce048299",
     "wem/WEMDE_REFERENCE_TRADING_PRICE/metadata/v1.metadata.json": "8083475a4a72892b17d769c8b40e69bd3a79c5b1d5d17834b370a9e372695821",
     "wem/WEMDE_REFERENCE_TRADING_PRICE/metadata/version-hint.text": "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b",
@@ -10330,5 +10456,5 @@
     "wem/folders.json": "611390a6c9942265546d3834109913d609c5f454cf1e0b1b6cd30362e5bc49ef",
     "wem/headers.json": "252ddcb44b57520da95db9c532bed78ef5b9450cfa9f8bc5a05bce74e8c36d95"
   },
-  "tables": 526
+  "tables": 535
 }

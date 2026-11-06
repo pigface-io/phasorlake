@@ -3558,7 +3558,7 @@ async fn every_real_head_survives_the_lake() {
         let text = p.to_string_lossy();
         let unpivoted = [
             "ForecastUtilisation",
-            "/Wholesale/Generation/",
+            "/Generation/Generation_MD/",
             "/Wholesale/Metered_data/",
         ]
         .iter()

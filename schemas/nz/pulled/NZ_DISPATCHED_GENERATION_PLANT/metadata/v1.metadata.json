@@ -1,0 +1,178 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 5682906470731977385,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 15,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1756641600000,
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nz/NZ_DISPATCHED_GENERATION_PLANT",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "phasor.declared": "true",
+    "phasor.format": "5",
+    "phasor.headers": "{\"1\":\"PlantName\",\"2\":\"PointOfConnectionCode\",\"3\":\"UnitCode\",\"4\":\"TechnologyCode\",\"5\":\"Technology\",\"6\":\"FuelCode\",\"7\":\"Fuel\",\"8\":\"PeakingPlantFlag\",\"9\":\"PlantOperatorCode\",\"10\":\"PlantOperator\",\"11\":\"DateCommissioned\",\"12\":\"DateDecommissioned\",\"13\":\"NameplateMegawatts\",\"14\":\"EffectiveStartDate\",\"15\":\"EffectiveEndDate\"}",
+    "phasor.load": "snapshot",
+    "phasor.market": "nz",
+    "phasor.offset": "+12:00",
+    "phasor.reports": "[[\"EMI\",\"DISPATCHED_GENERATION_PLANT\"]]",
+    "phasor.table": "NZ_DISPATCHED_GENERATION_PLANT",
+    "phasor.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 5682906470731977385,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "id": 1,
+          "name": "PLANTNAME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 2,
+          "name": "POINTOFCONNECTIONCODE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 3,
+          "name": "UNITCODE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 4,
+          "name": "TECHNOLOGYCODE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 5,
+          "name": "TECHNOLOGY",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 6,
+          "name": "FUELCODE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 7,
+          "name": "FUEL",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 8,
+          "name": "PEAKINGPLANTFLAG",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 9,
+          "name": "PLANTOPERATORCODE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 10,
+          "name": "PLANTOPERATOR",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 11,
+          "name": "DATECOMMISSIONED",
+          "required": false,
+          "type": "date"
+        },
+        {
+          "id": 12,
+          "name": "DATEDECOMMISSIONED",
+          "required": false,
+          "type": "date"
+        },
+        {
+          "id": 13,
+          "name": "NAMEPLATEMEGAWATTS",
+          "required": false,
+          "type": "decimal(4, 1)"
+        },
+        {
+          "id": 14,
+          "name": "EFFECTIVESTARTDATE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 15,
+          "name": "EFFECTIVEENDDATE",
+          "required": false,
+          "type": "string"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 5682906470731977385,
+      "timestamp-ms": 1756641600000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nz/NZ_DISPATCHED_GENERATION_PLANT/metadata/snap-5682906470731977385-1-c3861d0f-4565-819d-807c-5202ce10ea9d.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 5682906470731977385,
+      "summary": {
+        "operation": "append",
+        "phasor.files": "2",
+        "phasor.from.file": "20250917_DispatchedGenerationPlant.csv",
+        "phasor.from.release": "2025-09",
+        "phasor.from.sha256": "0434e4e509675c56673e3466594ee7cd2e7b42ecd3444050592b38f502108dcc",
+        "phasor.from.time": "1902-01-01T00:00:00+12:00",
+        "phasor.kinds": "[\"emi\"]",
+        "phasor.report-subtype": "DISPATCHED_GENERATION_PLANT",
+        "phasor.report-type": "EMI",
+        "phasor.rows": "299",
+        "phasor.to.file": "20260702_DispatchedGenerationPlant.csv",
+        "phasor.to.release": "2026-07",
+        "phasor.to.sha256": "0a1d0c2b64755bb6e87cfbcbacde6119a7df3e4e3d323eaaaa71ab874c3654ba",
+        "phasor.to.time": "2025-09-15T00:00:00+12:00",
+        "phasor.total-rows": "299",
+        "phasor.version": "1"
+      },
+      "timestamp-ms": 1756641600000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "c3861d0f-4565-819d-807c-5202ce10ea9d"
+}

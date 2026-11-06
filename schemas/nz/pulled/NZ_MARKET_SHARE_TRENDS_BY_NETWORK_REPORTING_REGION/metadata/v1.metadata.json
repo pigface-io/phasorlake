@@ -1,0 +1,124 @@
+{
+  "current-schema-id": 0,
+  "current-snapshot-id": 8552497479862239774,
+  "default-sort-order-id": 0,
+  "default-spec-id": 0,
+  "format-version": 3,
+  "last-column-id": 6,
+  "last-partition-id": 999,
+  "last-sequence-number": 1,
+  "last-updated-ms": 1788177600000,
+  "location": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nz/NZ_MARKET_SHARE_TRENDS_BY_NETWORK_REPORTING_REGION",
+  "metadata-log": [],
+  "next-row-id": 0,
+  "partition-specs": [
+    {
+      "fields": [],
+      "spec-id": 0
+    }
+  ],
+  "properties": {
+    "phasor.declared": "true",
+    "phasor.format": "5",
+    "phasor.headers": "{\"1\":\"Month ended\",\"2\":\"Region\",\"3\":\"Participant code\",\"4\":\"Entity name\",\"5\":\"ICP count\",\"6\":\"ICP share (%)\"}",
+    "phasor.load": "snapshot",
+    "phasor.market": "nz",
+    "phasor.offset": "+12:00",
+    "phasor.reports": "[[\"EMI\",\"MARKET_SHARE_TRENDS_BY_NETWORK_REPORTING_REGION\"]]",
+    "phasor.table": "NZ_MARKET_SHARE_TRENDS_BY_NETWORK_REPORTING_REGION",
+    "phasor.visibility": "PUBLIC"
+  },
+  "refs": {
+    "main": {
+      "snapshot-id": 8552497479862239774,
+      "type": "branch"
+    }
+  },
+  "schemas": [
+    {
+      "fields": [
+        {
+          "id": 1,
+          "name": "MONTH_ENDED",
+          "required": false,
+          "type": "date"
+        },
+        {
+          "id": 2,
+          "name": "REGION",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 3,
+          "name": "PARTICIPANT_CODE",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 4,
+          "name": "ENTITY_NAME",
+          "required": false,
+          "type": "string"
+        },
+        {
+          "id": 5,
+          "name": "ICP_COUNT",
+          "required": false,
+          "type": "long"
+        },
+        {
+          "id": 6,
+          "name": "ICP_SHARE",
+          "required": false,
+          "type": "decimal(4, 2)"
+        }
+      ],
+      "identifier-field-ids": [],
+      "schema-id": 0,
+      "type": "struct"
+    }
+  ],
+  "snapshot-log": [
+    {
+      "snapshot-id": 8552497479862239774,
+      "timestamp-ms": 1788177600000
+    }
+  ],
+  "snapshots": [
+    {
+      "added-rows": 0,
+      "first-row-id": 0,
+      "manifest-list": "https://raw.githubusercontent.com/pigface-io/phasorlake-schemas/main/nz/NZ_MARKET_SHARE_TRENDS_BY_NETWORK_REPORTING_REGION/metadata/snap-8552497479862239774-1-916787a1-f466-839d-b460-e468eeb03ad3.avro",
+      "schema-id": 0,
+      "sequence-number": 1,
+      "snapshot-id": 8552497479862239774,
+      "summary": {
+        "operation": "append",
+        "phasor.files": "1",
+        "phasor.from.file": "20260930_MarketShareTrendsByNetworkReportingRegion.csv",
+        "phasor.from.release": "2026-09",
+        "phasor.from.sha256": "395ace00e1ee1b836076085d478842bdec3189887ff6f1b69c97a720d7032cff",
+        "phasor.from.time": "2003-12-31T00:00:00+12:00",
+        "phasor.kinds": "[\"emi\"]",
+        "phasor.report-subtype": "MARKET_SHARE_TRENDS_BY_NETWORK_REPORTING_REGION",
+        "phasor.report-type": "EMI",
+        "phasor.rows": "146008",
+        "phasor.to.file": "20260930_MarketShareTrendsByNetworkReportingRegion.csv",
+        "phasor.to.release": "2026-09",
+        "phasor.to.sha256": "395ace00e1ee1b836076085d478842bdec3189887ff6f1b69c97a720d7032cff",
+        "phasor.to.time": "2026-09-30T00:00:00+12:00",
+        "phasor.total-rows": "146008",
+        "phasor.version": "1"
+      },
+      "timestamp-ms": 1788177600000
+    }
+  ],
+  "sort-orders": [
+    {
+      "fields": [],
+      "order-id": 0
+    }
+  ],
+  "table-uuid": "916787a1-f466-839d-b460-e468eeb03ad3"
+}

@@ -383,6 +383,25 @@
     {
       "blocks": [
         {
+          "first-release": "2025-09",
+          "last-release": "2026-07",
+          "months": 2,
+          "report": [
+            "EMI",
+            "DISPATCHED_GENERATION_PLANT"
+          ],
+          "version": 1
+        }
+      ],
+      "cadence": "day",
+      "feed": "emi",
+      "folder": "GenerationFleet/Existing",
+      "listings": [],
+      "root": "publicdata/Datasets/Wholesale/Generation"
+    },
+    {
+      "blocks": [
+        {
           "first-release": "1997-08",
           "last-release": "2026-09",
           "months": 350,
@@ -474,6 +493,112 @@
       "folder": "HVDC_Flows",
       "listings": [],
       "root": "publicdata/Datasets/Wholesale/Metered_data"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2026-09",
+          "last-release": "2026-09",
+          "months": 1,
+          "report": [
+            "EMI",
+            "MARKET_SHARE_TRENDS_BY_NETWORK_REPORTING_REGION"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-09",
+          "last-release": "2026-09",
+          "months": 1,
+          "report": [
+            "EMI",
+            "MARKET_SHARE_TRENDS_BY_ROOT_NSP"
+          ],
+          "version": 1
+        }
+      ],
+      "cadence": "day",
+      "feed": "emi",
+      "folder": "MarketStructure",
+      "listings": [],
+      "root": "publicdata/Datasets/Retail"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2026-11",
+          "last-release": "2026-11",
+          "months": 1,
+          "report": [
+            "EMI",
+            "DISTRIBUTION_PRICE_CATEGORY_CODES_BY_NSP"
+          ],
+          "version": 1
+        }
+      ],
+      "cadence": "day",
+      "feed": "emi",
+      "folder": "MarketStructure/DistributionPriceCategoryCodes",
+      "listings": [],
+      "root": "publicdata/Datasets/Retail"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2026-09",
+          "last-release": "2026-09",
+          "months": 1,
+          "report": [
+            "EMI",
+            "MARKET_SHARE_BY_ME_PAND_TRADER"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-09",
+          "last-release": "2026-09",
+          "months": 1,
+          "report": [
+            "EMI",
+            "METERING_CONFIGURATIONS_INCL_DISTRIBUTION_PRICE_CAT_CODE"
+          ],
+          "version": 1
+        },
+        {
+          "first-release": "2026-09",
+          "last-release": "2026-09",
+          "months": 1,
+          "report": [
+            "EMI",
+            "METER_CATEGORY_BY_LEVEL1ANZSIC"
+          ],
+          "version": 1
+        }
+      ],
+      "cadence": "day",
+      "feed": "emi",
+      "folder": "MarketStructure/ICPandMeteringDetails",
+      "listings": [],
+      "root": "publicdata/Datasets/Retail"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2026-01",
+          "last-release": "2026-11",
+          "months": 11,
+          "report": [
+            "EMI",
+            "NETWORK_SUPPLY_POINTS_TABLE"
+          ],
+          "version": 1
+        }
+      ],
+      "cadence": "day",
+      "feed": "emi",
+      "folder": "NetworkSupplyPointsTable",
+      "listings": [],
+      "root": "publicdata/Datasets/Wholesale/MappingsAndGeospatial"
     },
     {
       "blocks": [
@@ -626,6 +751,25 @@
       "folder": "Reactive_power",
       "listings": [],
       "root": "publicdata/Datasets/Wholesale/Metered_data"
+    },
+    {
+      "blocks": [
+        {
+          "first-release": "2026-05",
+          "last-release": "2026-05",
+          "months": 1,
+          "report": [
+            "EMI",
+            "AVERAGE_POWER_USE_AND_COSTS"
+          ],
+          "version": 1
+        }
+      ],
+      "cadence": "day",
+      "feed": "emi",
+      "folder": "RegionalPowerPrices",
+      "listings": [],
+      "root": "publicdata/Datasets/Retail"
     },
     {
       "blocks": [
