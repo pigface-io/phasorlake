@@ -729,6 +729,7 @@ mod tests {
             listing: ListingKind::AzureBlob,
             documents: vec![],
             only: vec![],
+            batch: None,
             fetcher: crate::net::Fetcher::new(
                 Arc::new(t.clone()),
                 archive,
@@ -787,6 +788,7 @@ mod tests {
             listing: ListingKind::AzureBlob,
             documents: vec![],
             only: vec![],
+            batch: None,
             fetcher: crate::net::Fetcher::new(
                 Arc::new(bad),
                 Archive::new(home.path().join("archive2")),
@@ -851,6 +853,7 @@ mod tests {
             listing: ListingKind::Iis,
             documents: vec![],
             only: vec![],
+            batch: None,
             fetcher: crate::net::Fetcher::new(Arc::new(t.clone()), archive.clone(), fast.clone()),
         };
         let f = Fetchers::new(vec![

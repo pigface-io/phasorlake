@@ -423,6 +423,7 @@ mod tests {
             listing: kind,
             documents: docs.iter().map(|d| (*d).to_owned()).collect(),
             only: Vec::new(),
+            batch: None,
             fetcher: Fetcher::new(
                 Arc::new(t.clone()),
                 Archive::new(dir.keep()),

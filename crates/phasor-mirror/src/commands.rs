@@ -208,9 +208,9 @@ pub async fn run_command(cli: &Cli) -> Result<i32> {
                 let roots = self::roots(ctx, &mirror, &[])?;
                 let _hosts = host_locks(ctx, &mirror, &[])?;
                 let fetcher = ctx.fetchers(&roots).await?;
-                download(ctx, &fetcher, &mirror, only, None, false, None)
+                download(ctx, &fetcher, &mirror, Pass { only, ..Pass::ALL }, None)
                     .await
-                    .map(|(code, _)| code)
+                    .map(|d| d.code)
             };
             locked(&mirror, pass).await
         }
@@ -417,15 +417,16 @@ async fn run(ctx: &Context, mirror: &Mirror, plan: &RunPlan<'_>) -> Result<i32, 
                     ctx,
                     &fetcher,
                     mirror,
-                    &[],
-                    None,
-                    delete_duplicates,
+                    Pass {
+                        delete_duplicates,
+                        ..Pass::ALL
+                    },
                     Some(&tracker)
                 )
             );
             tracker.into_inner().write();
-            let ((p_code, p_net), (d_code, d_net)) = (peeked?, downloaded?);
-            Ok::<_, MirrorError>((p_code.max(d_code), p_net || d_net))
+            let ((p_code, p_net), d) = (peeked?, downloaded?);
+            Ok::<_, MirrorError>((p_code.max(d.code), p_net || d.network))
         };
         let d = match attempt.await {
             Ok((code, false)) => return Ok(code),
@@ -501,12 +502,22 @@ async fn watch(ctx: &Context, mirror: &Mirror, plan: &WatchPlan<'_>) -> Result<i
     let archive = ctx.archive();
     let mut fetcher = ctx.fetchers(&roots).await?;
     let (mut rounds, mut refused) = (0, 0);
+    // The folders whose files a host's `batch` put off last round: the next
+    // round comes back for them as soon as the least interval allows.
+    let mut carried: Vec<String> = Vec::new();
     while plan.rounds.is_none_or(|n| rounds < n) {
         let now = std::time::Instant::now();
         let due = schedule.due(now);
-        if due.is_empty() || now < not_before {
-            let next = schedule.next().unwrap_or(now + plan.wait).max(not_before);
-            tokio::time::sleep_until(next.into()).await;
+        if (due.is_empty() && carried.is_empty()) || now < not_before {
+            // With files carried, the next round comes as soon as the least
+            // interval allows, whether or not a folder is due by then.
+            let next = schedule.next().unwrap_or(now + plan.wait);
+            let next = if carried.is_empty() {
+                next
+            } else {
+                next.min(not_before)
+            };
+            tokio::time::sleep_until(next.max(not_before).into()).await;
             continue;
         }
         rounds += 1;
@@ -560,21 +571,32 @@ async fn watch(ctx: &Context, mirror: &Mirror, plan: &WatchPlan<'_>) -> Result<i
                     peek(ctx, &fetcher, mirror, true, None).await?;
                 }
             }
-            let read: Vec<String> = r.folders.into_iter().map(|(f, _)| f).collect();
+            // The folders read this round and those with files put off last
+            // round, each once.
+            let mut read: Vec<String> = r.folders.into_iter().map(|(f, _)| f).collect();
+            for f in carried.drain(..) {
+                if !read.contains(&f) {
+                    read.push(f);
+                }
+            }
             download(
                 ctx,
                 &fetcher,
                 mirror,
-                &[],
-                Some(&read),
-                plan.delete_duplicates,
+                Pass {
+                    folders: Some(&read),
+                    delete_duplicates: plan.delete_duplicates,
+                    batched: true,
+                    ..Pass::ALL
+                },
                 None,
             )
             .await
         };
         let d = match round.await {
-            Ok(_) => {
+            Ok(d) => {
                 refused = 0;
+                carried = d.deferred_folders;
                 continue;
             }
             Err(MirrorError::Fetch(e)) if waits_out(&e) => e.diagnostic(),
@@ -760,23 +782,52 @@ fn passes_with_time(d: &phasor_mirror::Diagnostic) -> bool {
     )
 }
 
-/// Downloads the crawl's files; the exit code, and whether a file failed on the network.
+/// What a download pass left: its exit code, whether a file failed on the
+/// network, and the folders whose files a host's `batch` put off.
+struct Downloaded {
+    code: i32,
+    network: bool,
+    deferred_folders: Vec<String>,
+}
+
+/// Which files a download pass takes.
+struct Pass<'a> {
+    /// Only the files whose URL starts with one of these, when any.
+    only: &'a [String],
+    /// Only the files listed on one of these folders, when given.
+    folders: Option<&'a [String]>,
+    /// Skip, and record removed, each paired zip whose listing matches its folder.
+    delete_duplicates: bool,
+    /// A watch's round: at most each host's `batch` of its files.
+    batched: bool,
+}
+
+impl Pass<'_> {
+    /// Every file of the crawl record.
+    const ALL: Pass<'static> = Pass {
+        only: &[],
+        folders: None,
+        delete_duplicates: false,
+        batched: false,
+    };
+}
+
+/// Downloads the crawl's files the pass names.
 async fn download(
     ctx: &Context,
     fetcher: &Fetchers,
     mirror: &Mirror,
-    only: &[String],
-    folders: Option<&[String]>,
-    delete_duplicates: bool,
+    pass: Pass<'_>,
     tracker: Option<&RefCell<Tracker>>,
-) -> Result<(i32, bool), MirrorError> {
+) -> Result<Downloaded, MirrorError> {
     let json = ctx.json;
     let progress = ctx.progress;
     let options = phasor_mirror::DownloadOptions {
         downloads: ctx.config.downloads,
-        only,
-        folders,
-        delete_duplicates,
+        only: pass.only,
+        folders: pass.folders,
+        delete_duplicates: pass.delete_duplicates,
+        batched: pass.batched,
     };
     let summary = phasor_mirror::download(fetcher, mirror, &options, |f| {
         if let Some(t) = tracker {
@@ -807,9 +858,16 @@ async fn download(
             summary.bytes as f64 / 1e9,
             summary.failed.len(),
         );
+        if summary.deferred > 0 {
+            println!("{} files wait for the next round", summary.deferred);
+        }
     }
     let network = summary.failed.iter().any(passes_with_time);
-    Ok((i32::from(!summary.failed.is_empty()), network))
+    Ok(Downloaded {
+        code: i32::from(!summary.failed.is_empty()),
+        network,
+        deferred_folders: summary.deferred_folders,
+    })
 }
 
 fn map(ctx: &Context, mirror: &Mirror, given: &[String], jobs: usize) -> Result<i32, MirrorError> {

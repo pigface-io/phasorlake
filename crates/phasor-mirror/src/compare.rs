@@ -1059,6 +1059,7 @@ mod tests {
                 downloads: 1,
                 only: &[],
                 folders: None,
+                batched: false,
                 delete_duplicates: false,
             },
             |_| {},

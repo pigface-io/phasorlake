@@ -35,6 +35,10 @@ pub struct FileDone<'a> {
 /// What a download pass did.
 #[derive(Debug, Clone, Default, Serialize)]
 pub struct DownloadSummary {
+    /// Files a host's `batch` put off to the next pass.
+    pub deferred: usize,
+    /// The folders those files were listed on, each once, in order.
+    pub deferred_folders: Vec<String>,
     /// Files in the crawl record.
     pub files: usize,
     /// Of those, already in the archive.
@@ -100,7 +104,7 @@ pub async fn download(
         .collect();
     // Stable: every other file in URL order, then the paired zips.
     kept.sort_by_key(|r| paired.contains_key(&r.url));
-    let files: Vec<RemoteFile> = kept
+    let mut files: Vec<RemoteFile> = kept
         .into_iter()
         .enumerate()
         .filter(|(_, r)| r.kind == RemoteKind::File && !removed.contains_key(&r.url))
@@ -122,6 +126,31 @@ pub async fn download(
         removed: listed - files.len(),
         ..DownloadSummary::default()
     };
+    // In a batched pass a host with a cap gives up the files past it; their
+    // folders are named so the next pass comes back for them.
+    if options.batched {
+        let mut taken: HashMap<&str, usize> = HashMap::new();
+        let mut deferred = std::collections::BTreeSet::new();
+        files.retain(|f| {
+            // A file held already costs nothing: the pass only confirms it.
+            if held.contains_key(f.url.as_str()) {
+                return true;
+            }
+            let host = fetcher.for_url(f.url.as_str());
+            let Some(batch) = host.batch else {
+                return true;
+            };
+            let n = taken.entry(host.base_url.as_str()).or_insert(0);
+            if *n < batch {
+                *n += 1;
+                return true;
+            }
+            deferred.insert(folders[f.url.as_str()].to_owned());
+            summary.deferred += 1;
+            false
+        });
+        summary.deferred_folders = deferred.into_iter().collect();
+    }
     let (paired, held, record) = (&paired, &held, &record);
     // The listings, read once, when the first paired zip comes up: peek
     // reads the paired zips' first, so by then they are there.
@@ -343,6 +372,9 @@ pub struct DownloadOptions<'a> {
     pub folders: Option<&'a [String]>,
     /// Skip, and record removed, each paired zip whose listing matches its folder.
     pub delete_duplicates: bool,
+    /// Whether each host's `batch` caps its files this pass (a watch's
+    /// round), the rest left for the next; a plain download takes every file.
+    pub batched: bool,
 }
 
 /// One download pass: what every file's fetch shares.
@@ -539,6 +571,83 @@ mod tests {
         ))
     }
 
+    /// A host with a batch: its files past the cap wait, their folder named
+    /// for the next pass; a plain pass takes every file.
+    #[tokio::test]
+    async fn a_batched_host_leaves_its_files_past_the_cap_for_the_next_pass() {
+        let home = tempfile::tempdir().unwrap();
+        let mirror = Mirror::new(home.path().join("mirror"));
+        let archive = home.path().join("archive");
+        let t = Arc::new(StaticTransport::default());
+        // Two files that download, in URL order.
+        const TWO: &str = "<pre> Monday, October 12, 2026 10:45 AM 3 <A HREF=\"/A/x.zip\">x</A><br> Monday, October 12, 2026 10:45 AM 4 <A HREF=\"/A/y.zip\">y</A><br></pre>";
+        t.add("https://h/A/", Canned::ok(TWO.as_bytes()));
+        t.add("https://h/A/x.zip", Canned::ok(b"xxx"));
+        t.add("https://h/A/y.zip", Canned::ok(b"yyyy"));
+        let one = |batch| {
+            Fetchers::new(vec![crate::net::HostFetcher {
+                base_url: String::new(),
+                offset_secs: crate::stamp::AEST,
+                listing: crate::config::ListingKind::Iis,
+                documents: Vec::new(),
+                only: Vec::new(),
+                batch,
+                fetcher: crate::net::Fetcher::new(
+                    Arc::new(t.clone()),
+                    Archive::new(&archive),
+                    FetcherConfig {
+                        attempts: 1,
+                        backoff: Duration::ZERO,
+                        max_backoff: Duration::ZERO,
+                        min_interval: Duration::ZERO,
+                    },
+                ),
+            }])
+        };
+        let capped = one(Some(1));
+        crawl(
+            &capped,
+            &mirror,
+            &[root("https://h/A/").unwrap()],
+            false,
+            |_| {},
+        )
+        .await
+        .unwrap();
+        let options = |batched| DownloadOptions {
+            downloads: 2,
+            only: &[],
+            folders: None,
+            delete_duplicates: false,
+            batched,
+        };
+        let s = download(&capped, &mirror, &options(true), ignore)
+            .await
+            .unwrap();
+        assert_eq!((s.files, s.downloaded, s.deferred), (2, 1, 1));
+        assert_eq!(s.deferred_folders, ["https://h/A/"]);
+        // The next pass: the file held costs nothing, the other is downloaded.
+        let s = download(&capped, &mirror, &options(true), ignore)
+            .await
+            .unwrap();
+        assert_eq!((s.cached, s.downloaded, s.deferred), (1, 1, 0));
+        assert!(s.deferred_folders.is_empty());
+        // Not batched, or a host without a cap: every file.
+        std::fs::remove_dir_all(archive.join("h")).unwrap();
+        let fresh = Mirror::new(home.path().join("mirror"));
+        assert_eq!(fresh.reindex(&Archive::new(&archive)).unwrap(), 0);
+        let s = download(&capped, &fresh, &options(false), ignore)
+            .await
+            .unwrap();
+        assert_eq!((s.deferred, s.downloaded), (0, 2));
+        std::fs::remove_dir_all(archive.join("h")).unwrap();
+        assert_eq!(fresh.reindex(&Archive::new(&archive)).unwrap(), 0);
+        let s = download(&one(None), &fresh, &options(true), ignore)
+            .await
+            .unwrap();
+        assert_eq!((s.deferred, s.downloaded), (0, 2));
+    }
+
     #[tokio::test]
     async fn downloads_every_crawled_file_once() {
         let home = tempfile::tempdir().unwrap();
@@ -558,6 +667,7 @@ mod tests {
                 only: &[],
                 folders: None,
                 delete_duplicates: false,
+                batched: false,
             },
             ignore,
         )
@@ -577,6 +687,7 @@ mod tests {
                 only: &[],
                 folders: None,
                 delete_duplicates: false,
+                batched: false,
             },
             |d| {
                 seen.push((d.url.to_owned(), d.cached, d.total));
@@ -606,6 +717,7 @@ mod tests {
                 only: &[],
                 folders: None,
                 delete_duplicates: false,
+                batched: false,
             },
             ignore,
         )
@@ -622,6 +734,7 @@ mod tests {
                 only: &only,
                 folders: None,
                 delete_duplicates: false,
+                batched: false,
             },
             ignore,
         )
@@ -640,6 +753,7 @@ mod tests {
                     only: &[],
                     folders: Some(&folders),
                     delete_duplicates: false,
+                    batched: false,
                 },
                 ignore,
             )
@@ -666,6 +780,7 @@ mod tests {
             downloads: 1,
             only: &[],
             folders: None,
+            batched: false,
             delete_duplicates: false,
         };
         download(&f, &mirror, &options, ignore).await.unwrap();
@@ -720,6 +835,7 @@ mod tests {
             downloads: 1,
             only: &[],
             folders: None,
+            batched: false,
             delete_duplicates: false,
         };
         download(&f, &mirror, &options, ignore).await.unwrap();
@@ -796,6 +912,7 @@ mod tests {
                 only: &[],
                 folders: None,
                 delete_duplicates: false,
+                batched: false,
             },
             ignore,
         )
@@ -827,6 +944,7 @@ mod tests {
                     only: &[],
                     folders: None,
                     delete_duplicates: false,
+                    batched: false,
                 },
                 ignore,
             ))
@@ -880,7 +998,7 @@ mod tests {
             .unwrap();
         // Once N's folder is down, N.zip is found the same as it.
         let removed = mirror.removed_path();
-        let s = download(&f, &mirror, &DownloadOptions { downloads: 1, only: &[], folders: None, delete_duplicates: false }, |d| {
+        let s = download(&f, &mirror, &DownloadOptions { downloads: 1, only: &[], folders: None, delete_duplicates: false, batched: false }, |d| {
             if d.url == "https://h/A/N/a.zip" {
                 std::fs::write(
                     &removed,
@@ -912,6 +1030,7 @@ mod tests {
                 only: &[],
                 folders: None,
                 delete_duplicates: false,
+                batched: false,
             },
             ignore,
         )
@@ -1023,6 +1142,7 @@ mod tests {
             downloads: 1,
             only: &[],
             folders: None,
+            batched: false,
             delete_duplicates: true,
         };
         let s = download(&f, &mirror, &options, |_| {}).await.unwrap();

@@ -280,6 +280,11 @@ pub struct HostConfig {
     /// Its own tries per request; the top-level count when absent.
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub attempts: Option<u32>,
+    /// At most this many of its files downloaded in one round of a watch;
+    /// the rest wait for the next round, so a backlog here never holds
+    /// another host's due folders back. Every file when absent.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub batch: Option<usize>,
     /// The folders mirrored, as paths under `base_url`.
     #[serde(default)]
     pub roots: Vec<String>,
@@ -326,6 +331,7 @@ impl HostConfig {
             request_interval_ms: None,
             downloads: None,
             attempts: None,
+            batch: None,
             roots: ["Data_Archive/", "Reports/ARCHIVE/", "Reports/CURRENT/"]
                 .iter()
                 .map(|r| (*r).to_owned())

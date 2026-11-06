@@ -783,6 +783,51 @@ fn a_watch_keeps_each_version_and_what_is_new() {
 }
 
 /// A month to keep from leaves out what is before it, and prune deletes it.
+/// A host with a `batch`: a watch's round downloads that many of its files
+/// and the next round comes straight back for the rest, due or not.
+#[test]
+fn a_batched_host_yields_the_rest_of_its_files_to_the_next_round() {
+    const MON: &str = "Monday, October 12, 2026 10:45 AM";
+    let srv = Server::start();
+    srv.route(
+        "/B/",
+        Reply::Ok(dated(&[
+            ("/B/one.csv", MON, Some(3)),
+            ("/B/two.csv", MON, Some(3)),
+        ])),
+    );
+    srv.route("/B/one.csv", Reply::Ok(b"one".to_vec()));
+    srv.route("/B/two.csv", Reply::Ok(b"two".to_vec()));
+    let cli = Cli::new();
+    let base = srv.url("");
+    // The folder is read once an hour; a round with files put off follows
+    // as soon as the least interval (a second) allows.
+    cli.config(&format!(
+        "{FAST}watch_secs = 3600\nwatch_least_secs = 1\n[[hosts]]\nbase_url = \"{base}\"\nlisting_offset_secs = 36000\nroots = [\"B/\"]\nbatch = 1\n"
+    ));
+    let root = srv.url("/B/");
+    // A run is not batched: both files.
+    cli.ok(&["run", "--root", &root]);
+    let host = base.split_once("://").unwrap().1.replace(':', "_");
+    let b = cli.home.path().join("archive").join(&host).join("B");
+    let forget = || {
+        std::fs::remove_dir_all(&b).unwrap();
+        cli.ok(&["reindex"]);
+    };
+    assert_eq!(std::fs::read(b.join("two.csv")).unwrap(), b"two");
+    forget();
+    let out = cli.ok(&["--json", "watch", "--root", &root, "--rounds", "2"]);
+    assert_eq!(out.matches("\"event\":\"watch_round\"").count(), 2, "{out}");
+    assert!(out.contains("\"deferred\":1"), "{out}");
+    assert!(out.contains("\"read\":0"), "{out}");
+    assert_eq!(std::fs::read(b.join("one.csv")).unwrap(), b"one");
+    assert_eq!(std::fs::read(b.join("two.csv")).unwrap(), b"two");
+    forget();
+    let out = cli.ok(&["watch", "--root", &root, "--rounds", "2"]);
+    assert!(out.contains("1 files wait for the next round"), "{out}");
+    assert_eq!(std::fs::read(b.join("two.csv")).unwrap(), b"two");
+}
+
 #[test]
 fn prune_deletes_what_is_before_the_month_kept_from() {
     let cli = Cli::new();

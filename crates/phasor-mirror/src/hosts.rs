@@ -28,6 +28,8 @@ pub struct Host {
     pub downloads: Option<usize>,
     /// Its own tries per request, when it has them.
     pub attempts: Option<u32>,
+    /// At most this many of its files in one round of a watch, when it has a cap.
+    pub batch: Option<usize>,
     /// The folders mirrored, under `base_url`.
     pub roots: Vec<Url>,
     /// For a host of documents, the files watched, under `base_url`.
@@ -101,6 +103,7 @@ impl Host {
             ),
             downloads: c.downloads,
             attempts: c.attempts,
+            batch: c.batch,
         })
     }
 
@@ -122,6 +125,7 @@ impl Host {
             request_interval: Duration::from_millis(request_interval_ms),
             downloads: None,
             attempts: None,
+            batch: None,
             roots: vec![root.clone()],
             documents: Vec::new(),
             only: Vec::new(),
@@ -228,6 +232,7 @@ mod tests {
             request_interval_ms: None,
             downloads: Some(1),
             attempts: Some(3),
+            batch: None,
             documents: Vec::new(),
             only: Vec::new(),
             roots: vec![
@@ -325,6 +330,7 @@ mod tests {
                 request_interval: Duration::from_secs(1),
                 downloads: None,
                 attempts: None,
+                batch: None,
                 roots: vec![],
                 documents: vec![],
                 only: vec![],

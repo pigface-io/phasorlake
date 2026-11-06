@@ -26,6 +26,9 @@ pub struct HostFetcher {
     pub documents: Vec<String>,
     /// Patterns of the file names its listings keep; every file when empty.
     pub only: Vec<String>,
+    /// At most this many of its files in one batched download pass, when
+    /// it has a cap; the rest wait for the next pass.
+    pub batch: Option<usize>,
     /// Its fetcher.
     pub fetcher: Fetcher,
 }
@@ -92,6 +95,7 @@ impl Fetchers {
             listing: ListingKind::Iis,
             documents: Vec::new(),
             only: Vec::new(),
+            batch: None,
             fetcher,
         }])
     }
@@ -183,6 +187,7 @@ impl Fetchers {
             .hosts
             .into_iter()
             .map(|h| HostFetcher {
+                batch: None,
                 fetcher: h.fetcher.with_events(tx.clone()),
                 ..h
             })
@@ -254,6 +259,7 @@ pub fn per_host(
                     listing: h.listing,
                     documents: h.documents.iter().map(ToString::to_string).collect(),
                     only: h.only.clone(),
+                    batch: h.batch,
                     fetcher: Fetcher::new(transport, archive.clone(), config),
                 }
             })
@@ -288,6 +294,7 @@ mod tests {
             listing: ListingKind::Iis,
             documents: Vec::new(),
             only: Vec::new(),
+            batch: None,
             fetcher: Fetcher::new(Arc::new(t.clone()), archive.clone(), fast()),
         }
     }
@@ -456,6 +463,7 @@ mod tests {
                 request_interval: Duration::from_millis(9),
                 downloads: Some(1),
                 attempts: None,
+                batch: None,
                 roots: vec![],
                 documents: vec![],
                 only: vec![],

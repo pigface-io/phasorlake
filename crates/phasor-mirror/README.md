@@ -111,7 +111,10 @@ included: nothing is read that the config does not name. A host has its
 roots, its clock (`listing_offset_secs`, the offset of the times its
 listings and zips carry), how it lists a folder (`listing`: `iis`, the
 default, or `azure-blob`), and may set its own pace (`request_interval_ms`),
-pool (`downloads`, under the top-level count), tries (`attempts`) and
+pool (`downloads`, under the top-level count), tries (`attempts`), a cap on
+the files a watch's round downloads for it (`batch`: the rest wait for the
+next round, so a backlog on one host never holds another host's due
+folders back) and
 watch cadence: `every_secs` for its folders, and `[[hosts.schedule]]` rules
 giving the folders under a path their own interval, the longest matching
 path winning (`watch_fast` and `watch_current` on a host still read as
