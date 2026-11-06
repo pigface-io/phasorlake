@@ -391,13 +391,21 @@ impl Config {
 }
 
 impl Config {
-    /// The effective number of parse workers.
+    /// The effective number of parse workers: the setting, else
+    /// [`default_jobs`].
     pub fn effective_jobs(&self) -> usize {
         if self.jobs > 0 {
             return self.jobs;
         }
-        std::thread::available_parallelism().map_or(2, |n| (n.get() / 2).max(1))
+        default_jobs()
     }
+}
+
+/// Parse workers when neither the flag nor the setting names a number:
+/// half the cores, at least one.
+#[must_use]
+pub fn default_jobs() -> usize {
+    std::thread::available_parallelism().map_or(2, |n| (n.get() / 2).max(1))
 }
 
 #[cfg(test)]
@@ -467,6 +475,7 @@ mod tests {
             Some("http://localhost:1")
         );
         assert!(Config::default().effective_jobs() >= 1);
+        assert_eq!(Config::default().effective_jobs(), default_jobs());
         // A kit's table is read by the kit, with its own keys.
         #[derive(Debug, PartialEq, serde::Deserialize)]
         #[serde(deny_unknown_fields)]
