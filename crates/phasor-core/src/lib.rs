@@ -11,6 +11,7 @@ pub mod num;
 pub mod nztime;
 pub mod paths;
 pub mod period;
+pub mod render;
 pub mod report;
 pub mod source_times;
 pub mod timetext;
